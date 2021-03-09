@@ -1,0 +1,23 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "jquery": true
+    },
+    "extends": [
+        "standard",
+        "plugin:backbone/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-unused-vars": 0,
+        "no-empty": 0,
+        "backbone/no-native-jquery": 0
+    },
+    "globals": {
+        "Handlebars": true
+    }
+}
