@@ -131,7 +131,6 @@ export const ChatView = Backbone.View.extend({
       channelId = currentChannel.get('id')
     }
 
-    console.log('id current channel: ' + channelId)
     const fetchAllMessages = async () => {
       for (let i = 0; i < this.myChannels.length; i++) {
         const channel = this.myChannels.at(i)
@@ -148,12 +147,9 @@ export const ChatView = Backbone.View.extend({
     const fetchMessage = async () => {
       if (currentChannel !== undefined) {
         const messages = await currentChannel.getMessages()
-        console.log('messages 2')
-        console.log(messages)
         for (let i = 0; i < messages.length; i++) {
           this.receiveMessage(channelId, messages[i])
         }
-        console.log(this.myMessages[channelId])
         this.updateContextCenter(currentChannel)
         this.updateContextRightSide(currentChannel)
       }
@@ -883,7 +879,6 @@ export const ChatView = Backbone.View.extend({
 
     this.context.id = currentChannel.get('id')
     this.context.messages = []
-    console.log(this.myMessages[currentChannel.get('id')])
     const channelId = currentChannel.get('id')
     if (this.myMessages[channelId] !== undefined) {
       for (let i = 0; i < this.myMessages[channelId].length; i++) {
@@ -1005,11 +1000,8 @@ export const ChatView = Backbone.View.extend({
   },
 
   updateHTML: function (div) {
-    console.log(div)
-    console.log(this.context.messages)
     const html = this.templateChat(this.context)
     const found = $(html).find('#' + div)[0].innerHTML
-    console.log(found)
     const currentDiv = document.getElementById(div)
     currentDiv.innerHTML = found
   },
