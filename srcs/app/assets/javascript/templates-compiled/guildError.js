@@ -8,7 +8,7 @@ templates['guildError'] = template({"compiler":[8,">= 4.3.0"],"main":function(co
         return undefined
     };
 
-  return "<span>"
+  return "<style>\n#guildError {\ncolor: red;\n}\n</style>\n<span id=\"guildError\">"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"status") : depth0), depth0))
     + ": "
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"statusText") : depth0), depth0))
