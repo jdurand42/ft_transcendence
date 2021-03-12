@@ -25,7 +25,7 @@ export const ManageGuildView = Backbone.View.extend({
     this.userId = this.model.get('userLoggedId')
     console.log(this.model.get('userLoggedId'))
     this.router = this.model.get('router')
-    this.preload()
+    this.load()
   },
 
   preload: function () {
@@ -34,6 +34,20 @@ export const ManageGuildView = Backbone.View.extend({
 
   getUsers: function () {
     this.listenTo(this.users, 'sync', function () { this.chooseView() }, this)
+  },
+
+  load: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch()
+        await this.guilds.fetch()
+        this.chooseView()
+      } catch (e) {
+        console.log(e)
+        this.$el.html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
   },
 
   chooseView: function () {
