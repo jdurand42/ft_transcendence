@@ -10,7 +10,7 @@ export const GuildView = Backbone.View.extend({
     this.users = this.model.get('users').get('obj')
     this.ladders = this.model.get('ladders').get('obj')
     console.log(this.id)
-    if (this.id === null) { this.id = this.userId }
+    // a refaire
     // console.log(this.id)
     this.$el.html(Handlebars.templates.guild({}))
     this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
@@ -19,8 +19,16 @@ export const GuildView = Backbone.View.extend({
   },
 
   getUsers: function () {
-    this.listenTo(this.users, 'sync', function () { this.currentWar() }, this)
-    this.currentWar()
+    this.listenTo(this.users, 'sync', function () {
+      if (this.id === null) {
+        this.id = this.users.get(this.userId).get('guild_id')
+        if (this.id === null) {
+          this.model.router.navigate('#manage_guild')
+        }
+      }
+      console.log(this.guilds.get(this.id))
+      this.currentWar()
+    }, this)
   },
 
   currentWar: function () {
