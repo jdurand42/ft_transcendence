@@ -1,4 +1,4 @@
-import { User } from '../models/user_model'
+import { User } from '../models/userModel'
 
 export const Users = Backbone.Collection.extend({
   initialize: function () {

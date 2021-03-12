@@ -50,9 +50,29 @@
                 {{/each}}
                 </div>
             </div>
+            {{#if superAdmin}}
+            <div class="all-channels-admin">
+                <div class="first-line">
+                    <div class="sub-title">ALL CHANNELS (ADMIN VIEW)</div>
+                </div>
+                <div class="all-channels" id="all-channels">
+                {{#each allChannels}}
+                    <div class="clickable-discussions clikable-discussions{{id}}" for={{id}} id="all-channel{{id}}">
+                        {{!-- <div class="image-container"> --}}
+                            {{!-- <img src={{image_url}} id="image_url" class="image_url"></img> --}}
+                        {{!-- </div> --}}
+                        <p class="channelName">#{{name}}</p>
+                        <div class="admin_panel_settings" for="{{id}}">
+                            <img src='./icons/admin_panel_settings.svg' class="admin_panel_settings-icon" for={{id}}></img>
+                        </div>
+                    </div>
+                {{/each}}
+                </div>
+            </div>
+            {{/if}}
         </div>
     </div>
-    <div class="center" id="center">
+    <div class="center" id="center"  style="display: none;">
         <div class="header">
             <div class="left-header">
                 {{#unless channel}}
@@ -84,15 +104,16 @@
                 {{/if}}
                 {{/if}}
                 {{#unless channel}}
-                <button class="play-button">
+                <button class="play-button" for="{{userId}}">
                     <img src="./icons/videogame.svg" height="24">
                 </button>
                 {{/unless}}
             </div>
         </div>
-        <div class="messages">
+        <div class="messages" id="messages{{id}}">
             <div class="scrollable">
                 {{#each messages}}
+                {{#if message}}
                 <div class="message">
                     <div class="info">
                         <div class="image-container">
@@ -104,14 +125,30 @@
                     </div>
                     <div class="output">{{message}}</div>
                 </div>
+                {{/if}}
+                {{#unless message}}
+                <div class="invitation">
+                    <div class="textInvitation">{{sender}} invites {{receiver}} to join a game.</div>
+                    {{#if invitation}}
+                    <div class="buttons">
+                        <div class="acceptInvitation">
+                            <button class="button yes acceptInvit">Accept</button>
+                        </div>
+                        <div class="refuseInvitation">
+                            <button class="button no">Refuse</button>
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+                {{/unless}}
                 {{/each}}
             </div>
         <div class="input-container">
-            <input class="textInput input" type="text">
+            <input class="textInput input" type="text" id="textInput" for={{id}}>
         </div>
         </div>
     </div>
-    <div class="right-side" id="right-side">
+    <div class="right-side" id="right-side" style="display: none;">
         <div class="privacy">{{privacy}} channel</div>
         <div class="title online">
             <div class="pastille"></div>
@@ -128,8 +165,8 @@
                         <div class="name nickname">{{nickname}}</div>
                     </div>
                     {{!-- {{#if others}} --}}
-                    <div class="play-button-container">
-                        <button class="play-button">Play</button>         
+                    <div class="play-button-container" for="{{userId}}">
+                        <button class="play-button" for="{{userId}}">Play</button>         
                     </div>
                     {{!-- {{/if}} --}}
                 </div>
@@ -190,7 +227,7 @@
             <input class="textInput search modalSearchChannels" type="text" id="modalSearchChannels" placeholder="Research"></input>
             <div class="friends modalSearchChannels" id="friendsmodalSearchChannels">
                 {{#each friends}}
-                <div class="eachFriend eachFriendModalCreateChannel" for="{{id}}">
+                <div class="eachFriend eachFriendModalCreateChannel" for="friend{{id}}">
                     <div class="left">
                         <div class="image-container">
                             <img src={{image_url}} id="blockViewProfile image_url" class="image_url"></img>
@@ -199,7 +236,7 @@
                     </div>
                     <div class="right">
                         <label class="checkboxlabel" for="{{checkboxId}}"></label>
-                        <input type="checkbox" class="checkbox" id="{{id}}" value="{{id}}"></input>
+                        <input type="checkbox" class="checkbox" id="friend{{id}}" value="{{id}}"></input>
                     </div>
                 </div>
                 {{/each}}
@@ -318,11 +355,13 @@
         <div class="left-menu">
             <div class="menu">
                 <div class="sub-menu overview-menu" id="overview-menu"><p class="p">Overview</p></div>
-                <div class="sub-menu permissions-menu"  id="permissions-menu"><p class="p">Permissions</p></div>
-                <div class="sub-menu members-menu" id="members-menu"><p class="p">Members</p></div>
                 {{#if owner}}
-                <div class="deleteChannel" >Delete channel</div>
+                <div class="sub-menu permissions-menu"  id="permissions-menu"><p class="p">Permissions</p></div>
                 {{/if}}
+                <div class="sub-menu members-menu" id="members-menu"><p class="p">Members</p></div>
+                {{#ifCond owner '||' superAdmin}}
+                <div class="deleteChannel" >Delete channel</div>
+                {{/ifCond}}
             </div>
         </div>
         <div class="modal validationModal modalValidationDeleteDefinitivelyChannel" id="modalValidationDeleteDefinitivelyChannel" style="display: none;">
@@ -405,6 +444,14 @@
                             <div class="nickname">
                                 <p class="text">{{nickname}}</p>
                             </div>
+                            {{#if superAdmin}}
+                            <div class="dots-container" for="{{id}}">
+                                <img src='./icons/dots.svg' class="dots"></img>
+                            </div>
+                            <div class="admin-rights" id="admin-rights{{id}}" style="display: none;">
+                                <div class="el remove-admin-rights" id="removeAdminRights" for="{{id}}">Remove administrator rights</div>
+                            </div>
+                            {{/if}}
                         </div>
                     {{/each}}
                 </div>
@@ -425,9 +472,9 @@
                                 <img src='./icons/dots.svg' class="dots"></img>
                             </div>
                             <div class="admin-rights" id="admin-rights{{id}}" style="display: none;">
-                                {{#if owner}}
+                                {{#ifCond owner '||' superAdmin}}
                                 <div class="el appoint-as-admin" id="appointAsAdministrator" for="{{id}}">Appoint as administrator</div>
-                                {{/if}}
+                                {{/ifCond}}
                                 <div class="el mute" id="mute" for="{{id}}">Mute</div>
                                 <div class="el ban" id="ban" for="{{id}}">Ban</div>
                             </div>
