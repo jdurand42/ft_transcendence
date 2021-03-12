@@ -61,7 +61,11 @@ paths:
                   $ref: '#/components/schemas/integer_list'
       responses:
         '201':
-          $ref: '#/components/responses/201'
+          description: chat created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/chat"
   "/api/chats/{id}":
     parameters:
       - name: id
@@ -130,8 +134,12 @@ paths:
       tags:
         - Chats
       responses:
-        '200':
+        '201':
           description: participant set as admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/chat_element"
     delete:
       summary: Demote admin
       description: Allows current_user to ldemote admin
@@ -140,28 +148,6 @@ paths:
       responses:
         '204':
           description: admin demoted
-  "/api/chats/{id}/bans":
-    post:
-      summary: Bans an user
-      description: Allows moderators to ban an user for a specified duration (in seconds)
-      tags:
-        - Chats
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Chat ID
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ban"
-      responses:
-        '204':
-          description: user banned
-
   "/api/chats/{id}/messages":
     post:
       summary: Use http to broadcast a websocket message
@@ -227,9 +213,39 @@ paths:
             schema:
               $ref: "#/components/schemas/ban"
       responses:
-        '204':
+        '201':
           description: user muted
-
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'User 1 muted for 100sec'
+  "/api/chats/{id}/bans":
+    post:
+      summary: Bans an user
+      description: Allows moderators to ban an user for a specified duration (in seconds)
+      tags:
+        - Chats
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Chat ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ban"
+      responses:
+        '201':
+          description: user banned
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'User 1 banned for 100sec'
 
   "/api/chats/{id}/participants":
     parameters:
@@ -251,8 +267,12 @@ paths:
             type: string
           description: Required password if privacy is set to protected
       responses:
-        '200':
+        '201':
           description: chat joined
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/chat_element"
     delete:
       summary: Leaves a chatroom
       description: Allows current_user to leaves a chatroom
@@ -261,8 +281,6 @@ paths:
       responses:
         '204':
           description: chat left
-
-
 
   "/api/chats/{id}/invites":
     post:
@@ -286,8 +304,15 @@ paths:
                 participant_ids:
                   $ref: '#/components/schemas/integer_list'
       responses:
-        '200':
+        '201':
           description: participants added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  participant_ids:
+                    $ref: '#/components/schemas/integer_list'
 
   "/api/games":
     get:
@@ -374,7 +399,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/guild_response"
+                $ref: "#/components/schemas/guild"
 
   "/api/guilds/{id}":
     parameters:
@@ -412,6 +437,10 @@ paths:
       responses:
         '200':
           description: guild modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/guild"
 
   "/api/guilds/{id}/officers/{tid}":
     parameters:
@@ -433,8 +462,12 @@ paths:
       tags:
         - Guilds
       responses:
-        '200':
-          description: member added
+        '201':
+          description: member promoted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/guild_officer"
     delete:
       summary: Removes a guild officer
       description: Allows current_user to remove a guild officer
@@ -463,8 +496,12 @@ paths:
       tags:
         - Guilds
       responses:
-        '200':
+        '201':
           description: member added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/guild_member"
     delete:
       summary: Removes a guild member
       description: Allows current_user to remove a guild member
@@ -881,11 +918,17 @@ components:
           $ref: '#/components/schemas/arrayOfUserIgnored'
     guild_response:
       allOf:
+        - $ref: "#/components/schemas/guild"
         - type: object
           properties:
             id:
               type: integer
-        - $ref: "#/components/schemas/guild"
+            officer_ids:
+              $ref: '#/components/schemas/integer_list'
+            owner_id:
+              type: integer
+            member_ids:
+              $ref: '#/components/schemas/integer_list'
     user_response:
       allOf:
         - type: object
@@ -899,6 +942,14 @@ components:
           properties:
             id:
               type: string
+            admin_ids:
+              $ref: '#/components/schemas/integer_list'
+            participant_ids:
+              $ref: '#/components/schemas/integer_list'
+            timeout_ids:
+              $ref: '#/components/schemas/integer_list'
+            ban_ids:
+              $ref: '#/components/schemas/integer_list'
         - $ref: "#/components/schemas/chat"
     ladder:
       type: object
@@ -919,12 +970,32 @@ components:
           type: string
         anagram:
           type: string
-        owner_id:
-          type: integer
         score:
           type: integer
-        officer_ids:
-          $ref: '#/components/schemas/integer_list'
+    guild_officer:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        guild_id:
+          type: integer
+        rank:
+          type: string
+          enum: [officer, owner, member]
+    guild_member:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        guild_id:
+          type: integer
+        rank:
+          type: string
+          enum: [member, owner, officer]
     ban:
       type: object
       properties:
@@ -955,14 +1026,15 @@ components:
           type: string
         owner_id:
           type: integer
-        admin_ids:
-          $ref: '#/components/schemas/integer_list'
-        participant_ids:
-          $ref: '#/components/schemas/integer_list'
-        timeout_ids:
-          $ref: '#/components/schemas/integer_list'
-        ban_ids:
-          $ref: '#/components/schemas/integer_list'
+    chat_element:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        chat_id:
+          type: integer
     war:
       type: object
       properties:
