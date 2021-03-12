@@ -1,0 +1,74 @@
+<div class="header">
+    <div class="left-header">
+        {{#unless channel}}
+        <div class="image-container">
+            <img src={{image_url}} class="blockViewProfile image_url"  id={{id}} for="{{userId}}"></img>
+        </div>
+        {{/unless}}
+        <div class="info">
+            {{#unless channel}}
+            <p class="anagram">{{anagram}}</p>
+            <p class="nickname">{{nickname}}</p>
+            <div class="pastille" id="pastille"></div>
+            <p class="status">{{status}}</p>
+            <div class="slide-show-container">
+                <img src="{{slide_show}}" class="slide-show"></img>
+            </div>
+            {{/unless}}
+            {{#if channel}}
+            <p class="name">#{{name}}</p>
+            {{/if}}
+        </div>
+    </div>
+    <div class="right-header">
+        {{#if channel}}
+        {{#if owner}}
+        <div class="group_add-container" for="{{id}}">
+            <img src="./icons/group_add.svg" class="group_add"></img>
+        </div>
+        {{/if}}
+        {{/if}}
+        {{#unless channel}}
+        <button class="play-button" for="{{userId}}">
+            <img src="./icons/videogame.svg" height="24">
+        </button>
+        {{/unless}}
+    </div>
+</div>
+<div class="messages" id="messages{{id}}">
+    <div class="scrollable">
+        {{#each messages}}
+        {{#if message}}
+        <div class="message">
+            <div class="info">
+                <div class="image-container">
+                    <img src={{image_url}} class="blockViewProfile image_url" id={{id}} for="{{id}}"></img>
+                </div>
+                <div class="anagram">{{anagram}}</div>
+                <div class="nickname">{{nickname}}</div>
+                <div class="time">{{time}}</div>
+            </div>
+            <div class="output">{{message}}</div>
+        </div>
+        {{/if}}
+        {{#unless message}}
+        <div class="invitation">
+            <div class="textInvitation">{{sender}} invites {{receiver}} to join a game.</div>
+            {{#if invitation}}
+            <div class="buttons">
+                <div class="acceptInvitation">
+                    <button class="button yes acceptInvit">Accept</button>
+                </div>
+                <div class="refuseInvitation">
+                    <button class="button no">Refuse</button>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        {{/unless}}
+        {{/each}}
+    </div>
+    <div class="input-container">
+        <input class="textInput input" type="text" id="textInput" for={{id}}>
+    </div>
+</div>

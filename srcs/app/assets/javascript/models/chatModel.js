@@ -47,9 +47,9 @@ export const ChatModel = Backbone.Model.extend({
       }
     })
   },
-  leaveRoom: function () {
+  leaveRoom: async function () {
     const url = '/api/chats/' + this.id + '/participants'
-    fetch(url, {
+    return fetch(url, {
       method: 'DELETE',
       headers: this.headers
     })
@@ -77,12 +77,28 @@ export const ChatModel = Backbone.Model.extend({
   deleteDefinitivelyChannel: function () {
     this.destroy()
   },
-  patchAdmin: function (adminIds) {
-    this.save({ admin_ids: adminIds }, { patch: true })
+  appointAsAdmin: function (userId) {
+    const header = this.superHeaders.getHeaders()
+    header.append('accept', 'application/json')
+    header.append('Content-Type', 'application/json')
+    const url = '/api/chats/' + this.id + '/admins/' + userId
+    fetch(url, {
+      method: 'POST',
+      headers: header
+    })
+  },
+  removeAdminRights: function (userId) {
+    const header = this.superHeaders.getHeaders()
+    header.append('accept', 'application/json')
+    header.append('Content-Type', 'application/json')
+    const url = '/api/chats/' + this.id + '/admins/' + userId
+    fetch(url, {
+      method: 'DELETE',
+      headers: header
+    })
   },
   banUser: function (value, userId) {
     const header = this.superHeaders.getHeaders()
-    console.log(header)
     header.append('accept', 'application/json')
     header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/bans'
@@ -114,8 +130,31 @@ export const ChatModel = Backbone.Model.extend({
       privacy: privacy,
       password: password
     },
-    { patch: true }
-    )
+    { patch: true })
+  },
+  sendMessage: async function (message) {
+    const header = this.superHeaders.getHeaders()
+    header.append('accept', 'application/json')
+    header.append('Content-Type', 'application/json')
+    const url = '/api/chats/' + this.id + '/messages'
+    return fetch(url, {
+      method: 'POST',
+      headers: header,
+      body: JSON.stringify({
+        content: message
+      })
+    })
+  },
+  getMessages: async function () {
+    const header = this.superHeaders.getHeaders()
+    header.append('accept', 'application/json')
+    header.append('Content-Type', 'application/json')
+    const url = '/api/chats/' + this.id + '/messages'
+    let data
+    const response = await fetch(url, {
+      headers: header
+    })
+    const json = await response.json()
+    return json
   }
-
 })

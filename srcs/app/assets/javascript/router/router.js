@@ -14,7 +14,7 @@ import { ManageGuildView } from '../views/guild/manageGuildView.js'
 import { AdminView } from '../views/admin/adminView.js'
 
 // models
-import { User } from '../models/user_model'
+import { User } from '../models/userModel'
 import { Guild } from '../models/guild_model.js'
 
 // controlers
@@ -23,17 +23,16 @@ import { GuildController } from '../views/guild/guildController.js'
 
 // models and collection
 import { Guilds } from '../collections/guilds_collection.js'
-import { Users } from '../collections/users_collection.js'
+import { Users } from '../collections/usersCollection.js'
 import { Ladders } from '../collections/laddersCollection.js'
 import { Wrapper } from '../models/wrapper.js'
 import { SuperWrapper } from '../collections/superWrapper.js'
 import { Channels } from '../collections/channels'
 import { GameRecords } from '../collections/gameRecords.js'
 
-// import { ChatController } from '../view/chat/chatController.js' // not here
-
 // services
 import { OauthService } from '../services/oauthService.js'
+import { MyWebSocket } from '../services/websocket'
 
 // Views for test only
 import { TestView } from '../views/testView.js'
@@ -47,7 +46,8 @@ export const Router = Backbone.Router.extend({
     this.guildController = new GuildController()
     this.superWrapper = undefined
     this.oauthService = new OauthService()
-    this.view = undefined // ZOmbie views problem
+    this.chatView = undefined
+    this.socket = undefined
   },
 
   routes:
@@ -56,11 +56,11 @@ export const Router = Backbone.Router.extend({
     user_page: 'users_view', // Achanger nom de route et tout
     home: 'home_view',
     pong: 'pong_view',
-    'profile/(:id)/': 'profile_view',
     'profile/(:id)': 'profile_view',
+    'profile/(:id)/': 'profile_view',
     guilds: 'guilds_view',
-    'guild/(:id)/': 'guild_view',
     'guild/(:id)': 'guild_view',
+    'guild/(:id)/': 'guild_view',
     'chat/:id(/:page)': 'chat_view',
     chat: 'chat_view',
     leaderboard: 'leaderboard_view',
@@ -87,9 +87,8 @@ export const Router = Backbone.Router.extend({
 
     const fetchUser = async () => {
       this.oauthService.setAjaxEnvironnement()
-      this.oauthService.ajaxSetup()
-      await this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
-      this.userLogged.save({ first_login: true }, { patch: true })
+      await this.setUpUser(this.oauthService, this.userLogged)
+      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this)
       if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
         this.navigate('#home', { trigger: true })
       }
@@ -97,31 +96,32 @@ export const Router = Backbone.Router.extend({
     fetchUser()
   },
 
+  setUpUser: async (oauthService, userLogged) => {
+    oauthService.ajaxSetup()
+    await userLogged.fetchUser(window.localStorage.getItem('user_id'))
+  },
+
   two_factor_connexion: function (url) {
     const fetchUser = async () => {
-      this.oauthService.ajaxSetup()
-      await this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
+      await this.setUpUser(this.oauthService, this.userLogged)
+      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this)
       this.navigate('#home', { trigger: true })
     }
     fetchUser()
   },
 
   accessPage: function (url) {
-    console.log('accessPageview')
     if (window.localStorage.getItem('access-token') === null) {
-      console.log('oauth view')
       this.oauth_view()
       return 1
     } else if (performance.navigation.type >= 0 && performance.navigation.type <= 2) {
       const fetchUser = async () => {
-        console.log('fetch user')
-        this.oauthService = new OauthService()
-        this.oauthService.ajaxSetup()
-        await this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
+        await this.setUpUser(this.oauthService, this.userLogged)
         if (url !== 'firstConnexion' || url !== 'twoFactor') { this.headerView.render() }
       }
       fetchUser()
     }
+    this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this)
   },
 
   firstConnexion_view: function () {
@@ -135,6 +135,8 @@ export const Router = Backbone.Router.extend({
 
   exit: function () {
     const fetchAPI = new FetchAPI()
+    console.log(this.socket)
+    this.socket.getSocket().close()
     fetchAPI.exit()
     window.localStorage.clear()
     this.oauth_view()
@@ -166,7 +168,7 @@ export const Router = Backbone.Router.extend({
     const pongView = new PongView()
   },
 
-  profile_view: function (id) {
+  profile_view: function (id, page) {
     if (this.accessPage()) { return }
     console.log('profile view')
     this.profileController.loadView(id, this.loadWrapper())
@@ -184,9 +186,7 @@ export const Router = Backbone.Router.extend({
 
   chat_view: function (id, page) {
     if (this.accessPage()) { return }
-    // const chatView = new ChatView({ model: this.loadChannelWrapper(userLogged) })
-    const chatView = new ChatView({ model: this.loadChannelWrapper() })
-    // chatView.render()
+    const chatView = new ChatView()
   },
 
   leaderboard_view: function () {
@@ -213,9 +213,8 @@ export const Router = Backbone.Router.extend({
 
   manage_guild_view: function () {
     if (this.accessPage()) { }
-    console.log('ici')
     if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new ManageGuildView({ model: this.loadWrapper() })
+    const manageGuildView = new ManageGuildView({ model: this.loadWrapper() })
   },
 
   loadWrapper: function () {
@@ -227,17 +226,17 @@ export const Router = Backbone.Router.extend({
       userLoggedId: window.localStorage.getItem('user_id'),
       router: this
     })
-  },
-
-  loadChannelWrapper: function () {
-    const userId = window.localStorage.getItem('user_id')
-    const superWrapper = new SuperWrapper({
-      users: new Wrapper({ obj: new Users() }),
-      myChannels: new Wrapper({ obj: new Channels() }),
-      channels: new Wrapper({ obj: new Channels() })
-    })
-    superWrapper.get('myChannels').get('obj').fetchByUserId(userId)
-    superWrapper.get('channels').get('obj').fetchAllChannels()
-    return superWrapper
   }
+
+  // loadChannelWrapper: function () {
+  //   const userId = window.localStorage.getItem('user_id')
+  //   const superWrapper = new SuperWrapper({
+  //     users: new Wrapper({ obj: new Users() }),
+  //     myChannels: new Wrapper({ obj: new Channels() }),
+  //     channels: new Wrapper({ obj: new Channels() })
+  //   })
+  //   superWrapper.get('myChannels').get('obj').fetchByUserId(userId)
+  //   superWrapper.get('channels').get('obj').fetchAllChannels()
+  //   return superWrapper
+  // }
 })

@@ -1,6 +1,6 @@
 import { SuperWrapper } from '../collections/superWrapper.js'
 import { Wrapper } from '../models/wrapper.js'
-import { Users } from '../collections/users_collection.js'
+import { Users } from '../collections/usersCollection.js'
 import { Guilds } from '../collections/guilds_collection.js'
 
 export const TestView = Backbone.View.extend({

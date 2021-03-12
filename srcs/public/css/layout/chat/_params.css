@@ -53,7 +53,6 @@
 input[type="radio"] {
     vertical-align: middle;
     margin: 0;
-    margin-bottom: 16px;
 }
 
 .chat .parameters .password {

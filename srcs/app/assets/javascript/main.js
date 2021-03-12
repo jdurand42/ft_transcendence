@@ -3,7 +3,6 @@ import { Wrapper } from './models/wrapper.js'
 import { SuperWrapper } from './collections/superWrapper.js'
 
 import { Guilds } from './collections/guilds_collection.js'
-import { Users } from './collections/users_collection.js'
 import { Ladders } from './collections/laddersCollection.js'
 
 $(document).ready(function () {
