@@ -56,6 +56,8 @@ export const ChatView = Backbone.View.extend({
   },
   initialize: function () {
     this.myMessages = {}
+    this.context = {}
+    this.context.messages = []
     this.myChannels = new Channels()
     this.channels = new Channels()
     this.users = new Users()
@@ -78,23 +80,26 @@ export const ChatView = Backbone.View.extend({
       let i = 0
       for (; i < this.myChannels.length; i++) {
         const currentChannel = this.myChannels.at(i)
+        const channelId = currentChannel.get('id')
         if (currentChannel.get('ban_ids').some(el => el === this.userLoggedId) === false) {
-          const channelId = currentChannel.get('id')
-          const messages = await currentChannel.getMessages()
-          let i = 0
-          for (; i < messages.length; i++) {
-            this.receiveMessage(channelId, messages[i])
-            const socket = new MyWebSocket(channelId, 'ChatChannel', this)
-            if (i === 0) {
-              console.log(this.myMessages)
-              this.render()
-            }
-          }
+          const socket = new MyWebSocket(channelId, 'ChatChannel', this)
         } else {
           this.myChannels.remove(i)
         }
+        // if (currentChannel.get('ban_ids').some(el => el === this.userLoggedId) === false) {
+        //   const messages = await currentChannel.getMessages()
+        //   const socket = new MyWebSocket(channelId, 'ChatChannel', this)
+        //   for (let j = 0; j < messages.length; j++) {
+        //     this.receiveMessage(channelId, messages[j])
+        //     if (j === 0) { this.render() }
+        //   }
+        // } else {
+        //   this.myChannels.remove(i)
+        // }
       }
-      if (i === 0) { this.render() }
+
+      // if (i === 0) { this.render() }
+      this.render()
     }
     fetch()
   },
@@ -111,11 +116,8 @@ export const ChatView = Backbone.View.extend({
   el: $('#app'),
   render: function () {
     this.templateChat = Handlebars.templates.chat
-    this.context = {}
 
     this.updateContextLeftSide()
-
-    this.context.messages = []
 
     let currentChannel
     if (this.myChannels.length > 0) {
@@ -123,41 +125,69 @@ export const ChatView = Backbone.View.extend({
     } else if (this.channels.length > 0) {
       currentChannel = this.channels.at(0)
     }
-    console.log(this.myMessages)
+
+    let channelId
     if (currentChannel !== undefined) {
-      console.log(this.myMessages)
-      this.updateContextCenter(currentChannel)
-      this.updateContextRightSide(currentChannel)
+      channelId = currentChannel.get('id')
     }
 
-    Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
-      switch (operator) {
-        case '||':
-          return (v1 || v2) ? options.fn(this) : options.inverse(this)
-        default:
-          return options.inverse(this)
+    console.log('id current channel: ' + channelId)
+    const fetchAllMessages = async () => {
+      for (let i = 0; i < this.myChannels.length; i++) {
+        const channel = this.myChannels.at(i)
+        if (channel.get('id') !== channelId) {
+          const messages = await channel.getMessages()
+          for (let i = 0; i < messages.length; i++) {
+            this.receiveMessage(channel.get('id'), messages[i])
+          }
+        }
       }
-    })
-
-    const templateDataChat = this.templateChat(this.context)
-    this.$el.html(templateDataChat)
-
-    // update post render
-    let currentTarget
-    if (this.myChannels.length > 0) {
-      const id = this.myChannels.at(0).get('id')
-      if (document.getElementById('channel' + id) !== undefined) {
-        currentTarget = document.getElementById('channel' + id)
-      } else if (document.getElementById('DM' + id) !== undefined) {
-        currentTarget = document.getElementById('DM' + id)
-      }
-      this.updateDOM(currentTarget, this.myChannels.at(0))
-    } else if (this.channels.length > 0) {
-      const id = this.channels.at(0).get('id')
-      currentTarget = document.getElementById('all-channel' + id)
-      this.updateDOM(currentTarget, this.channels.at(0))
     }
-    return this
+    fetchAllMessages()
+
+    const fetchMessage = async () => {
+      if (currentChannel !== undefined) {
+        const messages = await currentChannel.getMessages()
+        console.log('messages 2')
+        console.log(messages)
+        for (let i = 0; i < messages.length; i++) {
+          this.receiveMessage(channelId, messages[i])
+        }
+        console.log(this.myMessages[channelId])
+        this.updateContextCenter(currentChannel)
+        this.updateContextRightSide(currentChannel)
+      }
+
+      Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+        switch (operator) {
+          case '||':
+            return (v1 || v2) ? options.fn(this) : options.inverse(this)
+          default:
+            return options.inverse(this)
+        }
+      })
+
+      const templateDataChat = this.templateChat(this.context)
+      this.$el.html(templateDataChat)
+
+      // update post render
+      let currentTarget
+      if (this.myChannels.length > 0) {
+        const id = this.myChannels.at(0).get('id')
+        if (document.getElementById('channel' + id) !== undefined) {
+          currentTarget = document.getElementById('channel' + id)
+        } else if (document.getElementById('DM' + id) !== undefined) {
+          currentTarget = document.getElementById('DM' + id)
+        }
+        this.updateDOM(currentTarget, this.myChannels.at(0))
+      } else if (this.channels.length > 0) {
+        const id = this.channels.at(0).get('id')
+        currentTarget = document.getElementById('all-channel' + id)
+        this.updateDOM(currentTarget, this.channels.at(0))
+      }
+      return this
+    }
+    fetchMessage()
   },
 
   play: function (e) {
@@ -166,8 +196,6 @@ export const ChatView = Backbone.View.extend({
     let i = 0
     for (; i < DM.length; i++) {
       if (DM[i].get('participant_ids').some(el => el === Number(userId)) === true) {
-        console.log(document.getElementById('DM' + DM[i].get('id')))
-        console.log(document.getElementById('DM' + DM[i].get('id')).classList.contains('open'))
         if (document.getElementById('DM' + DM[i].get('id')).classList.contains('open') === false) {
           e.currentTarget = document.getElementById('DM' + DM[i].get('id'))
           this.openChat(e)
@@ -200,8 +228,6 @@ export const ChatView = Backbone.View.extend({
     }
     this.myMessages[chatId].unshift(JSON.parse(JSON.stringify(message)))
 
-    console.log(this.myMessages[chatId])
-
     if (sender !== undefined && document.getElementById('messages' + chatId) !== null) {
       this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
       if (message.created_at) {
@@ -210,7 +236,6 @@ export const ChatView = Backbone.View.extend({
         this.context.messages[0].time = date
       }
       this.context.messages[0].message = message.content
-      console.log('update HTML: messages ' + chatId)
       this.updateHTML('messages' + chatId)
       document.getElementById('textInput').focus()
     }
@@ -857,10 +882,26 @@ export const ChatView = Backbone.View.extend({
     }
 
     this.context.id = currentChannel.get('id')
-    // this.context.messages = []
+    this.context.messages = []
     console.log(this.myMessages[currentChannel.get('id')])
-    if (this.myMessages[currentChannel.get('id')] !== undefined) {
-      this.context.messages = this.myMessages[currentChannel.get('id')]
+    const channelId = currentChannel.get('id')
+    if (this.myMessages[channelId] !== undefined) {
+      for (let i = 0; i < this.myMessages[channelId].length; i++) {
+        const message = this.myMessages[channelId][i]
+        let sender
+        if (message.sender_id === this.userLogged.get('id')) {
+          sender = this.userLogged
+        } else {
+          sender = this.users.get(message.sender_id)
+        }
+        this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
+        if (message.created_at) {
+          let date = message.created_at.replace('T', ' ')
+          date = date.substr(0, 19)
+          this.context.messages[0].time = date
+        }
+        this.context.messages[0].message = message.content
+      }
     }
   },
 
@@ -964,8 +1005,11 @@ export const ChatView = Backbone.View.extend({
   },
 
   updateHTML: function (div) {
+    console.log(div)
+    console.log(this.context.messages)
     const html = this.templateChat(this.context)
     const found = $(html).find('#' + div)[0].innerHTML
+    console.log(found)
     const currentDiv = document.getElementById(div)
     currentDiv.innerHTML = found
   },
