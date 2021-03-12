@@ -56,11 +56,11 @@ export const Router = Backbone.Router.extend({
     user_page: 'users_view', // Achanger nom de route et tout
     home: 'home_view',
     pong: 'pong_view',
-    'profile/:id(/:page)': 'profile_view',
-    'profile/:id(/:page)/': 'profile_view',
+    'profile/(:id)': 'profile_view',
+    'profile/(:id)/': 'profile_view',
     guilds: 'guilds_view',
-    'guild/:id(/:page)': 'guild_view',
-    'guild/:id(/:page)/': 'guild_view',
+    'guild/(:id)': 'guild_view',
+    'guild/(:id)/': 'guild_view',
     'chat/:id(/:page)': 'chat_view',
     chat: 'chat_view',
     leaderboard: 'leaderboard_view',
@@ -171,7 +171,7 @@ export const Router = Backbone.Router.extend({
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
     console.log('profile view')
-    this.profileController.loadView(id, page, this.loadWrapper())
+    this.profileController.loadView(id, this.loadWrapper())
   },
 
   guilds_view: function () {
@@ -181,7 +181,7 @@ export const Router = Backbone.Router.extend({
 
   guild_view: function (id, page) {
     if (this.accessPage()) { return }
-    this.guildController.loadView(id, page, this.loadWrapper())
+    this.guildController.loadView(id, this.loadWrapper())
   },
 
   chat_view: function (id, page) {
@@ -213,6 +213,7 @@ export const Router = Backbone.Router.extend({
 
   manage_guild_view: function () {
     if (this.accessPage()) { }
+    if (this.view != undefined) { this.view.undelegateEvents() }
     const manageGuildView = new ManageGuildView({ model: this.loadWrapper() })
   },
 
