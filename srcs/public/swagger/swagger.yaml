@@ -107,6 +107,10 @@ paths:
       responses:
         '200':
           description: chat modified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/chat"
     delete:
       summary: Deletes a chat
       tags:
