@@ -608,27 +608,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/war"
-    patch:
+  "/api/wars/{id}":
+    put:
       summary: Modifies a war
       tags:
         - Wars
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: War ID
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                war_term_ids:
-                  $ref: '#/components/schemas/war_terms_list'
-                war_time_id:
-                  $ref: '#/components/schemas/integer_list'
+              $ref: "#/components/schemas/war_update"
       responses:
         '200':
           description: guild found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/guild_response"
+                $ref: "#/components/schemas/war"
   "/api/ladders/{id}":
     get:
       summary: Retrieves a ladder
@@ -1111,31 +1114,37 @@ components:
           type: integer
         on:
           type: integer
+        war_start:
+          type: string
+          format: date-time
+        war_end:
+          type: string
+          format: date-time
         prize:
           type: integer
         from_score:
           type: integer
         on_score:
           type: integer
-        war_term_ids:
-          $ref: '#/components/schemas/war_terms_list'
-        war_time_id:
+        max_unanswered:
           type: integer
-    war_terms_list:
-      type: array
-      items:
-        type: object
-        properties:
-          start:
-            type: string
-            format: date-time
-          end:
-            type: string
-            format: date-time
-          ladder:
-            type: boolean
-          agreed:
-            type: boolean
+        terms_accepted:
+          type: boolean
+    war_update:
+      type: object
+      properties:
+        war_start:
+          type: string
+          format: date-time
+        war_end:
+          type: string
+          format: date-time
+        prize:
+          type: integer
+        max_unanswered:
+          type: integer
+        addon_ids:
+          $ref: "#/components/schemas/integer_list"
     integer_list:
       type: array
       items:
