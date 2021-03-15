@@ -480,7 +480,7 @@ paths:
       responses:
         '204':
           description: officer removed
-  "/api/guilds/{id}/accept_invites":
+  "/api/guilds/{id}/pending_invites":
     parameters:
       - name: id
         in: path
@@ -500,14 +500,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/guild_member"
-  "/api/guilds/{id}/refuse_invites":
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        description: Guild ID
     delete:
       summary: Invitation refused
       description: Allows current_user to refuse invitation
