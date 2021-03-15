@@ -1119,6 +1119,9 @@ components:
           type: integer
         addon_ids:
           $ref: "#/components/schemas/integer_list"
+        accept_terms:
+          type: boolean
+          example: false
     integer_list:
       type: array
       items:
