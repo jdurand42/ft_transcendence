@@ -525,7 +525,7 @@ paths:
           type: integer
         description: Guild ID
     post:
-      summary: Adds a guild member
+      summary: If invited, current_user joins the guild
       description: Allows current_user to add a guild member
       tags:
         - Guilds
