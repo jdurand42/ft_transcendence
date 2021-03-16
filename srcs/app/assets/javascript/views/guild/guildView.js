@@ -1,34 +1,78 @@
 export const GuildView = Backbone.View.extend({
   events: {
-    'click #currentWar': 'currentWar',
-    'click #lastWars': 'lastWars',
-    'click #members': 'members'
+    'click #currentWar': 'loadCurrentWar',
+    'click #lastWars': 'loadLastWars',
+    'click #members': 'loadMembers'
   },
   el: $('#app'),
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
     this.ladders = this.model.get('ladders').get('obj')
+    this.userId = this.model.get('userLoggedId')
     console.log(this.id)
     // a refaire
     // console.log(this.id)
     this.$el.html(Handlebars.templates.guild({}))
     this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
-    this.renderPannel()
-    this.listenTo(this.guilds, 'sync', function () { this.getUsers() }, this)
+    this.loadCurrentWar()
   },
 
-  getUsers: function () {
-    this.listenTo(this.users, 'sync', function () {
-      if (this.id === null) {
-        this.id = this.users.get(this.userId).get('guild_id')
-        if (this.id === null) {
-          this.model.router.navigate('#manage_guild')
+  loadCurrentWar: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch()
+        if (this.id === null || this.id === undefined) {
+          console.log(this.userId)
+	        this.id = this.users.get(this.userId).get('guild_id')
+          console.log(this.id)
         }
+	        if (this.id === null || this.id === undefined) {
+          this.$el.find('#guildContent').html('<p>It seems you aren\'t member of a guild</p>')
+          return
+	      }
+        await this.ladders.fetch() &&
+        await this.guilds.fetch()
+        this.renderPannel()
+        this.currentWar()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
       }
-      console.log(this.guilds.get(this.id))
-      this.currentWar()
-    }, this)
+    }
+    load()
+  },
+
+  loadLastWars: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch() &&
+        await this.ladders.fetch() &&
+        await this.guilds.fetch()
+        this.renderPannel()
+        this.lastWars()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
+  },
+
+  loadMembers: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch() &&
+        await this.ladders.fetch() &&
+        await this.guilds.fetch() &&
+        this.renderPannel()
+        this.members()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
   },
 
   currentWar: function () {
