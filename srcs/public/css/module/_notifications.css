@@ -1,0 +1,53 @@
+.notif {
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    flex-direction: column;
+
+    position: absolute;
+    right: 32px;
+    bottom: 32px;
+    /* width: 400px;
+    height: 160px; */
+    width: 400px;
+    height: 160px;
+
+    background-color: var(--table-color);
+
+    font-size: 18px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.notif
+.closeNotif {
+    align-self: flex-end;
+    cursor: pointer;
+
+    margin-top: 16px;
+    margin-right: 16px;
+}
+
+.notif
+.buttons-notif-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.notif .buttons-notif-container
+.button-notif {
+    border-radius: 7px;
+    width: 80px;
+    height: 35px;
+
+    margin-right: 8px;
+    margin-left: 8px;
+    margin-top: 16px;
+
+    font-size: 14px;
+    font-family: Roboto-Regular;
+}
+
+.notif .buttons-notif-container
+.refuseGame {
+    background-color: #c4c4c4;
+}
