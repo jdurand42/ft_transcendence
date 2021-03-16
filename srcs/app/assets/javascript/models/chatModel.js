@@ -62,13 +62,10 @@ export const ChatModel = Backbone.Model.extend({
     })
   },
   invitesToChannel: function (participantsIds) {
-    const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/invites'
     fetch(url, {
       method: 'POST',
-      headers: header,
+      headers: this.headers,
       body: JSON.stringify({
         participant_ids: participantsIds
       })
@@ -78,33 +75,24 @@ export const ChatModel = Backbone.Model.extend({
     this.destroy()
   },
   appointAsAdmin: function (userId) {
-    const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/admins/' + userId
     fetch(url, {
       method: 'POST',
-      headers: header
+      headers: this.headers
     })
   },
   removeAdminRights: function (userId) {
-    const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/admins/' + userId
     fetch(url, {
       method: 'DELETE',
-      headers: header
+      headers: this.headers
     })
   },
   banUser: function (value, userId) {
-    const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/bans'
     fetch(url, {
       method: 'POST',
-      headers: header,
+      headers: this.headers,
       body: JSON.stringify({
         user_id: userId,
         duration: value
@@ -112,13 +100,10 @@ export const ChatModel = Backbone.Model.extend({
     })
   },
   muteUser: function (value, userId) {
-    const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/mutes'
     fetch(url, {
       method: 'POST',
-      headers: header,
+      headers: this.headers,
       body: JSON.stringify({
         user_id: userId,
         duration: value
@@ -133,26 +118,20 @@ export const ChatModel = Backbone.Model.extend({
     { patch: true })
   },
   sendMessage: async function (message) {
-    const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/messages'
     return fetch(url, {
       method: 'POST',
-      headers: header,
+      headers: this.headers,
       body: JSON.stringify({
         content: message
       })
     })
   },
   getMessages: async function () {
-    const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/chats/' + this.id + '/messages'
     let data
     const response = await fetch(url, {
-      headers: header
+      headers: this.headers
     })
     const json = await response.json()
     return json

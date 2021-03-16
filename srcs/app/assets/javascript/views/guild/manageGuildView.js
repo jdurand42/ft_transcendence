@@ -25,7 +25,7 @@ export const ManageGuildView = Backbone.View.extend({
     this.userId = this.model.get('userLoggedId')
     console.log(this.model.get('userLoggedId'))
     this.router = this.model.get('router')
-    this.preload()
+    this.load()
   },
 
   preload: function () {
@@ -34,6 +34,20 @@ export const ManageGuildView = Backbone.View.extend({
 
   getUsers: function () {
     this.listenTo(this.users, 'sync', function () { this.chooseView() }, this)
+  },
+
+  load: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch()
+        await this.guilds.fetch()
+        this.chooseView()
+      } catch (e) {
+        console.log(e)
+        this.$el.html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
   },
 
   chooseView: function () {
@@ -232,6 +246,7 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.guild.save({ name: name }, { patch: true })
         this.guild.set({ name: name })
+        this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
       } catch (e) {
         console.log(e)
         if (e.status != 200) { this.renderError(e, '#nameError', Handlebars.templates.guildError) } else {
@@ -249,6 +264,7 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.guild.save({ anagram: anagram }, { patch: true })
         this.guild.set({ anagram: anagram })
+        this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
       } catch (e) {
         if (e.status != 200) { this.renderError(e, '#anagramError', Handlebars.templates.guildError) } else {
           this.guild.set({ anagram: anagram })
