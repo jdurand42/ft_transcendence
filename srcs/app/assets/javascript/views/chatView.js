@@ -183,26 +183,6 @@ export const ChatView = Backbone.View.extend({
     const newGame = new GameRecord()
 
     newGame.inviteGame(userId)
-
-    // const DM = this.myChannels.filter(el => el.get('privacy') === 'direct_message')
-    // let i = 0
-    // for (; i < DM.length; i++) {
-    //   if (DM[i].get('participant_ids').some(el => el === Number(userId)) === true) {
-    //     if (document.getElementById('DM' + DM[i].get('id')).classList.contains('open') === false) {
-    //       e.currentTarget = document.getElementById('DM' + DM[i].get('id'))
-    //       this.openChat(e)
-    //     }
-    //     DM[i].sendMessage()
-    //     break
-    //   }
-    // }
-    // if (i === DM.length) {
-    //   const createAndSend = async () => {
-    //     const newChannel = await this.createDMValidate(e, userId)
-    //     newChannel.sendMessage()
-    //   }
-    //   createAndSend()
-    // }
   },
 
   receiveMessage: function (chatId, message) {

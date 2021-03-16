@@ -21,7 +21,6 @@ export const GameRecord = Backbone.Model.extend({
   },
 
   inviteGame: function (opponentId, gameType = 'duel') {
-    console.log(this.headers)
     fetch(this.urlRoot, {
       method: 'POST',
       headers: this.headers,
@@ -29,6 +28,13 @@ export const GameRecord = Backbone.Model.extend({
         game_type: gameType,
         opponent_id: opponentId
       })
+    })
+  },
+
+  refuseInvitationGame: function (gameId) {
+    fetch(this.urlRoot + '/' + gameId, {
+      method: 'DELETE',
+      headers: this.headers
     })
   }
 })
