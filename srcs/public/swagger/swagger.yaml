@@ -619,6 +619,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/war"
+  "/api/wars/{id}/times":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: War ID
+    get:
+      summary: Retrieves war times
+      tags:
+        - Wars
+      responses:
+        '200':
+          description: wars times found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/war_time"
+    post:
+      summary: Creates a war time
+      tags:
+        - Wars
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/war_time"
+      responses:
+        '200':
+          description: war time created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/war_time"
+
+  "/api/wars/{id}/times/{tid}":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: War ID
+      - name: tid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Target ID
+    delete:
+      summary: Removes a war time
+      description: Allows current_user to remove a war time
+      tags:
+        - Wars
+      responses:
+        '204':
+          description: war time removed
   "/api/ladders/{id}":
     get:
       summary: Retrieves a ladder
@@ -1139,6 +1197,16 @@ components:
         accept_terms:
           type: boolean
           example: false
+    war_time:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+
     integer_list:
       type: array
       items:
