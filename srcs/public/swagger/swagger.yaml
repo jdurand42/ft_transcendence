@@ -545,6 +545,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/guild_member"
   "/api/guilds/{id}/members/{tid}":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Guild ID
+      - name: tid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Target ID
     delete:
       summary: Removes a guild member
       description: Allows current_user to remove a guild member
@@ -1117,8 +1130,12 @@ components:
           type: integer
         max_unanswered:
           type: integer
-        addon_ids:
-          $ref: "#/components/schemas/integer_list"
+        tournament_effort:
+          type: boolean
+          example: false
+        ladder_effort:
+          type: boolean
+          example: false
         accept_terms:
           type: boolean
           example: false
