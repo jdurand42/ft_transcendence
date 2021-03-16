@@ -3,8 +3,8 @@ import { Users } from '../collections/usersCollection'
 import { ChatModel } from '../models/chatModel'
 import { User } from '../models/userModel'
 import { Channels } from '../collections/channels'
-import { SuperHeaders } from '../services/headers'
 import { MyWebSocket } from '../services/websocket'
+import { GameRecord } from '../models/gameRecord'
 
 export const ChatView = Backbone.View.extend({
   events: {
@@ -62,7 +62,7 @@ export const ChatView = Backbone.View.extend({
     this.channels = new Channels()
     this.users = new Users()
     this.userLogged = new User()
-    this.userLoggedId = window.localStorage.getItem('user_id')
+    this.userLoggedId = Number(window.localStorage.getItem('user_id'))
 
     this.userLogged.fetchUser(this.userLoggedId)
 
@@ -81,24 +81,16 @@ export const ChatView = Backbone.View.extend({
       for (; i < this.myChannels.length; i++) {
         const currentChannel = this.myChannels.at(i)
         const channelId = currentChannel.get('id')
-        if (currentChannel.get('ban_ids').some(el => el === this.userLoggedId) === false) {
+        if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
           const socket = new MyWebSocket(channelId, 'ChatChannel', this)
+          const participantIds = currentChannel.get('participant_ids')
+          for (let i = 0; i < participantIds.length; i++) {
+            const socket = new MyWebSocket(participantIds[i], 'UserStatusChannel', this)
+          }
         } else {
-          this.myChannels.remove(i)
+          this.myChannels.remove(channelId)
         }
-        // if (currentChannel.get('ban_ids').some(el => el === this.userLoggedId) === false) {
-        //   const messages = await currentChannel.getMessages()
-        //   const socket = new MyWebSocket(channelId, 'ChatChannel', this)
-        //   for (let j = 0; j < messages.length; j++) {
-        //     this.receiveMessage(channelId, messages[j])
-        //     if (j === 0) { this.render() }
-        //   }
-        // } else {
-        //   this.myChannels.remove(i)
-        // }
       }
-
-      // if (i === 0) { this.render() }
       this.render()
     }
     fetch()
@@ -187,53 +179,75 @@ export const ChatView = Backbone.View.extend({
   },
 
   play: function (e) {
-    const userId = e.currentTarget.getAttribute('for')
-    const DM = this.myChannels.filter(el => el.get('privacy') === 'direct_message')
-    let i = 0
-    for (; i < DM.length; i++) {
-      if (DM[i].get('participant_ids').some(el => el === Number(userId)) === true) {
-        if (document.getElementById('DM' + DM[i].get('id')).classList.contains('open') === false) {
-          e.currentTarget = document.getElementById('DM' + DM[i].get('id'))
-          this.openChat(e)
-        }
-        DM[i].sendMessage('%%play%%')
-        break
-      }
-    }
-    if (i === DM.length) {
-      const createAndSend = async () => {
-        const newChannel = await this.createDMValidate(e, userId)
-        newChannel.sendMessage('%%play%%')
-      }
-      createAndSend()
-    }
+    const userId = Number(e.currentTarget.getAttribute('for'))
+    const newGame = new GameRecord()
+
+    newGame.inviteGame(userId)
+
+    // const DM = this.myChannels.filter(el => el.get('privacy') === 'direct_message')
+    // let i = 0
+    // for (; i < DM.length; i++) {
+    //   if (DM[i].get('participant_ids').some(el => el === Number(userId)) === true) {
+    //     if (document.getElementById('DM' + DM[i].get('id')).classList.contains('open') === false) {
+    //       e.currentTarget = document.getElementById('DM' + DM[i].get('id'))
+    //       this.openChat(e)
+    //     }
+    //     DM[i].sendMessage()
+    //     break
+    //   }
+    // }
+    // if (i === DM.length) {
+    //   const createAndSend = async () => {
+    //     const newChannel = await this.createDMValidate(e, userId)
+    //     newChannel.sendMessage()
+    //   }
+    //   createAndSend()
+    // }
   },
 
   receiveMessage: function (chatId, message) {
-    let sender
-    if (message.sender_id === this.userLogged.get('id')) {
-      sender = this.userLogged
+    if (message.action) { // message.action = message TO DO
+      if (message.action === 'user_online') {
+        this.users.get(message.id).set({ status: 'online' })
+      } else if (message.action === 'user_offline') {
+        this.users.get(message.id).set({ status: 'offline' })
+      } else if (message.action === 'user_ingame') {
+        this.users.get(message.id).set({ status: 'ingame' })
+      }
+      const currentChannel = this.channels.get(this.channelId)
+      this.updateContextCenter(currentChannel)
+      this.updateContextRightSide(currentChannel)
+      if (currentChannel.get('privacy') === 'direct_message') {
+        this.updateHTML('center')
+      } else {
+        this.updateHTML('right-side')
+      }
     } else {
-      if (this.userLogged.get('ignores').some(el => el.ignored_id === message.sender_id) === false) {
-        sender = this.users.get(message.sender_id)
+      let sender
+      if (message.sender_id === this.userLogged.get('id')) {
+        sender = this.userLogged
+      } else {
+        if (this.userLogged.get('ignores').some(el => el.ignored_id === message.sender_id) === false) {
+          sender = this.users.get(message.sender_id)
+        }
       }
-    }
 
-    if (this.myMessages[chatId] === undefined) {
-      this.myMessages[chatId] = []
-    }
-    this.myMessages[chatId].unshift(JSON.parse(JSON.stringify(message)))
-
-    if (sender !== undefined && document.getElementById('messages' + chatId) !== null) {
-      this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
-      if (message.created_at) {
-        let date = message.created_at.replace('T', ' ')
-        date = date.substr(0, 19)
-        this.context.messages[0].time = date
+      if (this.myMessages[chatId] === undefined) {
+        this.myMessages[chatId] = []
       }
-      this.context.messages[0].message = message.content
-      this.updateHTML('messages' + chatId)
-      document.getElementById('textInput').focus()
+      this.myMessages[chatId].unshift(JSON.parse(JSON.stringify(message)))
+
+      if (sender !== undefined && document.getElementById('messages' + chatId) !== null) {
+        this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
+        if (message.created_at) {
+          let date = message.created_at.replace('T', ' ')
+          date = date.substr(0, 19)
+          this.context.messages[0].time = date
+        }
+        this.context.messages[0].message = message.content
+        this.updateHTML('messages' + chatId)
+        document.getElementById('textInput').focus()
+      }
     }
   },
 
@@ -541,7 +555,7 @@ export const ChatView = Backbone.View.extend({
     document.getElementById('center').style.display = 'flex'
     this.updateHTML('right-side')
     document.getElementById('right-side').style.display = 'flex'
-    this.channelId = undefined
+    // this.channelId = undefined
   },
 
   savePrivacy: function () {
@@ -843,11 +857,7 @@ export const ChatView = Backbone.View.extend({
   updateContextCenter: function (currentChannel) {
     let status
 
-    const idUserLogged = this.userLogged.get('id')
-    if (currentChannel.get('timeout_ids').find(el => el === idUserLogged) === true) {
-      document.getElementById('textInput').disabled = true
-      document.getElementById('textInput').value = 'You have been mute for a certain amount of time'
-    }
+    const idUserLogged = this.userLoggedId
 
     if (currentChannel.get('privacy') === 'direct_message') {
       this.context.channel = false
@@ -862,6 +872,7 @@ export const ChatView = Backbone.View.extend({
       this.context.nickname = user.get('nickname')
       status = user.get('status')
       this.context.status = status
+
       if (status === 'ingame') {
         this.context.slide_show = './icons/slideshow-ingame.svg'
       } else {
@@ -902,8 +913,10 @@ export const ChatView = Backbone.View.extend({
 
   openChat: function (e) {
     // display
+
     const divId = e.currentTarget.getAttribute('id')
     const id = e.currentTarget.getAttribute('for')
+    this.channelId = id
     this.closeOpenDiscussion()
     document.getElementById(divId).classList.add('open')
     const currentChannel = this.channels.get(id)
@@ -923,6 +936,16 @@ export const ChatView = Backbone.View.extend({
     // update HTML
     this.updateHTML('center')
     this.updateHTML('right-side')
+
+    if (currentChannel.get('timeout_ids').some(el => el == this.userLoggedId) === true) {
+      document.getElementById('textInput').disabled = true
+      document.getElementById('textInput').value = 'You have been mute for a certain amount of time'
+    }
+
+    if (currentChannel.get('privacy') === 'direct_message' && this.context.status !== 'online') {
+      document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
+      document.getElementById('play-button').style.cursor = 'auto'
+    }
 
     // update post render
     this.updateDOM(e.currentTarget, currentChannel)

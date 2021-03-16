@@ -1,6 +1,6 @@
 export class MyWebSocket {
   constructor (chatRoomId, channelName, objet) {
-    const url = 'ws://localhost:3000/cable?access-token=' + window.localStorage.getItem('access-token') + '&client=' + window.localStorage.getItem('client_id') + '&uid=' + window.localStorage.getItem('uid')
+    const url = 'ws://' + window.location.host + '/cable?access-token=' + window.localStorage.getItem('access-token') + '&client=' + window.localStorage.getItem('client_id') + '&uid=' + window.localStorage.getItem('uid')
     this.socket = new WebSocket(url)
 
     const socket = this.socket
@@ -28,6 +28,7 @@ export class MyWebSocket {
         return
       }
       if (msg.message) {
+        console.log(msg.message)
         objet.receiveMessage(chatRoomId, msg.message)
       }
     }
