@@ -246,6 +246,7 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.guild.save({ name: name }, { patch: true })
         this.guild.set({ name: name })
+        this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
       } catch (e) {
         console.log(e)
         if (e.status != 200) { this.renderError(e, '#nameError', Handlebars.templates.guildError) } else {
@@ -263,6 +264,7 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.guild.save({ anagram: anagram }, { patch: true })
         this.guild.set({ anagram: anagram })
+        this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
       } catch (e) {
         if (e.status != 200) { this.renderError(e, '#anagramError', Handlebars.templates.guildError) } else {
           this.guild.set({ anagram: anagram })
