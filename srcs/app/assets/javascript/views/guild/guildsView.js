@@ -3,16 +3,26 @@ export const GuildsView = Backbone.View.extend({
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
     // console.log('bonjour')
-    this.listenTo(this.guilds, 'sync', function () {
+    /*  this.listenTo(this.guilds, 'sync', function () {
       this.preload()
-    }, this)
+    }, this) */
+    this.load()
   },
 
   el: $('#app'),
-  preload: function () {
-    this.listenTo(this.users, 'sync', function () {
-      this.render()
-    }, this)
+
+  load: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch()
+        await this.guilds.fetch()
+        this.render()
+      } catch (e) {
+        console.log(e)
+        this.$el.html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
   },
 
   render: function () {

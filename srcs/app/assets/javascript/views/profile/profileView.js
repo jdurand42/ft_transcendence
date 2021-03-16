@@ -7,11 +7,12 @@ import { NoGuildView } from './noGuildView.js' */
 
 export const ProfileView = Backbone.View.extend({
   events: {
-    'click #matchHistory': 'matchHistory',
-    'click #friends': 'friends',
-    'click #profileGuild': 'profileGuild',
-    'click #achivements': 'achivements'
+    'click #matchHistory': 'loadMatchHistory',
+    'click #friends': 'loadFriends',
+    'click #profileGuild': 'loadGuild',
+    'click #achievements': 'loadAchievements'
   },
+
   el: $('#app'),
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
@@ -23,19 +24,73 @@ export const ProfileView = Backbone.View.extend({
       this.id = this.userId
     }
     this.$el.html(Handlebars.templates.profile({}))
-    this.listenTo(this.guilds, 'sync', function () { this.getUsers() }, this)
-  },
-
-  getUsers: function () {
-    this.listenTo(this.users, 'sync', function () { this.getGameRecords() }, this)
     this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
+    this.loadMatchHistory()
+    //    this.listenTo(this.guilds, 'sync', function () { this.getUsers() }, this)
   },
 
-  getGameRecords: function () {
-    this.gameRecords.fetch()
-    this.ladders.fetch()
-    this.listenTo(this.ladders, 'sync', function () { this.renderPannel() }, this)
-    this.listenTo(this.gameRecords, 'sync', function () { this.matchHistory() }, this)
+  loadMatchHistory: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch() &&
+        await this.ladders.fetch() &&
+ 				await this.gameRecords.fetch()
+        this.renderPannel()
+        await this.guilds.fetch()
+        this.matchHistory()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
+  },
+
+  loadFriends: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch()
+        this.renderPannel()
+        await this.guilds.fetch()
+        this.friends()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
+  },
+
+  loadAchievements: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch()
+        // await this.achivements.fetch()
+        this.renderPannel()
+        this.achievements()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
+  },
+
+  loadGuild: function () {
+	  const load = async () => {
+	    try {
+	      await this.users.fetch() &&
+        await this.guilds.fetch() &&
+        await this.ladders.fetch()
+	      // await this.achivements.fetch()
+	      this.renderPannel()
+	      this.profileGuild()
+	    	} catch (e) {
+	      	console.log(e)
+	      	this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+	    	}
+	  	}
+	  	load()
   },
 
   renderPannel: function () {
@@ -82,7 +137,7 @@ export const ProfileView = Backbone.View.extend({
     return this
   },
 
-  achivements: function () {
+  achievements: function () {
     const context = {
       name: this.users.get(this.id).get('nickname'),
       ladder_id: this.users.get(this.id).get('ladder_id'),
@@ -90,21 +145,10 @@ export const ProfileView = Backbone.View.extend({
       guild_id: this.users.get(this.id).get('guild_id'),
       id: this.id
     }
-    this.$el.find('#profileContent').html(Handlebars.templates.achivements(context))
+    this.$el.find('#profileContent').html(Handlebars.templates.achievements(context))
   },
 
   profileGuild: function () {
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild({}))
-  },
-
-  render: function () {
-    const context = {
-      guild_id: this.users.get(this.id).get('guild_id'),
-      id: this.id
-    }
-    this.$el.html(this.template(context))
-    this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
-    this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar(context))
-    return this
   }
 })
