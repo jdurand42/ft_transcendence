@@ -158,8 +158,8 @@ templates['chat'] = template({"1":function(container,depth0,helpers,partials,dat
         return undefined
     };
 
-  return "                <button class=\"play-button\" for=\""
-    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"userId") || (depth0 != null ? lookupProperty(depth0,"userId") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"userId","hash":{},"data":data,"loc":{"start":{"line":107,"column":49},"end":{"line":107,"column":59}}}) : helper)))
+  return "                <button class=\"play-button\" id=\"play-button\" for=\""
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"userId") || (depth0 != null ? lookupProperty(depth0,"userId") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"userId","hash":{},"data":data,"loc":{"start":{"line":107,"column":66},"end":{"line":107,"column":76}}}) : helper)))
     + "\">\n                    <img src=\"./icons/videogame.svg\" height=\"24\">\n                </button>\n";
 },"20":function(container,depth0,helpers,partials,data) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
@@ -501,9 +501,9 @@ templates['chat'] = template({"1":function(container,depth0,helpers,partials,dat
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":113,"column":42},"end":{"line":113,"column":48}}}) : helper)))
     + "\">\n            <div class=\"scrollable\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"messages") : depth0),{"name":"each","hash":{},"fn":container.program(20, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":115,"column":16},"end":{"line":144,"column":25}}})) != null ? stack1 : "")
-    + "            </div>\n        <div class=\"input-container\">\n            <input class=\"textInput input\" type=\"text\" id=\"textInput\" for="
-    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":147,"column":74},"end":{"line":147,"column":80}}}) : helper)))
-    + ">\n        </div>\n        </div>\n    </div>\n    <div class=\"right-side\" id=\"right-side\" style=\"display: none;\">\n        <div class=\"privacy\">"
+    + "            </div>\n        <div class=\"input-container\">\n            <input class=\"textInput input\" type=\"text\"  id=\"textInput\" for="
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":147,"column":75},"end":{"line":147,"column":81}}}) : helper)))
+    + "></input>\n        </div>\n        </div>\n    </div>\n    <div class=\"right-side\" id=\"right-side\" style=\"display: none;\">\n        <div class=\"privacy\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"privacy") || (depth0 != null ? lookupProperty(depth0,"privacy") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"privacy","hash":{},"data":data,"loc":{"start":{"line":152,"column":29},"end":{"line":152,"column":40}}}) : helper)))
     + " channel</div>\n        <div class=\"title online\">\n            <div class=\"pastille\"></div>\n            <div class=\"status ONLINE\">ONLINE-"
     + alias4(((helper = (helper = lookupProperty(helpers,"nbOnline") || (depth0 != null ? lookupProperty(depth0,"nbOnline") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nbOnline","hash":{},"data":data,"loc":{"start":{"line":155,"column":46},"end":{"line":155,"column":58}}}) : helper)))

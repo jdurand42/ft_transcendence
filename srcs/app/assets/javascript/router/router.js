@@ -12,6 +12,7 @@ import { SearchView } from '../views/search/searchView.js'
 import { ChatView } from '../views/chatView'
 import { ManageGuildView } from '../views/guild/manageGuildView.js'
 import { AdminView } from '../views/admin/adminView.js'
+import { NotifView } from '../views/notifView'
 
 // models
 import { User } from '../models/userModel'
@@ -29,6 +30,7 @@ import { Wrapper } from '../models/wrapper.js'
 import { SuperWrapper } from '../collections/superWrapper.js'
 import { Channels } from '../collections/channels'
 import { GameRecords } from '../collections/gameRecords.js'
+// import { Achievements } from '../collections/achievements.js'
 
 // services
 import { OauthService } from '../services/oauthService.js'
@@ -48,12 +50,13 @@ export const Router = Backbone.Router.extend({
     this.oauthService = new OauthService()
     this.chatView = undefined
     this.socket = undefined
+    this.users = new Users()
+    this.notifView = new NotifView({ collection: this.users })
   },
 
   routes:
   {
     admin: 'admin_view',
-    user_page: 'users_view', // Achanger nom de route et tout
     home: 'home_view',
     pong: 'pong_view',
     'profile/(:id)': 'profile_view',
@@ -87,8 +90,9 @@ export const Router = Backbone.Router.extend({
 
     const fetchUser = async () => {
       this.oauthService.setAjaxEnvironnement()
-      await this.setUpUser(this.oauthService, this.userLogged)
-      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this)
+      console.log(this.users)
+      await this.setUpUser(this.oauthService, this.userLogged, this.users)
+      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
       if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
         this.navigate('#home', { trigger: true })
       }
@@ -96,15 +100,16 @@ export const Router = Backbone.Router.extend({
     fetchUser()
   },
 
-  setUpUser: async (oauthService, userLogged) => {
+  setUpUser: async (oauthService, userLogged, users) => {
     oauthService.ajaxSetup()
+    users.fetch()
     await userLogged.fetchUser(window.localStorage.getItem('user_id'))
   },
 
   two_factor_connexion: function (url) {
     const fetchUser = async () => {
-      await this.setUpUser(this.oauthService, this.userLogged)
-      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this)
+      await this.setUpUser(this.oauthService, this.userLogged, this.users)
+      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
       this.navigate('#home', { trigger: true })
     }
     fetchUser()
@@ -116,12 +121,12 @@ export const Router = Backbone.Router.extend({
       return 1
     } else if (performance.navigation.type >= 0 && performance.navigation.type <= 2) {
       const fetchUser = async () => {
-        await this.setUpUser(this.oauthService, this.userLogged)
+        await this.setUpUser(this.oauthService, this.userLogged, this.users)
         if (url !== 'firstConnexion' || url !== 'twoFactor') { this.headerView.render() }
       }
       fetchUser()
     }
-    this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this)
+    this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
   },
 
   firstConnexion_view: function () {
@@ -156,11 +161,6 @@ export const Router = Backbone.Router.extend({
     if (this.accessPage()) { return }
     this.headerView.render()
     const homeView = new HomeView()
-  },
-
-  users_view: function (url) {
-    if (this.accessPage()) { return }
-    const usersView = new UsersView({ model: this.userLogged })
   },
 
   pong_view: function (url) {

@@ -1,0 +1,14 @@
+<div class="notif gameNotif" id="gameNotif{{gameId}}" > 
+    <div class="closeNotif" id="closeGameNotif-container">
+        <img src="./icons/close.svg" class="refuseGame" id="closeGameNotif" for="{{gameId}}"></img>
+    </div>
+    <p class="text">{{nickname}} send you an invitation to a match.</p>
+    <div class="buttons-notif-container">
+        <div class="acceptGame-container" id="acceptGame-container">
+            <button class="button-notif acceptGame" id="acceptGame" for="{{gameId}}">Accept</button>
+        </div>
+        <div class="refuseGame-container" id="refuseGame-container">
+            <button class="button-notif refuseGame" id="refuseGame" for="{{gameId}}">Refuse</button>
+        </div>
+    </div>
+</div>
