@@ -25,11 +25,16 @@ export const NotifView = Backbone.View.extend({
   },
 
   gameInvitation: function (msg) {
-    // const sender = this.users.get(msg.sender_id)
-    // this.context.nickname = sender.get('nickname')
+    this.userLoggedId = window.localStorage.getItem('user_id')
     this.context.gameId = msg.id
-    this.templateGameNotif = Handlebars.templates.gameNotif
-
+    if (msg.sender_id === this.userLoggedId) {
+      this.context.nickname = this.users.get(this.userLoggedId).get('nickname')
+      this.templateGameNotif = Handlebars.templates.senderGameNotif
+    } else {
+      // const sender = this.users.get(msg.sender_id)
+      // this.context.nickname = sender.get('nickname')
+      this.templateGameNotif = Handlebars.templates.gameNotif
+    }
     const templateDataGameNotif = this.templateGameNotif(this.context)
     this.$el.append(templateDataGameNotif)
   },
