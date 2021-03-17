@@ -22,7 +22,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/arrayOfAchievements"
-  "/api/chats/":
+  "/api/chats":
     get:
       summary: Retrieves chats
       tags:
@@ -371,7 +371,7 @@ paths:
       responses:
         '204':
           description: invitation declined
-  "/api/guilds/":
+  "/api/guilds":
     get:
       summary: Retrieves guilds
       tags:
@@ -588,8 +588,13 @@ paths:
       summary: Declares a war
       tags:
         - Wars
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/war_declaration"
       responses:
-        '200':
+        '201':
           description: war declared
           content:
             application/json:
@@ -611,7 +616,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/war_update"
+              $ref: "#/components/schemas/war_negociable"
       responses:
         '200':
           description: guild found
@@ -619,6 +624,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/war"
+  "/api/wars/agreement":
+    post:
+      summary: Agree war terms
+      description: Allows current_user to agree war terms
+      tags:
+        - Wars
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agree_terms:
+                  type: boolean
+      responses:
+        '201':
+          description: war terms agreed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/war_negociable"
   "/api/wars/{id}/times":
     parameters:
       - name: id
@@ -639,7 +665,7 @@ paths:
               schema:
                 "$ref": "#/components/schemas/war_time"
     post:
-      summary: Creates a war time
+      summary: Creates war time
       tags:
         - Wars
       requestBody:
@@ -670,7 +696,7 @@ paths:
           type: integer
         description: Target ID
     delete:
-      summary: Removes a war time
+      summary: Removes war time
       description: Allows current_user to remove a war time
       tags:
         - Wars
@@ -1153,29 +1179,26 @@ components:
         chat_id:
           type: integer
     war:
-      type: object
-      properties:
-        from:
-          type: integer
-        on:
-          type: integer
-        war_start:
-          type: string
-          format: date-time
-        war_end:
-          type: string
-          format: date-time
-        prize:
-          type: integer
-        from_score:
-          type: integer
-        on_score:
-          type: integer
-        max_unanswered:
-          type: integer
-        terms_accepted:
-          type: boolean
-    war_update:
+      allOf:
+        - type: object
+          properties:
+            from:
+              type: integer
+            on:
+              type: integer
+            from_score:
+              type: integer
+            on_score:
+              type: integer
+        - $ref: "#/components/schemas/war_negociable"
+    war_declaration:
+      allOf:
+        - type: object
+          properties:
+            on:
+              type: integer
+        - $ref: "#/components/schemas/war_negociable"
+    war_negociable:
       type: object
       properties:
         war_start:
@@ -1192,9 +1215,6 @@ components:
           type: boolean
           example: false
         ladder_effort:
-          type: boolean
-          example: false
-        accept_terms:
           type: boolean
           example: false
     war_time:
