@@ -602,7 +602,8 @@ paths:
                 $ref: "#/components/schemas/war"
   "/api/wars/{id}":
     put:
-      summary: Modifies a war
+      summary: Negociate war terms
+      description: Allows guild owners to update alternately a war
       tags:
         - Wars
       parameters:
@@ -624,10 +625,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/war"
-  "/api/wars/agreement":
+  "/api/wars/agreements":
     post:
-      summary: Agree war terms
-      description: Allows current_user to agree war terms
+      summary: Accepts or declines war terms
+      description: Allows current_user to accept or declines war terms
       tags:
         - Wars
       requestBody:
