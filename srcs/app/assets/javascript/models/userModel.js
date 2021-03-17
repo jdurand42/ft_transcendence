@@ -38,9 +38,9 @@ export const User = Backbone.Model.extend({
     return this.urlRoot
   },
 
-  fetchUser: function (url) {
+  fetchUser: function (userId) {
     return this.fetch({
-      url: this.urlRoot + url,
+      url: this.urlRoot + userId,
       success: function (response) {
       },
       error: function (errorResponse) {
