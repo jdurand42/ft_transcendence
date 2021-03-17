@@ -219,11 +219,13 @@ export const ChatView = Backbone.View.extend({
             this.receiveMessage(message.id, messages[i])
           }
 
-          this.updateContextLeftSide()
-          if (this.myChannels.get(message.id).get('privacy') === 'direct_message') {
-            this.updateHTML('DM')
-          } else {
-            this.updateHTML('myChannels')
+          if (message.sender_id !== this.userLoggedId) { // check back ok
+            this.updateContextLeftSide()
+            if (this.myChannels.get(message.id).get('privacy') === 'direct_message') {
+              this.updateHTML('DM')
+            } else {
+              this.updateHTML('myChannels')
+            }
           }
         }
         fetchMyChannels()
