@@ -6,7 +6,6 @@ export const LeaderboardView = Backbone.View.extend({
     this.load()
   },
   el: $('#app'),
-
   load: function () {
     const load = async () => {
       try {
@@ -20,7 +19,6 @@ export const LeaderboardView = Backbone.View.extend({
     }
     load()
   },
-
   render: function () {
     const row = []
     for (let i = 1; i <= this.guilds.length; i++) {
