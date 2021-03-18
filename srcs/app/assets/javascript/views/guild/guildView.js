@@ -95,7 +95,8 @@ export const GuildView = Backbone.View.extend({
     for (let i = 1; i <= this.users.length; i++) {
       if (this.users.get(i).get('guild_id') == this.id &&
 			this.users.get(i).get('id') !== this.guilds.get(this.id).get('owner_id') &&
-			this.guilds.get(this.id).get('officer_ids').includes(this.users.get(i).get('id')) === false) {
+			this.guilds.get(this.id).get('officer_ids').includes(this.users.get(i).get('id')) === false &&
+			this.guilds.get(this.id).get('owner_id') != this.users.get(i).get('id')) {
         members.push(JSON.parse(JSON.stringify(this.users.get(i))))
       }
     }

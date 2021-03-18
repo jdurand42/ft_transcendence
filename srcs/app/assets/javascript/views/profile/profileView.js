@@ -10,7 +10,8 @@ export const ProfileView = Backbone.View.extend({
     'click #matchHistory': 'loadMatchHistory',
     'click #friends': 'loadFriends',
     'click #profileGuild': 'loadGuild',
-    'click #achievements': 'loadAchievements'
+    'click #achievements': 'loadAchievements',
+    'click #leaveGuild': 'leaveGuild'
   },
 
   el: $('#app'),
@@ -19,6 +20,7 @@ export const ProfileView = Backbone.View.extend({
     this.users = this.model.get('users').get('obj')
     this.ladders = this.model.get('ladders').get('obj')
     this.gameRecords = this.model.get('gameRecords').get('obj')
+    this.achievements = this.model.get('achievements').get('obj')
     this.userId = this.model.get('userLoggedId')
     if (this.id === null) {
       this.id = this.userId
@@ -65,9 +67,9 @@ export const ProfileView = Backbone.View.extend({
     const load = async () => {
       try {
         await this.users.fetch()
-        // await this.achivements.fetch()
+        await this.achievements.fetch()
         this.renderPannel()
-        this.achievements()
+        this.achievementsView()
       } catch (e) {
         console.log(e)
         this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
@@ -133,22 +135,73 @@ export const ProfileView = Backbone.View.extend({
       guild_id: this.users.get(this.id).get('guild_id'),
       id: this.id
     }
+    // console.log(this.users.get(this.id).get('friends'))
     this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
     return this
   },
 
-  achievements: function () {
+  achievementsView: function () {
     const context = {
       name: this.users.get(this.id).get('nickname'),
       ladder_id: this.users.get(this.id).get('ladder_id'),
-      ladder_name: this.ladders.get(this.users.get(this.id).get('ladder_id')).get('name'),
+      // ladder_name: this.ladders.get(this.users.get(this.id).get('ladder_id')).get('name'),
       guild_id: this.users.get(this.id).get('guild_id'),
       id: this.id
     }
+    console.log(this.achievements)
     this.$el.find('#profileContent').html(Handlebars.templates.achievements(context))
   },
 
   profileGuild: function () {
-    this.$el.find('#profileContent').html(Handlebars.templates.profileGuild({}))
+    let guild
+    if (this.users.get(this.id).get('guild_id')) {
+      guild = this.guilds.get(this.users.get(this.id).get('guild_id'))
+    } else if (this.userId === this.id) {
+      this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
+      return
+    } else {
+      this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
+      return
+    }
+    console.log(guild)
+    const context = {
+      guild: JSON.parse(JSON.stringify(guild)),
+      owner: JSON.parse(JSON.stringify(this.users.get(guild.get('owner_id')[0]))),
+      officers: Array(),
+      members: Array()
+    }
+    for (let i = 0; i < guild.get('officer_ids').length; i++) {
+      context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('officer_ids')[i]))))
+    }
+
+    for (let i = 0; i < guild.get('member_ids').length; i++) {
+      context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
+    }
+    this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
+    if (this.userId == this.id) {
+      this.$el.find('#manageGuildButton').html('<button><a href=\"#manage_guild\">Manage guild</a></button>')
+      console.log('ici')
+    }
+    if (this.userId == this.id) {
+      console.log('ici')
+      this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
+    }
+  },
+
+  leaveGuild: function () {
+    console.log('faire plus tard')
+  /*  const leaveGuild = async () => {
+      try {
+        const response = await this.createRequest('/api/guilds/' + this.members/' + this.userId, 'DELETE')
+        this.users.get(this.userId).set({ guild_id: null })
+        this.$el.html('<p>You successfully leaved the guild</p>')
+        console.log('ici')
+      } catch (e) {
+        console.log(e)
+        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
+      } finally {
+      }
+    }
+    leaveGuild() */
   }
 })

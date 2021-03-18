@@ -30,7 +30,7 @@ import { Wrapper } from '../models/wrapper.js'
 import { SuperWrapper } from '../collections/superWrapper.js'
 import { Channels } from '../collections/channels'
 import { GameRecords } from '../collections/gameRecords.js'
-// import { Achievements } from '../collections/achievements.js'
+import { Achievements } from '../collections/achievements.js'
 
 // services
 import { OauthService } from '../services/oauthService.js'
@@ -223,6 +223,7 @@ export const Router = Backbone.Router.extend({
       guilds: new Wrapper({ obj: new Guilds() }),
       ladders: new Wrapper({ obj: new Ladders() }),
       gameRecords: new Wrapper({ obj: new GameRecords() }),
+      achievements: new Wrapper({ obj: new Achievements() }),
       userLoggedId: window.localStorage.getItem('user_id'),
       router: this
     })

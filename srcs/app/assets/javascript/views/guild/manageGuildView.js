@@ -5,6 +5,7 @@ export const ManageGuildView = Backbone.View.extend({
     'click .createGuild': 'createGuild',
     'click .inviteMember': 'inviteMember',
     'click .kickMember': 'kickMember',
+    'click .sendInvitation': 'sendInvitation',
     'click .promoteMember': 'promoteMember',
     'click .relegateMember': 'relegateMember',
     'click .updateGuildName': 'updateGuildName',
@@ -14,6 +15,7 @@ export const ManageGuildView = Backbone.View.extend({
     'keyup #memberToKick': function () { this.nicknameSearch(this.membersList, 'memberToKick', '#KickMemberResult') },
     'keyup #memberToPromote': function () { this.nicknameSearch(this.membersList, 'memberToPromote', '#promoteMemberResult') },
     'keyup #memberToRelegate': function () { this.nicknameSearch(this.officersList, 'memberToRelegate', '#relegateMemberResult') },
+    'keyup #nonMemberToSendInvitation': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#sendInvitationResult') },
     'mouseover .nicknameSearchElement': function (e) { this.outlineNickname(e) },
     'mouseout .nicknameSearchElement': function (e) { e.target.style.color = '' },
     'click .nicknameSearchElement': function (e) { this.clickNickname(e) }
@@ -147,6 +149,33 @@ export const ManageGuildView = Backbone.View.extend({
         if (e.status == 200) {
           this.updateLists([this.membersList, this.nonMembersList], nickname, id)
           this.users.get(id).set({ guild_id: this.guild.id })
+        }
+      } finally {
+      }
+    }
+    inviteMember()
+  },
+
+  sendInvitation: function () {
+    const nickname = document.getElementById('nonMemberToSendInvitation').value
+    let id
+    if (this.users.findWhere({ nickname: nickname })) {
+    	id = this.users.findWhere({ nickname: nickname }).id
+    } else {
+      console.log('error') // a gerer
+      return
+    }
+    const inviteMember = async () => {
+      try {
+        const response = await this.createRequest('/invitations/', 'POST', { user_id: id })
+        // this.updateLists([this.membersList, this.nonMembersList], nickname, id)
+        // this.users.get(id).set({ guild_id: this.guild.id })
+        this.$el.find('#guildGlobalError').html('<p>Invitation successfully sent</p>')
+      } catch (e) {
+        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
+        if (e.status == 200) {
+          /* this.updateLists([this.membersList, this.nonMembersList], nickname, id)
+          this.users.get(id).set({ guild_id: this.guild.id }) */
         }
       } finally {
       }
@@ -358,11 +387,11 @@ export const ManageGuildView = Backbone.View.extend({
     }
   },
 
-  createRequest: function (path, method) {
+  createRequest: function (path, method, data) {
     return $.ajax({
       url: '/api/guilds/' + this.guild.id + path,
-      method: method
-      // data: data
+      method: method,
+      data: data
     })
   }
 })

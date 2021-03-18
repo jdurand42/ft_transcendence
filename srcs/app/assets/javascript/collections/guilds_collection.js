@@ -5,7 +5,7 @@ export const Guilds = Backbone.Collection.extend({
     this.on('all', function (e) {
       //
     }, this)
-    this.fetch('success')
+    // this.fetch('success')
   },
   model: Guild,
   urlRoot: '/api/guilds/',
