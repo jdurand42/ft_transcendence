@@ -24,7 +24,7 @@ export const GameRecord = Backbone.Model.extend({
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({
-        game_type: gameType,
+        mode: gameType,
         opponent_id: opponentId
       })
     })

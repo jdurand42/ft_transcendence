@@ -330,11 +330,17 @@ paths:
             type: integer
           description: filter by user_id (either win or loose)
         - in: query
-          name: game_type
+          name: mode
           schema:
             type: string
             enum: [duel, ladder, tournament]
-          description: filter by game_type [Duel Ladder Tournament]
+          description: filter by mode [Duel Ladder Tournament]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [ pending, inprogress, played ]
+          description: filter by status
       responses:
         '200':
           description: Games found
@@ -602,7 +608,8 @@ paths:
                 $ref: "#/components/schemas/war"
   "/api/wars/{id}":
     put:
-      summary: Modifies a war
+      summary: Negociate war terms
+      description: Allows guild owners to update alternately a war
       tags:
         - Wars
       parameters:
@@ -624,10 +631,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/war"
-  "/api/wars/agreement":
+  "/api/wars/agreements":
     post:
-      summary: Agree war terms
-      description: Allows current_user to agree war terms
+      summary: Accepts or declines war terms
+      description: Allows current_user to accept or declines war terms
       tags:
         - Wars
       requestBody:
@@ -998,9 +1005,12 @@ components:
           description: user_id
         player_right_id:
           type: integer
-        game_type:
+        mode:
           type: string
           enum: [duel, ladder, tournament]
+        status:
+          type: string
+          enum: [pending, inprogress, played]
         created_at:
           type: string
     message:
@@ -1017,7 +1027,7 @@ components:
     game:
       type: object
       properties:
-        game_type:
+        mode:
           type: string
           description: could be [Duel Ladder]
           enum: [duel, ladder]

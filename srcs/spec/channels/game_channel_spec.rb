@@ -30,7 +30,7 @@ RSpec.describe GameChannel, type: :channel do
 
     it 'shouldnt subscribe if game is closed' do
       stub_connection current_user: player_left
-      game.update!(state: 3)
+      game.update!(status: 'played')
       subscribe(id: game.id)
       expect(subscription).to be_rejected
     end
@@ -38,10 +38,12 @@ RSpec.describe GameChannel, type: :channel do
 
   describe 'Game' do
     it 'should start' do
+      ActiveJob::Base.queue_adapter = :test
+      ActiveJob::Base.queue_adapter.perform_enqueued_jobs = false
       stub_connection current_user: player_left
       subscribe(id: game.id)
-      # stub_connection current_user: player_right
-      # subscribe(id: game.id)
+      stub_connection current_user: player_right
+      expect { subscribe(id: game.id) }.to enqueue_job
       stub_connection current_user: viewer
       subscribe(id: game.id)
       expect(subscription).to be_confirmed

@@ -1,18 +1,20 @@
 # frozen_string_literal: true
 
 class UserChannel < ApplicationCable::Channel
+  include(UserStatusHelper)
+
   def subscribed
     @user = User.find(params[:id])
 
     return reject if reject_user?
 
-    @user.update!(status: 'online')
+    update_user_status(@user, 'online')
     stream_from "user_#{@user.id}"
   end
 
   def unsubscribed
-    @user.update!(status: 'offline')
-    stop_all_streams
+    update_user_status(@user, 'offline')
+    # stop_stream_from("user_#{@user.id}")
   end
 
   private
