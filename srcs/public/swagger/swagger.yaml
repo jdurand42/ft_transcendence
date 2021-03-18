@@ -1,3 +1,4 @@
+
 openapi: 3.0.1
 info:
   version: v1
@@ -285,7 +286,28 @@ paths:
       responses:
         '204':
           description: chat left
-
+  "/api/chats/{id}/participants/{tid}":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Chat ID
+      - name: tid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Target ID
+    delete:
+      summary: Kicks a participant from a chatroom
+      description: Allows current_user to kick a participant
+      tags:
+        - Chats
+      responses:
+        '204':
+          description: participant kicked
   "/api/chats/{id}/invites":
     post:
       summary: Adds participants to the chatroom
