@@ -335,6 +335,12 @@ paths:
             type: string
             enum: [duel, ladder, tournament]
           description: filter by mode [Duel Ladder Tournament]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [ pending, inprogress, played ]
+          description: filter by status
       responses:
         '200':
           description: Games found
