@@ -1,8 +1,8 @@
 <div class="notif gameNotif" id="gameNotif{{gameId}}" > 
-    <div class="closeNotif" id="closeGameNotif-container">
+    <div class="closeNotif refuseGame" id="closeGameNotif-container" for={{gameId}}>
         <img src="./icons/close.svg" class="refuseGame" id="closeGameNotif" for="{{gameId}}"></img>
     </div>
-    <p class="text">{{nickname}} send you an invitation to a match.</p>
+    <p class="text">{{nickname}} sent you an invitation to a match.</p>
     <div class="buttons-notif-container">
         <div class="acceptGame-container" id="acceptGame-container">
             <button class="button-notif acceptGame" id="acceptGame" for="{{gameId}}">Accept</button>

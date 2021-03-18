@@ -1,0 +1,13 @@
+input.checkbox[type="checkbox"] {
+    cursor: pointer;
+
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    border-radius: 5px;
+    width: 22px;
+    height: 22px;
+
+    background-color: #c4c4c4;
+    background: transparent;
+}

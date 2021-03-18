@@ -10,16 +10,16 @@
     background-attachment: fixed;
 
     box-shadow: inset 0 0 0 1000px rgba(27, 37, 52, 0.4);
-    /* position: fixed; */
 
     line-height: var(--header-size);
     height: var(--header-size);
     width: 100%;
 
+    z-index: 1;
 
     display: grid;
     grid-gap: 8px;
-    grid-template-columns: 200px 175px minmax(auto, 300px) minmax(auto, 300px) minmax(auto, 300px) auto 100px minmax(auto, 200px) 150px;
+    grid-template-columns: 200px 175px minmax(auto, 200px) minmax(auto, 300px) auto 64px max-content 150px;
 
     padding: 0px 32px 0px 32px;
     padding-right: 32px;
@@ -36,7 +36,7 @@
 .topnav .logo {
     font-family: MajorMonoDisplay-Regular;
     align-content: flex-start;
-    font-size: 2rem;
+    font-size: 36px;
     text-align: left;
 }
 
@@ -69,18 +69,15 @@
 
     position: relative;
     top: 17px;
-    left: 25%;
 }
 
 .topnav .chat {
-    background: url('../../icons/chat.svg');
     background-size: contain;
     background-repeat: no-repeat;
-    height: 40px;
-    width: 40px;
+    height: 41px;
+    width: 41px;
 
     display: flex;
-    justify-self: flex-end;
     position: relative;
     top: 25%;
 }
@@ -98,4 +95,10 @@
 
 .topnav .user {
     text-align: left;
+    margin-left: 8px;
+}
+
+.topnav .user-page {
+    display: flex;
+    flex-direction: row;
 }
