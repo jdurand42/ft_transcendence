@@ -330,11 +330,11 @@ paths:
             type: integer
           description: filter by user_id (either win or loose)
         - in: query
-          name: game_type
+          name: mode
           schema:
             type: string
             enum: [duel, ladder, tournament]
-          description: filter by game_type [Duel Ladder Tournament]
+          description: filter by mode [Duel Ladder Tournament]
       responses:
         '200':
           description: Games found
@@ -999,9 +999,12 @@ components:
           description: user_id
         player_right_id:
           type: integer
-        game_type:
+        mode:
           type: string
           enum: [duel, ladder, tournament]
+        status:
+          type: string
+          enum: [pending, inprogress, played]
         created_at:
           type: string
     message:
@@ -1018,7 +1021,7 @@ components:
     game:
       type: object
       properties:
-        game_type:
+        mode:
           type: string
           description: could be [Duel Ladder]
           enum: [duel, ladder]
