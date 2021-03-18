@@ -10,9 +10,9 @@ templates['guildsList'] = template({"1":function(container,depth0,helpers,partia
 
   return "        <tr class=\"guildTable\" for=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":17,"column":36},"end":{"line":17,"column":42}}}) : helper)))
-    + "\" href=\"#guild/"
-    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":17,"column":57},"end":{"line":17,"column":63}}}) : helper)))
-    + "\">\n            <td class=\"first-th\">"
+    + "\" onclick=\"window.location='#guild/"
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":17,"column":77},"end":{"line":17,"column":83}}}) : helper)))
+    + "/';\">\n            <td class=\"first-th\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"rank") || (depth0 != null ? lookupProperty(depth0,"rank") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"rank","hash":{},"data":data,"loc":{"start":{"line":18,"column":33},"end":{"line":18,"column":41}}}) : helper)))
     + "</td>\n            <td>\n                <div class=\"image-container\">\n                    <img class=\"guild-image\" src=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"image_url") || (depth0 != null ? lookupProperty(depth0,"image_url") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"image_url","hash":{},"data":data,"loc":{"start":{"line":21,"column":50},"end":{"line":21,"column":63}}}) : helper)))
