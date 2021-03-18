@@ -10,10 +10,10 @@ templates['senderGameNotif'] = template({"compiler":[8,">= 4.3.0"],"main":functi
 
   return "<div class=\"notif senderGameNotif\" id=\"senderGameNotif"
     + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":1,"column":54},"end":{"line":1,"column":64}}}) : helper)))
-    + "\" > \n    <div class=\"closeNotif\" id=\"closeSenderGameNotif-container\">\n        <img src=\"./icons/close.svg\" class=\"closeSenderGameNotif\" id=\"closeSenderGameNotif\" for=\""
+    + "\" > \n    <div class=\"closeNotif\" id=\"closeSenderGameNotif-container\" for="
+    + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":2,"column":68},"end":{"line":2,"column":78}}}) : helper)))
+    + ">\n        <img src=\"./icons/close.svg\" class=\"closeSenderGameNotif\" id=\"closeSenderGameNotif\" for=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":3,"column":97},"end":{"line":3,"column":107}}}) : helper)))
-    + "\"></img>\n    </div>\n    <p class=\"text\">You have sent an invitation to a match to "
-    + alias4(((helper = (helper = lookupProperty(helpers,"nickname") || (depth0 != null ? lookupProperty(depth0,"nickname") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nickname","hash":{},"data":data,"loc":{"start":{"line":5,"column":62},"end":{"line":5,"column":74}}}) : helper)))
-    + ".</p>\n</div>";
+    + "\"></img>\n    </div>\n    <p class=\"text\">You have sent an invitation to a match.</p>\n</div>";
 },"useData":true});
 })();

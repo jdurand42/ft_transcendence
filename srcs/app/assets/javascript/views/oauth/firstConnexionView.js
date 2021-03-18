@@ -1,7 +1,8 @@
 export const FirstConnexionView = Backbone.View.extend({
   events: {
     'click .validate': 'validate',
-    'change input[type=file]': 'loadFile'
+    'change input[type=file]': 'loadFile',
+    'click .activate2FA': 'check'
   },
 
   initialize: function () {
@@ -57,5 +58,10 @@ export const FirstConnexionView = Backbone.View.extend({
             type: event.target.files[0].type
           }))
       })
+  },
+
+  check: function () {
+    const checkbox = document.getElementById('2FA')
+    if (checkbox.checked === true) { checkbox.checked = false } else { checkbox.checked = true }
   }
 })

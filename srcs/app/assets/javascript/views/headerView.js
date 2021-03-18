@@ -11,11 +11,14 @@ export const HeaderView = Backbone.View.extend({
 
     if (target === undefined) { target = '#home' }
     array[target.substring(1)] = true
+    if (target === '#chat') {
+      array.chatIcon = './icons/active_chat.svg'
+    } else {
+      array.chatIcon = './icons/chat.svg'
+    }
     array.active = 'active'
     array.user = this.model.get('nickname')
-    if (this.model.get('admin') === true) {
-      array.admin = this.model.get('admin')
-    }
+    array.admin = this.model.get('admin')
     array.profile_pic = this.model.get('image_url')
     const context = JSON.parse(JSON.stringify(array))
     const templateDataTopNav = this.templateTopNav(context)

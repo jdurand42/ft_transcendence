@@ -1,7 +1,7 @@
 // views
 import { HomeView } from '../views/home_view.js'
 import { PongView } from '../views/pong/pong_view.js'
-import { HeaderView } from '../views/header_view'
+import { HeaderView } from '../views/headerView'
 import { LeaderboardView } from '../views/leaderboard/leaderboardView.js'
 import { TournamentsView } from '../views/tournaments/tournamentsView.js'
 import { OauthView } from '../views/oauth/oauthView.js'
@@ -91,7 +91,8 @@ export const Router = Backbone.Router.extend({
     const fetchUser = async () => {
       this.oauthService.setAjaxEnvironnement()
       console.log(this.users)
-      await this.setUpUser(this.oauthService, this.userLogged, this.users)
+      await this.setUpUser(this.oauthService, this.userLogged)
+      // this.userLogged.save({ first_login: true }, { patch: true })
       this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
       if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
         this.navigate('#home', { trigger: true })
@@ -100,15 +101,15 @@ export const Router = Backbone.Router.extend({
     fetchUser()
   },
 
-  setUpUser: async (oauthService, userLogged, users) => {
+  setUpUser: async (oauthService, userLogged) => {
     oauthService.ajaxSetup()
-    users.fetch()
+    // users.fetch()
     await userLogged.fetchUser(window.localStorage.getItem('user_id'))
   },
 
   two_factor_connexion: function (url) {
     const fetchUser = async () => {
-      await this.setUpUser(this.oauthService, this.userLogged, this.users)
+      await this.setUpUser(this.oauthService, this.userLogged)
       this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
       this.navigate('#home', { trigger: true })
     }
@@ -119,10 +120,11 @@ export const Router = Backbone.Router.extend({
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
-    } else if (performance.navigation.type >= 0 && performance.navigation.type <= 2) {
+    } else if (performance.navigation.type >= 1 && performance.navigation.type <= 2) {
+      console.log(performance.navigation.type)
       const fetchUser = async () => {
-        await this.setUpUser(this.oauthService, this.userLogged, this.users)
-        if (url !== 'firstConnexion' || url !== 'twoFactor') { this.headerView.render() }
+        await this.setUpUser(this.oauthService, this.userLogged)
+        if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
       }
       fetchUser()
     }
@@ -140,7 +142,6 @@ export const Router = Backbone.Router.extend({
 
   exit: function () {
     const fetchAPI = new FetchAPI()
-    console.log(this.socket)
     this.socket.getSocket().close()
     fetchAPI.exit()
     window.localStorage.clear()
@@ -159,6 +160,7 @@ export const Router = Backbone.Router.extend({
 
   home_view: function (url) {
     if (this.accessPage()) { return }
+    console.log('home')
     this.headerView.render()
     const homeView = new HomeView()
   },

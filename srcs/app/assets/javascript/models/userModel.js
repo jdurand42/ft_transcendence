@@ -82,8 +82,6 @@ export const User = Backbone.Model.extend({
 
   block: function (id) {
     const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/users/' + this.id + '/ignores'
     fetch(url, {
       method: 'POST',
@@ -95,8 +93,6 @@ export const User = Backbone.Model.extend({
   },
   unblock: function (id) {
     const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/users/' + this.id + '/ignores/' + id
     fetch(url, {
       method: 'DELETE',

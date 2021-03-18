@@ -1,0 +1,13 @@
+.logo {
+    font-family: MajorMonoDisplay-Regular;
+}
+
+.logo::before {
+    content: 'PonG';
+    color: var(--primary-color);
+}
+
+.logo::after {
+    content: 'Ame';
+    color: var(--secondary-color);
+}
