@@ -178,7 +178,8 @@ export const Router = Backbone.Router.extend({
 
   guilds_view: function () {
     if (this.accessPage()) { return }
-    const guildsView = new GuildsView({ model: this.loadWrapper() })
+    const guildsView = new GuildsView()
+    // const guildsView = new GuildsView({ model: this.loadWrapper() })
   },
 
   guild_view: function (id, page) {
@@ -231,15 +232,4 @@ export const Router = Backbone.Router.extend({
     })
   }
 
-  // loadChannelWrapper: function () {
-  //   const userId = window.localStorage.getItem('user_id')
-  //   const superWrapper = new SuperWrapper({
-  //     users: new Wrapper({ obj: new Users() }),
-  //     myChannels: new Wrapper({ obj: new Channels() }),
-  //     channels: new Wrapper({ obj: new Channels() })
-  //   })
-  //   superWrapper.get('myChannels').get('obj').fetchByUserId(userId)
-  //   superWrapper.get('channels').get('obj').fetchAllChannels()
-  //   return superWrapper
-  // }
 })

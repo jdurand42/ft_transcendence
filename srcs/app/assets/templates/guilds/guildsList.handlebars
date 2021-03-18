@@ -1,0 +1,35 @@
+<div class="guildsList" id="guildsList">
+    <div class="nbGuilds">{{nbGuilds}} Guilds</div>
+    <table class="guildsTable">
+        <tr>
+            <th class="first-th"></th>
+            <th></th>
+            <th>Guild</th>
+            <th>Anagram</th>
+            <th>Points</th>
+            <th>Gamers</th>
+            <th>Wars won</th>
+            <th>Total wars</th>
+            <th>Victories</th>
+            <th>Total games</th>
+        </tr>
+        {{#each guilds}}
+        <tr class="guildTable" for="{{id}}" href="#/guild/{{id}}">
+            <td class="first-th">{{rank}}</td>
+            <td>
+                <div class="image-container">
+                    <img class="guild-image" src="{{image_url}}">
+                </div>
+            </td>
+            <td>{{name}}</td>
+            <td>{{anagram}}</td>
+            <td>{{score}}</td>
+            <td>{{nbGamers}}</td>
+            <td>{{warsWon}}</td>
+            <td>{{totalWars}}</td>
+            <td>{{victories}}</td>
+            <td>{{totalGames}}</td>
+        </tr>
+        {{/each}}
+    </table>
+</div>

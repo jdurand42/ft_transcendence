@@ -1,55 +1,74 @@
+import { Guilds } from '../../collections/guilds_collection'
+
 export const GuildsView = Backbone.View.extend({
+  events: {
+    'keyup #searchGuilds': 'searchGuilds'
+  },
+
   initialize: function () {
-    this.guilds = this.model.get('guilds').get('obj')
-    this.users = this.model.get('users').get('obj')
-    // console.log('bonjour')
-    /*  this.listenTo(this.guilds, 'sync', function () {
-      this.preload()
-    }, this) */
-    this.load()
+    this.guilds = new Guilds()
+    this.context = {}
+
+    const fetchGuilds = async () => {
+      await this.guilds.fetch()
+      this.displayList()
+    }
+    fetchGuilds()
+
+    this.render()
   },
 
   el: $('#app'),
 
-  load: function () {
-    const load = async () => {
-      try {
-        await this.users.fetch()
-        await this.guilds.fetch()
-        this.render()
-      } catch (e) {
-        console.log(e)
-        this.$el.html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+  render: function () {
+    this.templateGuilds = Handlebars.templates.guildsMain
+    const templateData = this.templateGuilds(this.context)
+
+    this.$el.html(templateData)
+    console.log(Handlebars.templates.guildsHeader)
+    this.$el.find('#guildsHeader-container').html(Handlebars.templates.guildsHeader(this.context))
+    return this
   },
 
-  render: function () {
-    const row = Array.of(this.guilds.length)
+  displayList: function () {
+    this.updateContextGuilds(this.guilds)
+    this.$el.find('#guildsList-container').html(Handlebars.templates.guildsList(this.context))
+  },
 
-    for (let i = 1; i <= this.guilds.length; i++) {
-      const guilds = JSON.parse(JSON.stringify(this.guilds.get(i)))
-
-      guilds.owner_nickname = this.users.get(guilds.owner_id).get('nickname')
-      guilds.officers = []
-
-      for (let j = 0; j < this.guilds.get(i).get('officer_ids').length; j++) {
-        guilds.officers.push({
-          nickname: this.users.get(this.guilds.get(i).get('officer_ids')[j]).get('nickname'),
-          id: this.users.get(this.guilds.get(i).get('officer_ids')[j]).get('id')
-        })
+  updateContextGuilds: function (guilds) {
+    this.context.nbGuilds = guilds.length
+    this.context.guilds = []
+    for (let i = 0; i < guilds.length; i++) {
+      let guild
+      if (guilds[i] !== undefined) {
+        guild = guilds[i]
+      } else {
+        guild = guilds.at(i)
       }
-      row.push(guilds)
+      this.context.guilds.push(JSON.parse(JSON.stringify(guild)))
+      this.context.guilds[i].rank = i + 1
+      this.context.guilds[i].image_url = './images/profile-pic.jpg'
+      this.context.guilds[i].nbGamers = 1 + guild.get('officer_ids').length + guild.get('member_ids').length
+      this.context.guilds[i].warsWon = '42'
+      this.context.guilds[i].totalWars = '42'
+      this.context.guilds[i].victories = '42'
+      this.context.guilds[i].totalGames = '42'
     }
+    console.log(this.context)
+  },
 
-    const context = { row: row }
+  updateHTML: function (div, template) {
+    this.$el.find(div).html(template)
+  },
 
-    this.templateGuilds = Handlebars.templates.guilds
-    const templateData = this.templateGuilds(context)
-    //  let guild1 = this.collection.get(0)
-    //  console.log(guild1.name)
-    this.$el.html(templateData)
-    return this
+  searchGuilds: function (e) {
+    const value = document.getElementById('searchGuilds').value
+    const search = this.guilds.filter(function (el) {
+      if (el.get('name').toLowerCase().startsWith(value.toLowerCase()) === true) { return true }
+      if (el.get('anagram').toLowerCase().startsWith(value.toLowerCase() === true)) { return true }
+      return false
+    })
+    this.updateContextGuilds(search)
+    this.updateHTML('#guildsList-container', Handlebars.templates.guildsList(this.context))
   }
 })
