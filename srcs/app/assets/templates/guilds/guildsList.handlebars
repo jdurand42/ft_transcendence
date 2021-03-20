@@ -1,6 +1,6 @@
-<div class="guildsList" id="guildsList">
-    <div class="nbGuilds">{{nbGuilds}} Guilds</div>
-    <table class="guildsTable">
+<div class="listsBoard guildsList" id="guildsList">
+    <div class="nb-list nbGuilds">{{nbGuilds}} Guilds</div>
+    <table class="tablesBoard guildsTable">
         <tr>
             <th class="first-th"></th>
             <th></th>
@@ -14,11 +14,11 @@
             <th>Total games</th>
         </tr>
         {{#each guilds}}
-        <tr class="guildTable" for="{{id}}" onclick="window.location='#guild/{{id}}/';">
+        <tr class="tableBoard guildTable" for="{{id}}" onclick="window.location='#guild/{{id}}/';">
             <td class="first-th">{{rank}}</td>
             <td>
                 <div class="image-container">
-                    <img class="guild-image" src="{{image_url}}">
+                    <img class="list-image" src="{{image_url}}">
                 </div>
             </td>
             <td>{{name}}</td>

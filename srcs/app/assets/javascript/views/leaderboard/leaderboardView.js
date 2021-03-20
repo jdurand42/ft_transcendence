@@ -1,41 +1,69 @@
-export const LeaderboardView = Backbone.View.extend({
-  initialize: function () {
-    this.users = this.model.get('users').get('obj')
-    this.guilds = this.model.get('guilds').get('obj')
-    this.template = Handlebars.templates.leaderboard
-    this.load()
-  },
-  el: $('#app'),
-  load: function () {
-    const load = async () => {
-      try {
-        await this.users.fetch()
-        await this.guilds.fetch()
-        this.render()
-      } catch (e) {
-        console.log(e)
-        this.$el.html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
-  },
-  render: function () {
-    const row = []
-    for (let i = 1; i <= this.guilds.length; i++) {
-      // Trier guilde par score ici
-      row.push(JSON.parse(JSON.stringify(this.guilds.get(i))))
-    }
+import { Users } from '../../collections/usersCollection'
 
-    // trier le tableau ici par score
-    for (let i = 1; i <= row.length; i++) {
-      // Trier guilde par score ici
-      row[i - 1].position = i
+export const LeaderboardView = Backbone.View.extend({
+  events: {
+    'keyup #searchLeaderboard': 'searchLeaderboard'
+  },
+
+  initialize: function () {
+    this.users = new Users()
+    this.context = {}
+
+    const fetchUsers = async () => {
+      await this.users.fetch()
+      this.displayList()
     }
-    const context = { row: row }
-    console.log(row)
-    this.$el.html(this.template(context))
+    fetchUsers()
+
+    this.render()
+  },
+
+  el: $('#app'),
+
+  render: function () {
+    this.templateLeaderboard = Handlebars.templates.leaderboardMain
+    const templateData = this.templateLeaderboard(this.context)
+
+    this.$el.html(templateData)
+    this.$el.find('#leaderboardHeader-container').html(Handlebars.templates.leaderboardHeader(this.context))
     return this
+  },
+
+  displayList: function () {
+    this.updateContextLeaderboard(this.users)
+    this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
+  },
+
+  updateContextLeaderboard: function (users) {
+    this.context.nbGamers = users.length
+    this.context.users = []
+    for (let i = 0; i < users.length; i++) {
+      let user
+      if (users[i] !== undefined) {
+        user = users[i]
+      } else {
+        user = users.at(i)
+      }
+      this.context.users.push(JSON.parse(JSON.stringify(user)))
+      this.context.users[i].rank = i + 1
+      this.context.users[i].guild = '42'
+      this.context.users[i].generalRank = '42'
+      this.context.users[i].victories = '42'
+      this.context.users[i].totalGames = '42'
+    }
+  },
+
+  updateHTML: function (div, template) {
+    this.$el.find(div).html(template)
+  },
+
+  searchGuilds: function (e) {
+    const value = document.getElementById('searchLeaderboard').value
+    const search = this.guilds.filter(function (el) {
+      if (el.get('nickname').toLowerCase().startsWith(value.toLowerCase()) === true) { return true }
+      return false
+    })
+    this.updateContextLeaderboard(search)
+    this.updateHTML('#leaderboardList-container', Handlebars.templates.leaderboardList(this.context))
   }
 })
-
-// A list of users ordered by rank

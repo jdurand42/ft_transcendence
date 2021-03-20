@@ -1,0 +1,35 @@
+<div class="listsBoard leaderboardList" id="leaderboardList">
+    <div class="nb-list nbGamers">{{nbGamers}} gamers</div>
+    <table class="tablesBoard gamersTable">
+        <tr>
+            <th class="first-th"></th>
+            <th></th>
+            <th></th>
+            <th>Nickname</th>
+            <th>Guild</th>
+            <th>General Rank</th>
+            <th>Victories</th>
+            <th>Total games</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        {{#each users}}
+        <tr class="tableBoard gamerTable" for="{{id}}" onclick="window.location='#profile/{{id}}/';">
+            <td class="first-th">{{trophy}}</td>
+            <td>{{rank}}</td>
+            <td>
+                <div class="image-container">
+                    <img class="list-image" src="{{image_url}}">
+                </div>
+            </td>
+            <td>{{nickname}}</td>
+            <td>{{guild}}</td>
+            <td>{{generalRank}}</td>
+            <td>{{victories}}</td>
+            <td>{{totalGames}}</td>
+            <td>{{status}}</td>
+            <td><button>Follow</button></td>
+        </tr>
+        {{/each}}
+    </table>
+</div>
