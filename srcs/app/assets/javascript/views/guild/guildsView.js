@@ -25,7 +25,6 @@ export const GuildsView = Backbone.View.extend({
     const templateData = this.templateGuilds(this.context)
 
     this.$el.html(templateData)
-    console.log(Handlebars.templates.guildsHeader)
     this.$el.find('#guildsHeader-container').html(Handlebars.templates.guildsHeader(this.context))
     return this
   },
@@ -54,7 +53,6 @@ export const GuildsView = Backbone.View.extend({
       this.context.guilds[i].victories = '42'
       this.context.guilds[i].totalGames = '42'
     }
-    console.log(this.context)
   },
 
   updateHTML: function (div, template) {
