@@ -8,7 +8,7 @@ templates['profileGuild'] = template({"1":function(container,depth0,helpers,part
         return undefined
     };
 
-  return "	<tr class=\"membersListEl\">\n			<td>Gold</td>\n			<td>1</td>\n			<td>profilePic</td>\n			<td><a href=\"#profile/"
+  return "	<tr class=\"usersListEl\">\n			<td>Gold</td>\n			<td>1</td>\n			<td>profilePic</td>\n			<td><a href=\"#profile/"
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":39,"column":25},"end":{"line":39,"column":31}}}) : helper)))
     + "/\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"nickname") || (depth0 != null ? lookupProperty(depth0,"nickname") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nickname","hash":{},"data":data,"loc":{"start":{"line":39,"column":34},"end":{"line":39,"column":46}}}) : helper)))
@@ -21,7 +21,7 @@ templates['profileGuild'] = template({"1":function(container,depth0,helpers,part
         return undefined
     };
 
-  return "	<tr class=\"membersListEl\">\n			<td>Gold</td>\n			<td>1</td>\n			<td>profilePic</td>\n			<td><a href=\"#profile/"
+  return "	<tr class=\"usersListEl\">\n			<td>Gold</td>\n			<td>1</td>\n			<td>profilePic</td>\n			<td><a href=\"#profile/"
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":54,"column":25},"end":{"line":54,"column":31}}}) : helper)))
     + "/\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"nickname") || (depth0 != null ? lookupProperty(depth0,"nickname") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nickname","hash":{},"data":data,"loc":{"start":{"line":54,"column":34},"end":{"line":54,"column":46}}}) : helper)))
@@ -38,7 +38,9 @@ templates['profileGuild'] = template({"1":function(container,depth0,helpers,part
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"id") : stack1), depth0))
     + "\">"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"name") : stack1), depth0))
-    + "</a>\n<span id=\"manageGuildButton\"></span>\n<span id=\"leaveGuildButton\"></span>\n\n<section>\n<table id=\"membersList\">\n<tr id=\"guildMembersIndex\">\n	<th>12?? gamers</th>\n	<th></th>\n	<th></th>\n	<th>Pseudo</th>\n	<th>league Rank</th>\n	<th>General Rank</th>\n	<th>Victories</th>\n	<th>Total Games</th>\n	<th>Status</th>\n	<th>Status</th>\n</tr>\n\n<tr class=\"membersListEl\">\n	<td>Gold</td>\n	<td>1</td>\n	<td>profilePic</td>\n	<td><a href=\"#profile/"
+    + "</a>\n<span id=\"manageGuildButton\"></span>\n<span id=\"leaveGuildButton\"></span>\n\n<section>\n<table class=\"usersList\">\n<tr class=\"usersListIndex\">\n	<th>"
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"membersNumber") : depth0), depth0))
+    + " members</th>\n	<th></th>\n	<th></th>\n	<th>Pseudo</th>\n	<th>league Rank</th>\n	<th>General Rank</th>\n	<th>Victories</th>\n	<th>Total Games</th>\n	<th>Status</th>\n	<th>Status</th>\n</tr>\n\n<tr class=\"usersListEl\">\n	<td>Gold</td>\n	<td>1</td>\n	<td>profilePic</td>\n	<td><a href=\"#profile/"
     + alias2(((helper = (helper = lookupProperty(helpers,"owner_id") || (depth0 != null ? lookupProperty(depth0,"owner_id") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias3,{"name":"owner_id","hash":{},"data":data,"loc":{"start":{"line":25,"column":23},"end":{"line":25,"column":35}}}) : helper)))
     + "/\">"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"owner") : depth0)) != null ? lookupProperty(stack1,"nickname") : stack1), depth0))

@@ -147,11 +147,17 @@ export const ProfileView = Backbone.View.extend({
   },
 
   friends: function () {
-    const context = {
-      guild_id: this.users.get(this.id).get('guild_id'),
-      id: this.id
+    const friends = this.users.get(this.id).get('friends')
+    const context = { friends: Array(), friendsNumber: friends.length }
+    for (let i = 0; i < friends.length; i++) {
+      context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
+      if (this.users.get(friends[i].friend_id).get('guild_id')) {
+        context.friends[i].guild = JSON.parse(JSON.stringify(this.guilds.get(this.users.get(friends[i].friend_id).get('guild_id'))))
+      } else {
+        context.friends[i].guild = false
+      }
     }
-    // console.log(this.users.get(this.id).get('friends'))
+    console.log(context)
     this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
     return this
   },
@@ -184,15 +190,19 @@ export const ProfileView = Backbone.View.extend({
       guild: JSON.parse(JSON.stringify(guild)),
       owner: JSON.parse(JSON.stringify(this.users.get(guild.get('owner_id')[0]))),
       officers: Array(),
-      members: Array()
+      members: Array(),
+      membersNumber: 0
     }
     for (let i = 0; i < guild.get('officer_ids').length; i++) {
       context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('officer_ids')[i]))))
     }
 
     for (let i = 0; i < guild.get('member_ids').length; i++) {
-      context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
+      context.members.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
     }
+
+    context.membersNumber = context.officers.length + context.members.length + 1
+
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
     if (this.userId === this.id) {
       if (this.users.get(this.userId).get('guild_id') != null) {
@@ -228,14 +238,21 @@ export const ProfileView = Backbone.View.extend({
   },
 
   followUser: function () {
-    // if (id === undefined) { id = this.id }
     const follow = async () => {
       try {
-        const response = await $.ajax({
-          url: '/api/users/' + this.id + '/friends',
-          method: 'POST',
-          data: { friend_id: this.id }
-        })
+        const friends = this.users.get(this.userId).get('friends')
+        for (let i = 0; i < friends.length; i++) {
+          if (friends[i].friend_id == this.id) {
+            const response = await this.users.get(this.userId).unfollow(this.id)
+            friends.splice(friends.indexOf({ friend_id: parseInt(this.id) }), 1)
+            this.users.get(this.userId).set({ friends: friends })
+            document.getElementById('followUser').innerHTML = '<div>follow</div>'
+            return
+          }
+        }
+        const response = await this.users.get(this.userId).follow(this.id)
+        friends.push({ friend_id: parseInt(this.id) })
+        this.users.get(this.userId).set({ friends: friends })
         document.getElementById('followUser').innerHTML = '<div>followed</div>'
       } catch (e) {
         console.log(e)

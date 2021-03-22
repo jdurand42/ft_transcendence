@@ -2,11 +2,64 @@
 	/*margin-top: 90px;*/
 	background-color: white;
 	position: absolute;
-	display flex;
+	/*display flex;*/
 	height:100%;
 	margin-top: 343px;
-	width: 100%;
+	/*width: 100%;*/
+	min-width: 100vw;
+  min-height: calc(100vh - var(--header-size));
+	overflow-x: hidden;
+	/*height: 100%;*/
+	box-sizing: border-box;
 	left:0;
 	margin-left: 0;
 	margin-right: 0;
+}
+
+.usersList {
+	/*border-spacing: 200px;*/
+	border-collapse: separate;
+	border-spacing: 0px 30px;
+	margin: auto;
+}
+
+.usersListIndex th{
+	/*text-align: center;*/
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: bold;
+	font-size: 16px;
+	line-height: 19px;
+	}
+
+.usersList tr {
+		padding: 40px;
+		margin: auto;
+}
+
+.usersListEl {
+		background: #1B2534;
+		box-shadow: 0px 4px 6px rgba(59, 60, 64, 0.4);
+		border-radius: 50px;
+
+		color: white;
+}
+
+.usersListEl td {
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 19px;
+
+	padding: 30px;
+}
+
+.usersListEl td a {
+	color:white;
+	text-decoration: none;
+}
+
+.usersListEl td a:hover {
+	text-decoration: underline;
 }

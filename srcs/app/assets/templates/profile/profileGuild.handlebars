@@ -4,9 +4,9 @@
 <span id="leaveGuildButton"></span>
 
 <section>
-<table id="membersList">
-<tr id="guildMembersIndex">
-	<th>12?? gamers</th>
+<table class="usersList">
+<tr class="usersListIndex">
+	<th>{{this.membersNumber}} members</th>
 	<th></th>
 	<th></th>
 	<th>Pseudo</th>
@@ -18,7 +18,7 @@
 	<th>Status</th>
 </tr>
 
-<tr class="membersListEl">
+<tr class="usersListEl">
 	<td>Gold</td>
 	<td>1</td>
 	<td>profilePic</td>
@@ -32,7 +32,7 @@
 </tr>
 
 	{{#each this.officers}}
-	<tr class="membersListEl">
+	<tr class="usersListEl">
 			<td>Gold</td>
 			<td>1</td>
 			<td>profilePic</td>
@@ -47,7 +47,7 @@
 	{{/each}}
 
 	{{#each this.members}}
-	<tr class="membersListEl">
+	<tr class="usersListEl">
 			<td>Gold</td>
 			<td>1</td>
 			<td>profilePic</td>

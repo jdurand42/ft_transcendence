@@ -115,7 +115,8 @@ export const GuildView = Backbone.View.extend({
       owner_id: this.guilds.get(this.id).get('owner_id'),
       owner_nickname: this.users.get(this.guilds.get(this.id).get('owner_id')).get('nickname'),
       members: members,
-      officers: officers
+      officers: officers,
+      membersNumber: members.length + officers.length + 1
     }
 
     this.$el.find('#guildcontent').html(Handlebars.templates.guildMembers(context))
@@ -123,7 +124,6 @@ export const GuildView = Backbone.View.extend({
   },
 
   renderPannel: function () {
-    console.log('ici')
     this.$el.find('#guildPannel').html(Handlebars.templates.guildPannel({}))
   }
 })
