@@ -368,7 +368,6 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   updateLists: function (l, nickname, id) {
-    console.log('yes ici')
     if (l[0].length > 0) {
       console.log(1)
       l[0].push({

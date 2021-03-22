@@ -52,6 +52,7 @@ export const Router = Backbone.Router.extend({
     this.socket = undefined
     this.users = new Users()
     this.notifView = new NotifView({ collection: this.users })
+    this.view = undefined
   },
 
   routes:
@@ -116,6 +117,7 @@ export const Router = Backbone.Router.extend({
   },
 
   accessPage: function (url) {
+    if (this.view != undefined) { this.view.undelegateEvents() }
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
@@ -171,12 +173,14 @@ export const Router = Backbone.Router.extend({
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
     console.log('profile view')
-    this.profileController.loadView(id, this.loadWrapper())
+    if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = this.profileController.loadView(id, this.loadWrapper())
   },
 
   guilds_view: function () {
     if (this.accessPage()) { return }
-    const guildsView = new GuildsView({ model: this.loadWrapper() })
+    if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = new GuildsView({ model: this.loadWrapper() })
   },
 
   guild_view: function (id, page) {
@@ -214,7 +218,7 @@ export const Router = Backbone.Router.extend({
   manage_guild_view: function () {
     if (this.accessPage()) { }
     if (this.view != undefined) { this.view.undelegateEvents() }
-    const manageGuildView = new ManageGuildView({ model: this.loadWrapper() })
+    this.view = new ManageGuildView({ model: this.loadWrapper() })
   },
 
   loadWrapper: function () {

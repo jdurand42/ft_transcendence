@@ -11,7 +11,9 @@ export const ProfileView = Backbone.View.extend({
     'click #friends': 'loadFriends',
     'click #profileGuild': 'loadGuild',
     'click #achievements': 'loadAchievements',
-    'click #leaveGuild': 'leaveGuild'
+    'click #leaveGuild': 'leaveGuild',
+    'click #followUser': 'followUser',
+    'click #playUser': 'playUser'
   },
 
   el: $('#app'),
@@ -28,7 +30,6 @@ export const ProfileView = Backbone.View.extend({
     this.$el.html(Handlebars.templates.profile({}))
     this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
     this.loadMatchHistory()
-    //    this.listenTo(this.guilds, 'sync', function () { this.getUsers() }, this)
   },
 
   loadMatchHistory: function () {
@@ -38,6 +39,9 @@ export const ProfileView = Backbone.View.extend({
         await this.ladders.fetch() &&
  				await this.gameRecords.fetch()
         this.renderPannel()
+        if (this.id != this.userId) {
+        	this.renderProfileButtons()
+        }
         await this.guilds.fetch()
         this.matchHistory()
       } catch (e) {
@@ -53,7 +57,8 @@ export const ProfileView = Backbone.View.extend({
       try {
         await this.users.fetch()
         this.renderPannel()
-        await this.guilds.fetch()
+        await this.guilds.fetch() &&
+        await this.ladders.fetch()
         this.friends()
       } catch (e) {
         console.log(e)
@@ -66,7 +71,7 @@ export const ProfileView = Backbone.View.extend({
   loadAchievements: function () {
     const load = async () => {
       try {
-        await this.users.fetch()
+        await this.users.fetch() &&
         await this.achievements.fetch()
         this.renderPannel()
         this.achievementsView()
@@ -97,6 +102,17 @@ export const ProfileView = Backbone.View.extend({
 
   renderPannel: function () {
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel({}))
+  },
+
+  renderProfileButtons: function () {
+    const div = this.$el.find('#profileButtons')
+    div.html(Handlebars.templates.profileButtons())
+    const friends = this.users.get(this.userId).get('friends')
+    for (let i = 0; i < friends.length; i++) {
+      if (friends[i].friend_id == this.id) {
+        document.getElementById('followUser').innerHTML = '<div>followed</div>'
+      }
+    }
   },
 
   matchHistory: function () {
@@ -178,14 +194,16 @@ export const ProfileView = Backbone.View.extend({
       context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
     }
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
-    if (this.userId == this.id) {
-      this.$el.find('#manageGuildButton').html('<button><a href=\"#manage_guild\">Manage guild</a></button>')
-      console.log('ici')
+    if (this.userId === this.id) {
+      if (this.users.get(this.userId).get('guild_id') != null) {
+        this.$el.find('#manageGuildButton').html('<button><a href=\"#manage_guild\">Manage guild</a></button>')
+        this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
+      }
     }
-    if (this.userId == this.id) {
+    /* if (this.userId == this.id) {
       console.log('ici')
       this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
-    }
+    } */
   },
 
   leaveGuild: function () {
@@ -203,5 +221,26 @@ export const ProfileView = Backbone.View.extend({
       }
     }
     leaveGuild() */
+  },
+
+  playUser: function () {
+    // not implemented yet
+  },
+
+  followUser: function () {
+    // if (id === undefined) { id = this.id }
+    const follow = async () => {
+      try {
+        const response = await $.ajax({
+          url: '/api/users/' + this.id + '/friends',
+          method: 'POST',
+          data: { friend_id: this.id }
+        })
+        document.getElementById('followUser').innerHTML = '<div>followed</div>'
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    follow()
   }
 })
