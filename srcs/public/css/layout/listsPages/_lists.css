@@ -2,12 +2,22 @@
     background-color: #ffffff;
 
     width: 100vw;
+    height: 100%;
+    min-height: calc(100vh - var(--header-size));
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+
+    padding-bottom: 128px;
+}
+
+.listsPage::-webkit-scrollbar {
+    display: none;
 }
 
 .listsHeader-container {
     background: url('../../../images/background.jpg');
     box-shadow: inset 0 0 0 1000px rgba(27, 37, 52, 0.4);
-    width: 100vw;
     height: calc(217px - var(--header-size));
 
     background-position: 50% 0;

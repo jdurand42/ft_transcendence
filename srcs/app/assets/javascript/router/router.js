@@ -194,7 +194,7 @@ export const Router = Backbone.Router.extend({
 
   leaderboard_view: function () {
     if (this.accessPage()) { return }
-    const leaderboardView = new LeaderboardView({ model: this.loadWrapper() })
+    const leaderboardView = new LeaderboardView({ model: this.userLogged })
   },
 
   tournaments_view: function () {

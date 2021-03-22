@@ -1,21 +1,42 @@
 import { Users } from '../../collections/usersCollection'
+import { Guilds } from '../../collections/guilds_collection'
+import { Ladders } from '../../collections/laddersCollection'
+import { User } from '../../models/userModel'
 
 export const LeaderboardView = Backbone.View.extend({
   events: {
-    'keyup #searchLeaderboard': 'searchLeaderboard'
+    'keyup #searchLeaderboard': 'searchLeaderboard',
+    'click .league-filter': 'openFilter',
+    'click .league': 'filter'
   },
 
   initialize: function () {
     this.users = new Users()
+    this.guilds = new Guilds()
+    this.ladders = new Ladders()
+    this.userLogged = new User()
     this.context = {}
 
     const fetchUsers = async () => {
-      await this.users.fetch()
+      const response1 = this.guilds.fetch()
+      const response2 = this.users.fetch()
+      await response1 && await response2
       this.displayList()
     }
     fetchUsers()
 
-    this.render()
+    const fetchLadders = async () => {
+      const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
+      const response2 = this.ladders.fetch()
+      await response1 && await response2
+      if (this.userLogged.get('ladder_id') === null) { // Back undefined doit disparaitre
+        this.ladderId = 1
+      } else {
+        this.ladderId = this.userLogged.get('ladder_id')
+      }
+      this.render()
+    }
+    fetchLadders()
   },
 
   el: $('#app'),
@@ -24,13 +45,20 @@ export const LeaderboardView = Backbone.View.extend({
     this.templateLeaderboard = Handlebars.templates.leaderboardMain
     const templateData = this.templateLeaderboard(this.context)
 
+    this.context.name = this.ladders.get(this.ladderId).get('name')
+    this.context.league = []
+    for (let i = 0; i < this.ladders.length; i++) {
+      this.context.league.push(JSON.parse(JSON.stringify(this.ladders.at(i))))
+    }
+
     this.$el.html(templateData)
     this.$el.find('#leaderboardHeader-container').html(Handlebars.templates.leaderboardHeader(this.context))
     return this
   },
 
   displayList: function () {
-    this.updateContextLeaderboard(this.users)
+    this.updateContextLeaderboard(this.users.slice().filter(el => el.get('ladder_id') === this.ladderId))
+    console.log(this.$el.find('#leaderboardList-container'))
     this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
   },
 
@@ -46,24 +74,48 @@ export const LeaderboardView = Backbone.View.extend({
       }
       this.context.users.push(JSON.parse(JSON.stringify(user)))
       this.context.users[i].rank = i + 1
-      this.context.users[i].guild = '42'
+      if (user.get('guild_id') === null) {
+        this.context.users[i].guild = 'N/A'
+      } else {
+        this.context.users[i].guild = this.guilds.get(user.get('guild_id')).get('name')
+      }
       this.context.users[i].generalRank = '42'
-      this.context.users[i].victories = '42'
-      this.context.users[i].totalGames = '42'
+      this.context.users[i].victories = user.get('ladder_games_won')
+      this.context.users[i].totalGames = user.get('ladder_games_won') + user.get('ladder_games_lost')
     }
   },
 
-  updateHTML: function (div, template) {
-    this.$el.find(div).html(template)
+  updateHTML: function (parent, child, template) {
+    const html = template(this.context)
+    console.log(html)
+    document.getElementById(child).remove()
+    console.log(document.getElementById(parent))
+    document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },
 
-  searchGuilds: function (e) {
+  searchLeaderboard: function () {
     const value = document.getElementById('searchLeaderboard').value
-    const search = this.guilds.filter(function (el) {
+    const search = this.users.filter(function (el) {
       if (el.get('nickname').toLowerCase().startsWith(value.toLowerCase()) === true) { return true }
       return false
     })
     this.updateContextLeaderboard(search)
-    this.updateHTML('#leaderboardList-container', Handlebars.templates.leaderboardList(this.context))
+    this.updateHTML('leaderboardList-container', 'leaderboardList', Handlebars.templates.leaderboardList)
+  },
+
+  openFilter: function (e) {
+    if (document.getElementById('list-leagues').style.display === 'none') {
+      document.getElementById('list-leagues').style.display = 'flex'
+    } else {
+      document.getElementById('list-leagues').style.display = 'none'
+    }
+  },
+
+  filter: function (e) {
+    this.ladderId = Number(e.currentTarget.getAttribute('for'))
+    this.context.name = this.ladders.get(this.ladderId).get('name')
+    this.openFilter()
+    this.updateHTML('league-filter', 'league-name', Handlebars.templates.leaderboardHeader)
+    this.displayList()
   }
 })

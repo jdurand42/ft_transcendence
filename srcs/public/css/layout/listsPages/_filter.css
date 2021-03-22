@@ -1,0 +1,79 @@
+.leaderboardHeader
+.filter {
+    display: flex;
+    flex-direction: row;
+
+    position: relative;
+    top: 20px;
+    left: 471px;
+
+    width: 170px;
+    height: 43px;
+    line-height: 43px;
+
+    background-color: #C4C4C4;
+
+    border-radius: 10px;
+
+    color: #565656;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+
+    padding-left: 8px;
+
+    cursor: pointer;
+}
+
+.leaderboardHeader .filter
+.league-name {
+    margin-left: 8px;
+    color: black;
+    font-size: 16px;
+}
+
+.leaderboardHeader .filter
+.arrow-down-container {
+    align-self: center;
+    position: relative;
+    right: -40px;
+}
+
+.leaderboardHeader
+.list-leagues {
+    position: relative;
+    top: 28px;
+    left: 471px;
+
+    width: 170px;
+
+    flex-direction: column;
+
+    border-radius: 10px;
+
+    background-color: #C4C4C4;
+    z-index: 1;
+}
+
+.leaderboardHeader
+.list-leagues .el {
+    height: 32px;
+    line-height: 32px;
+
+    font-family: Roboto-Regular;
+    padding-left: 8px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.leaderboardHeader
+.list-leagues .el:hover {
+    background-color: #565656;
+    color: white;
+}
+
+.leaderboardHeader
+.list-leagues:hover {
+    border-radius: 10px;
+}
