@@ -38,7 +38,7 @@
     font-family: Roboto-Regular;
 }
 
-.nb-list {
+.listsBoard .nb-list {
     position: relative;
     left: 145px;
     top: 64px;
@@ -47,7 +47,7 @@
     font-size: 18px;
 }
 
-.tablesBoard {
+.listsBoard .tablesBoard {
     position: relative;
     top: 96px;
     width: 90%;
@@ -61,7 +61,7 @@
     border-spacing: 0 1em;
 }
 
-.tablesBoard
+.listsBoard .tablesBoard
 .first-th {
     padding-left: 16px;
 }
@@ -78,7 +78,7 @@ td:last-child {
     border: 0px solid;
 }
 
-.tablesBoard
+.listsBoard .tablesBoard
 .tableBoard {
     background-color: #1B2534;
     box-shadow: 0px 4px 6px rgba(59, 60, 64, 0.4);
@@ -93,7 +93,7 @@ td:last-child {
     margin-bottom: 8px;
 }
 
-.tablesBoard .tableBoard
+.listsBoard .tablesBoard .tableBoard
 .image-container {
     width: 42px;
     height: 42px;

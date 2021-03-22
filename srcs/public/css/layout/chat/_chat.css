@@ -7,9 +7,9 @@
     background-position: 0 0;
     background-attachment: fixed;
 
-    display: flex; 
+    display: flex;
     flex-direction: row;
-    
+
     overflow: hidden;
     overflow-x: auto;
 }
