@@ -9,8 +9,7 @@ Ladder.create(name: 'Gold', desc: 'ehm.')
 Ladder.create(name: 'Platine', desc: 'mhe.')
 Ladder.create(name: 'Diamond', desc: 'mhe.')
 
-alfred = FactoryBot.create(:user, nickname: 'Alfred', email: '9000@student.42.fr',
-                                  image_url: 'https://res.cloudinary.com/practicaldev/image/fetch/s--yjlrbrT6--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://thepracticaldev.s3.amazonaws.com/i/rlyibpr58qk49ci8y1rk.png', two_factor: true, two_factor_code: ENV['ALFRED_CODE'])
+alfred = FactoryBot.create(:user, nickname: 'Alfred', email: '9000@student.42.fr', two_factor: true, two_factor_code: ENV['ALFRED_CODE'])
 general_chat_room = Chat.create(name: 'general', privacy: 'public', owner_id: alfred.id)
 ChatParticipant.create(user: alfred, chat: general_chat_room)
 
@@ -33,6 +32,11 @@ if Rails.env.development?
 
   10.times do |_i|
     winner = User.find(0..7)
-    FactoryBot.create(:game, winner: winner, player_left: winner, player_right: User.find(8..15), mode: 'ladder')
+    FactoryBot.create(:game, winner: winner, player_left: winner, player_right: User.find(8..15), mode: 'ladder',
+                             status: 'played')
+  end
+
+  User.all.each do |t|
+    t.update!(ladder_id: rand(1..5))
   end
 end

@@ -67,7 +67,8 @@ RSpec.describe 'Games', type: :request do
           expect do
             post '/api/games', headers: auth.create_new_auth_token,
                                params: { mode: 'duel', opponent_id: to.id }
-          end.to have_broadcasted_to("user_#{to.id}").exactly(:once).with(sender_id: auth.id, action: "game_invitation", id: Game.maximum(:id).next)
+          end.to have_broadcasted_to("user_#{to.id}").exactly(:once).with(sender_id: auth.id,
+                                                                          action: 'game_invitation', id: Game.maximum(:id).next)
           expect(response).to have_http_status(201)
           expect(json).not_to be_empty
         end
@@ -86,17 +87,30 @@ RSpec.describe 'Games', type: :request do
         end
       end
 
-      describe 'a duel game without opponent_id' do
-        before do
-          post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel' }
-        end
+      it 'a duel game without opponent_id' do
+        post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel' }
+        expect(response).to have_http_status(422)
+        expect(json).not_to be_empty
+      end
 
-        it 'returns status code 422' do
-          expect(response).to have_http_status(422)
-          expect(json).not_to be_empty
-        end
+      it 'already in another duel game' do
+        create(:game, player_right: auth, status: 'pending')
+        to = create(:user, status: 'online')
+        post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel', opponent_id: to.id }
+        expect(response).to have_http_status(422)
+        expect(json).not_to be_empty
+      end
+
+      it 'already in another duel game' do
+        from = create(:user, status: 'online')
+        auth.update!(status: 'online')
+        create(:game, player_left: auth, status: 'pending')
+        post '/api/games', headers: from.create_new_auth_token, params: { mode: 'duel', opponent_id: auth.id }
+        expect(response).to have_http_status(422)
+        expect(json).not_to be_empty
       end
     end
+
     context 'delete' do
       describe 'cancel invitation' do
         before do
