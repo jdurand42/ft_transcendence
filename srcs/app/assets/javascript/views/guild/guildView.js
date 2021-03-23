@@ -102,12 +102,8 @@ export const GuildView = Backbone.View.extend({
     }
 
     for (let i = 0; i < this.guilds.get(this.id).get('officer_ids').length; i++) {
-      officers.push({
-        nickname: this.users.get(this.guilds.get(this.id).get('officer_ids')[i]).get('nickname'),
-        id: this.users.get(this.guilds.get(this.id).get('officer_ids')[i]).get('id')
-      })
+      officers.push(JSON.parse(JSON.stringify(this.users.get(this.guilds.get(this.id).get('officer_ids')[i]))))
     }
-    console.log(this.guilds.get(this.id).get('owner_id'))
     const context = {
       name: this.guilds.get(this.id).get('name'),
       id: this.id,

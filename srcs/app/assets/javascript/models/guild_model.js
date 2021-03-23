@@ -32,6 +32,21 @@ export const Guild = Backbone.Model.extend({
         console.log(response)
       }
     })
+  },
+
+  leave: function (id) {
+    return $.ajax({
+      url: '/api/guilds/' + this.id + '/members/' + id,
+      method: 'DELETE'
+    })
+  },
+
+  sendInvitation: function (id) {
+    return $.ajax({
+      url: '/api/guilds/' + this.id + '/invitations',
+      method: 'POST',
+      data: { user_id: id }
+    })
   }
 })
 

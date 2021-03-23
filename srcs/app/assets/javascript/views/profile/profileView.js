@@ -13,6 +13,7 @@ export const ProfileView = Backbone.View.extend({
     'click #achievements': 'loadAchievements',
     'click #leaveGuild': 'leaveGuild',
     'click #followUser': 'followUser',
+    'click #sendInvitation': 'sendInvitation',
     'click #playUser': 'playUser'
   },
 
@@ -183,9 +184,15 @@ export const ProfileView = Backbone.View.extend({
       return
     } else {
       this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
+      console.log(this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id')[0] === parseInt(this.userId))
+      if (this.users.get(this.userId).get('guild_id') &&
+			(this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
+			this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.officer_ids)))) {
+        console.log('2')
+      	this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
+      }
       return
     }
-    console.log(guild)
     const context = {
       guild: JSON.parse(JSON.stringify(guild)),
       owner: JSON.parse(JSON.stringify(this.users.get(guild.get('owner_id')[0]))),
@@ -198,39 +205,30 @@ export const ProfileView = Backbone.View.extend({
     }
 
     for (let i = 0; i < guild.get('member_ids').length; i++) {
+      if (guild.get('member_ids')[i] === guild.get('owner_id')[0]) { continue }
       context.members.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
     }
 
     context.membersNumber = context.officers.length + context.members.length + 1
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
-    if (this.userId === this.id) {
-      if (this.users.get(this.userId).get('guild_id') != null) {
-        this.$el.find('#manageGuildButton').html('<button><a href=\"#manage_guild\">Manage guild</a></button>')
-        this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
-      }
-    }
-    /* if (this.userId == this.id) {
-      console.log('ici')
-      this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
-    } */
   },
 
   leaveGuild: function () {
-    console.log('faire plus tard')
-  /*  const leaveGuild = async () => {
+    if (this.users.get(this.userId).get('guild_id') === null) {
+      return
+    }
+    const guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+    const leave = async () => {
       try {
-        const response = await this.createRequest('/api/guilds/' + this.members/' + this.userId, 'DELETE')
+      	const response = await guild.leave(this.userId)
         this.users.get(this.userId).set({ guild_id: null })
-        this.$el.html('<p>You successfully leaved the guild</p>')
-        console.log('ici')
+        this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
         console.log(e)
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
-      } finally {
       }
     }
-    leaveGuild() */
+    leave()
   },
 
   playUser: function () {
@@ -259,5 +257,19 @@ export const ProfileView = Backbone.View.extend({
       }
     }
     follow()
+  },
+
+  sendInvitation: function () {
+    if (!this.users.get(this.userId).get('guild_id') || this.id === this.userId) { return }
+    const guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+    const sendInvitation = async () => {
+      try {
+        const response = await guild.sendInvitation(this.id)
+        this.$el.find('#sendInvitationButton').html('<span>Invited</span>')
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    sendInvitation()
   }
 })
