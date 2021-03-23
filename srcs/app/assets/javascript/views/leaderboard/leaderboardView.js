@@ -7,7 +7,8 @@ export const LeaderboardView = Backbone.View.extend({
   events: {
     'keyup #searchLeaderboard': 'searchLeaderboard',
     'click .league-filter': 'openFilter',
-    'click .league': 'filter'
+    'click .league': 'filter',
+    'click #follow': 'follow'
   },
 
   initialize: function () {
@@ -56,6 +57,16 @@ export const LeaderboardView = Backbone.View.extend({
     return this
   },
 
+  follow: function (e) {
+    if (e.currentTarget.className === 'follow') {
+      e.currentTarget.classList.remove('follow')
+      e.currentTarget.classList.add('unfollow')
+    } else {
+      e.currentTarget.classList.remove('unfollow')
+      e.currentTarget.classList.add('follow')
+    }
+  },
+
   displayList: function () {
     this.updateContextLeaderboard(this.users.slice().filter(el => el.get('ladder_id') === this.ladderId))
     console.log(this.$el.find('#leaderboardList-container'))
@@ -73,6 +84,8 @@ export const LeaderboardView = Backbone.View.extend({
         user = users.at(i)
       }
       this.context.users.push(JSON.parse(JSON.stringify(user)))
+      console.log(this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg')
+      this.context.users[i].trophy = 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg'
       this.context.users[i].rank = i + 1
       if (user.get('guild_id') === null) {
         this.context.users[i].guild = 'N/A'
@@ -82,14 +95,18 @@ export const LeaderboardView = Backbone.View.extend({
       this.context.users[i].generalRank = '42'
       this.context.users[i].victories = user.get('ladder_games_won')
       this.context.users[i].totalGames = user.get('ladder_games_won') + user.get('ladder_games_lost')
+
+      if (user.get('status') === 'ingame') {
+        this.context.users[i].slide_show = './icons/slideshow-ingame.svg'
+      } else {
+        this.context.users[i].slide_show = './icons/slideshow.svg'
+      } 
     }
   },
 
   updateHTML: function (parent, child, template) {
     const html = template(this.context)
-    console.log(html)
     document.getElementById(child).remove()
-    console.log(document.getElementById(parent))
     document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },
 

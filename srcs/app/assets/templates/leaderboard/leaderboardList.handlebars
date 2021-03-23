@@ -14,21 +14,37 @@
             <th></th>
         </tr>
         {{#each users}}
-        <tr class="tableBoard gamerTable" for="{{id}}" onclick="window.location='#profile/{{id}}/';">
-            <td class="first-th">{{trophy}}</td>
+        <tr class="tableBoard gamerTable" for="{{id}}">
+            <td class="first-th">
+                <div class="trophy-container">
+                    <img class="trophy" src="{{trophy}}">
+                </div>
+            </td>
             <td>{{rank}}</td>
             <td>
-                <div class="image-container">
+                <div class="image-container" onclick="window.location='#profile/{{id}}/';">
                     <img class="list-image" src="{{image_url}}">
                 </div>
             </td>
-            <td>{{nickname}}</td>
+            <td class="tableBoard-nickname" onclick="window.location='#profile/{{id}}/';">{{nickname}}</td>
+            {{#if guild_id}}
+            <td class="tableBoard-guild" onclick="window.location='#guild/{{guild_id}}/';">{{guild}}</td>
+            {{/if}}
+            {{#unless guild_id}}
             <td>{{guild}}</td>
+            {{/unless}}
             <td>{{generalRank}}</td>
             <td>{{victories}}</td>
             <td>{{totalGames}}</td>
-            <td>{{status}}</td>
-            <td><button>Follow</button></td>
+            <td>
+                <div class="status-container">
+                    <div class="pastille {{status}}" id="pastille"></div>
+                    <p class="status">{{status}}</p>
+                    <div class="slide-show-container"></div>
+                    <img src="{{slide_show}}" class="slide-show"></img>
+                </div>
+            </td>
+            <td><button class="follow" id="follow" for={{id}}></button></td>
         </tr>
         {{/each}}
     </table>

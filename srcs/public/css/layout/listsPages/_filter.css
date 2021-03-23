@@ -34,8 +34,8 @@
 .leaderboardHeader .filter
 .arrow-down-container {
     align-self: center;
-    position: relative;
-    right: -40px;
+    position: absolute;
+    right: 8px;
 }
 
 .leaderboardHeader
