@@ -38,8 +38,8 @@ RSpec.describe "Wars", type: :request do
       user_1_access = user_1.create_new_auth_token
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       post api_wars_url, headers: user_1_access, params: valid_attributes
-      expect(response.status).to eq 401
-      expect(response.message).to eq 'Unauthorized'
+      expect(response.status).to eq 403
+      expect(response.message).to eq 'Forbidden'
       expect(War.count).to eq 0
     end
     it 'should not let declare a war against himself' do
@@ -173,6 +173,23 @@ RSpec.describe "Wars", type: :request do
     end
     it 'should not consider war without agreed terms' do
       expect(response.status).to eq 201
+    end
+  end
+  describe 'War Closed' do
+    let(:attributes) { { on: Guild.last.id, war_start: DateTime.now, war_end: DateTime.now.in_time_zone(1).in(2), prize: 1000, max_unanswered: 10 } }
+    before {
+      post api_wars_url, headers: access_token, params: attributes
+      post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+      post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+    }
+    it 'should close war at war_end' do
+      perform_enqueued_jobs
+      expect(War.first.war_closed).to eq true
+    end
+    it 'should not let update closed war', test:true do
+      perform_enqueued_jobs
+      put api_war_url(War.first.id), headers: access_token_2, params: { max_unanswered: 12 }
+      expect(json['errors']).to eq ["This war has ended"]
     end
   end
 end
