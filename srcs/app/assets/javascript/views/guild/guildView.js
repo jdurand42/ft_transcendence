@@ -2,7 +2,8 @@ export const GuildView = Backbone.View.extend({
   events: {
     'click #currentWar': 'loadCurrentWar',
     'click #lastWars': 'loadLastWars',
-    'click #members': 'loadMembers'
+    'click #members': 'loadMembers',
+    'click #calendar': 'loadCalendar'
   },
   el: $('#app'),
   initialize: function () {
@@ -10,9 +11,6 @@ export const GuildView = Backbone.View.extend({
     this.users = this.model.get('users').get('obj')
     this.ladders = this.model.get('ladders').get('obj')
     this.userId = this.model.get('userLoggedId')
-    console.log(this.id)
-    // a refaire
-    // console.log(this.id)
     this.$el.html(Handlebars.templates.guild({}))
     this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
     this.loadCurrentWar()
@@ -34,6 +32,11 @@ export const GuildView = Backbone.View.extend({
         await this.ladders.fetch() &&
         await this.guilds.fetch()
         this.renderPannel()
+        if (this.users.get(this.userId).get('guild_id') &&
+				this.guilds.get(this.id).get('id') === this.users.get(this.userId).get('guild_id')) {
+          this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
+          this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
+        }
         this.currentWar()
       } catch (e) {
         console.log(e)
@@ -67,6 +70,22 @@ export const GuildView = Backbone.View.extend({
         await this.guilds.fetch() &&
         this.renderPannel()
         this.members()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
+  },
+
+  loadCalendar: function () {
+    const load = async () => {
+      try {
+        await this.users.fetch() &&
+        await this.ladders.fetch() &&
+        await this.guilds.fetch() &&
+        this.renderPannel()
+        this.calendar()
       } catch (e) {
         console.log(e)
         this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
@@ -121,5 +140,11 @@ export const GuildView = Backbone.View.extend({
 
   renderPannel: function () {
     this.$el.find('#guildPannel').html(Handlebars.templates.guildPannel({}))
+  },
+
+  calendar: function () {
+    const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
+    this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
+    return this
   }
 })
