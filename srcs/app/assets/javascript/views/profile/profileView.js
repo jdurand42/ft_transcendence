@@ -11,7 +11,11 @@ export const ProfileView = Backbone.View.extend({
     'click #friends': 'loadFriends',
     'click #profileGuild': 'loadGuild',
     'click #achievements': 'loadAchievements',
-    'click #leaveGuild': 'leaveGuild'
+    'click #leaveGuild': 'leaveGuild',
+    'click #followUser': function (e) { this.followUser(e) },
+    //    'click #followAnUser': function (e) { this.followAnUser(e) },
+    'click #sendInvitation': 'sendInvitation',
+    'click #playUser': 'playUser'
   },
 
   el: $('#app'),
@@ -28,7 +32,6 @@ export const ProfileView = Backbone.View.extend({
     this.$el.html(Handlebars.templates.profile({}))
     this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
     this.loadMatchHistory()
-    //    this.listenTo(this.guilds, 'sync', function () { this.getUsers() }, this)
   },
 
   loadMatchHistory: function () {
@@ -38,6 +41,9 @@ export const ProfileView = Backbone.View.extend({
         await this.ladders.fetch() &&
  				await this.gameRecords.fetch()
         this.renderPannel()
+        if (this.id != this.userId) {
+        	this.renderProfileButtons()
+        }
         await this.guilds.fetch()
         this.matchHistory()
       } catch (e) {
@@ -53,7 +59,8 @@ export const ProfileView = Backbone.View.extend({
       try {
         await this.users.fetch()
         this.renderPannel()
-        await this.guilds.fetch()
+        await this.guilds.fetch() &&
+        await this.ladders.fetch()
         this.friends()
       } catch (e) {
         console.log(e)
@@ -66,7 +73,7 @@ export const ProfileView = Backbone.View.extend({
   loadAchievements: function () {
     const load = async () => {
       try {
-        await this.users.fetch()
+        await this.users.fetch() &&
         await this.achievements.fetch()
         this.renderPannel()
         this.achievementsView()
@@ -97,6 +104,17 @@ export const ProfileView = Backbone.View.extend({
 
   renderPannel: function () {
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel({}))
+  },
+
+  renderProfileButtons: function () {
+    const div = this.$el.find('#profileButtons')
+    div.html(Handlebars.templates.profileButtons())
+    const friends = this.users.get(this.userId).get('friends')
+    for (let i = 0; i < friends.length; i++) {
+      if (friends[i].friend_id == this.id) {
+        document.getElementById('followUser').innerHTML = '<div>followed</div>'
+      }
+    }
   },
 
   matchHistory: function () {
@@ -131,11 +149,23 @@ export const ProfileView = Backbone.View.extend({
   },
 
   friends: function () {
-    const context = {
-      guild_id: this.users.get(this.id).get('guild_id'),
-      id: this.id
+    const friends = this.users.get(this.id).get('friends')
+    const userFriends = this.users.get(this.userId).get('friends')
+    const context = { friends: Array(), friendsNumber: friends.length }
+    for (let i = 0; i < friends.length; i++) {
+      context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
+      if (userFriends.some(e => e.friend_id === friends[i].friend_id)) {
+        context.friends[i].isFriend = true
+      } else {
+        context.friends[i].isFriend = false
+      }
+      if (this.users.get(friends[i].friend_id).get('guild_id')) {
+        context.friends[i].guild = JSON.parse(JSON.stringify(this.guilds.get(this.users.get(friends[i].friend_id).get('guild_id'))))
+      } else {
+        context.friends[i].guild = false
+      }
     }
-    // console.log(this.users.get(this.id).get('friends'))
+    console.log(context)
     this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
     return this
   },
@@ -161,47 +191,95 @@ export const ProfileView = Backbone.View.extend({
       return
     } else {
       this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
+      if (this.users.get(this.userId).get('guild_id') &&
+			(this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
+			this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.officer_ids)))) {
+      	this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
+      }
       return
     }
-    console.log(guild)
     const context = {
       guild: JSON.parse(JSON.stringify(guild)),
       owner: JSON.parse(JSON.stringify(this.users.get(guild.get('owner_id')[0]))),
       officers: Array(),
-      members: Array()
+      members: Array(),
+      membersNumber: 0
     }
     for (let i = 0; i < guild.get('officer_ids').length; i++) {
       context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('officer_ids')[i]))))
     }
 
     for (let i = 0; i < guild.get('member_ids').length; i++) {
-      context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
+      if (guild.get('member_ids')[i] === guild.get('owner_id')[0]) { continue }
+      context.members.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
     }
+
+    context.membersNumber = context.officers.length + context.members.length + 1
+
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
-    if (this.userId == this.id) {
-      this.$el.find('#manageGuildButton').html('<button><a href=\"#manage_guild\">Manage guild</a></button>')
-      console.log('ici')
-    }
-    if (this.userId == this.id) {
-      console.log('ici')
-      this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
-    }
   },
 
   leaveGuild: function () {
-    console.log('faire plus tard')
-  /*  const leaveGuild = async () => {
+    if (this.users.get(this.userId).get('guild_id') === null) {
+      return
+    }
+    const guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+    const leave = async () => {
       try {
-        const response = await this.createRequest('/api/guilds/' + this.members/' + this.userId, 'DELETE')
+      	const response = await guild.leave(this.userId)
         this.users.get(this.userId).set({ guild_id: null })
-        this.$el.html('<p>You successfully leaved the guild</p>')
-        console.log('ici')
+        this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
         console.log(e)
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
-      } finally {
       }
     }
-    leaveGuild() */
+    leave()
+  },
+
+  playUser: function () {
+    // not implemented yet
+  },
+
+  followUser: function (e) {
+    console.log(e.target.value)
+    if (e.target.value) {
+      this.tid = e.target.value
+    } else {
+      this.tid = this.id
+    }
+    const follow = async () => {
+      try {
+        const friends = this.users.get(this.userId).get('friends')
+        for (let i = 0; i < friends.length; i++) {
+          if (friends[i].friend_id == this.tid) {
+            const response = await this.users.get(this.userId).unfollow(this.tid)
+            friends.splice(friends.indexOf({ friend_id: parseInt(this.tid) }), 1)
+            this.users.get(this.userId).set({ friends: friends })
+            document.getElementById('followUser').innerHTML = 'follow'
+            return
+          }
+        }
+        const response = await this.users.get(this.userId).follow(this.tid)
+        friends.push({ friend_id: parseInt(this.tid) })
+        this.users.get(this.userId).set({ friends: friends })
+        document.getElementById('followUser').innerHTML = 'followed'
+      } catch (e) {
+      }
+    }
+    follow()
+  },
+
+  sendInvitation: function () {
+    if (!this.users.get(this.userId).get('guild_id') || this.id === this.userId) { return }
+    const guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+    const sendInvitation = async () => {
+      try {
+        const response = await guild.sendInvitation(this.id)
+        this.$el.find('#sendInvitationButton').html('<span>Invited</span>')
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    sendInvitation()
   }
 })

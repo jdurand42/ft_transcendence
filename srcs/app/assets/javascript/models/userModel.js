@@ -98,5 +98,21 @@ export const User = Backbone.Model.extend({
       method: 'DELETE',
       headers: header
     })
+  },
+
+  follow: function (id) {
+    return $.ajax({
+      url: '/api/users/' + this.id + '/friends',
+      method: 'POST',
+      data: { friend_id: id }
+    })
+  },
+
+  unfollow: function (id) {
+    return $.ajax({
+      url: '/api/users/' + this.id + '/friends/' + id,
+      method: 'DELETE'
+    })
   }
+
 })

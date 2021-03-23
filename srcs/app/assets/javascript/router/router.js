@@ -52,6 +52,7 @@ export const Router = Backbone.Router.extend({
     this.socket = undefined
     this.users = new Users()
     this.notifView = new NotifView({ collection: this.users })
+    this.view = undefined
   },
 
   routes:
@@ -117,6 +118,7 @@ export const Router = Backbone.Router.extend({
   },
 
   accessPage: function (url) {
+    if (this.view != undefined) { this.view.undelegateEvents() }
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
@@ -162,44 +164,50 @@ export const Router = Backbone.Router.extend({
     if (this.accessPage()) { return }
     console.log('home')
     this.headerView.render()
-    const homeView = new HomeView()
+    this.view = new HomeView()
   },
 
   pong_view: function (url) {
     if (this.accessPage()) { return }
-    const pongView = new PongView()
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = new PongView()
   },
 
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
     console.log('profile view')
-    this.profileController.loadView(id, this.loadWrapper())
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = this.profileController.loadView(id, this.loadWrapper())
   },
 
   guilds_view: function () {
     if (this.accessPage()) { return }
-    const guildsView = new GuildsView()
-    // const guildsView = new GuildsView({ model: this.loadWrapper() })
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = new GuildsView({ model: this.loadWrapper() })
   },
 
   guild_view: function (id, page) {
     if (this.accessPage()) { return }
-    this.guildController.loadView(id, this.loadWrapper())
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = this.guildController.loadView(id, this.loadWrapper())
   },
 
   chat_view: function (id, page) {
     if (this.accessPage()) { return }
-    const chatView = new ChatView()
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = new ChatView()
   },
 
   leaderboard_view: function () {
     if (this.accessPage()) { return }
-    const leaderboardView = new LeaderboardView({ model: this.userLogged })
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = new LeaderboardView({ model: this.loadWrapper() })
   },
 
   tournaments_view: function () {
     if (this.accessPage()) { return }
-    const tournamentsView = new TournamentsView({ model: this.loadWrapper() })
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = new TournamentsView({ model: this.loadWrapper() })
   },
 
   test_view: function () {
@@ -216,8 +224,9 @@ export const Router = Backbone.Router.extend({
 
   manage_guild_view: function () {
     if (this.accessPage()) { }
-    if (this.view != undefined) { this.view.undelegateEvents() }
-    const manageGuildView = new ManageGuildView({ model: this.loadWrapper() })
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    // if (this.view != undefined) { this.view.undelegateEvents() }
+    this.view = new ManageGuildView({ model: this.loadWrapper() })
   },
 
   loadWrapper: function () {

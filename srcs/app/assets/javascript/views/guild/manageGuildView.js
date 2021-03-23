@@ -30,14 +30,6 @@ export const ManageGuildView = Backbone.View.extend({
     this.load()
   },
 
-  preload: function () {
-    this.listenTo(this.guilds, 'sync', function () { this.getUsers() }, this)
-  },
-
-  getUsers: function () {
-    this.listenTo(this.users, 'sync', function () { this.chooseView() }, this)
-  },
-
   load: function () {
     const load = async () => {
       try {
@@ -368,7 +360,6 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   updateLists: function (l, nickname, id) {
-    console.log('yes ici')
     if (l[0].length > 0) {
       console.log(1)
       l[0].push({
