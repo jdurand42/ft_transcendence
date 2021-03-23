@@ -38,8 +38,8 @@ RSpec.describe "Wars", type: :request do
       user_1_access = user_1.create_new_auth_token
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       post api_wars_url, headers: user_1_access, params: valid_attributes
-      expect(response.status).to eq 401
-      expect(response.message).to eq 'Unauthorized'
+      expect(response.status).to eq 403
+      expect(response.message).to eq 'Forbidden'
       expect(War.count).to eq 0
     end
     it 'should not let declare a war against himself' do
@@ -90,43 +90,6 @@ RSpec.describe "Wars", type: :request do
       expect(response.status).to eq 403
     end
   end
-  describe "#create_war_time" do
-    before { post api_wars_url, headers: access_token, params: valid_attributes }
-    it 'should create a war time' do
-      post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,1,1) }
-      expect(response.status).to eq 201
-    end
-    it 'should not create entangled war time (start dates entangled)' do
-      post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,6,6) }
-      post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,2,2), end: DateTime.new(2022,1,1) }
-      expect(response.status).to eq 403
-      expect(json['errors']).to eq ['Entity dates are entangled with another one']
-    end
-    it 'should not create entangled war time (end dates entangled)' do
-      post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2022), end: DateTime.new(2024) }
-      post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021), end: DateTime.new(2023) }
-      expect(response.status).to eq 403
-      expect(json['errors']).to eq ['Entity dates are entangled with another one']
-    end
-  end
-  describe "#destroy_war_time" do
-    before {
-      post api_wars_url, headers: access_token, params: valid_attributes
-      post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,1,1) }
-    }
-    it 'should destroy a war time' do
-      delete times_api_war_url(War.first.id), headers: access_token, params: { tid: WarTime.first.id }
-      expect(response.status).to eq 204
-      expect(WarTime.count).to eq 0
-    end
-    it 'should not destroy a war time if terms accepted' do
-      post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-      post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-      delete times_api_war_url(War.first.id), headers: access_token, params: { tid: WarTime.first.id }
-      expect(response.status).to eq 403
-      expect(WarTime.count).to eq 1
-    end
-  end
   describe '#agreement' do
     before { post api_wars_url, headers: access_token, params: valid_attributes }
     it 'should agree war terms' do
@@ -173,6 +136,84 @@ RSpec.describe "Wars", type: :request do
     end
     it 'should not consider war without agreed terms' do
       expect(response.status).to eq 201
+    end
+  end
+  describe 'lifecycle' do
+    let(:attributes) { { on: Guild.last.id, war_start: DateTime.now, war_end: DateTime.now.in_time_zone(1).in(2), prize: 1000, max_unanswered: 10 } }
+    before {
+      post api_wars_url, headers: access_token, params: attributes
+      post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+      post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+    }
+    context 'opening' do
+      before { perform_enqueued_jobs(only: WarOpenerJob) }
+      it 'should open at start time' do
+        expect(War.first.opened?).to be_truthy
+      end
+      it 'should not let update when opened' do
+        put api_war_url(War.first.id), headers: access_token_2, params: { max_unanswered: 12 }
+        expect(json['errors']).to eq ["War ongoing"]
+      end
+    end
+    context 'closing' do
+      before { perform_enqueued_jobs(only: WarCloserJob) }
+      it 'should close at end time' do
+        expect(War.first.closed?).to be_truthy
+      end
+      it 'should not let update when closed' do
+        put api_war_url(War.first.id), headers: access_token_2, params: { max_unanswered: 12 }
+        expect(json['errors']).to eq ["This war has ended"]
+      end
+    end
+  end
+  describe "Times", test:true do
+    before { post api_wars_url, headers: access_token, params: valid_attributes }
+    context 'create' do
+      it 'should create a war time' do
+        post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,1,1) }
+        expect(response.status).to eq 201
+      end
+      it 'should not create entangled war time (start dates entangled)' do
+        post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,6,6) }
+        post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,2,2), end: DateTime.new(2022,1,1) }
+        expect(response.status).to eq 403
+        expect(json['errors']).to eq ['Entity dates are entangled with another one']
+      end
+      it 'should not create entangled war time (end dates entangled)' do
+        post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2022), end: DateTime.new(2024) }
+        post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021), end: DateTime.new(2023) }
+        expect(response.status).to eq 403
+        expect(json['errors']).to eq ['Entity dates are entangled with another one']
+      end
+    end
+    context 'lifecycle' do
+      it 'should be opened' do
+        post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,1,1) }
+        expect(WarTimeOpenerJob).to have_been_enqueued.at(DateTime.new(2021,1,1))
+        perform_enqueued_jobs(only: WarTimeOpenerJob)
+        expect(War.first.war_times.first.opened?).to be_truthy
+      end
+      it 'should be closed' do
+        post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,1,1) }
+        expect(WarTimeCloserJob).to have_been_enqueued.at(DateTime.new(2022,1,1))
+        perform_enqueued_jobs(only: WarTimeCloserJob)
+        expect(War.first.war_times.first.closed?).to be_truthy
+      end
+    end
+    context 'destroy' do
+      before { post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.new(2021,1,1), end: DateTime.new(2022,1,1) } }
+      it 'should destroy a war time' do
+        delete times_api_war_url(War.first.id), headers: access_token, params: { tid: WarTime.first.id }
+        expect(response.status).to eq 204
+        expect(WarTime.count).to eq 0
+      end
+      it 'should not destroy a war time if terms accepted' do
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        delete times_api_war_url(War.first.id), headers: access_token, params: { tid: WarTime.first.id }
+        expect(response.status).to eq 403
+        expect(WarTime.count).to eq 1
+      end
     end
   end
 end

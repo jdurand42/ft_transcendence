@@ -3,7 +3,7 @@
 module Api
   class WarsController < ApiController
     before_action :set_war, except: %i[index create]
-    before_action :owners_permission, only: %i[update create_times destroy_times agreements]
+    before_action :permission, only: %i[update create_times destroy_times agreements]
     before_action :pending_agreement?, only: %i[update create_times destroy_times]
 
     UserReducer = Rack::Reducer.new(War.all.order(war_end: :desc), ->(guild_id:) { where(guild_id: guild_id) })
@@ -36,7 +36,7 @@ module Api
       else
         @war.update!(on_agreement: param_agreement)
       end
-      @war.update!(terms_agreed: true) if @war.from_agreement? && @war.on_agreement?
+      start_war(@war) if @war.from_agreement? && @war.on_agreement?
       json_response(@war, 201)
     end
 
@@ -44,6 +44,8 @@ module Api
       return render_error('timeSlotEntangled', 403) if times_entangled?
 
       war_time = WarTime.create!(time_params_create)
+      WarTimeOpenerJob.set(wait_until: war_time.start).perform_later(war_time)
+      WarTimeCloserJob.set(wait_until: war_time.end).perform_later(war_time)
       json_response(war_time, 201)
     end
 
@@ -57,6 +59,12 @@ module Api
     end
 
     private
+
+    def start_war(war)
+      war.update!(terms_agreed: true)
+      WarOpenerJob.set(wait_until: war.war_start).perform_later(war)
+      WarCloserJob.set(wait_until: war.war_end).perform_later(war)
+    end
 
     def pending_agreement?
       return unless @war.from_agreement? || @war.on_agreement?
@@ -85,8 +93,10 @@ module Api
       current_user == @from.owner ? @war.negotiation? : @war.negotiation == false
     end
 
-    def owners_permission
-      render_not_allowed unless current_user == @from.owner || current_user == @on.owner
+    def permission
+      return render_not_allowed unless current_user == @from.owner || current_user == @on.owner
+      return render_error('warOngoing', 403) if @war.opened?
+      return render_error('warClosed', 403) if @war.closed?
     end
 
     def params_update
