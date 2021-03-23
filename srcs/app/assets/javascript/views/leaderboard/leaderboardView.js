@@ -58,18 +58,26 @@ export const LeaderboardView = Backbone.View.extend({
   },
 
   follow: function (e) {
+    const userId = Number(e.currentTarget.getAttribute('for'))
+    let newFriends = this.userLogged.get('friends')
     if (e.currentTarget.className === 'follow') {
       e.currentTarget.classList.remove('follow')
       e.currentTarget.classList.add('unfollow')
+      this.userLogged.follow(userId)
+      newFriends.push({ friend_id: Number(userId)})
     } else {
       e.currentTarget.classList.remove('unfollow')
       e.currentTarget.classList.add('follow')
+      this.userLogged.unfollow(userId)
+      newFriends = newFriends.slice().filter(el => el.friend_id != userId)
     }
+    this.userLogged.set({ friends: newFriends})
   },
 
   displayList: function () {
     this.updateContextLeaderboard(this.users.slice().filter(el => el.get('ladder_id') === this.ladderId))
     this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
+    
   },
 
   updateContextLeaderboard: function (users) {
@@ -98,7 +106,8 @@ export const LeaderboardView = Backbone.View.extend({
         this.context.users[i].slide_show = './icons/slideshow-ingame.svg'
       } else {
         this.context.users[i].slide_show = './icons/slideshow.svg'
-      } 
+      }
+      this.context.users[i].follow = this.userLogged.get('friends').some(el => el.friend_id === user.get('id'))
     }
   },
 

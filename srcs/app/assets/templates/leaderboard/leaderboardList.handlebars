@@ -44,7 +44,12 @@
                     <img src="{{slide_show}}" class="slide-show"></img>
                 </div>
             </td>
+            {{#unless follow}}
             <td><button class="follow" id="follow" for={{id}}></button></td>
+            {{/unless}}
+            {{#if follow}}
+            <td><button class="unfollow" id="follow" for={{id}}></button></td>
+            {{/if}}
         </tr>
         {{/each}}
     </table>

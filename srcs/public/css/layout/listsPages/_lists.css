@@ -123,6 +123,7 @@ td:last-child {
     height: 22px;
     line-height: 22px;
     border-radius: 5px;
+    font-size: 14px;
 }
 
 .listsBoard .tablesBoard .tableBoard
@@ -137,6 +138,7 @@ td:last-child {
     line-height: 22px;
     border-radius: 5px;
     background-color: #C4C4C4;
+    font-size: 14px;
 }
 
 .listsBoard .tablesBoard .tableBoard
