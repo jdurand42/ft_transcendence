@@ -12,7 +12,8 @@ export const ProfileView = Backbone.View.extend({
     'click #profileGuild': 'loadGuild',
     'click #achievements': 'loadAchievements',
     'click #leaveGuild': 'leaveGuild',
-    'click #followUser': 'followUser',
+    'click #followUser': function (e) { this.followUser(e) },
+    //    'click #followAnUser': function (e) { this.followAnUser(e) },
     'click #sendInvitation': 'sendInvitation',
     'click #playUser': 'playUser'
   },
@@ -149,9 +150,15 @@ export const ProfileView = Backbone.View.extend({
 
   friends: function () {
     const friends = this.users.get(this.id).get('friends')
+    const userFriends = this.users.get(this.userId).get('friends')
     const context = { friends: Array(), friendsNumber: friends.length }
     for (let i = 0; i < friends.length; i++) {
       context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
+      if (userFriends.some(e => e.friend_id === friends[i].friend_id)) {
+        context.friends[i].isFriend = true
+      } else {
+        context.friends[i].isFriend = false
+      }
       if (this.users.get(friends[i].friend_id).get('guild_id')) {
         context.friends[i].guild = JSON.parse(JSON.stringify(this.guilds.get(this.users.get(friends[i].friend_id).get('guild_id'))))
       } else {
@@ -184,11 +191,9 @@ export const ProfileView = Backbone.View.extend({
       return
     } else {
       this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
-      console.log(this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id')[0] === parseInt(this.userId))
       if (this.users.get(this.userId).get('guild_id') &&
 			(this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
 			this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.officer_ids)))) {
-        console.log('2')
       	this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
       }
       return
@@ -235,25 +240,30 @@ export const ProfileView = Backbone.View.extend({
     // not implemented yet
   },
 
-  followUser: function () {
+  followUser: function (e) {
+    console.log(e.target.value)
+    if (e.target.value) {
+      this.tid = e.target.value
+    } else {
+      this.tid = this.id
+    }
     const follow = async () => {
       try {
         const friends = this.users.get(this.userId).get('friends')
         for (let i = 0; i < friends.length; i++) {
-          if (friends[i].friend_id == this.id) {
-            const response = await this.users.get(this.userId).unfollow(this.id)
-            friends.splice(friends.indexOf({ friend_id: parseInt(this.id) }), 1)
+          if (friends[i].friend_id == this.tid) {
+            const response = await this.users.get(this.userId).unfollow(this.tid)
+            friends.splice(friends.indexOf({ friend_id: parseInt(this.tid) }), 1)
             this.users.get(this.userId).set({ friends: friends })
-            document.getElementById('followUser').innerHTML = '<div>follow</div>'
+            document.getElementById('followUser').innerHTML = 'follow'
             return
           }
         }
-        const response = await this.users.get(this.userId).follow(this.id)
-        friends.push({ friend_id: parseInt(this.id) })
+        const response = await this.users.get(this.userId).follow(this.tid)
+        friends.push({ friend_id: parseInt(this.tid) })
         this.users.get(this.userId).set({ friends: friends })
-        document.getElementById('followUser').innerHTML = '<div>followed</div>'
+        document.getElementById('followUser').innerHTML = 'followed'
       } catch (e) {
-        console.log(e)
       }
     }
     follow()

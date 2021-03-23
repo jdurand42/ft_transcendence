@@ -16,7 +16,9 @@ templates['friends'] = template({"1":function(container,depth0,helpers,partials,
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"guild_id") : depth0),{"name":"if","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":25,"column":3},"end":{"line":27,"column":10}}})) != null ? stack1 : "")
     + "		<td>\n		<td>1</td>\n		<td>1000</td>\n		<td>42</td>\n		<td>1001</td>\n		<td>online</td>\n		<td><a href=\"#spectate/"
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":34,"column":25},"end":{"line":34,"column":31}}}) : helper)))
-    + "\">spectate</a></td>\n		<td>follow</td>\n	</tr>\n";
+    + "\">spectate</a></td>\n"
+    + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"isFriend") : depth0),{"name":"if","hash":{},"fn":container.program(4, data, 0),"inverse":container.program(6, data, 0),"data":data,"loc":{"start":{"line":35,"column":2},"end":{"line":39,"column":9}}})) != null ? stack1 : "")
+    + "	</tr>\n";
 },"2":function(container,depth0,helpers,partials,data) {
     var stack1, helper, alias1=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -30,6 +32,28 @@ templates['friends'] = template({"1":function(container,depth0,helpers,partials,
     + "/\">"
     + alias1(container.lambda(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"name") : stack1), depth0))
     + "</a>\n";
+},"4":function(container,depth0,helpers,partials,data) {
+    var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "			<td><button id=\"followUser\" value=\""
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"id","hash":{},"data":data,"loc":{"start":{"line":36,"column":38},"end":{"line":36,"column":44}}}) : helper)))
+    + "\">Followed</button></td>\n";
+},"6":function(container,depth0,helpers,partials,data) {
+    var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "			<td><button id=\"followUser\" vakue=\""
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"id","hash":{},"data":data,"loc":{"start":{"line":38,"column":38},"end":{"line":38,"column":44}}}) : helper)))
+    + "\">Follow</button></td>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -41,7 +65,7 @@ templates['friends'] = template({"1":function(container,depth0,helpers,partials,
   return "<section class=\"profileBlock\" id=\"friendsBlock\">\n	<table class=\"usersList\">\n	<tr id=\"profileList\" class=\"usersListIndex\">\n		<th>"
     + container.escapeExpression(container.lambda((depth0 != null ? lookupProperty(depth0,"friendsNumber") : depth0), depth0))
     + " friends</th>\n		<th></th>\n		<th></th>\n		<th>Pseudo</th>\n		<th>Guild</th>\n		<th>league Rank</th>\n		<th>General Rank</th>\n		<th>Victories</th>\n		<th>Total Games</th>\n		<th>Status</th>\n		<th></th>\n		<th></th>\n	</tr>\n\n"
-    + ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"friends") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":18,"column":1},"end":{"line":37,"column":10}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"each").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"friends") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":18,"column":1},"end":{"line":41,"column":10}}})) != null ? stack1 : "")
     + "</table>\n</section>\n";
 },"useData":true});
 })();

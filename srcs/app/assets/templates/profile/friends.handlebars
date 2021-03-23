@@ -32,7 +32,11 @@
 		<td>1001</td>
 		<td>online</td>
 		<td><a href="#spectate/{{id}}">spectate</a></td>
-		<td>follow</td>
+		{{#if isFriend}}
+			<td><button id="followUser" value="{{id}}">Followed</button></td>
+		{{else}}
+			<td><button id="followUser" vakue="{{id}}">Follow</button></td>
+		{{/if}}
 	</tr>
 	{{/each}}
 </table>
