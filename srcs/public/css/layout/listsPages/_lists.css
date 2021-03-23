@@ -183,3 +183,7 @@ td:last-child {
 .ingame {
     background: var(--primary-color);
 }
+
+.listsBoard .guildTable {
+    cursor: pointer;
+}

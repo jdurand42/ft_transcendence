@@ -69,7 +69,6 @@ export const LeaderboardView = Backbone.View.extend({
 
   displayList: function () {
     this.updateContextLeaderboard(this.users.slice().filter(el => el.get('ladder_id') === this.ladderId))
-    console.log(this.$el.find('#leaderboardList-container'))
     this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
   },
 
@@ -84,7 +83,6 @@ export const LeaderboardView = Backbone.View.extend({
         user = users.at(i)
       }
       this.context.users.push(JSON.parse(JSON.stringify(user)))
-      console.log(this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg')
       this.context.users[i].trophy = 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg'
       this.context.users[i].rank = i + 1
       if (user.get('guild_id') === null) {
@@ -110,6 +108,10 @@ export const LeaderboardView = Backbone.View.extend({
     document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },
 
+  updateEL: function (div, template) {
+    this.$el.find(div).html(template)
+  },
+
   searchLeaderboard: function () {
     const value = document.getElementById('searchLeaderboard').value
     const search = this.users.filter(function (el) {
@@ -117,7 +119,7 @@ export const LeaderboardView = Backbone.View.extend({
       return false
     })
     this.updateContextLeaderboard(search)
-    this.updateHTML('leaderboardList-container', 'leaderboardList', Handlebars.templates.leaderboardList)
+    this.updateEL('#leaderboardList-container', Handlebars.templates.leaderboardList(this.context))
   },
 
   openFilter: function (e) {
