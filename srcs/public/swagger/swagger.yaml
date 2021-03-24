@@ -1056,6 +1056,8 @@ components:
         opponent_id:
           type: integer
           description: user_id of your opponent
+        war_time_id:
+          type: integer
     user:
       type: object
       properties:
@@ -1097,6 +1099,8 @@ components:
         - type: object
           properties:
             id:
+              type: integer
+            score:
               type: integer
             officer_ids:
               $ref: '#/components/schemas/integer_list'
@@ -1214,9 +1218,9 @@ components:
       allOf:
         - type: object
           properties:
-            from:
+            from_id:
               type: integer
-            on:
+            on_id:
               type: integer
             from_score:
               type: integer
@@ -1227,7 +1231,7 @@ components:
       allOf:
         - type: object
           properties:
-            on:
+            on_id:
               type: integer
         - $ref: "#/components/schemas/war_negociable"
     war_negociable:
