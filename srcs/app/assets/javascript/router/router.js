@@ -123,14 +123,13 @@ export const Router = Backbone.Router.extend({
       this.oauth_view()
       return 1
     } else if (performance.navigation.type >= 1 && performance.navigation.type <= 2) {
-      console.log(performance.navigation.type)
       const fetchUser = async () => {
+        this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
         await this.setUpUser(this.oauthService, this.userLogged)
         if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
       }
       fetchUser()
     }
-    this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
   },
 
   firstConnexion_view: function () {
