@@ -39,24 +39,24 @@ export const GuildsView = Backbone.View.extend({
       for (let i = 0; i < this.guilds.length; i++) {
         const guildId = this.guilds.at(i).get('id')
         const wars = new Wars()
-        wars.fetchByGuildId(guildId)
+        await wars.fetchByGuildId(guildId)
+        console.log(wars)
         let totalWars = document.createTextNode('0')
         let warWons = document.createTextNode('0')
         document.getElementById('totalWars' + guildId).appendChild(totalWars)
         document.getElementById('warsWon' + guildId).appendChild(warWons)
-        for (let i = 0; i < this.wars.length; i++) {
-          const from = this.wars.at(i).get('from')
-          let totalWars = document.createTextNode(Number(totalWars) + 1)
-          document.getElementById('totalWars' + from).appendChild(totalWars)
-          if (guildId === this.wars.at(i).get('from')) {
-            if (this.wars.at(i).get('from_score') > this.wars.at(i).get('on_score')) {
-              let warWons = document.createTextNode(Number(warWons) + 1)
-              document.getElementById('warsWon' + from).appendChild(warWons)
+        for (let i = 0; i < wars.length; i++) {
+          let totalWars = Number(document.getElementById('totalWars' + guildId).textContent) + 1
+          document.getElementById('totalWars' + guildId).textContent = totalWars.toString()
+          if (guildId === wars.at(i).get('from_id')) {
+            if (wars.at(i).get('from_score') > wars.at(i).get('on_score')) {
+              warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
+              document.getElementById('warsWon' + guildId).textContent = warWons.toString()
             }
           } else {
-            if (this.wars.at(i).get('from_score') < this.wars.at(i).get('on_score')) {
-              let warWons = document.createTextNode(Number(warWons) + 1)
-              document.getElementById('warsWon' + from).appendChild(warWons)
+            if (wars.at(i).get('from_score') < wars.at(i).get('on_score')) {
+              warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
+              document.getElementById('warsWon' + guildId).textContent = warWons.toString()
             }
           }
         }
@@ -80,7 +80,6 @@ export const GuildsView = Backbone.View.extend({
       } else {
         guild = guilds.at(i)
       }
-      console.log(guild)
       this.context.guilds.push(JSON.parse(JSON.stringify(guild)))
       this.context.guilds[i].rank = i + 1
       this.context.guilds[i].image_url = './images/profile-pic.jpg'
