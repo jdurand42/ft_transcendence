@@ -10,7 +10,7 @@ Ladder.create(name: 'Platine', desc: 'mhe.')
 Ladder.create(name: 'Diamond', desc: 'mhe.')
 
 alfred = FactoryBot.create(:user, nickname: 'Alfred', email: '9000@student.42.fr', two_factor: true, two_factor_code: ENV['ALFRED_CODE'])
-general_chat_room = Chat.create(name: 'general', privacy: 'public', owner_id: alfred.id)
+general_chat_room = Chat.create(name: 'general', privacy: 'public', owner: alfred)
 ChatParticipant.create(user: alfred, chat: general_chat_room)
 
 if Rails.env.development?
@@ -31,9 +31,10 @@ if Rails.env.development?
     end
   end
 
+  FactoryBot.create(:war, from: guilds[0], on: guilds[1], war_start: DateTime.now, war_end: DateTime.new(2022))
 
   10.times do |_i|
-    winner = User.find(0..7)
+    winner = User.find(1..7)
     FactoryBot.create(:game, winner: winner, player_left: winner, player_right: User.find(8..15), mode: 'ladder',
                              status: 'played')
   end

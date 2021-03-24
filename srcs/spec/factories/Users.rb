@@ -38,8 +38,7 @@ FactoryBot.define do
         chat { chat }
       end
       after(:create) do |user, evaluator|
-        ChatAdmin.create(chat: evaluator.chat, user: user)
-        ChatParticipant.create(chat: evaluator.chat, user: user)
+        ChatParticipant.create(chat: evaluator.chat, user: user, role: 'admin')
       end
     end
   end
@@ -49,5 +48,9 @@ FactoryBot.define do
     user_ignored { create(:user) }
   end
 
+  factory :friend do
+    user { create(:user) }
+    friend { create(:user) }
+  end
 
 end
