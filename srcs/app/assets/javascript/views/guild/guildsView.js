@@ -1,4 +1,5 @@
 import { Guilds } from '../../collections/guilds_collection'
+import { Wars } from '../../collections/warCollection'
 
 export const GuildsView = Backbone.View.extend({
   events: {
@@ -7,11 +8,15 @@ export const GuildsView = Backbone.View.extend({
 
   initialize: function () {
     this.guilds = new Guilds()
+    this.wars = new Wars()
     this.context = {}
 
     const fetchGuilds = async () => {
+      const response = this.wars.fetch()
       await this.guilds.fetch()
       this.displayList()
+      await response
+      this.displayWars()
     }
     fetchGuilds()
 
@@ -29,6 +34,37 @@ export const GuildsView = Backbone.View.extend({
     return this
   },
 
+  displayWars: function () {
+    const fetchWars = async () => {
+      for (let i = 0; i < this.guilds.length; i++) {
+        const guildId = this.guilds.at(i).get('id')
+        const wars = new Wars()
+        wars.fetchByGuildId(guildId)
+        let totalWars = document.createTextNode('0')
+        let warWons = document.createTextNode('0')
+        document.getElementById('totalWars' + guildId).appendChild(totalWars)
+        document.getElementById('warsWon' + guildId).appendChild(warWons)
+        for (let i = 0; i < this.wars.length; i++) {
+          const from = this.wars.at(i).get('from')
+          let totalWars = document.createTextNode(Number(totalWars) + 1)
+          document.getElementById('totalWars' + from).appendChild(totalWars)
+          if (guildId === this.wars.at(i).get('from')) {
+            if (this.wars.at(i).get('from_score') > this.wars.at(i).get('on_score')) {
+              let warWons = document.createTextNode(Number(warWons) + 1)
+              document.getElementById('warsWon' + from).appendChild(warWons)
+            }
+          } else {
+            if (this.wars.at(i).get('from_score') < this.wars.at(i).get('on_score')) {
+              let warWons = document.createTextNode(Number(warWons) + 1)
+              document.getElementById('warsWon' + from).appendChild(warWons)
+            }
+          }
+        }
+      }
+    }
+    fetchWars()
+  },
+
   displayList: function () {
     this.updateContextGuilds(this.guilds)
     this.$el.find('#guildsList-container').html(Handlebars.templates.guildsList(this.context))
@@ -44,14 +80,11 @@ export const GuildsView = Backbone.View.extend({
       } else {
         guild = guilds.at(i)
       }
+      console.log(guild)
       this.context.guilds.push(JSON.parse(JSON.stringify(guild)))
       this.context.guilds[i].rank = i + 1
       this.context.guilds[i].image_url = './images/profile-pic.jpg'
-      this.context.guilds[i].nbGamers = 1 + guild.get('officer_ids').length + guild.get('member_ids').length
-      this.context.guilds[i].warsWon = '42'
-      this.context.guilds[i].totalWars = '42'
-      this.context.guilds[i].victories = '42'
-      this.context.guilds[i].totalGames = '42'
+      this.context.guilds[i].nbGamers = guild.get('member_ids').length
     }
   },
 

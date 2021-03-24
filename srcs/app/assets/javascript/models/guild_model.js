@@ -5,9 +5,8 @@ export const Guild = Backbone.Model.extend({
     anagram: undefined,
     owner_id: undefined,
     score: undefined,
-    oauthService: undefined,
-    officers_ids: undefined,
-    war_records: undefined
+    officer_ids: undefined,
+    member_ids: undefined,
   },
 
   initialize: function (id) {
