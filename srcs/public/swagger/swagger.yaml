@@ -1051,8 +1051,8 @@ components:
       properties:
         mode:
           type: string
-          description: could be [Duel Ladder]
-          enum: [duel, ladder]
+          enum: [duel, ladder, war]
+          example: [duel, ladder, war]
         opponent_id:
           type: integer
           description: user_id of your opponent
@@ -1226,6 +1226,16 @@ components:
               type: integer
             on_score:
               type: integer
+            terms_agreed:
+              type: boolean
+            from_agreement:
+              type: boolean
+            on_agreement:
+              type: boolean
+            opened:
+              type: boolean
+            closed:
+              type: boolean
         - $ref: "#/components/schemas/war_negociable"
     war_declaration:
       allOf:
