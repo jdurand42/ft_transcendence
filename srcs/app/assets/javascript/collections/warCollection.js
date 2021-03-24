@@ -1,7 +1,10 @@
 import { War } from '../models/warModel'
+import { SuperHeaders } from '../services/headers'
 
 export const Wars = Backbone.Collection.extend({
     initialize: function () {
+        this.superHeaders = new SuperHeaders()
+        this.headers = this.superHeaders.getHeaders()
     },
     model: War,
     urlRoot: '/api/wars',
@@ -9,9 +12,14 @@ export const Wars = Backbone.Collection.extend({
       return this.urlRoot
     },
     fetchByGuildId: function (id) {
-        return $.ajax({
-            url: this.urlRoot + '?guild_id=' + id,
-            method: 'GET'
+        const url = this.urlRoot + '?guild_id=' + id
+        return fetch(url, {
+            method: 'GET',
+            headers: this.headers
         })
+        // return $.ajax({
+        //     url: this.urlRoot + '?guild_id=' + id,
+        //     method: 'GET'
+        // })
     }
 })

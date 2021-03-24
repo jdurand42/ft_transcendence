@@ -39,6 +39,7 @@ export const GuildsView = Backbone.View.extend({
       for (let i = 0; i < this.guilds.length; i++) {
         const guildId = this.guilds.at(i).get('id')
         const wars = new Wars()
+        console.log(wars)
         await wars.fetchByGuildId(guildId)
         console.log(wars)
         let totalWars = document.createTextNode('0')
