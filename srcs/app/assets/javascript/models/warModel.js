@@ -1,8 +1,7 @@
 export const War = Backbone.Model.extend({
     defaults: {
-        id: undefined,
-        from: undefined,
-        on: undefined,
+        from_id: undefined,
+        on_id: undefined,
         from_score: undefined,
         on_score: undefined,
         war_start: undefined,
