@@ -11,5 +11,12 @@
 
     border-top: solid #313236;
 
-    overflow: hidden;
+}
+
+.declareWar
+.close {
+    position: relative;
+    left: 1155px;
+    top: 64px;
+
 }
