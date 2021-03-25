@@ -1,8 +1,3 @@
-import { SuperWrapper } from '../collections/superWrapper.js'
-import { Wrapper } from '../models/wrapper.js'
-import { Users } from '../collections/usersCollection.js'
-import { Guilds } from '../collections/guilds_collection.js'
-
 export const TestView = Backbone.View.extend({
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')

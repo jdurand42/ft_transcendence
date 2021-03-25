@@ -1,0 +1,34 @@
+<div class="warSchedule declareWar" id="warSchedule">
+    <div class="close">
+        <img src="./icons/esc.svg" class="">
+    </div>
+    <div class="title">
+        <div class="guildsName from">{{fromName}}</div>
+        <div class="vs">VS</div>
+        <div class="guildsName on">{{onName}}</div>
+    </div>
+    <div class="warsCalendar">
+        <div class="warsCalendarFrom">
+            <div class="nextWars">Next wars</div>
+            {{#each warsFrom}}
+            <div class="date">
+                {{date}}
+            </div>
+            {{/each}}
+        </div>
+        <div class="warCalendarNext">
+
+        </div>
+        <div class="warsCalendarOn">
+            <div class="nextWars">Next wars</div>
+            {{#each warsOn}}
+            <div class="date">
+                {{date}}
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    <div class="buttons">
+
+    </div>
+</div>

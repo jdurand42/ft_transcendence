@@ -9,7 +9,7 @@ export const User = Backbone.Model.extend({
     image_url: undefined,
     ladder_games_lost: undefined,
     ladder_games_won: undefined,
-    ladder_id: undefined,
+    ladder_id: 0,
     nickname: undefined,
     status: undefined,
     two_factor: false,

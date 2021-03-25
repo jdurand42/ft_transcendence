@@ -13,6 +13,7 @@
 @import url(layout/guilds/_guilds.css);
 @import url(layout/listsPages/_lists.css);
 @import url(layout/listsPages/_filter.css);
+@import url(layout/declareWar/_declareWar.css);
 
 @import url(module/_table.css);
 @import url(module/_modals.css);

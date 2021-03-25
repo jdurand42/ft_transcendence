@@ -1,3 +1,4 @@
+import { Guild } from './guildModel'
 import { User } from './userModel'
 
 export const War = Backbone.Model.extend({
@@ -5,10 +6,10 @@ export const War = Backbone.Model.extend({
     id: undefined,
     closed: undefined,
     opened: undefined,
-    from: undefined,
+    from_id: undefined,
     from_agreement: undefined,
     from_score: undefined,
-    // on: undefined,
+    on_id: undefined,
     on_agreement: undefined,
     on_score: undefined,
     war_start: undefined,

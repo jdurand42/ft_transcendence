@@ -46,7 +46,7 @@ export const ManageGuildView = Backbone.View.extend({
 
   chooseView: function () {
     if (this.users.get(this.userId).get('guild_id') === undefined ||
-		this.users.get(this.userId).get('guild_id') === null) {
+    this.users.get(this.userId).get('guild_id') === null) {
       this.createGuildView()
     } else {
       this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))

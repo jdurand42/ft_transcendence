@@ -1,5 +1,5 @@
 import { Users } from '../../collections/usersCollection'
-import { Guilds } from '../../collections/guilds_collection'
+import { Guilds } from '../../collections/guildsCollection'
 import { Ladders } from '../../collections/laddersCollection'
 import { User } from '../../models/userModel'
 
@@ -22,6 +22,7 @@ export const LeaderboardView = Backbone.View.extend({
       const response1 = this.guilds.fetch()
       const response2 = this.users.fetch()
       await response1 && await response2
+      // this.users.get(window.localStorage.getItem('user_id')).set({ ladder_id: 1 }) // Back undefined doit disparaitre
       this.displayList()
     }
     fetchUsers()
@@ -32,6 +33,7 @@ export const LeaderboardView = Backbone.View.extend({
       await response1 && await response2
       if (this.userLogged.get('ladder_id') === null) { // Back undefined doit disparaitre
         this.ladderId = 1
+        this.userLogged.set({ ladder_id: 1 })
       } else {
         this.ladderId = this.userLogged.get('ladder_id')
       }
@@ -64,20 +66,19 @@ export const LeaderboardView = Backbone.View.extend({
       e.currentTarget.classList.remove('follow')
       e.currentTarget.classList.add('unfollow')
       this.userLogged.follow(userId)
-      newFriends.push({ friend_id: Number(userId)})
+      newFriends.push({ friend_id: Number(userId) })
     } else {
       e.currentTarget.classList.remove('unfollow')
       e.currentTarget.classList.add('follow')
       this.userLogged.unfollow(userId)
       newFriends = newFriends.slice().filter(el => el.friend_id != userId)
     }
-    this.userLogged.set({ friends: newFriends})
+    this.userLogged.set({ friends: newFriends })
   },
 
   displayList: function () {
     this.updateContextLeaderboard(this.users.slice().filter(el => el.get('ladder_id') === this.ladderId))
     this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
-    
   },
 
   updateContextLeaderboard: function (users) {
