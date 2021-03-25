@@ -1056,8 +1056,6 @@ components:
         opponent_id:
           type: integer
           description: user_id of your opponent
-        war_time_id:
-          type: integer
     user:
       type: object
       properties:
