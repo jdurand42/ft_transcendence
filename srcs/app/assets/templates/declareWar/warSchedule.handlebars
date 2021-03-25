@@ -7,25 +7,44 @@
         <div class="vs">VS</div>
         <div class="guildsName on">{{onName}}</div>
     </div>
-    <div class="warsCalendar">
-        <div class="warsCalendarFrom">
+    <div class="warScheduleMiddle">
+        <div class="warsCalendar warsCalendarFrom">
             <div class="nextWars">Next wars</div>
-            {{#each warsFrom}}
-            <div class="date">
-                {{date}}
+            <div class="allDates allDatesFrom">
+            {{#each fromWars}}
+            <div class="dates">
+                <div class="date">
+                    <div class="day">{{startDay}} {{startDate}}</div>
+                    <div class="tiret"> - </div>
+                    <div class="day">{{endDay}} {{endDate}}</div>
+                </div>
+                <div class="hours">
+                    <div class="startHours">at {{startHours}}h{{startMin}}m</div>
+                    <div class="endHours">at {{endHours}}h{{endMin}}m</div>
+                </div>
             </div>
             {{/each}}
+            </div>
         </div>
         <div class="warCalendarNext">
-
         </div>
-        <div class="warsCalendarOn">
+        <div class="warsCalendar warsCalendarOn">
             <div class="nextWars">Next wars</div>
-            {{#each warsOn}}
-            <div class="date">
-                {{date}}
+            <div class="allDates allDatesOn">
+            {{#each onWars}}
+            <div class="dates">
+                <div class="date">
+                    <div class="day">{{startDay}} {{startDate}}</div>
+                    <div class="tiret"> - </div>
+                    <div class="day">{{endDay}} {{endDate}}</div>
+                </div>
+                <div class="hours">
+                    <div class="startHours">at {{startHours}}h{{startMin}}m</div>
+                    <div class="endHours">at {{endHours}}h{{endMin}}m</div>
+                </div>
             </div>
             {{/each}}
+            </div>
         </div>
     </div>
     <div class="buttons">
