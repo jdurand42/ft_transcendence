@@ -114,5 +114,4 @@ export const User = Backbone.Model.extend({
       method: 'DELETE'
     })
   }
-
 })
