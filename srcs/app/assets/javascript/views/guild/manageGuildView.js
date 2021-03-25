@@ -1,4 +1,4 @@
-import { Guild } from '../../models/guild_model.js'
+import { Guild } from '../../models/guildModel.js'
 
 export const ManageGuildView = Backbone.View.extend({
   events: {

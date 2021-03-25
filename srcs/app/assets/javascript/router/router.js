@@ -1,44 +1,41 @@
 // views
-import { HomeView } from '../views/home_view.js'
-import { PongView } from '../views/pong/pong_view.js'
+import { HomeView } from '../views/home_view'
+import { PongView } from '../views/pong/pong_view'
 import { HeaderView } from '../views/headerView'
-import { LeaderboardView } from '../views/leaderboard/leaderboardView.js'
-import { TournamentsView } from '../views/tournaments/tournamentsView.js'
-import { OauthView } from '../views/oauth/oauthView.js'
-import { GuildsView } from '../views/guild/guildsView.js'
-import { FirstConnexionView } from '../views/oauth/firstConnexionView.js'
-import { TwoFactorView } from '../views/oauth/twoFactorView.js'
-import { SearchView } from '../views/search/searchView.js'
+import { LeaderboardView } from '../views/leaderboard/leaderboardView'
+import { TournamentsView } from '../views/tournaments/tournamentsView'
+import { OauthView } from '../views/oauth/oauthView'
+import { GuildsView } from '../views/guild/guildsView'
+import { FirstConnexionView } from '../views/oauth/firstConnexionView'
+import { TwoFactorView } from '../views/oauth/twoFactorView'
 import { ChatView } from '../views/chatView'
-import { ManageGuildView } from '../views/guild/manageGuildView.js'
-import { AdminView } from '../views/admin/adminView.js'
+import { ManageGuildView } from '../views/guild/manageGuildView'
+import { AdminView } from '../views/admin/adminView'
 import { NotifView } from '../views/notifView'
 
 // models
 import { User } from '../models/userModel'
-import { Guild } from '../models/guild_model.js'
 
 // controlers
-import { ProfileController } from '../views/profile/profileController.js'
-import { GuildController } from '../views/guild/guildController.js'
+import { ProfileController } from '../views/profile/profileController'
+import { GuildController } from '../views/guild/guildController'
 
 // models and collection
-import { Guilds } from '../collections/guilds_collection.js'
-import { Users } from '../collections/usersCollection.js'
-import { Ladders } from '../collections/laddersCollection.js'
-import { Wrapper } from '../models/wrapper.js'
-import { SuperWrapper } from '../collections/superWrapper.js'
-import { Channels } from '../collections/channels'
-import { GameRecords } from '../collections/gameRecords.js'
-import { Achievements } from '../collections/achievements.js'
+import { Guilds } from '../collections/guilds_collection'
+import { Users } from '../collections/usersCollection'
+import { Ladders } from '../collections/laddersCollection'
+import { Wrapper } from '../models/wrapper'
+import { SuperWrapper } from '../collections/superWrapper'
+import { GameRecords } from '../collections/gameRecords'
+import { Achievements } from '../collections/achievements'
 
 // services
-import { OauthService } from '../services/oauthService.js'
+import { OauthService } from '../services/oauthService'
 import { MyWebSocket } from '../services/websocket'
 
 // Views for test only
-import { TestView } from '../views/testView.js'
-import { FetchAPI } from '../services/fetchAPI.js'
+import { TestView } from '../views/testView'
+import { FetchAPI } from '../services/fetchAPI'
 
 export const Router = Backbone.Router.extend({
   initialize: function () {

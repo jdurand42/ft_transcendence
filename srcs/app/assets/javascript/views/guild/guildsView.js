@@ -1,4 +1,4 @@
-import { Guilds } from '../../collections/guilds_collection'
+import { Guilds } from '../../collections/guildsCollection'
 import { Wars } from '../../collections/warCollection'
 
 export const GuildsView = Backbone.View.extend({
@@ -42,12 +42,12 @@ export const GuildsView = Backbone.View.extend({
         console.log(wars)
         await wars.fetchByGuildId(guildId)
         console.log(wars)
-        let totalWars = document.createTextNode('0')
+        const totalWars = document.createTextNode('0')
         let warWons = document.createTextNode('0')
         document.getElementById('totalWars' + guildId).appendChild(totalWars)
         document.getElementById('warsWon' + guildId).appendChild(warWons)
         for (let i = 0; i < wars.length; i++) {
-          let totalWars = Number(document.getElementById('totalWars' + guildId).textContent) + 1
+          const totalWars = Number(document.getElementById('totalWars' + guildId).textContent) + 1
           document.getElementById('totalWars' + guildId).textContent = totalWars.toString()
           if (guildId === wars.at(i).get('from_id')) {
             if (wars.at(i).get('from_score') > wars.at(i).get('on_score')) {
