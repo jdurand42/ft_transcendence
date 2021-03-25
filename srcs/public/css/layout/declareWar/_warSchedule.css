@@ -1,0 +1,22 @@
+.warSchedule
+.title {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    /* left: 50%; */
+    align-items: center;
+    font-family: Quantico-Regular;
+}
+
+.warSchedule
+.title .vs {
+    position: relative;
+    left: 50%;
+
+}
+
+.warSchedule .title
+.guildsName {
+    font-size: 32px;
+    margin:16px;
+}
