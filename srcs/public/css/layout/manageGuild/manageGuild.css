@@ -1,0 +1,190 @@
+.manageGuildContainer {
+	display: flex;
+	color: white;
+	font-family: roboto;
+	height: 100vh;
+	width:100vw;
+	background: url('../../../images/background.jpg');
+	background-position: 50% 0;
+	background-position: 0 0;
+	background-attachment: fixed;
+
+	overflow: hidden;
+	overflow-x: hidden;
+}
+
+.manageGuildContainer .manageGuildSideBar {
+	position: absolute;
+	display: flex;
+	width: 329px;
+	height: 100vh;
+	left: 0px;
+	top: 82px;
+	background-color: transparent;
+	border-right: 1px solid #364050;
+	border-top: 1px solid #364050;
+
+	overflow: hidden;
+	overflow-x: hidden;
+}
+
+.manageGuildContainer .manageGuildContentContainer {
+	position: absolute;
+	display: flex;
+	width: 100vw - 329px;
+	height: 100vh;
+	left: 329px;
+	top: 82px;
+	min-width: 100vw - var(--header-size);
+	background-color: transparent;
+	border-top: 1px solid #364050;
+
+	overflow: hidden;
+	overflow-x: hidden;
+}
+
+.manageGuildContainer .manageGuildContentContainer #createGuildContent {
+	padding-left: 71px;
+	padding-top: 60px;
+}
+
+.manageGuildContainer .manageGuildContentContainer .manageGuildContent {
+	padding-left: 71px;
+	padding-top: 60px;
+}
+
+.manageGuildSideBar .manageGuildSideBarContent {
+	color: white;
+	font-family: roboto;
+	padding-top: 71px;
+	margin-left: auto;
+	margin-right: 10px;
+
+	font-style: normal;
+	font-weight: normal;
+	font-size: 18px;
+	line-height: 21px;
+}
+
+.manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl {
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+
+.manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl:hover {
+	text-decoration: underline;
+}
+
+.manageGuildSideBar .manageGuildSideBarContent #leaveGuildSideBar {
+	color:  #FA0808;
+	border-top: 1px solid #364050;
+}
+
+.manageGuildContent #leaveGuildPage div {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.manageGuildTitle {
+	font-style: bold;
+}
+
+.manageGuildTitle #manageGuildExitButton {
+	padding-left: 100px;
+}
+
+.manageGuildForm {
+	padding-top: 30px;
+}
+
+.manageGuildForm div {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.createGuild {
+	border-radius: 13px;
+	width: 112px;
+	height: 34px;
+}
+
+.manageGuildTextInput {
+	background: #364050;
+	border: 1px solid #000000;
+	box-sizing: border-box;
+	border-radius: 3px;
+
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 16px;
+
+	padding: 10px;
+
+	color: #C4C4C4;
+}
+
+#guildName {
+	min-width: 280px;
+	min-height: 41px;
+}
+
+#guildAnagram {
+	min-width: 119px;
+	min-height: 41px;
+}
+
+.manageGuildContent .manageGuildMembersList {
+	list-style: none;
+}
+
+.manageGuildContent .memberProfilePicture {
+	height: 34px;
+	width: 43px;
+}
+
+.manageGuildContent .manageGuildMembersList span {
+	padding-left: 40px;
+}
+
+
+.manageGuildModal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+#inviteMemberModalContent {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+	left: 50%;
+	top:50%;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.manageGuildModal .close {
+  color: #aaa;
+  float: right;
+	padding-right: 350px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.manageGuildModal .close:hover,
+.manageGuildModal .close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}

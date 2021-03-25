@@ -25,7 +25,7 @@ export const GuildView = Backbone.View.extend({
 	        this.id = this.users.get(this.userId).get('guild_id')
           console.log(this.id)
         }
-	        if (this.id === null || this.id === undefined) {
+	      if (this.id === null || this.id === undefined) {
           this.$el.find('#guildContent').html('<p>It seems you aren\'t member of a guild</p>')
           return
 	      }

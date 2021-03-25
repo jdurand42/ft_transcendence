@@ -1,15 +1,11 @@
 .content{
-	/*margin-top: 90px;*/
 	background-color: white;
 	position: absolute;
-	/*display flex;*/
 	height:100%;
 	margin-top: 343px;
-	/*width: 100%;*/
 	min-width: 100vw;
   min-height: calc(100vh - var(--header-size));
 	overflow-x: hidden;
-	/*height: 100%;*/
 	box-sizing: border-box;
 	left:0;
 	margin-left: 0;

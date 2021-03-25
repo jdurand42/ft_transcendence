@@ -32,3 +32,5 @@
 
 @import url(guild/_guild.css);
 @import url(profile/_profile.css);
+
+@import url(layout/manageGuild/manageGuild.css)
