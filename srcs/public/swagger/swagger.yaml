@@ -1236,6 +1236,8 @@ components:
               type: boolean
             closed:
               type: boolean
+            last_negotiation:
+              type: integer
         - $ref: "#/components/schemas/war_negociable"
     war_declaration:
       allOf:
