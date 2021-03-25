@@ -1,32 +1,30 @@
-import { Guild } from './guildModel'
-import { User } from './userModel'
-
 export const War = Backbone.Model.extend({
   defaults: {
-    id: undefined,
     closed: undefined,
-    opened: undefined,
-    from_id: undefined,
     from_agreement: undefined,
+    from_id: undefined,
     from_score: undefined,
-    on_id: undefined,
-    on_agreement: undefined,
-    on_score: undefined,
-    war_start: undefined,
-    war_end: undefined,
-    prize: undefined,
-    max_unanswared: undefined,
-    tournament_effort: undefined,
+    id: undefined,
     ladder_effort: undefined,
-    terms_agreed: undefined
+    last_negotiation: undefined,
+    max_unanswared: undefined,
+    on_agreement: undefined,
+    on_id: undefined,
+    opened: undefined,
+    prize: undefined,
+    terms_agreed: undefined,
+    tournament_effort: undefined,
+    war_start: undefined,
+    war_end: undefined
   },
 
   initialize: function () {
   },
 
-  urlRoot: 'api/wars/',
+  urlRoot: 'api/wars',
 
   url: function () {
+    if (this.id !== undefined) { return this.urlRoot }
     return this.urlRoot
   }
 })
