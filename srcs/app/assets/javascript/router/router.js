@@ -6,6 +6,7 @@ import { LeaderboardView } from '../views/leaderboard/leaderboardView'
 import { TournamentsView } from '../views/tournaments/tournamentsView'
 import { OauthView } from '../views/oauth/oauthView'
 import { GuildsView } from '../views/guild/guildsView'
+import { DeclareWar } from '../views/guild/declareWarView'
 import { FirstConnexionView } from '../views/oauth/firstConnexionView'
 import { TwoFactorView } from '../views/oauth/twoFactorView'
 import { ChatView } from '../views/chatView'
@@ -21,7 +22,7 @@ import { ProfileController } from '../views/profile/profileController'
 import { GuildController } from '../views/guild/guildController'
 
 // models and collection
-import { Guilds } from '../collections/guilds_collection'
+import { Guilds } from '../collections/guildsCollection'
 import { Users } from '../collections/usersCollection'
 import { Ladders } from '../collections/laddersCollection'
 import { Wrapper } from '../models/wrapper'
@@ -67,13 +68,12 @@ export const Router = Backbone.Router.extend({
     leaderboard: 'leaderboard_view',
     tournaments: 'tournaments_view',
     manage_guild: 'manage_guild_view',
+    'declare_war/(:from_id)/(:on_id)': 'declare_war',
     connexion: 'connexion',
     exit: 'exit',
     firstConnexion: 'firstConnexion_view',
     two_factor_connexion: 'two_factor_connexion',
     twoFactor: 'twoFactor_view',
-    'search(/:item)': 'search_view',
-    'search(/:item)/': 'search_view',
     '': 'oauth_view'
   },
 
@@ -211,18 +211,17 @@ export const Router = Backbone.Router.extend({
     const testView = new TestView({ model: this.loadWrapper() })
   },
 
-  search_view: function (item) {
-    if (this.accessPage()) { }
-    // let searchView
-    // const searchView = new SearchView({ model: this.loadWraper(item) })
-    // console.log(searchView.item)
-  },
-
   manage_guild_view: function () {
-    if (this.accessPage()) { }
+    if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
     // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = new ManageGuildView({ model: this.loadWrapper() })
+  },
+
+  declare_war: function (fromId, onId) {
+    if (this.accessPage()) { return }
+    console.log(fromId + ' ' + onId)
+    const declareWar = new DeclareWar({ fromId: fromId, onId: onId })
   },
 
   loadWrapper: function () {

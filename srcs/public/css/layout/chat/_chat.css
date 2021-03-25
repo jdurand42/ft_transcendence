@@ -3,7 +3,6 @@
     width: 100vw;
     height: calc(100vh - var(--header-size));
 
-    background-position: 50% 0;
     background-position: 0 0;
     background-attachment: fixed;
 

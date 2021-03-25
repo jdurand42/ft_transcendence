@@ -1,9 +1,4 @@
 import { Router } from './router/router.js'
-import { Wrapper } from './models/wrapper.js'
-import { SuperWrapper } from './collections/superWrapper.js'
-
-import { Guilds } from './collections/guilds_collection.js'
-import { Ladders } from './collections/laddersCollection.js'
 
 $(document).ready(function () {
   const mainRouter = new Router()
