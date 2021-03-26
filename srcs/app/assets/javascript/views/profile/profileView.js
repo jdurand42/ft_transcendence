@@ -247,6 +247,7 @@ export const ProfileView = Backbone.View.extend({
     } else {
       this.tid = this.id
     }
+    console.log(this.tid)
     const follow = async () => {
       try {
         const friends = this.users.get(this.userId).get('friends')
@@ -255,14 +256,14 @@ export const ProfileView = Backbone.View.extend({
             const response = await this.users.get(this.userId).unfollow(this.tid)
             friends.splice(friends.indexOf({ friend_id: parseInt(this.tid) }), 1)
             this.users.get(this.userId).set({ friends: friends })
-            document.getElementById('followUser').innerHTML = 'follow'
+            e.target.innerHTML = 'follow'
             return
           }
         }
         const response = await this.users.get(this.userId).follow(this.tid)
         friends.push({ friend_id: parseInt(this.tid) })
         this.users.get(this.userId).set({ friends: friends })
-        document.getElementById('followUser').innerHTML = 'followed'
+        e.target.innerHTML = 'followed'
       } catch (e) {
       }
     }

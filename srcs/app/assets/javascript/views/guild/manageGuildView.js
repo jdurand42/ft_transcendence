@@ -11,13 +11,14 @@ export const ManageGuildView = Backbone.View.extend({
     'click .updateGuildName': 'updateGuildName',
     'click .updateGuildAnagram': 'updateGuildAnagram',
     'click #leaveGuild': 'leaveGuild',
-    'keyup #nonMemberToInvite': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToInvite', '#inviteMemberResult') },
+    /* 'keyup #nonMemberToInvite': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToInvite', '#inviteMemberResult') },
     'keyup #memberToKick': function () { this.nicknameSearch(this.membersList, 'memberToKick', '#KickMemberResult') },
     'keyup #memberToPromote': function () { this.nicknameSearch(this.membersList, 'memberToPromote', '#promoteMemberResult') },
     'keyup #memberToRelegate': function () { this.nicknameSearch(this.officersList, 'memberToRelegate', '#relegateMemberResult') },
-    'keyup #nonMemberToSendInvitation': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#sendInvitationResult') },
+    'keyup #nonMemberToSendInvitation': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#sendInvitationResult') }, */
     'mouseover .nicknameSearchElement': function (e) { this.outlineNickname(e) },
     'mouseout .nicknameSearchElement': function (e) { e.target.style.color = '' },
+    'keyup #nonMemberToInvite': function (e) { this.inviteModalSearch(e) },
     'click .nicknameSearchElement': function (e) { this.clickNickname(e) },
     'click .manageGuildSideBarContentEl': function (e) { this.sideBar(e) },
     'click #inviteMemberModalButton': function (e) { this.modal(e) },
@@ -274,6 +275,7 @@ export const ManageGuildView = Backbone.View.extend({
 
   nicknameSearch: function (list, input, target) {
     const value = document.getElementById(input).value
+    console.log(value)
     /* if (!value.length) {
       this.$el.find(target).html(Handlebars.templates.nicknameSearchResult({}))
       return
@@ -352,7 +354,16 @@ export const ManageGuildView = Backbone.View.extend({
   modal: function (e) {
     const modal = document.getElementById('inviteMemberModal')
     modal.style.display = 'block'
-    this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#sendInvitationResult')
+    this.inviteModalSearch(e)
+    // this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#inviteMemberResult')
+  },
+
+  inviteModalSearch: function (e) {
+    const value = document.getElementById('nonMemberToInvite').value
+    console.log(value)
+    this.search = this.nonMembersList.slice().filter(el => el.nickname.toLowerCase().includes(value.toLowerCase()) === true)
+    const context = { search: JSON.parse(JSON.stringify(this.search)), input: 'nonMemberToInvite' }
+    this.$el.find('#inviteMemberResult').html(Handlebars.templates.nicknameSearchResult(context))
   },
 
   closeModal: function (e) {
