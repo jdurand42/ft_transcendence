@@ -120,7 +120,6 @@ export const Router = Backbone.Router.extend({
   accessPage: function (url) {
     // prevent zombie views
     if (this.view != undefined) {
-      this.view.undelegateEvents()
       this.remove_view()
     }
     if (window.localStorage.getItem('access-token') === null) {
@@ -249,6 +248,8 @@ export const Router = Backbone.Router.extend({
   		// this._removeElement();
   	this.view.$el.empty()
   	this.view.stopListening()
+    this.view.undelegateEvents()
+    this.view = undefined
   	return this
   }
 })
