@@ -128,14 +128,14 @@ export const DeclareWar = Backbone.View.extend({
       for (let i = 0; i < this.fromWars.length; i++) {
         if (new Date(this.fromWars.at(i).get('war_start')) <= date[1] && new Date(this.fromWars.at(i).get('war_end')) >= date[0]) {
           document.getElementById('error').style.display = 'flex'
-          document.getElementById('error').textContent = this.fromGuild.get('name') + ' has already a war schedule to this date'
+          document.getElementById('error').textContent = this.fromGuild.get('name') + ' has already a war scheduled at this date'
           res = false
         }
       }
       for (let i = 0; i < this.onWars.length; i++) {
         if (new Date(this.onWars.at(i).get('war_start')) <= date[1] && new Date(this.onWars.at(i).get('war_end')) >= date[0]) {
           document.getElementById('error').style.display = 'flex'
-          document.getElementById('error').textContent = this.onGuild.get('name') + ' has already a war schedule to this date'
+          document.getElementById('error').textContent = this.onGuild.get('name') + ' has already a war scheduled at this date'
           res = false
         }
       }
