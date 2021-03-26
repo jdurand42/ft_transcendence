@@ -1,42 +1,4 @@
 .warSchedule
-.title {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    top: 128px;
-    align-items: center;
-    font-family: Quantico-Regular;
-    left: 50%;
-    right: 50%;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.warSchedule .title
-.guildsName {
-    font-size: 28px;
-    margin:16px;
-
-    position: relative;
-    top: -28px;
-
-    white-space: nowrap;
-}
-
-.warSchedule .title
-.from {
-    position: absolute;
-    right: 8px;
-}
-
-.warSchedule .title
-.on {
-    position: absolute;
-    left: 8px;
-}
-
-.warSchedule
 .warScheduleMiddle {
     margin-left: 16px;
     margin-right: 16px;
@@ -146,21 +108,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    position: relative;
-    /* top: calc(var(--header-size) + 128px); */
-    height: calc(100vh - 82px - 220px);
-    top: 220px;
 }
 
-.warSchedule .warCalendarNext
-.warScheduleTitle {
-    font-family: Roboto-Bold;
-    font-size: 20px;
-
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
 
 .warSchedule .warCalendarNext
 .schedule-container {

@@ -3,7 +3,8 @@ import { Wars } from '../../collections/warCollection'
 
 export const DeclareWar = Backbone.View.extend({
   events: {
-    'click .nextWarSchedule': 'nextWarSchedule'
+    'click .nextWarSchedule': 'nextWarSchedule',
+    'click .prevWarRules': 'prevWarRules'
   },
   initialize: function (options) {
     this.templateWarSchedule = Handlebars.templates.warSchedule
@@ -44,6 +45,11 @@ export const DeclareWar = Backbone.View.extend({
     return this
   },
 
+  prevWarRules: function () {
+    const templateData = this.templateWarSchedule(this.context)
+    this.$el.html(templateData)
+  },
+
   areFill: function () {
     const array = []
     const input = document.getElementsByClassName('input')
@@ -60,6 +66,10 @@ export const DeclareWar = Backbone.View.extend({
     let day = Number(document.getElementById('fromJJ').value)
     let month = Number(document.getElementById('fromMM').value)
     let year = Number(document.getElementById('fromYY').value)
+    this.context.fromJJ = document.getElementById('fromJJ').value
+    this.context.fromMM = document.getElementById('fromMM').value
+    this.context.fromYY = document.getElementById('fromYY').value
+
     fromDate.setFullYear(year, month - 1, day)
     if (year.toString().length != 4) {
       document.getElementById('fromYY').style.border = 'solid 2px var(--error-message-color)'
@@ -74,6 +84,11 @@ export const DeclareWar = Backbone.View.extend({
     day = Number(document.getElementById('toJJ').value)
     month = Number(document.getElementById('toMM').value)
     year = Number(document.getElementById('toYY').value)
+
+    this.context.toJJ = document.getElementById('toJJ').value
+    this.context.toMM = document.getElementById('toMM').value
+    this.context.toYY = document.getElementById('toYY').value
+
     const toDate = new Date()
     toDate.setFullYear(year, month - 1, day)
     if (year.toString().length != 4) {
@@ -89,6 +104,10 @@ export const DeclareWar = Backbone.View.extend({
 
     let hh = Number(document.getElementById('fromHH').value)
     let mm = Number(document.getElementById('fromMIN').value)
+
+    this.context.fromHH = document.getElementById('fromHH').value
+    this.context.fromMIN = document.getElementById('fromMIN').value
+
     if (!(hh >= 0 && hh <= 23)) {
       document.getElementById('fromHH').style.border = 'solid 2px var(--error-message-color)'
       res = false
@@ -101,6 +120,10 @@ export const DeclareWar = Backbone.View.extend({
 
     hh = Number(document.getElementById('toHH').value)
     mm = Number(document.getElementById('toMIN').value)
+
+    this.context.toHH = document.getElementById('toHH').value
+    this.context.toMIN = document.getElementById('toMIN').value
+
     if (!(hh >= 0 && hh <= 23)) {
       document.getElementById('toHH').style.border = 'solid 2px var(--error-message-color)'
       res = false

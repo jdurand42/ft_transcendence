@@ -15,6 +15,7 @@
 @import url(layout/listsPages/_filter.css);
 @import url(layout/declareWar/_declareWar.css);
 @import url(layout/declareWar/_warSchedule.css);
+@import url(layout/declareWar/_warRules.css);
 
 @import url(module/_table.css);
 @import url(module/_modals.css);

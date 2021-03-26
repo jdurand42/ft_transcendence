@@ -1,2 +1,30 @@
 <div class="warRules declareWar" id="warSchedule">
+    <a class="close" id="closeDeclareWar" href='#guild/{{onId}}'>
+        <img src="./icons/esc.svg">
+    </a>
+    <div class="title">VS
+        <div class="guildsName from">{{fromName}}</div>
+        <div class="guildsName on">{{onName}}</div>
+    </div>
+    <div class="declareMiddle warRulesMiddle">
+        <div class="declareWarTitle warRulesTitle">War rules</div>
+        <div class="boxes">
+            <div class="box win-reward-box">
+                <div class="sub-title win-reward-title">Win reward</div>
+            </div>
+            <div class="box accountable-matches-box">
+                <div class="sub-title accountable-matches-title">Accountable matches</div>
+
+            </div>
+            <div class="box max-unanswered-box">
+                <div class="sub-title max-unanswered-title">Max unanswered matches during war times</div>
+
+            </div>
+        </div>
+    </div>
+    <p id="error" style="display: none;"></p>
+    <div class="buttons">
+        <button class="button prev prevWarRules">Previous</button>
+        <button class="button next nextWarRules">Next</button>
+    </div>
 </div>

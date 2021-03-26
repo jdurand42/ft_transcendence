@@ -25,34 +25,34 @@
             {{/each}}
             </div>
         </div>
-        <div class="warCalendarNext">
-            <div class="warScheduleTitle">War schedule</div>
+        <div class="declareMiddle warCalendarNext">
+            <div class="declareWarTitle warScheduleTitle">War schedule</div>
             <div class="schedule-container">
                 <img src="./icons/schedule-yellow.svg" class="schedule">
             </div>
             <div class="input-container-from-to">
                 <div class="input-container from">
                     <div class="text-input">From</div>
-                    <input type="text" class="input" id="fromJJ" placeholder="JJ" maxlength="2"></input>
-                    <input type="text" class="input" id="fromMM" placeholder="MM" maxlength="2"></input>
-                    <input type="text" class="input" id="fromYY" placeholder="YYYY" maxlength="4"></input>
+                    <input type="text" class="input" id="fromJJ" placeholder="JJ" maxlength="2" value="{{fromJJ}}"></input>
+                    <input type="text" class="input" id="fromMM" placeholder="MM" maxlength="2" value="{{fromMM}}"></input>
+                    <input type="text" class="input" id="fromYY" placeholder="YYYY" maxlength="4" value="{{fromYY}}"></input>
                     <div class="tiret"> - </div>
-                    <input type="text" class="input" id="fromHH" placeholder="HH" maxlength="2"></input>
-                    <input type="text" class="input" id="fromMIN" placeholder="MM" maxlength="2"></input>
+                    <input type="text" class="input" id="fromHH" placeholder="HH" maxlength="2" value="{{fromHH}}"></input>
+                    <input type="text" class="input" id="fromMIN" placeholder="MM" maxlength="2" value="{{fromMIN}}"></input>
                 </div>
                 <div class="input-container to">
                     <div class="text-input">To</div>
-                    <input type="text" class="input" id="toJJ" placeholder="JJ" maxlength="2"></input>
-                    <input type="text" class="input" id="toMM" placeholder="MM" maxlength="2"></input>
-                    <input type="text" class="input" id="toYY" placeholder="YYYY" maxlength="4"></input>
+                    <input type="text" class="input" id="toJJ" placeholder="JJ" maxlength="2" value="{{toJJ}}"></input>
+                    <input type="text" class="input" id="toMM" placeholder="MM" maxlength="2" value="{{toMM}}"></input>
+                    <input type="text" class="input" id="toYY" placeholder="YYYY" maxlength="4" value="{{toYY}}"></input>
                     <div class="tiret"> - </div>
-                    <input type="text" class="input" id="toHH" placeholder="HH" maxlength="2"></input>
-                    <input type="text" class="input" id="toMIN" placeholder="MM" maxlength="2"></input>
+                    <input type="text" class="input" id="toHH" placeholder="HH" maxlength="2" value="{{toHH}}"></input>
+                    <input type="text" class="input" id="toMIN" placeholder="MM" maxlength="2" value="{{toMIN}}"></input>
                 </div>
             </div>
             <p id="error" style="display: none;"></p>
             <div class="buttons">
-                <button class="button prev prevWarSchedule">Previous</button>
+                {{!-- <button class="button prev prevWarSchedule">Previous</button> --}}
                 <button class="button next nextWarSchedule">Next</button>
             </div>
         </div>

@@ -11,7 +11,8 @@
 
     border-top: solid #313236;
 
-    overflow: hidden;
+    overflow-y: hidden;
+    overflow-x: auto;
 }
 
 .declareWar
@@ -55,4 +56,63 @@
     left:50%;
     transform: translate(-50%, 50%);
     text-align: center;
+}
+
+.declareWar
+.title {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 128px;
+    align-items: center;
+    font-family: Quantico-Regular;
+    left: 50%;
+    right: 50%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.declareWar .title
+.guildsName {
+    font-size: 28px;
+    margin:16px;
+
+    position: relative;
+    top: -28px;
+
+    white-space: nowrap;
+}
+
+.declareWar .title
+.from {
+    position: absolute;
+    right: 8px;
+}
+
+.declareWar .title
+.on {
+    position: absolute;
+    left: 8px;
+}
+
+.declareWar
+.declareWarTitle {
+    font-family: Roboto-Bold;
+    font-size: 20px;
+
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.declareWar .declareMiddle {
+    position: relative;
+    height: calc(100vh - var(--header-size) - 180px);
+    top: 180px;
+}
+
+.declareWar .sub-title {
+    font-family: Roboto-Medium;
+    font-size: 16px;
 }
