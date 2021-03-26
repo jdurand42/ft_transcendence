@@ -29,8 +29,7 @@ export const DeclareWar = Backbone.View.extend({
     this.fromWars.sort()
     this.onWars.sort()
 
-    this.context.fromName = '42'
-    // this.context.fromName = this.fromGuild.get('name')
+    this.context.fromName = this.fromGuild.get('name')
     this.context.onName = this.onGuild.get('name')
 
     this.updateContextWarCalendar()

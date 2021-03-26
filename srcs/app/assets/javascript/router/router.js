@@ -220,7 +220,6 @@ export const Router = Backbone.Router.extend({
 
   declare_war: function (fromId, onId) {
     if (this.accessPage()) { return }
-    console.log(fromId + ' ' + onId)
     const declareWar = new DeclareWar({ fromId: fromId, onId: onId })
   },
 

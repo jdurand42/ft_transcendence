@@ -2,9 +2,8 @@
     <div class="close">
         <img src="./icons/esc.svg" class="">
     </div>
-    <div class="title">
+    <div class="title">VS
         <div class="guildsName from">{{fromName}}</div>
-        <div class="vs">VS</div>
         <div class="guildsName on">{{onName}}</div>
     </div>
     <div class="warScheduleMiddle">
@@ -27,6 +26,34 @@
             </div>
         </div>
         <div class="warCalendarNext">
+            <div class="warScheduleTitle">War schedule</div>
+            <div class="schedule-container">
+                <img src="./icons/schedule-yellow.svg" class="schedule">
+            </div>
+            <div class="input-container-from-to">
+                <div class="input-container from">
+                    <div class="text-input">From</div>
+                    <input type="text" class="input fromJJ" placeholder="JJ" maxlength="2"></input>
+                    <input type="text" class="input fromMM" placeholder="MM" maxlength="2"></input>
+                    <input type="text" class="input fromYY" placeholder="YY" maxlength="2"></input>
+                    <div class="tiret"> - </div>
+                    <input type="text" class="input fromHH" placeholder="HH" maxlength="2"></input>
+                    <input type="text" class="input fromMIN" placeholder="MM" maxlength="2"></input>
+                </div>
+                <div class="input-container to">
+                    <div class="text-input">To</div>
+                    <input type="text" class="input fromJJ" placeholder="JJ" maxlength="2"></input>
+                    <input type="text" class="input fromMM" placeholder="MM" maxlength="2"></input>
+                    <input type="text" class="input fromYY" placeholder="YY" maxlength="2"></input>
+                    <div class="tiret"> - </div>
+                    <input type="text" class="input fromHH" placeholder="HH" maxlength="2"></input>
+                    <input type="text" class="input fromMIN" placeholder="MM" maxlength="2"></input>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="button prev">Previous</button>
+                <button class="button next">Next</button>
+            </div>
         </div>
         <div class="warsCalendar warsCalendarOn">
             <div class="nextWars">Next wars</div>
@@ -47,7 +74,5 @@
             </div>
         </div>
     </div>
-    <div class="buttons">
 
-    </div>
 </div>

@@ -10,6 +10,8 @@
     font-family: Roboto-Regular;
 
     border-top: solid #313236;
+
+    overflow: hidden;
 }
 
 .declareWar
@@ -17,4 +19,30 @@
     position: absolute;
     right: 64px;
     top: 115px;
+}
+
+.declareWar
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
+
+.declareWar
+.button {
+    width: 117px;
+    height: 37px;
+    border-radius: 7px;
+    margin: 8px;
+    font-size: 14px;
+}
+
+.declareWar
+.prev {
+    background-color: #C4C4C4;
 }

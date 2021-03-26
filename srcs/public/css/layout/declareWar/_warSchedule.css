@@ -3,19 +3,14 @@
     display: flex;
     flex-direction: row;
     position: absolute;
-    top: 32px;
+    top: 128px;
     align-items: center;
     font-family: Quantico-Regular;
     left: 50%;
     right: 50%;
-}
-
-.warSchedule
-.title .vs {
-    position: absolute;
-    top: 120px;
-    left: 50%;
-    right: 50%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .warSchedule .title
@@ -23,27 +18,30 @@
     font-size: 28px;
     margin:16px;
 
-    position: absolute;
-    top: 92px;
+    position: relative;
+    top: -28px;
 
     white-space: nowrap;
 }
 
 .warSchedule .title
 .from {
-    position: relative;
-    right: 222px;
+    position: absolute;
+    right: 8px;
 }
 
 .warSchedule .title
 .on {
-    position: relative;
-    left: -205px;
+    position: absolute;
+    left: 8px;
 }
 
 .warSchedule
 .warScheduleMiddle {
-    margin-left: 32px;
+    margin-left: 16px;
+    margin-right: 16px;
+    display: flex;
+    flex-direction: row;
 }
 
 .warSchedule
@@ -51,10 +49,9 @@
     width: 300px;
     padding-left: 16px;
     padding-right: 16px;
-    height: 70vh;
+    height: calc(100vh - 32%);
     overflow: scroll;
 }
-
 
 .warSchedule
 .warsCalendar .allDates::-webkit-scrollbar-track {
@@ -69,10 +66,14 @@
 }
 
 .warSchedule
+.warsCalendar {
+    top: calc(var(--header-size) + 64px);
+}
+
+.warSchedule
 .warsCalendarFrom {
-    position: absolute;
-    left: 2%;
-    top: calc(var(--header-size) + 128px);
+    position: relative;
+    float: left;
 }
 
 .warSchedule
@@ -85,11 +86,11 @@
     border-left: solid 1px var(--primary-color);
 }
 
+
 .warSchedule
 .warsCalendarOn {
-    position: absolute;
-    right: 2%;
-    top: calc(var(--header-size) + 128px);
+    position: relative;
+    float: right;
 }
 
 .warSchedule .warScheduleMiddle
@@ -133,10 +134,74 @@
     margin-left: 86px;
 }
 
-.warSchedule .warScheduleMiddle
-.dates .date .tiret {
+.warSchedule .tiret {
     font-size: 36px;
     color: var(--primary-color);
     margin-left: 8px;
     margin-right: 8px;
+}
+
+.warSchedule .warScheduleMiddle
+.warCalendarNext {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    /* top: calc(var(--header-size) + 128px); */
+    height: calc(100vh - 82px - 220px);
+    top: 220px;
+}
+
+.warSchedule .warCalendarNext
+.warScheduleTitle {
+    font-family: Roboto-Bold;
+    font-size: 20px;
+
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.warSchedule .warCalendarNext
+.schedule-container {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    position: relative;
+    top: 16px;
+}
+
+.warSchedule .warCalendarNext
+.input {
+    width: 58px;
+    height: 37px;
+    outline: none;
+    text-align: center;
+    font-family: Roboto-Regular;
+    border-radius: 10px;
+    border: solid 1px #C4C4C4;
+    margin: 2px;
+}
+
+.warSchedule .input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.warSchedule .text-input {
+    width: 47px;
+}
+
+.warSchedule .input-container-from-to {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
