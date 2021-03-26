@@ -46,3 +46,13 @@
 .prev {
     background-color: #C4C4C4;
 }
+
+.declareWar #error {
+    color: var(--error-message-color);
+
+    position: absolute;
+    bottom: 128px;
+    left:50%;
+    transform: translate(-50%, 50%);
+    text-align: center;
+}
