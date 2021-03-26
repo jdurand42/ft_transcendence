@@ -20,6 +20,7 @@ export const HeaderView = Backbone.View.extend({
     array.user = this.model.get('nickname')
     array.admin = this.model.get('admin')
     array.profile_pic = this.model.get('image_url')
+    array.id = this.model.get('id')
     const context = JSON.parse(JSON.stringify(array))
     const templateDataTopNav = this.templateTopNav(context)
     this.$el.html(templateDataTopNav)

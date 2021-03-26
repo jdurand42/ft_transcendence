@@ -55,12 +55,16 @@ templates['topnav'] = template({"1":function(container,depth0,helpers,partials,d
     + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(depth0 != null ? lookupProperty(depth0,"chat") : depth0),{"name":"unless","hash":{},"fn":container.program(9, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":10,"column":45},"end":{"line":10,"column":80}}})) != null ? stack1 : "")
     + "chat\" href=\"#chat\">\n    <img src="
     + alias4(((helper = (helper = lookupProperty(helpers,"chatIcon") || (depth0 != null ? lookupProperty(depth0,"chatIcon") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"chatIcon","hash":{},"data":data,"loc":{"start":{"line":11,"column":13},"end":{"line":11,"column":25}}}) : helper)))
-    + " class=\"chat\">\n  </a>\n  <a class=\"btn user-page\" href=\"#user_page\">\n    <img src="
+    + " class=\"chat\">\n  </a>\n  <a class=\"btn user-page\" href=\"#profile/"
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":13,"column":42},"end":{"line":13,"column":48}}}) : helper)))
+    + "\">\n    <img src="
     + alias4(((helper = (helper = lookupProperty(helpers,"profile_pic") || (depth0 != null ? lookupProperty(depth0,"profile_pic") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"profile_pic","hash":{},"data":data,"loc":{"start":{"line":14,"column":13},"end":{"line":14,"column":28}}}) : helper)))
     + " class=\"profile_pic\"></img>\n    <div class=\"btn "
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"user_page") : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":15,"column":20},"end":{"line":15,"column":56}}})) != null ? stack1 : "")
-    + " user\" href=\"#user_page\">"
-    + alias4(((helper = (helper = lookupProperty(helpers,"user") || (depth0 != null ? lookupProperty(depth0,"user") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"user","hash":{},"data":data,"loc":{"start":{"line":15,"column":81},"end":{"line":15,"column":89}}}) : helper)))
+    + " user\" href=\"#profile/"
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":15,"column":78},"end":{"line":15,"column":84}}}) : helper)))
+    + "\">"
+    + alias4(((helper = (helper = lookupProperty(helpers,"user") || (depth0 != null ? lookupProperty(depth0,"user") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"user","hash":{},"data":data,"loc":{"start":{"line":15,"column":86},"end":{"line":15,"column":94}}}) : helper)))
     + "</div>\n  </a>\n  <a class=\"exit\" href=\"#exit\"></a>\n</div>\n";
 },"useData":true});
 })();

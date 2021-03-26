@@ -10,9 +10,9 @@
   <a class="btn {{#if chat}}{{active}}{{/if}}{{#unless chat}}unactive{{/unless}}chat" href="#chat">
     <img src={{chatIcon}} class="chat">
   </a>
-  <a class="btn user-page" href="#user_page">
+  <a class="btn user-page" href="#profile/{{id}}">
     <img src={{profile_pic}} class="profile_pic"></img>
-    <div class="btn {{#if user_page}} {{active}} {{/if}} user" href="#user_page">{{user}}</div>
+    <div class="btn {{#if user_page}} {{active}} {{/if}} user" href="#profile/{{id}}">{{user}}</div>
   </a>
   <a class="exit" href="#exit"></a>
 </div>
