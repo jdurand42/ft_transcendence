@@ -1,0 +1,136 @@
+.warTimes
+.input {
+    width: 58px;
+    height: 37px;
+    outline: none;
+    text-align: center;
+    font-family: Roboto-Regular;
+    border-radius: 10px;
+    border: solid 1px #C4C4C4;
+    margin: 2px;
+}
+
+.warTimes
+.warTimesTitle {
+    margin-bottom: 32px;
+}
+
+.warTimes
+.text-input {
+    margin-right: 8px;
+    margin-left: 8px;
+}
+
+.warTimes .all-war-times {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.warTimes .war-time {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    margin-top: 16px;
+}
+
+.warTimes .filter-days {
+    display: flex;
+    flex-direction: row;
+
+    width: 132px;
+    height: 43px;
+    line-height: 43px;
+
+    background-color: #C4C4C4;
+
+    border-radius: 10px;
+
+    color: #565656;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+
+    padding-left: 8px;
+
+    cursor: pointer;
+
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.warTimes
+.minus-circular-container {
+    margin-left: 8px;
+}
+
+.warTimes .filter
+.day-name {
+    margin-left: 8px;
+    color: black;
+    font-size: 16px;
+    width: 96px;
+}
+
+.warTimes .filter
+.arrow-down-container {
+    align-self: center;
+    position: relative;
+}
+
+.warTimes
+.list-days {
+    position: absolute;
+
+    width: 140px;
+
+    flex-direction: column;
+
+    border-radius: 10px;
+
+    background-color: #C4C4C4;
+    z-index: 1;
+}
+
+.warTimes
+.list-days .day {
+    height: 32px;
+    line-height: 32px;
+
+    color: black;
+    font-family: Roboto-Regular;
+    padding-left: 8px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.warTimes
+.list-days .day:hover {
+    background-color: #565656;
+    color: white;
+}
+
+.warTimes
+.list-days:hover {
+    border-radius: 10px;
+}
+
+.warTimes
+.add-war-time {
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    align-items: center;
+
+    position: relative;
+    right: 268px;
+    margin-top: 16px;
+}
+
+.warTimes
+.add-war-time-container {
+    margin-bottom: 4px;
+    margin-right: 8px;
+}

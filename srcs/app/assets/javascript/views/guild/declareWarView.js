@@ -4,7 +4,10 @@ import { Wars } from '../../collections/warCollection'
 export const DeclareWar = Backbone.View.extend({
   events: {
     'click .nextWarRules': 'nextWarRules',
-    'click .prevWarTimes': 'prevWarTimes'
+    'click .prevWarTimes': 'prevWarTimes',
+    'click .validateWarTimes': 'validateWarTimes',
+    'click .filter-days': 'filterDay',
+    'click .day': 'selectDay'
   },
   initialize: function (options) {
     this.templateWarRules = Handlebars.templates.warRules
@@ -43,6 +46,31 @@ export const DeclareWar = Backbone.View.extend({
     this.context.maxUnanswered = '2'
     this.context.ladder = 'checked'
     this.context.tournaments = 'checked'
+
+    this.context.warTime = []
+    this.context.warTime.days = []
+    this.days = [
+      { day: 'Monday' },
+      { day: 'Tuesday' },
+      { day: 'Wednesday' },
+      { day: 'Thursday' },
+      { day: 'Friday' },
+      { day: 'Saturday' },
+      { day: 'Sunday' }
+    ]
+
+    const newDays = this.days
+    newDays.forEach(element => {
+      element.index = this.context.warTime.length
+    })
+
+    this.context.warTime.push({
+      index: this.context.warTime.length,
+      day: 'Monday',
+      days: newDays
+    })
+
+    console.log(this.context.warTime)
 
     const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
@@ -122,13 +150,77 @@ export const DeclareWar = Backbone.View.extend({
 
     const templateData = this.templateWarTimes(this.context)
     this.$el.html(templateData)
-    const $j = jQuery.noConflict()
-    $('#scheduler').weekly_schedule()
   },
 
   prevWarTimes: function () {
     const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
     this.disableDates()
+  },
+
+  validateWarTimes: function () {
+    const hh = document.getElementsByClassName('hh')
+    const mm = document.getElementsByClassName('mm')
+
+    let res = true
+
+    for (let i = 0; i < hh.length; i++) {
+      if (!(hh[i].value >= 0 && hh[i].value <= 23) || hh[i].value === '') {
+        hh[i].style.border = 'solid 2px var(--error-message-color)'
+        res = false
+      } else {
+        hh[i].style.border = 'solid 1px #C4C4C4'
+      }
+    }
+
+    for (let i = 0; i < mm.length; i++) {
+      if (!(mm[i].value >= 0 && mm[i].value <= 59) || mm[i].value === '') {
+        mm[i].style.border = 'solid 2px var(--error-message-color)'
+        res = false
+      } else {
+        mm[i].style.border = 'solid 1px #C4C4C4'
+      }
+    }
+
+    if (res === false) {
+      document.getElementById('error').style.display = 'flex'
+      document.getElementById('error').textContent = 'Please fill the war times correctly'
+    }
+  },
+
+  filterDay: function (e) {
+    const id = e.currentTarget.id
+    const dropList = document.getElementById(id + '-open')
+    if (dropList.style.display === 'none') {
+      const getOffsetLeft = element => {
+        let offsetLeft = 0
+        while (element) {
+          offsetLeft += element.offsetLeft
+          element = element.offsetParent
+        }
+        return offsetLeft
+      }
+      const Y = getOffsetLeft(e.currentTarget)
+      dropList.style.top = e.currentTarget.offsetTop + 48
+      dropList.style.left = Y
+      dropList.style.display = 'flex'
+    } else {
+      dropList.style.display = 'none'
+    }
+  },
+
+  updateHTML: function (div) {
+    const html = this.templateWarTimes(this.context)
+    const found = $(html).find('#' + div)[0].innerHTML
+    const currentDiv = document.getElementById(div)
+    currentDiv.innerHTML = found
+  },
+
+  selectDay: function (e) {
+    const value = e.currentTarget.textContent
+    const index = e.currentTarget.getAttribute('for')
+    const id = e.currentTarget.id
+    this.context.warTime[index].day = value
+    this.updateHTML('day-name-' + id)
   }
 })
