@@ -11,14 +11,82 @@
 .warRules .declareMiddle
 .box {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 
     width: 415px;
-    height: 235px;
+    height: 200px;
+    padding-top: 16px;
 }
 
 .warRules .declareMiddle
 .accountable-matches-box {
     border-left: solid 1px var(--primary-color);
     border-right: solid 1px var(--primary-color);
+}
+
+.warRules .declareMiddle
+.win-reward-box {
+    border-left: solid 1px var(--primary-color);
+}
+
+.warRules .win-schedule-box .schedule-container {
+    margin: 16px;
+    margin-bottom: 32px;
+}
+
+.warRules .input {
+    background: #364050;
+    color: var(--secondary-color);
+    border: 1px solid #000;
+
+    font-size: 14px;
+    outline: none;
+    
+    font-family: 'Roboto-Regular';
+    padding-left: 4px;
+
+    height: 32px;
+
+}
+
+.warRules .win-schedule-box .datepicker {
+    width: 300px;
+}
+
+.warRules .win-reward {
+    width: 140px;
+}
+
+.warRules .win-reward-points-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    margin-top: 64px;
+}
+
+.warRules .win-reward-points-container
+.points {
+    margin-left: 8px;
+}
+
+.warRules .checkboxes {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 8px;
+}
+
+.warRules .checkboxes-container {
+    margin-top: 32px;
+}
+
+.warRules .checkboxes .checkbox {
+    margin-right: 8px;
+}
+
+.warRules .max-unanswered {
+    margin-top: 50px;
+    width: 90px;
 }

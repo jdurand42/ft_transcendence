@@ -40,9 +40,52 @@ export const DeclareWar = Backbone.View.extend({
 
     this.updateContextWarCalendar()
 
-    const templateData = this.templateWarSchedule(this.context)
+    const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
+
+    this.disableDates()
+
     return this
+  },
+
+  disableDates: function () {
+    const dates = []
+    for (let i = 0; i < this.fromWars.length; i++) {
+      const startDate = new Date(this.fromWars.at(i).get('war_start'))
+      const endDate = new Date(this.fromWars.at(i).get('war_end'))
+      // eslint-disable-next-line no-unmodified-loop-condition
+      while (startDate <= endDate) {
+        // dates.push(startDate)
+        dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
+        startDate.setDate(startDate.getDate() + 1)
+      }
+    }
+    for (let i = 0; i < this.onWars.length; i++) {
+      const startDate = new Date(this.onWars.at(i).get('war_start'))
+      const endDate = new Date(this.onWars.at(i).get('war_end'))
+      // eslint-disable-next-line no-unmodified-loop-condition
+      while (startDate <= endDate) {
+        // dates.push(startDate)
+        dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
+        startDate.setDate(startDate.getDate() + 1)
+      }
+    }
+
+    const $j = jQuery.noConflict()
+    $('#datepicker-from').daterangepicker({
+      // dateFormat: 'dd/mm/yyyy hh:mm A',
+      minDate: new Date(),
+      timePicker: true,
+      locale: {
+        format: 'DD/M/YYYY hh:mm A'
+      },
+      isInvalidDate: function (date) {
+        date = date.toDate().toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        if (dates.some(el => el === date) === true) { return true }
+        return false
+      }
+
+    })
   },
 
   prevWarRules: function () {

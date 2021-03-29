@@ -9,16 +9,43 @@
     <div class="declareMiddle warRulesMiddle">
         <div class="declareWarTitle warRulesTitle">War rules</div>
         <div class="boxes">
+            <div class="box win-schedule-box">
+                <div class="sub-title win-schedule-title">War schedule</div>
+                <div class="schedule-container">
+                    <img src="./icons/schedule-yellow.svg" class="schedule">
+                </div>
+                <input type="text" class="input datepicker" id="datepicker-from"></input>
+            </div>
             <div class="box win-reward-box">
                 <div class="sub-title win-reward-title">Win reward</div>
+                <div class="win-reward-points-container">
+                    <div class="cup-container">
+                        <img src="./icons/cup.svg" class="cup">
+                    </div>
+                    <input type="text" class="input win-reward" id="win-reward"></input>
+                    <div class="points">points</div>
+                </div>
             </div>
             <div class="box accountable-matches-box">
                 <div class="sub-title accountable-matches-title">Accountable matches</div>
-
+                <div class="checkboxes-container">
+                    <div class="checkboxes">
+                        <input type="checkbox" class="checkbox" id="ladder" value="ladder" name="ladder" checked></input>
+                        <label for="ladder">Ladder</label>
+                    </div>
+                    <div class="checkboxes">
+                        <input type="checkbox" class="checkbox" id="tournaments" value="tournaments" checked></input>
+                        <label for="tournaments">Tournaments</label>
+                    </div>
+                    <div class="checkboxes">
+                        <input type="checkbox" class="checkbox" id="interguilds-duels" value="interguilds-duels" checked disabled></input>
+                        <label for="interguilds-duels">Interguilds duels</label>
+                    </div>
+                </div>
             </div>
             <div class="box max-unanswered-box">
-                <div class="sub-title max-unanswered-title">Max unanswered matches during war times</div>
-
+                <div class="sub-title max-unanswered-title">Max unanswered<br>matches during war times</div>
+                <input type="text" class="input max-unanswered" id="max-unanswered"></input>
             </div>
         </div>
     </div>
