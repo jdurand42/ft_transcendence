@@ -14,7 +14,7 @@
                 <div class="schedule-container">
                     <img src="./icons/schedule-yellow.svg" class="schedule">
                 </div>
-                <input type="text" class="input datepicker" id="datepicker-from"></input>
+                <input type="text" class="input datepicker" id="daterangepicker"></input>
             </div>
             <div class="box win-reward-box">
                 <div class="sub-title win-reward-title">Win reward</div>
@@ -22,7 +22,7 @@
                     <div class="cup-container">
                         <img src="./icons/cup.svg" class="cup">
                     </div>
-                    <input type="text" class="input win-reward" id="win-reward"></input>
+                    <input type="text" class="input win-reward" id="win-reward" value="{{winReward}}"></input>
                     <div class="points">points</div>
                 </div>
             </div>
@@ -30,11 +30,11 @@
                 <div class="sub-title accountable-matches-title">Accountable matches</div>
                 <div class="checkboxes-container">
                     <div class="checkboxes">
-                        <input type="checkbox" class="checkbox" id="ladder" value="ladder" name="ladder" checked></input>
+                        <input type="checkbox" class="checkbox" id="ladder" value="ladder" name="ladder" {{ladder}}></input>
                         <label for="ladder">Ladder</label>
                     </div>
                     <div class="checkboxes">
-                        <input type="checkbox" class="checkbox" id="tournaments" value="tournaments" checked></input>
+                        <input type="checkbox" class="checkbox" id="tournaments" value="tournaments" {{tournaments}}></input>
                         <label for="tournaments">Tournaments</label>
                     </div>
                     <div class="checkboxes">
@@ -45,13 +45,12 @@
             </div>
             <div class="box max-unanswered-box">
                 <div class="sub-title max-unanswered-title">Max unanswered<br>matches during war times</div>
-                <input type="text" class="input max-unanswered" id="max-unanswered"></input>
+                <input type="text" class="input max-unanswered" id="max-unanswered" value="{{maxUnanswered}}"></input>
             </div>
         </div>
     </div>
     <p id="error" style="display: none;"></p>
     <div class="buttons">
-        <button class="button prev prevWarRules">Previous</button>
         <button class="button next nextWarRules">Next</button>
     </div>
 </div>
