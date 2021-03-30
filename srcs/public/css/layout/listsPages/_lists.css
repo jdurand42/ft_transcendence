@@ -1,0 +1,215 @@
+.listsPage {
+    background-color: #ffffff;
+
+    width: 100vw;
+    height: 100%;
+    min-height: calc(100vh - var(--header-size));
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+
+    padding-bottom: 128px;
+
+}
+
+.listsPage::-webkit-scrollbar {
+    display: none;
+}
+
+.listsPage .listsHeader-container {
+    background: url('../../../images/background.jpg');
+    box-shadow: inset 0 0 0 1000px rgba(27, 37, 52, 0.4);
+    height: calc(217px - var(--header-size));
+
+    background-position: 50% 0;
+    background-position: 0 0;
+    background-attachment: fixed;
+}
+
+.listsPage .search-list {
+    position: relative;
+    left: 128px;
+    top: 64px;
+    border-radius: 10px;
+    background-color: #C4C4C4;
+    height: 45px;
+    width: 280px;
+    padding-left: 16px;
+    outline: none;
+    font-family: Roboto-Regular;
+}
+
+.listsPage
+.listsBoard {
+    height: calc(100vh - 217px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.listsPage .listsBoard::-webkit-scrollbar-track {
+	box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #191C20;
+}
+
+.listsPage .listsBoard::-webkit-scrollbar {
+	width: 12px;
+}
+
+.listsPage .listsBoard::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #7A808B;
+}
+
+.listsPage .listsBoard .nb-list {
+    position: relative;
+    left: 145px;
+    top: 64px;
+
+    font-family: Roboto-Bold;
+    font-size: 18px;
+}
+
+.listsPage .listsBoard .tablesBoard {
+    position: relative;
+    top: 96px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto; 
+
+    font-family: Roboto-Regular;
+    text-align: left;
+
+    border-collapse:separate; 
+    border-spacing: 0 1em;
+}
+
+.listsPage .listsBoard .tablesBoard
+.first-th {
+    padding-left: 16px;
+}
+
+.listsPage td:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border: 0px solid;
+}
+
+.listsPage td:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border: 0px solid;
+}
+
+.listsPage .listsBoard .tablesBoard
+.tableBoard {
+    background-color: #1B2534;
+    box-shadow: 0px 4px 6px rgba(59, 60, 64, 0.4);
+
+    color: var(--secondary-color);
+
+    height: 60px;
+    padding-left: 8px;
+
+    margin-bottom: 8px;
+}
+
+.listsPage .listsBoard .tablesBoard
+.tableBoard .tableBoard-nickname {
+    cursor: pointer;
+}
+
+.listsPage .listsBoard .tablesBoard
+.tableBoard .tableBoard-guild {
+    cursor: pointer;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.image-container {
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.image-container .list-image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.follow {
+    width: 80px;
+    height: 22px;
+    line-height: 22px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.follow::before {
+    content: 'Follow';
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.unfollow {
+    width: 80px;
+    height: 22px;
+    line-height: 22px;
+    border-radius: 5px;
+    background-color: #C4C4C4;
+    font-size: 14px;
+}
+
+.listsPage.listsBoard .tablesBoard .tableBoard
+.unfollow::before {
+    content: 'Unfollow';
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.status-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.status {
+    text-transform: uppercase;
+    color: var(--third-color);
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.pastille {
+    width: 8px;
+    height: 8px;
+    border-radius: 20px;
+    background: var(--green-color);
+
+    margin-right: 6px;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.online {
+    background: var(--green-color);
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.offline {
+    background: #EB5757;
+}
+
+.listsPage .listsBoard .tablesBoard .tableBoard
+.ingame {
+    background: var(--primary-color);
+}
+
+.listsPage .listsBoard .guildTable {
+    cursor: pointer;
+}

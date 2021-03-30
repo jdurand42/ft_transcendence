@@ -12,6 +12,7 @@ export class ProfileController {
     let view
 
     view = new ProfileView({ model: wrapper, id: id })
+    return view
     /* if (page === 'achivements') {
       view = new AchivementsView({ model: wrapper, id: id })
     } else if (page === 'edit_profile') {

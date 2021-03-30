@@ -1,0 +1,16 @@
+<div class="leaderboardHeader">
+    <input type="text" class="search-list" id="searchLeaderboard" placeholder="Research"></input>
+    <div class="filter league-filter" id="league-filter">League 
+        <div class="league-name" id="league-name">
+            {{name}} 
+        </div>
+        <div class="arrow-down-container">
+            <img src='./icons/arrow_down-black.svg' class="arrow-down"></img>
+        </div>
+    </div>
+    <div class="list-leagues" id="list-leagues" style="display: none;">
+        {{#each league}}
+            <div class="el league" id="{{name}}" for="{{id}}">{{name}}</div>
+        {{/each}}
+    </div>
+</div>

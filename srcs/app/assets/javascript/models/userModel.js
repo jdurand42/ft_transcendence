@@ -9,7 +9,7 @@ export const User = Backbone.Model.extend({
     image_url: undefined,
     ladder_games_lost: undefined,
     ladder_games_won: undefined,
-    ladder_id: undefined,
+    ladder_id: 0,
     nickname: undefined,
     status: undefined,
     two_factor: false,
@@ -38,9 +38,9 @@ export const User = Backbone.Model.extend({
     return this.urlRoot
   },
 
-  fetchUser: function (url) {
+  fetchUser: function (userId) {
     return this.fetch({
-      url: this.urlRoot + url,
+      url: this.urlRoot + userId,
       success: function (response) {
       },
       error: function (errorResponse) {
@@ -82,8 +82,6 @@ export const User = Backbone.Model.extend({
 
   block: function (id) {
     const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/users/' + this.id + '/ignores'
     fetch(url, {
       method: 'POST',
@@ -95,12 +93,25 @@ export const User = Backbone.Model.extend({
   },
   unblock: function (id) {
     const header = this.superHeaders.getHeaders()
-    header.append('accept', 'application/json')
-    header.append('Content-Type', 'application/json')
     const url = '/api/users/' + this.id + '/ignores/' + id
     fetch(url, {
       method: 'DELETE',
       headers: header
+    })
+  },
+
+  follow: function (id) {
+    return $.ajax({
+      url: '/api/users/' + this.id + '/friends',
+      method: 'POST',
+      data: { friend_id: id }
+    })
+  },
+
+  unfollow: function (id) {
+    return $.ajax({
+      url: '/api/users/' + this.id + '/friends/' + id,
+      method: 'DELETE'
     })
   }
 })

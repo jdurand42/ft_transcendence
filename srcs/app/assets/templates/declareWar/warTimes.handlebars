@@ -1,0 +1,64 @@
+<div class="warTimes declareWar" id="warSchedule">
+    <a class="close" id="closeDeclareWar" href='#guild/{{onId}}'>
+        <img src="./icons/esc.svg">
+    </a>
+    <div class="title">VS
+        <div class="guildsName from">{{fromName}}</div>
+        <div class="guildsName on">{{onName}}</div>
+    </div>
+    <div class="declareMiddle warRulesMiddle">
+        <div class="declareWarTitle warTimesTitle">War times</div>
+        <div class="all-war-times" id="all-war-times">
+            {{#each warTime}}
+            <div class="war-time" id="{{index}}">
+                <div class="text-input">From</div>
+                <div class="filter filter-days" id="filter-days-from-{{index}}" for={{index}}> 
+                    <div class="day-name" id="day-name-from-{{index}}">
+                        {{fromDay}}
+                    </div>
+                    <div class="arrow-down-container">
+                        <img src='./icons/arrow_down-black.svg' class="arrow-down"></img>
+                    </div>
+                </div>
+                <div class="list-days" id="filter-days-from-{{index}}-open" style="display: none;">
+                    {{#each days}}
+                    <div class="day" id="from-{{index}}" for="{{index}}">{{day}}</div>
+                    {{/each}}
+                </div>
+                <input type="text" class="input hh" id="fromHH{{index}}" placeholder="HH" maxlength="2"></input>
+                <input type="text" class="input mm" id="fromMM{{index}}" placeholder="MM" maxlength="2"></input>
+                <div class="text-input">To</div>
+                    <div class="filter filter-days" id="filter-days-to-{{index}}" for={{index}}> 
+                    <div class="day-name" id="day-name-to-{{index}}">
+                        {{toDay}} 
+                    </div>
+                    <div class="arrow-down-container">
+                        <img src='./icons/arrow_down-black.svg' class="arrow-down"></img>
+                    </div>
+                </div>
+                <div class="list-days" id="filter-days-to-{{index}}-open" style="display: none;">
+                    {{#each days}}
+                    <div class="day" id="to-{{index}}" for="{{index}}">{{day}}</div>
+                    {{/each}}
+                </div>
+                <input type="text" class="input hh" id="toHH{{index}}" placeholder="HH" maxlength="2"></input>
+                <input type="text" class="input mm" id="toMM{{index}}" placeholder="MM" maxlength="2"></input>
+                <div class="minus-circular-container" id="minus-circular-container" for="{{index}}">
+                    <img src="./icons/minus-circular.svg" class="minus-circular">
+                </div>
+            </div>
+            {{/each}}
+            <div class="add-war-time", id="add-war-time">
+            <a class="add-war-time-container" id="add-war-time-container">
+                <img src="./icons/plus.svg" class="add-war-time-icon">
+            </a>
+            Add war time
+            </div>
+        </div>
+    </div>
+    <p id="error" style="display: none;"></p>
+    <div class="buttons">
+        <button class="button prev prevWarTimes">Previous</button>
+        <button class="button next validateWarTimes">Validate</button>
+    </div>
+</div>

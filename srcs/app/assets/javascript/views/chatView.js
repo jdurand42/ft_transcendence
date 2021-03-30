@@ -38,6 +38,8 @@ export const ChatView = Backbone.View.extend({
     'click .members': 'closeAdminRights',
     'click .yesAsAdmin': 'yesAsAdmin',
     'click .ban': 'openModalBan',
+    'click .kick': 'openModalKick',
+    'click .yesKick': 'yesKick',
     'click .yesBan': 'validateBan',
     'click .mute': 'openModalMute',
     'click .yesMute': 'validateMute',
@@ -64,6 +66,8 @@ export const ChatView = Backbone.View.extend({
     this.userLogged = new User()
     this.userLoggedId = Number(window.localStorage.getItem('user_id'))
 
+    this.socket = new MyWebSocket(this.userLoggedId, 'UserChannel', this)
+
     this.userLogged.fetchUser(this.userLoggedId)
 
     this.myChannels.on('remove', function () {
@@ -80,6 +84,7 @@ export const ChatView = Backbone.View.extend({
       let i = 0
       for (; i < this.myChannels.length; i++) {
         const currentChannel = this.myChannels.at(i)
+        console.log(currentChannel)
         const channelId = currentChannel.get('id')
         if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
           const socket = new MyWebSocket(channelId, 'ChatChannel', this)
@@ -114,7 +119,7 @@ export const ChatView = Backbone.View.extend({
     let currentChannel
     if (this.myChannels.length > 0) {
       currentChannel = this.myChannels.at(0)
-    } else if (this.channels.length > 0) {
+    } else if (this.channels.length > 0 && this.userLogged.get('admin') === true) {
       currentChannel = this.channels.at(0)
     }
 
@@ -187,20 +192,46 @@ export const ChatView = Backbone.View.extend({
 
   receiveMessage: function (chatId, message) {
     if (message.action) { // message.action = message TO DO
-      if (message.action === 'user_online') {
-        this.users.get(message.id).set({ status: 'online' })
-      } else if (message.action === 'user_offline') {
-        this.users.get(message.id).set({ status: 'offline' })
-      } else if (message.action === 'user_ingame') {
-        this.users.get(message.id).set({ status: 'ingame' })
-      }
-      const currentChannel = this.channels.get(this.channelId)
-      this.updateContextCenter(currentChannel)
-      this.updateContextRightSide(currentChannel)
-      if (currentChannel.get('privacy') === 'direct_message') {
-        this.updateHTML('center')
-      } else {
-        this.updateHTML('right-side')
+      if (message.action === 'user_online' ||
+        message.action === 'user_offline' ||
+        message.action === 'user_ingame') {
+        if (message.action === 'user_online') {
+          this.users.get(message.id).set({ status: 'online' })
+        } else if (message.action === 'user_offline') {
+          this.users.get(message.id).set({ status: 'offline' })
+        } else if (message.action === 'user_ingame') {
+          this.users.get(message.id).set({ status: 'ingame' })
+        }
+        const currentChannel = this.channels.get(this.channelId)
+        this.updateContextCenter(currentChannel)
+        this.updateContextRightSide(currentChannel)
+        if (currentChannel.get('privacy') === 'direct_message') {
+          this.updateHTML('left-header')
+        } else {
+          this.updateHTML('right-side')
+        }
+      } else if (message.action === 'chat_invitation') {
+        const socket = new MyWebSocket(message.id, 'ChatChannel', this)
+
+        const fetchMyChannels = async () => {
+          this.channels.fetch()
+          await this.myChannels.fetchByUserId(this.userLoggedId)
+
+          const messages = await this.myChannels.get(message.id).getMessages()
+          for (let i = 0; i < messages.length; i++) {
+            this.receiveMessage(message.id, messages[i])
+          }
+
+          if (message.sender_id !== this.userLoggedId) { // check back ok
+            this.updateContextLeftSide()
+            if (this.myChannels.get(message.id).get('privacy') === 'direct_message') {
+              this.updateHTML('DM')
+            } else {
+              this.updateHTML('myChannels')
+            }
+          }
+        }
+        fetchMyChannels()
       }
     } else {
       let sender
@@ -374,6 +405,27 @@ export const ChatView = Backbone.View.extend({
     document.getElementById('modalValidationBan' + e.currentTarget.getAttribute('for')).style.display = 'flex'
   },
 
+  openModalKick: function (e) {
+    document.getElementById('modalValidationKick' + e.currentTarget.getAttribute('for')).style.display = 'flex'
+  },
+
+  yesKick: function (e) {
+    const userId = e.currentTarget.getAttribute('for')
+    const currentChannel = this.channels.get(this.channelId)
+    let adminIds = currentChannel.get('admin_ids')
+    let participantIds = currentChannel.get('participant_ids')
+    adminIds = adminIds.slice().filter(el => el != userId)
+    participantIds = participantIds.slice().filter(el => el != userId)
+    currentChannel.kickUser(userId)
+    currentChannel.set({ admin_ids: adminIds })
+    currentChannel.set({ participant_ids: participantIds })
+    this.modalClose()
+    this.updateContextAdmin(currentChannel)
+    this.updateContextMembers(currentChannel)
+    this.updateHTML('admins')
+    this.updateHTML('participants')
+  },
+
   yesAsAdmin: function (e) {
     const userId = e.currentTarget.getAttribute('for')
     const currentChannel = this.channels.get(this.channelId)
@@ -451,6 +503,7 @@ export const ChatView = Backbone.View.extend({
         this.context.admins.push(JSON.parse(JSON.stringify(admin)))
         this.context.admins[this.context.admins.length - 1].anagram = anagram
         this.context.admins[this.context.admins.length - 1].channelId = channelId
+        this.context.admins[this.context.admins.length - 1].owner = this.context.owner
         this.context.admins[this.context.admins.length - 1].superAdmin = this.userLogged.get('admin')
       }
     }
@@ -593,7 +646,7 @@ export const ChatView = Backbone.View.extend({
     e.stopPropagation()
 
     this.context.superAdmin = this.userLogged.get('admin')
-    if (this.channelId === undefined) {
+    if (e.currentTarget.getAttribute('class') === 'admin_panel_settings') {
       this.channelId = e.currentTarget.getAttribute('for')
       e.currentTarget = e.currentTarget.parentElement
       this.context.name = this.channels.get(this.channelId).get('name')
@@ -714,7 +767,12 @@ export const ChatView = Backbone.View.extend({
     this.context.myChannels = []
     for (let i = 0; i < channels.length; i++) {
       this.context.myChannels.push(JSON.parse(JSON.stringify(channels[i])))
-      this.context.myChannels[i].admin = channels[i].get('admin_ids').find(el => el === this.userLogged.get('id'))
+      if (channels[i].get('owner_id') && (channels[i].get('admin_ids').find(el => el === this.userLogged.get('id')) === true ||
+      channels[i].get('owner_id') === this.userLogged.get('id'))) {
+        this.context.myChannels[i].admin = true
+      } else {
+        this.context.myChannels[i].admin = false
+      }
     }
 
     // direct messages
@@ -722,8 +780,11 @@ export const ChatView = Backbone.View.extend({
     this.context.DM = []
     for (let i = 0; i < DM.length; i++) {
       this.context.DM.push(JSON.parse(JSON.stringify(DM[i])))
+      console.log(DM[i])
       const id = DM[i].get('participant_ids').find(el => el !== this.userLogged.get('id'))
+      console.log(id)
       const user = this.users.get(id)
+      console.log(this.users.get(id))
       if (this.userLogged.get('ignores').some(el => el.ignored_id == id) === true) {
         this.context.DM[i].image_url = './icons/blocked.svg'
       } else {
@@ -983,7 +1044,7 @@ export const ChatView = Backbone.View.extend({
         this.closeOpenDiscussion()
         document.getElementById('channel' + newChannel.get('id')).classList.add('open')
         e.currentTarget = document.getElementById('channel' + newChannel.get('id'))
-        const socket = new MyWebSocket(newChannel.get('id'), 'ChatChannel', this)
+        // const socket = new MyWebSocket(newChannel.get('id'), 'ChatChannel', this)
         this.openChat(e)
       } catch (error) {
         document.getElementById('error-message').innerHTML = error.responseJSON.message
@@ -1049,6 +1110,7 @@ export const ChatView = Backbone.View.extend({
     const newChannel = new ChatModel()
     const participantsIds = []
     participantsIds.push(Number(id))
+    console.log(id)
     const createChannel = async () => {
       try {
         const response = await newChannel.createChannel(undefined, participantsIds, 'direct_message')
@@ -1065,7 +1127,7 @@ export const ChatView = Backbone.View.extend({
         this.closeOpenDiscussion()
         document.getElementById('DM' + newChannel.get('id')).classList.add('open')
         e.currentTarget = document.getElementById('DM' + newChannel.get('id'))
-        const socket = new MyWebSocket(newChannel.get('id'), 'ChatChannel', this)
+        // const socket = new MyWebSocket(newChannel.get('id'), 'ChatChannel', this)
         this.openChat(e)
         return newChannel
       } catch (error) {

@@ -5,9 +5,8 @@ export const Guild = Backbone.Model.extend({
     anagram: undefined,
     owner_id: undefined,
     score: undefined,
-    oauthService: undefined,
-    officers_ids: undefined,
-    war_records: undefined
+    officer_ids: undefined,
+    member_ids: undefined,
   },
 
   initialize: function (id) {
@@ -31,6 +30,21 @@ export const Guild = Backbone.Model.extend({
         console.log('error while creating guild')
         console.log(response)
       }
+    })
+  },
+
+  leave: function (id) {
+    return $.ajax({
+      url: '/api/guilds/' + this.id + '/members/' + id,
+      method: 'DELETE'
+    })
+  },
+
+  sendInvitation: function (id) {
+    return $.ajax({
+      url: '/api/guilds/' + this.id + '/invitations',
+      method: 'POST',
+      data: { user_id: id }
     })
   }
 })

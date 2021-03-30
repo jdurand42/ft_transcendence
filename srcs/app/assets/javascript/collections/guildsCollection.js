@@ -1,11 +1,9 @@
-import { Guild } from '../models/guild_model'
+import { Guild } from '../models/guildModel'
 
 export const Guilds = Backbone.Collection.extend({
   initialize: function (url) {
     this.on('all', function (e) {
-      //
     }, this)
-    this.fetch('success')
   },
   model: Guild,
   urlRoot: '/api/guilds/',

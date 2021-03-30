@@ -1,12 +1,13 @@
-.panel {
+/*.panel {
 	position: relative;
-}
+}*/
 
 .subNavBar {
 	list-style-type: none;
 	padding-top: 25px;
 	margin: 0px;
 	width: 100%;
+	/* width = 100vw*/
 	text-align: center;
 }
 

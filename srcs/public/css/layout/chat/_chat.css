@@ -3,13 +3,12 @@
     width: 100vw;
     height: calc(100vh - var(--header-size));
 
-    background-position: 50% 0;
     background-position: 0 0;
     background-attachment: fixed;
 
-    display: flex; 
+    display: flex;
     flex-direction: row;
-    
+
     overflow: hidden;
     overflow-x: auto;
 }
@@ -281,7 +280,6 @@
     padding-left: 42px;
 }
 
-
 .chat .center .header .left-header .info
 .status {
     text-transform: uppercase;
@@ -437,11 +435,6 @@
     font-family: Roboto-Regular;
 
     margin-bottom: 8px;
-}
-
-.chat .center .messages .scrollable .message .info
-.anagram {
-    /* margin-right: 8px; */
 }
 
 .chat .center .messages .scrollable .message .info

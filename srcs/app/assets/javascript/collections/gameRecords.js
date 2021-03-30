@@ -5,7 +5,7 @@ export const GameRecords = Backbone.Collection.extend({
     this.on('all', function (e) {
       //
     }, this)
-    this.fetch('success')
+    // this.fetch('success')
   },
   model: GameRecord,
   urlRoot: '/api/games',

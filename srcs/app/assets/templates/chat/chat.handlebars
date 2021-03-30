@@ -74,7 +74,7 @@
     </div>
     <div class="center" id="center"  style="display: none;">
         <div class="header">
-            <div class="left-header">
+            <div class="left-header" id="left-header">
                 {{#unless channel}}
                 <div class="image-container">
                     <img src={{image_url}} class="blockViewProfile image_url"  id={{id}} for="{{userId}}"></img>
@@ -444,14 +444,106 @@
                             <div class="nickname">
                                 <p class="text">{{nickname}}</p>
                             </div>
-                            {{#if superAdmin}}
+                            {{#ifCond owner '||' superAdmin}}
                             <div class="dots-container" for="{{id}}">
                                 <img src='./icons/dots.svg' class="dots"></img>
                             </div>
                             <div class="admin-rights" id="admin-rights{{id}}" style="display: none;">
                                 <div class="el remove-admin-rights" id="removeAdminRights" for="{{id}}">Remove administrator rights</div>
+                                <div class="el mute" id="mute" for="{{id}}">Mute</div>
+                                <div class="el kick" id="kick" for="{{id}}">Kick</div>
+                                <div class="el ban" id="ban" for="{{id}}">Ban</div>
                             </div>
-                            {{/if}}
+                            {{/ifCond}}
+                        </div>
+                        <div class="modal validationModal modalValidationKick" id="modalValidationKick{{id}}" style="display: none;">
+                            <div class="background"></div>
+                            <div class="modalOpen">
+                                <p class="sure">Kick this member</p>
+                                <p class="adminRights">{{nickname}} won't access this channel anymore.</p>
+                                <div class="buttons">
+                                    <div class="validation-buttons button-container-yes">
+                                        <button class="button yes yesKick" for="{{id}}">Yes</button>
+                                    </div>
+                                    <div class="validation-buttons button-container-no">
+                                        <button class="button no">No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal validationModal modalValidationBan" id="modalValidationBan{{id}}" style="display: none;">
+                            <div class="background"></div>
+                            <div class="modalOpen">
+                                <p class="sure">Ban this member</p>
+                                <p class="adminRights">{{nickname}} won't be able to find, see or join this channel.</p>
+                                <div class="radio-buttons" >
+                                    <div class="radio-button">
+                                        <input type="radio" id="1minBan" name="radioBan{{id}}" value="60" checked>
+                                        <label for="1minBan">1 minute</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="10minBan" name="radioBan{{id}}" value="600">
+                                        <label for="10minBan">10 minutes</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="12hBan" name="radioBan{{id}}" value="43200">
+                                        <label for="12hBan">12 hours</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="24hBan" name="radioBan{{id}}" value="86400">
+                                        <label for="24hBan">24 hours</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="7daysBan" name="radioBan{{id}}" value="604800">
+                                        <label for="7daysBan">7 days</label> 
+                                    </div>
+                                </div>
+                                <div class="buttons">
+                                    <div class="validation-buttons button-container-yes">
+                                        <button class="button yes yesBan" for="{{id}}">Ban</button>
+                                    </div>
+                                    <div class="validation-buttons button-container-no">
+                                        <button class="button no">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal validationModal modalValidationMute" id="modalValidationMute{{id}}" style="display: none;">
+                            <div class="background"></div>
+                            <div class="modalOpen">
+                                <p class="sure">Mute this member</p>
+                                <p class="adminRights">{{nickname}} will have access to this channel, but couldn't send messages.</p>
+                                <div class="radio-buttons" >
+                                    <div class="radio-button">
+                                        <input type="radio" id="1minBan" name="radioMute{{id}}" value="60" checked>
+                                        <label for="1minMute">1 minute</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="10minBan" name="radioMute{{id}}" value="600">
+                                        <label for="10minMute">10 minutes</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="12hBan" name="radioMute{{id}}" value="43200">
+                                        <label for="12hMute">12 hours</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="24hBan" name="radioMute{{id}}" value="86400">
+                                        <label for="24hMute">24 hours</label> 
+                                    </div>
+                                    <div class="radio-button">
+                                        <input type="radio" id="7daysBan" name="radioMute{{id}}" value="604800">
+                                        <label for="7daysMute">7 days</label> 
+                                    </div>
+                                </div>
+                                <div class="buttons">
+                                    <div class="validation-buttons button-container-yes">
+                                        <button class="button yes yesMute" for="{{id}}">Mute</button>
+                                    </div>
+                                    <div class="validation-buttons button-container-no">
+                                        <button class="button no">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     {{/each}}
                 </div>
@@ -476,6 +568,7 @@
                                 <div class="el appoint-as-admin" id="appointAsAdministrator" for="{{id}}">Appoint as administrator</div>
                                 {{/ifCond}}
                                 <div class="el mute" id="mute" for="{{id}}">Mute</div>
+                                <div class="el kick" id="kick" for="{{id}}">Kick</div>
                                 <div class="el ban" id="ban" for="{{id}}">Ban</div>
                             </div>
                         </div>
@@ -487,6 +580,21 @@
                                 <div class="buttons">
                                     <div class="validation-buttons button-container-yes">
                                         <button class="button yes yesAsAdmin" for="{{id}}">Yes</button>
+                                    </div>
+                                    <div class="validation-buttons button-container-no">
+                                        <button class="button no">No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal validationModal modalValidationKick" id="modalValidationKick{{id}}" style="display: none;">
+                            <div class="background"></div>
+                            <div class="modalOpen">
+                                <p class="sure">Kick this member</p>
+                                <p class="adminRights">{{nickname}} won't access this channel anymore.</p>
+                                <div class="buttons">
+                                    <div class="validation-buttons button-container-yes">
+                                        <button class="button yes yesKick" for="{{id}}">Yes</button>
                                     </div>
                                     <div class="validation-buttons button-container-no">
                                         <button class="button no">No</button>

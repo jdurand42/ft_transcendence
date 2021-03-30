@@ -9,7 +9,6 @@ export const GameRecord = Backbone.Model.extend({
   },
 
   initialize: function () {
-    console.log('initialize')
     this.superHeaders = new SuperHeaders()
     this.headers = this.superHeaders.getHeaders()
   },
