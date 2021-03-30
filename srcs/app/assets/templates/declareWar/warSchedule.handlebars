@@ -1,0 +1,53 @@
+<div class="warSchedule declareWar" id="warSchedule">
+    <div class="close">
+        <img src="./icons/esc.svg" class="">
+    </div>
+    <div class="title">
+        <div class="guildsName from">{{fromName}}</div>
+        <div class="vs">VS</div>
+        <div class="guildsName on">{{onName}}</div>
+    </div>
+    <div class="warScheduleMiddle">
+        <div class="warsCalendar warsCalendarFrom">
+            <div class="nextWars">Next wars</div>
+            <div class="allDates allDatesFrom">
+            {{#each fromWars}}
+            <div class="dates">
+                <div class="date">
+                    <div class="day">{{startDay}} {{startDate}}</div>
+                    <div class="tiret"> - </div>
+                    <div class="day">{{endDay}} {{endDate}}</div>
+                </div>
+                <div class="hours">
+                    <div class="startHours">at {{startHours}}h{{startMin}}m</div>
+                    <div class="endHours">at {{endHours}}h{{endMin}}m</div>
+                </div>
+            </div>
+            {{/each}}
+            </div>
+        </div>
+        <div class="warCalendarNext">
+        </div>
+        <div class="warsCalendar warsCalendarOn">
+            <div class="nextWars">Next wars</div>
+            <div class="allDates allDatesOn">
+            {{#each onWars}}
+            <div class="dates">
+                <div class="date">
+                    <div class="day">{{startDay}} {{startDate}}</div>
+                    <div class="tiret"> - </div>
+                    <div class="day">{{endDay}} {{endDate}}</div>
+                </div>
+                <div class="hours">
+                    <div class="startHours">at {{startHours}}h{{startMin}}m</div>
+                    <div class="endHours">at {{endHours}}h{{endMin}}m</div>
+                </div>
+            </div>
+            {{/each}}
+            </div>
+        </div>
+    </div>
+    <div class="buttons">
+
+    </div>
+</div>
