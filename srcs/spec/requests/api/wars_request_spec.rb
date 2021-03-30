@@ -8,8 +8,8 @@ RSpec.describe "Wars", type: :request do
   let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022, 01, 01, 00, 00, 0), prize: 1000, max_unanswered: 10 } }
   let(:attributes_2) { { on_id: Guild.first.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 100, max_unanswered: 10 } }
   before {
-    post api_guilds_url, headers: access_token, params: { name: "NoShroud", anagram: "NOS" }
-    post api_guilds_url, headers: access_token_2, params: { name: "BANG", anagram: "ABCDE" }
+    post api_guilds_url, headers: access_token, params: { name: "NoShroud", anagram: "NOS", score: 100 }
+    post api_guilds_url, headers: access_token_2, params: { name: "BANG", anagram: "ABCDE", score: 100 }
   }
   context '#get' do
     before {
@@ -17,7 +17,7 @@ RSpec.describe "Wars", type: :request do
       post api_wars_url, headers: access_token_2, params: attributes_2
     }
     describe "#index" do
-      it 'should return all wars',test:true do
+      it 'should return all wars' do
         get api_wars_url, headers: access_token
         expect(json.size).to eq 2
         expect(response.status).to eq 200
@@ -149,7 +149,7 @@ RSpec.describe "Wars", type: :request do
     end
   end
   describe 'lifecycle' do
-    let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.now.in_time_zone(1).in(2), prize: 1000, max_unanswered: 10 } }
+    let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.now.in_time_zone(1).in(5), prize: 100, max_unanswered: 10 } }
     before {
       post api_wars_url, headers: access_token, params: attributes
       post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
@@ -166,13 +166,26 @@ RSpec.describe "Wars", type: :request do
       end
     end
     context 'closing' do
-      before { perform_enqueued_jobs(only: WarCloserJob) }
       it 'should close at end time' do
+        perform_enqueued_jobs(only: WarCloserJob)
         expect(War.first.closed?).to be_truthy
       end
       it 'should not let update when closed' do
+        perform_enqueued_jobs(only: WarCloserJob)
         put api_war_url(War.first.id), headers: access_token_2, params: { max_unanswered: 12 }
         expect(json['errors']).to eq ["This war has ended"]
+      end
+      it 'transfers prize points from looser to winner (from_side)' do
+        War.first.update!(from_score: 2, on_score: 1)
+        perform_enqueued_jobs(only: WarCloserJob)
+        expect(War.first.from.score).to eq 100
+        expect(War.first.on.score).to eq -100
+      end
+      it 'transfers prize points from looser to winner (on_side)' do
+        War.first.update!(from_score: 1, on_score: 2)
+        perform_enqueued_jobs(only: WarCloserJob)
+        expect(War.first.from.score).to eq -100
+        expect(War.first.on.score).to eq 100
       end
     end
   end

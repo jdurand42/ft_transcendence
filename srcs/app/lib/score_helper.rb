@@ -2,7 +2,27 @@
 
 module ScoreHelper
   include(WarHelper)
-  class GamePoints
+
+  class WarPrizeGiver
+    def prize_points(war)
+      winner_from(war) if war.from_score > war.on_score
+      winner_on(war) if war.on_score > war.from_score
+    end
+
+    private
+
+    def winner_from(war)
+      war.from.increment!(:score, war.prize)
+      war.on.decrement!(:score, war.prize)
+    end
+
+    def winner_on(war)
+      war.on.increment!(:score, war.prize)
+      war.from.decrement!(:score, war.prize)
+    end
+  end
+
+  class GamePointGiver
     POINTS = 10
 
     def game_points(game)

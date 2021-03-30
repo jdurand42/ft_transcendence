@@ -3,8 +3,8 @@
 require 'rails_helper'
 include(ScoreHelper)
 
-RSpec.describe GamePoints do
-  let(:gp) { GamePoints.new }
+RSpec.describe GamePointGiver do
+  let(:gp) { GamePointGiver.new }
   let!(:tom) { create(:user, nickname: 'tom', ladder_games_lost: 0, ladder_games_won: 0) }
   let!(:alan) { create(:user, nickname: 'alan', ladder_games_lost: 0, ladder_games_won: 0) }
   let!(:betty) { create(:user, nickname: 'betty', ladder_games_lost: 0, ladder_games_won: 0) }
