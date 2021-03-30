@@ -1,5 +1,6 @@
 import { Guild } from '../../models/guildModel'
 import { Wars } from '../../collections/warCollection'
+import { War } from '../../models/warModel'
 
 export const DeclareWar = Backbone.View.extend({
   events: {
@@ -7,13 +8,16 @@ export const DeclareWar = Backbone.View.extend({
     'click .prevWarTimes': 'prevWarTimes',
     'click .validateWarTimes': 'validateWarTimes',
     'click .filter-days': 'filterDay',
-    'click .day': 'selectDay'
+    'click .day': 'selectDay',
+    'click .add-war-time': 'addWarTime',
+    'click .minus-circular-container': 'lessWarTime'
   },
   initialize: function (options) {
     this.templateWarRules = Handlebars.templates.warRules
     this.templateWarTimes = Handlebars.templates.warTimes
     this.startDate = undefined
     this.endDate = undefined
+    this.dates = []
 
     this.fromId = options.fromId
     this.onId = options.onId
@@ -59,35 +63,35 @@ export const DeclareWar = Backbone.View.extend({
       { day: 'Sunday' }
     ]
 
-    const newDays = this.days
-    newDays.forEach(element => {
-      element.index = this.context.warTime.length
-    })
-
+    const newDays = JSON.parse(JSON.stringify(this.days))
+    for (const [key, value] of Object.entries(newDays)) {
+      value.index = this.context.warTime.length
+    }
     this.context.warTime.push({
       index: this.context.warTime.length,
-      day: 'Monday',
+      fromDay: 'Monday',
+      toDay: 'Monday',
       days: newDays
     })
-
-    console.log(this.context.warTime)
 
     const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
 
     this.disableDates()
-
+    this.defineStartEndDate()
+    this.initializeCalendar()
     return this
   },
 
   disableDates: function () {
-    const dates = []
+    // dates table
+
     for (let i = 0; i < this.fromWars.length; i++) {
       const startDate = new Date(this.fromWars.at(i).get('war_start'))
       const endDate = new Date(this.fromWars.at(i).get('war_end'))
       // eslint-disable-next-line no-unmodified-loop-condition
       while (startDate <= endDate) {
-        dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
+        this.dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
         startDate.setDate(startDate.getDate() + 1)
       }
     }
@@ -96,14 +100,16 @@ export const DeclareWar = Backbone.View.extend({
       const endDate = new Date(this.onWars.at(i).get('war_end'))
       // eslint-disable-next-line no-unmodified-loop-condition
       while (startDate <= endDate) {
-        dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
+        this.dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
         startDate.setDate(startDate.getDate() + 1)
       }
     }
+  },
 
+  defineStartEndDate: function () {
     const now = new Date()
     while (1) {
-      if (dates.some(el => {
+      if (this.dates.some(el => {
         return el === now.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' })
       }) === true) {
         now.setDate(now.getDate() + 1)
@@ -115,6 +121,12 @@ export const DeclareWar = Backbone.View.extend({
     const endDate = new Date(now)
     endDate.setHours(endDate.getHours() + 1)
 
+    this.startDate = now
+    this.endDate = endDate
+  },
+
+  initializeCalendar: function () {
+    const dates = this.dates
     const $j = jQuery.noConflict()
     $('#daterangepicker').daterangepicker({
       minDate: new Date(),
@@ -122,8 +134,8 @@ export const DeclareWar = Backbone.View.extend({
       locale: {
         format: 'DD/MM/YYYY hh:mm A'
       },
-      startDate: now,
-      endDate: endDate,
+      startDate: this.startDate,
+      endDate: this.endDate,
       isInvalidDate: function (date) {
         date = date.toDate().toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' })
         if (dates.some(el => el === date) === true) { return true }
@@ -132,11 +144,18 @@ export const DeclareWar = Backbone.View.extend({
     })
   },
 
+  error: function (str, display) {
+    console.log('error')
+    console.log(str)
+    document.getElementById('error').textContent = str
+    document.getElementById('error').style.display = display
+  },
+
   nextWarRules: function () {
+    const winReward = document.getElementById('win-reward').value
+    const maxUnanswered = document.getElementById('max-unanswered').value
     this.startDate = $('#daterangepicker').data('daterangepicker').startDate
     this.endDate = $('#daterangepicker').data('daterangepicker').endDate
-    this.context.winReward = document.getElementById('win-reward').value
-    this.context.maxUnanswered = document.getElementById('max-unanswered').value
     if (document.getElementById('ladder').checked) {
       this.context.ladder = 'checked'
     } else {
@@ -148,14 +167,31 @@ export const DeclareWar = Backbone.View.extend({
       this.context.tournaments = undefined
     }
 
-    const templateData = this.templateWarTimes(this.context)
-    this.$el.html(templateData)
+    let div
+    if (isNaN(winReward) === false && winReward >= 0) {
+      this.context.winReward = document.getElementById('win-reward').value
+    } else {
+      div = document.getElementById('win-reward')
+      div.style.border = 'solid 2px var(--error-message-color)'
+    }
+    if (isNaN(maxUnanswered) === false && maxUnanswered >= 0) {
+      this.context.maxUnanswered = document.getElementById('max-unanswered').value
+    } else {
+      div = document.getElementById('max-unanswered')
+      div.style.border = 'solid 2px var(--error-message-color)'
+    }
+    if (div) {
+      this.error('Input should be a positive number', 'flex')
+    } else {
+      const templateData = this.templateWarTimes(this.context)
+      this.$el.html(templateData)
+    }
   },
 
   prevWarTimes: function () {
     const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
-    this.disableDates()
+    this.initializeCalendar()
   },
 
   validateWarTimes: function () {
@@ -185,7 +221,37 @@ export const DeclareWar = Backbone.View.extend({
     if (res === false) {
       document.getElementById('error').style.display = 'flex'
       document.getElementById('error').textContent = 'Please fill the war times correctly'
+    } else {
+      this.declareWar()
     }
+  },
+
+  declareWar: function () {
+    let tournamentEffort = false
+    if (this.context.ladder === 'checked') {
+      tournamentEffort = true
+    }
+    let ladderEffort = false
+    if (this.context.ladder === 'checked') {
+      ladderEffort = true
+    }
+
+    const war = new War()
+    const declareWar = async () => {
+      try {
+        const response = await war.createWar(
+          Number(this.context.onId),
+          this.startDate.toISOString(),
+          this.endDate.toISOString(),
+          Number(this.context.winReward),
+          Number(this.context.maxUnanswered),
+          tournamentEffort,
+          ladderEffort)
+      } catch (response) {
+        console.log(response)
+      }
+    }
+    declareWar()
   },
 
   filterDay: function (e) {
@@ -209,6 +275,17 @@ export const DeclareWar = Backbone.View.extend({
     }
   },
 
+  addWarTimeHTML: function (div) {
+    const html = this.templateWarTimes(this.context)
+    const found = $(html).find('#' + div)[0].innerHTML
+    const currentDiv = document.getElementById('all-war-times')
+    const el = document.createElement('div')
+    el.setAttribute('id', div)
+    el.setAttribute('class', 'war-time')
+    el.innerHTML = found
+    currentDiv.insertBefore(el, document.getElementById('add-war-time'))
+  },
+
   updateHTML: function (div) {
     const html = this.templateWarTimes(this.context)
     const found = $(html).find('#' + div)[0].innerHTML
@@ -220,7 +297,45 @@ export const DeclareWar = Backbone.View.extend({
     const value = e.currentTarget.textContent
     const index = e.currentTarget.getAttribute('for')
     const id = e.currentTarget.id
-    this.context.warTime[index].day = value
+    console.log(e.currentTarget)
+    console.log(id)
+    if (id.startsWith('from-')) {
+      this.context.warTime[index].fromDay = value
+    } else {
+      this.context.warTime[index].toDay = value
+    }
     this.updateHTML('day-name-' + id)
+    const filters = document.getElementsByClassName('list-days')
+    for (let i = 0; i < filters.length; i++) {
+      filters[i].style.display = 'none'
+    }
+  },
+
+  addWarTime: function () {
+    const newDays = JSON.parse(JSON.stringify(this.days))
+    for (const [key, value] of Object.entries(newDays)) {
+      value.index = this.context.warTime.length
+    }
+
+    this.context.warTime.push({
+      index: this.context.warTime.length,
+      fromDay: 'Monday',
+      toDay: 'Monday',
+      days: newDays
+    })
+
+    this.addWarTimeHTML((this.context.warTime.length - 1).toString())
+  },
+
+  lessWarTime: function (e) {
+    console.log('less war time')
+    const index = e.currentTarget.getAttribute('for')
+    delete this.context.warTime[index]
+    for (let i = 0; i < this.context.warTime; i++) {
+      for (const [key, value] of Object.entries(this.context.warTime[i])) {
+        value.index = i
+      }
+    }
+    this.updateHTML('all-war-times')
   }
 })

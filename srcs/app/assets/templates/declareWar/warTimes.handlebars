@@ -8,13 +8,13 @@
     </div>
     <div class="declareMiddle warRulesMiddle">
         <div class="declareWarTitle warTimesTitle">War times</div>
-        <div class="all-war-times">
+        <div class="all-war-times" id="all-war-times">
             {{#each warTime}}
             <div class="war-time" id="{{index}}">
                 <div class="text-input">From</div>
                 <div class="filter filter-days" id="filter-days-from-{{index}}" for={{index}}> 
                     <div class="day-name" id="day-name-from-{{index}}">
-                        {{day}}
+                        {{fromDay}}
                     </div>
                     <div class="arrow-down-container">
                         <img src='./icons/arrow_down-black.svg' class="arrow-down"></img>
@@ -30,7 +30,7 @@
                 <div class="text-input">To</div>
                     <div class="filter filter-days" id="filter-days-to-{{index}}" for={{index}}> 
                     <div class="day-name" id="day-name-to-{{index}}">
-                        {{day}} 
+                        {{toDay}} 
                     </div>
                     <div class="arrow-down-container">
                         <img src='./icons/arrow_down-black.svg' class="arrow-down"></img>
@@ -43,12 +43,12 @@
                 </div>
                 <input type="text" class="input hh" id="toHH{{index}}" placeholder="HH" maxlength="2"></input>
                 <input type="text" class="input mm" id="toMM{{index}}" placeholder="MM" maxlength="2"></input>
-                <a class="minus-circular-container" id="minus-circular-container">
+                <div class="minus-circular-container" id="minus-circular-container" for="{{index}}">
                     <img src="./icons/minus-circular.svg" class="minus-circular">
-                </a>
+                </div>
             </div>
             {{/each}}
-            <div class="add-war-time">
+            <div class="add-war-time", id="add-war-time">
             <a class="add-war-time-container" id="add-war-time-container">
                 <img src="./icons/plus.svg" class="add-war-time-icon">
             </a>
