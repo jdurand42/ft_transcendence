@@ -113,9 +113,8 @@ module Api
     end
 
     def params_create
-      attacker = Guild.find(GuildMember.where(user: current_user).first.guild_id)
       tmp = params.permit(:on_id, :war_start, :war_end, :prize, :max_unanswered)
-      tmp.merge!(from_id: attacker.id)
+      tmp.merge!(from_id: current_user.guild&.id)
     end
 
     def time_params_create

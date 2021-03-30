@@ -58,6 +58,13 @@ RSpec.describe "Wars", type: :request do
       expect(response.status).to eq 422
       expect(War.count).to eq(0)
     end
+    it 'should not let guild-less user declare a war',test:true do
+      user = create(:user)
+      token = user.create_new_auth_token
+      post api_wars_url, headers: token, params: attributes
+      expect(response.status).to eq 403
+      expect(War.count).to eq(0)
+    end
   end
   describe "#update" do
     before { post api_wars_url, headers: access_token, params: attributes }
