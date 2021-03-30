@@ -86,18 +86,20 @@ export const DeclareWar = Backbone.View.extend({
   disableDates: function () {
     // dates table
 
-    for (let i = 0; i < this.fromWars.length; i++) {
-      const startDate = new Date(this.fromWars.at(i).get('war_start'))
-      const endDate = new Date(this.fromWars.at(i).get('war_end'))
+    const fromWars = this.fromWars.slice().filter(el => el.get('terms_agreed') === true)
+    const onWars = this.onWars.slice().filter(el => el.get('terms_agreed') === true)
+    for (let i = 0; i < fromWars.length; i++) {
+      const startDate = new Date(fromWars.at(i).get('war_start'))
+      const endDate = new Date(fromWars.at(i).get('war_end'))
       // eslint-disable-next-line no-unmodified-loop-condition
       while (startDate <= endDate) {
         this.dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
         startDate.setDate(startDate.getDate() + 1)
       }
     }
-    for (let i = 0; i < this.onWars.length; i++) {
-      const startDate = new Date(this.onWars.at(i).get('war_start'))
-      const endDate = new Date(this.onWars.at(i).get('war_end'))
+    for (let i = 0; i < onWars.length; i++) {
+      const startDate = new Date(onWars.at(i).get('war_start'))
+      const endDate = new Date(onWars.at(i).get('war_end'))
       // eslint-disable-next-line no-unmodified-loop-condition
       while (startDate <= endDate) {
         this.dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
