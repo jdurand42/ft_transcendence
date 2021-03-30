@@ -82,6 +82,7 @@ export const ChatView = Backbone.View.extend({
       let i = 0
       for (; i < this.myChannels.length; i++) {
         const currentChannel = this.myChannels.at(i)
+        console.log(currentChannel)
         const channelId = currentChannel.get('id')
         if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
           const socket = new MyWebSocket(channelId, 'ChatChannel', this)
@@ -116,7 +117,7 @@ export const ChatView = Backbone.View.extend({
     let currentChannel
     if (this.myChannels.length > 0) {
       currentChannel = this.myChannels.at(0)
-    } else if (this.channels.length > 0) {
+    } else if (this.channels.length > 0 && this.userLogged.get('admin') === true) {
       currentChannel = this.channels.at(0)
     }
 
@@ -621,7 +622,7 @@ export const ChatView = Backbone.View.extend({
     e.stopPropagation()
 
     this.context.superAdmin = this.userLogged.get('admin')
-    if (this.channelId === undefined) {
+    if (e.currentTarget.getAttribute('class') === 'admin_panel_settings') {
       this.channelId = e.currentTarget.getAttribute('for')
       e.currentTarget = e.currentTarget.parentElement
       this.context.name = this.channels.get(this.channelId).get('name')
@@ -742,7 +743,12 @@ export const ChatView = Backbone.View.extend({
     this.context.myChannels = []
     for (let i = 0; i < channels.length; i++) {
       this.context.myChannels.push(JSON.parse(JSON.stringify(channels[i])))
-      this.context.myChannels[i].admin = channels[i].get('admin_ids').find(el => el === this.userLogged.get('id'))
+      if (channels[i].get('owner_id') && (channels[i].get('admin_ids').find(el => el === this.userLogged.get('id')) === true ||
+      channels[i].get('owner_id') === this.userLogged.get('id'))) {
+        this.context.myChannels[i].admin = true
+      } else {
+        this.context.myChannels[i].admin = false
+      }
     }
 
     // direct messages
@@ -750,8 +756,11 @@ export const ChatView = Backbone.View.extend({
     this.context.DM = []
     for (let i = 0; i < DM.length; i++) {
       this.context.DM.push(JSON.parse(JSON.stringify(DM[i])))
+      console.log(DM[i])
       const id = DM[i].get('participant_ids').find(el => el !== this.userLogged.get('id'))
+      console.log(id)
       const user = this.users.get(id)
+      console.log(this.users.get(id))
       if (this.userLogged.get('ignores').some(el => el.ignored_id == id) === true) {
         this.context.DM[i].image_url = './icons/blocked.svg'
       } else {
@@ -1077,6 +1086,7 @@ export const ChatView = Backbone.View.extend({
     const newChannel = new ChatModel()
     const participantsIds = []
     participantsIds.push(Number(id))
+    console.log(id)
     const createChannel = async () => {
       try {
         const response = await newChannel.createChannel(undefined, participantsIds, 'direct_message')
