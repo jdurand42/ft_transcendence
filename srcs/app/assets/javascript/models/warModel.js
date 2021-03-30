@@ -40,7 +40,7 @@ export const War = Backbone.Model.extend({
     })
   }
 
-  createWarTime: function (warStart, warEnd) {
+  // createWarTime: function (warStart, warEnd) {
 
-  }
+  // }
 })
