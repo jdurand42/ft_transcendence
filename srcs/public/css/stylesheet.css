@@ -14,7 +14,6 @@
 @import url(layout/listsPages/_lists.css);
 @import url(layout/listsPages/_filter.css);
 @import url(layout/declareWar/_declareWar.css);
-/* @import url(layout/declareWar/_warSchedule.css); */
 @import url(layout/declareWar/_warRules.css);
 @import url(layout/declareWar/_warTimes.css);
 
@@ -24,7 +23,6 @@
 @import url(module/_textInput.css);
 @import url(module/_notifications.css);
 @import url(module/_checkboxes.css);
-/* @import url(module/_datePicker.css); */
 
 @import url(state/_topnav.css);
 @import url(state/chat/_chat.css);
