@@ -36,21 +36,21 @@ export const ChatModel = Backbone.Model.extend({
     })
   },
   leaveRoom: async function () {
-    const url = '/api/chats/' + this.id + '/participants'
+    const url = this.urlRoot + this.id + '/participants'
     return fetch(url, {
       method: 'DELETE',
       headers: this.headers
     })
   },
   subscribeChannel: function (password = '') {
-    const url = '/api/chats/' + this.id + '/participants?password=' + password
+    const url = this.urlRoot + this.id + '/participants?password=' + password
     fetch(url, {
       method: 'POST',
       headers: this.headers
     })
   },
   invitesToChannel: function (participantsIds) {
-    const url = '/api/chats/' + this.id + '/invites'
+    const url = this.urlRoot + this.id + '/invites'
     fetch(url, {
       method: 'POST',
       headers: this.headers,
@@ -63,21 +63,21 @@ export const ChatModel = Backbone.Model.extend({
     this.destroy()
   },
   appointAsAdmin: function (userId) {
-    const url = '/api/chats/' + this.id + '/admins/' + userId
+    const url = this.urlRoot + this.id + '/admins/' + userId
     fetch(url, {
       method: 'POST',
       headers: this.headers
     })
   },
   removeAdminRights: function (userId) {
-    const url = '/api/chats/' + this.id + '/admins/' + userId
+    const url = this.urlRoot + this.id + '/admins/' + userId
     fetch(url, {
       method: 'DELETE',
       headers: this.headers
     })
   },
   banUser: function (value, userId) {
-    const url = '/api/chats/' + this.id + '/bans'
+    const url = this.urlRoot + this.id + '/bans'
     fetch(url, {
       method: 'POST',
       headers: this.headers,
@@ -88,7 +88,7 @@ export const ChatModel = Backbone.Model.extend({
     })
   },
   muteUser: function (value, userId) {
-    const url = '/api/chats/' + this.id + '/mutes'
+    const url = this.urlRoot + this.id + '/mutes'
     fetch(url, {
       method: 'POST',
       headers: this.headers,
@@ -96,6 +96,13 @@ export const ChatModel = Backbone.Model.extend({
         user_id: userId,
         duration: value
       })
+    })
+  },
+  kickUser: function (userId) {
+    const url = this.urlRoot + this.id + '/participants/' + userId
+    fetch(url, {
+      method: 'DELETE',
+      headers: this.headers
     })
   },
   updatePrivacy: function (privacy, password) {
@@ -106,7 +113,7 @@ export const ChatModel = Backbone.Model.extend({
     { patch: true })
   },
   sendMessage: async function (message) {
-    const url = '/api/chats/' + this.id + '/messages'
+    const url = this.urlRoot + this.id + '/messages'
     return fetch(url, {
       method: 'POST',
       headers: this.headers,
@@ -116,7 +123,7 @@ export const ChatModel = Backbone.Model.extend({
     })
   },
   getMessages: async function () {
-    const url = '/api/chats/' + this.id + '/messages'
+    const url = this.urlRoot + this.id + '/messages'
     let data
     const response = await fetch(url, {
       headers: this.headers

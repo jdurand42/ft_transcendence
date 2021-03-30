@@ -38,6 +38,8 @@ export const ChatView = Backbone.View.extend({
     'click .members': 'closeAdminRights',
     'click .yesAsAdmin': 'yesAsAdmin',
     'click .ban': 'openModalBan',
+    'click .kick': 'openModalKick',
+    'click .yesKick': 'yesKick',
     'click .yesBan': 'validateBan',
     'click .mute': 'openModalMute',
     'click .yesMute': 'validateMute',
@@ -403,6 +405,27 @@ export const ChatView = Backbone.View.extend({
     document.getElementById('modalValidationBan' + e.currentTarget.getAttribute('for')).style.display = 'flex'
   },
 
+  openModalKick: function (e) {
+    document.getElementById('modalValidationKick' + e.currentTarget.getAttribute('for')).style.display = 'flex'
+  },
+
+  yesKick: function (e) {
+    const userId = e.currentTarget.getAttribute('for')
+    const currentChannel = this.channels.get(this.channelId)
+    let adminIds = currentChannel.get('admin_ids')
+    let participantIds = currentChannel.get('participant_ids')
+    adminIds = adminIds.slice().filter(el => el != userId)
+    participantIds = participantIds.slice().filter(el => el != userId)
+    currentChannel.kickUser(userId)
+    currentChannel.set({ admin_ids: adminIds })
+    currentChannel.set({ participant_ids: participantIds })
+    this.modalClose()
+    this.updateContextAdmin(currentChannel)
+    this.updateContextMembers(currentChannel)
+    this.updateHTML('admins')
+    this.updateHTML('participants')
+  },
+
   yesAsAdmin: function (e) {
     const userId = e.currentTarget.getAttribute('for')
     const currentChannel = this.channels.get(this.channelId)
@@ -480,6 +503,7 @@ export const ChatView = Backbone.View.extend({
         this.context.admins.push(JSON.parse(JSON.stringify(admin)))
         this.context.admins[this.context.admins.length - 1].anagram = anagram
         this.context.admins[this.context.admins.length - 1].channelId = channelId
+        this.context.admins[this.context.admins.length - 1].owner = this.context.owner
         this.context.admins[this.context.admins.length - 1].superAdmin = this.userLogged.get('admin')
       }
     }
