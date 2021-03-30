@@ -147,8 +147,6 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   error: function (str, display) {
-    console.log('error')
-    console.log(str)
     document.getElementById('error').textContent = str
     document.getElementById('error').style.display = display
   },
@@ -299,8 +297,6 @@ export const DeclareWar = Backbone.View.extend({
     const value = e.currentTarget.textContent
     const index = e.currentTarget.getAttribute('for')
     const id = e.currentTarget.id
-    console.log(e.currentTarget)
-    console.log(id)
     if (id.startsWith('from-')) {
       this.context.warTime[index].fromDay = value
     } else {
@@ -330,7 +326,6 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   lessWarTime: function (e) {
-    console.log('less war time')
     const index = e.currentTarget.getAttribute('for')
     delete this.context.warTime[index]
     for (let i = 0; i < this.context.warTime; i++) {
