@@ -1272,7 +1272,6 @@ components:
         end:
           type: string
           format: date-time
-
     integer_list:
       type: array
       items:

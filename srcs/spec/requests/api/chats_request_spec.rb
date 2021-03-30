@@ -25,7 +25,7 @@ RSpec.describe 'Chats', type: :request do
       assert_equal Chat.first.privacy, json['privacy']
     end
   end
-  describe "Ban/Mute responses", test:true do
+  describe "Ban/Mute responses" do
     let(:user_1) { create(:user) }
     before {
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
@@ -62,7 +62,7 @@ RSpec.describe 'Chats', type: :request do
         expect(response).to have_http_status(201)
         expect(Chat.first.name).to eq('DISCUSSION')
       end
-      it 'bad participant ID param' do
+      it 'bad participant ID param',test:true do
         post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: [0] }
         expect(response).to have_http_status(201)
       end
@@ -79,6 +79,7 @@ RSpec.describe 'Chats', type: :request do
         users = create_list(:user, 3)
         post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'direct_message', participant_ids: [users[0].id, users[1].id, users[2].id] }
         expect(Chat.first.participants.count).to eq 2
+        expect(Chat.first.participants.last.user_id).to eq users[0].id
       end
     end
     context 'should not create :' do
