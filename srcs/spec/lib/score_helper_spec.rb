@@ -7,10 +7,11 @@ RSpec.describe GamePoints do
   let(:gp) { GamePoints.new }
   let!(:tom) { create(:user, nickname: 'tom', ladder_games_lost: 0, ladder_games_won: 0) }
   let!(:alan) { create(:user, nickname: 'alan', ladder_games_lost: 0, ladder_games_won: 0) }
+  let!(:betty) { create(:user, nickname: 'betty', ladder_games_lost: 0, ladder_games_won: 0) }
   let!(:ladder_game) { create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'ladder') }
   let!(:ladder_game_2) { create(:game, player_left: tom, player_right: alan, winner: alan, status: 'played', mode: 'ladder') }
   context 'Ladder' do
-    it "increments Tom's ladder games won/lost",test:true do
+    it "increments Tom's ladder games won/lost" do
       gp.game_points(ladder_game)
       expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
       expect(User.find_by_nickname('alan').ladder_games_lost).to eq 1
@@ -44,11 +45,11 @@ RSpec.describe GamePoints do
       before do
         create(:war, from: nos, on: bang, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10, opened: true, from_score: 0, on_score: 0)
       end
-      context 'in a duel game' do
-        it "gives points to winner's guild (side_on)" do
+      context 'unexpected encounter' do
+        it "gives points to winner's guild war score (side_on)" do
           expect { gp.game_points(duel_game) }.to change { War.first.on_score }.by(10)
         end
-        it "gives points to winner's guild (side_from)" do
+        it "gives points to winner's guild war score (side_from)" do
           expect { gp.game_points(duel_game_2) }.to change { War.first.from_score }.by(10)
         end
       end
@@ -68,6 +69,16 @@ RSpec.describe GamePoints do
           expect(War.first.on_score).to eq 10
           expect(War.last.from_score).to eq 10
           expect(War.last.on_score).to eq 0
+        end
+      end
+      context 'war_time duel',test:true do
+        it "gives points to war on_score" do
+          war_time = WarTime.create(start: DateTime.now, end: DateTime.now + 1, opened: true, war_id: War.first.id)
+          war_game = create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'war', war_time_id: war_time.id)
+          gp.game_points(war_game)
+          expect(User.find_by_nickname('tom').guild.id).to eq War.first.on_id
+          expect(War.first.on_score).to eq 10
+          expect(War.first.from_score).to eq 0
         end
       end
     end
