@@ -257,6 +257,8 @@ export const DeclareWar = Backbone.View.extend({
   filterDay: function (e) {
     const id = e.currentTarget.id
     const dropList = document.getElementById(id + '-open')
+    console.log(id)
+    console.log(dropList)
     if (dropList.style.display === 'none') {
       const getOffsetLeft = element => {
         let offsetLeft = 0
@@ -267,8 +269,44 @@ export const DeclareWar = Backbone.View.extend({
         return offsetLeft
       }
       const Y = getOffsetLeft(e.currentTarget)
-      dropList.style.top = e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 125
-      dropList.style.left = Y
+
+      const getOffsetTop = element => {
+        let offsetTop = 0
+        while (element) {
+          offsetTop += element.offsetTop
+          console.log(element)
+          console.log(offsetTop)
+          element = element.offsetParent
+        }
+        return offsetTop
+      }
+      const X = getOffsetTop(e.target)
+      console.log(X)
+
+      console.log(e)
+
+      function getOffset (el) {
+        let _x = 0
+        let _y = 0
+        while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+          _x += el.offsetLeft - el.scrollLeft
+          _y += el.offsetTop - el.scrollTop
+          el = el.offsetParent
+        }
+        return { top: _y, left: _x }
+      }
+      const off = getOffset(e.currentTarget)
+      console.log(off.top)
+      console.log(off.left)
+      console.log(e.target)
+      console.log(e.currentTarget)
+      console.log(document.getElementById('all-war-times').scrollTop)
+      // dropList.style.top = X + e.currentTarget.offsetHeight + 4
+      dropList.style.top = off.top + 45 - document.getElementById('all-war-times').scrollTop
+      console.log(X)
+      dropList.style.position = 'fixed'
+      dropList.style.left = off.left
+      // dropList.style.left = Y
       dropList.style.display = 'flex'
     } else {
       dropList.style.display = 'none'
@@ -298,6 +336,7 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   selectDay: function (e) {
+    e.stopPropagation()
     const value = e.currentTarget.textContent
     const index = e.currentTarget.getAttribute('for')
     const id = e.currentTarget.id
@@ -307,10 +346,8 @@ export const DeclareWar = Backbone.View.extend({
       this.context.warTime[index].toDay = value
     }
     this.updateHTML('day-name-' + id)
-    const filters = document.getElementsByClassName('list-days')
-    for (let i = 0; i < filters.length; i++) {
-      filters[i].style.display = 'none'
-    }
+    const dropList = document.getElementById('filter-days-from-' + index + '-open')
+    dropList.style.display = 'none'
   },
 
   addWarTime: function () {

@@ -201,7 +201,7 @@
     flex-direction: column;
     align-items: center;
 
-    max-height: calc(100vh - 488px);
+    max-height: calc(100vh - 541px);
     width: 750px;
     overflow-y: auto;
 
@@ -324,16 +324,27 @@ table {
 }
 
 .warTimes
+.list-days .day:hover {
+    background-color: #565656;
+    color: white;
+}
+
+.warTimes
+.list-days:hover {
+    border-radius: 10px;
+}
+
+.warTimes
 .add-war-time {
     height: 32px;
     line-height: 32px;
     display: flex;
     align-items: center;
 
-    margin-top: 16px;
-
+    
     width: 750px;
     margin: auto;
+    margin-top: 8px;
 
     cursor: pointer;
 }
