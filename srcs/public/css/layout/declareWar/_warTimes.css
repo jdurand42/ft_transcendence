@@ -1,18 +1,40 @@
+/* .warTimes
+.inputHH {
+    border: solid 1px #C4C4C4;
+}
+
 .warTimes
-.input {
+.inputWarTimes {
     width: 58px;
     height: 37px;
     outline: none;
     text-align: center;
     font-family: Roboto-Regular;
     border-radius: 10px;
-    border: solid 1px #C4C4C4;
     margin: 2px;
+}
+
+.warTimes
+.input {
+    margin-left: 42px;
 }
 
 .warTimes
 .warTimesTitle {
     margin-bottom: 32px;
+}
+
+.warTimes
+.time-to-answer-title {
+    position: relative;
+    left: 300px;
+}
+
+.warTimes
+.max-unanswered-title {
+    position: relative;
+    top: 58px;
+    left: 197px;
 }
 
 .warTimes
@@ -142,6 +164,12 @@
 }
 
 .warTimes
+.box {
+    display: flex;
+    flex-direction: row;
+}
+
+.warTimes
 .add-war-time {
     height: 32px;
     line-height: 32px;
@@ -149,7 +177,148 @@
     align-items: center;
 
     position: relative;
-    right: 268px;
+    right: 292px;
+    margin-top: 16px;
+
+    cursor: pointer;
+}
+
+.warTimes
+.add-war-time-container {
+    margin-bottom: 4px;
+    margin-right: 8px;
+} */
+
+.warTimes
+.warTimesTitle {
+    margin-bottom: 32px;
+}
+
+.warTimes
+.war-times-table {
+    margin-top: 32px;
+    margin: auto;
+}
+
+.warTimes
+tr {
+    height: 65px;
+}
+
+.warTimes
+table {
+    margin-top: 32px;
+}
+
+.warTimes .filter
+.day-name {
+    margin-left: 8px;
+    color: black;
+    font-size: 16px;
+    width: 96px;
+    text-align: left;
+}
+
+.warTimes .filter
+.arrow-down-container {
+    align-self: center;
+    position: relative;
+}
+
+.warTimes
+.war-times-table th,
+.warTimes
+.war-times-table td {
+    color: var(--secondary-color);
+    text-align: center; 
+}
+
+.warTimes .war-times-table
+.td-text-input {
+    width: 52px;
+    text-align: right;
+    padding-right: 16px;
+}
+
+.warTimes
+.td-input {
+    width: 100px;
+}
+
+.warTimes
+.inputHH {
+    border: solid 1px #C4C4C4;
+}
+
+.warTimes
+.inputWarTimes {
+    width: 58px;
+    height: 37px;
+    outline: none;
+    text-align: center;
+    font-family: Roboto-Regular;
+    border-radius: 10px;
+}
+
+.warTimes .filter-days {
+    display: flex;
+    flex-direction: row;
+
+    width: 132px;
+    height: 43px;
+    line-height: 43px;
+
+    background-color: #C4C4C4;
+
+    border-radius: 10px;
+
+    color: #565656;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+
+    padding-left: 8px;
+
+    cursor: pointer;
+}
+
+.warTimes
+.list-days {
+    position: absolute;
+
+    width: 140px;
+
+    flex-direction: column;
+
+    border-radius: 10px;
+
+    background-color: #C4C4C4;
+    z-index: 1;
+}
+
+.warTimes
+.list-days .day {
+    height: 32px;
+    line-height: 32px;
+
+    color: black;
+    font-family: Roboto-Regular;
+    padding-left: 8px;
+    text-align: left;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.warTimes
+.add-war-time {
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    align-items: center;
+
+    position: relative;
+    left: 292px;
     margin-top: 16px;
 
     cursor: pointer;

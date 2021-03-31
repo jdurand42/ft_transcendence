@@ -153,7 +153,7 @@ export const DeclareWar = Backbone.View.extend({
 
   nextWarRules: function () {
     const winReward = document.getElementById('win-reward').value
-    const maxUnanswered = document.getElementById('max-unanswered').value
+    // const maxUnanswered = document.getElementById('max-unanswered').value
     this.startDate = $('#daterangepicker').data('daterangepicker').startDate
     this.endDate = $('#daterangepicker').data('daterangepicker').endDate
     if (document.getElementById('ladder').checked) {
@@ -174,12 +174,12 @@ export const DeclareWar = Backbone.View.extend({
       div = document.getElementById('win-reward')
       div.style.border = 'solid 2px var(--error-message-color)'
     }
-    if (isNaN(maxUnanswered) === false && maxUnanswered >= 0) {
-      this.context.maxUnanswered = document.getElementById('max-unanswered').value
-    } else {
-      div = document.getElementById('max-unanswered')
-      div.style.border = 'solid 2px var(--error-message-color)'
-    }
+    // if (isNaN(maxUnanswered) === false && maxUnanswered >= 0) {
+    //   this.context.maxUnanswered = document.getElementById('max-unanswered').value
+    // } else {
+    //   div = document.getElementById('max-unanswered')
+    //   div.style.border = 'solid 2px var(--error-message-color)'
+    // }
     if (div) {
       this.error('Input should be a positive number', 'flex')
     } else {
@@ -267,7 +267,7 @@ export const DeclareWar = Backbone.View.extend({
         return offsetLeft
       }
       const Y = getOffsetLeft(e.currentTarget)
-      dropList.style.top = e.currentTarget.offsetTop + 48
+      dropList.style.top = e.currentTarget.offsetTop + e.currentTarget.offsetHeight + 125
       dropList.style.left = Y
       dropList.style.display = 'flex'
     } else {
@@ -276,6 +276,7 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   addWarTimeHTML: function (div) {
+    console.log(div)
     const html = this.templateWarTimes(this.context)
     const found = $(html).find('#' + div)[0].innerHTML
     const currentDiv = document.getElementById('all-war-times')
