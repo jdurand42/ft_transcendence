@@ -60,7 +60,7 @@ RSpec.describe 'Games', type: :request do
 
     context 'create' do
       describe 'a valid duel game' do
-        it 'returns status code 201',test:true do
+        it 'returns status code 201' do
           to = create(:user, status: 'online')
           create(:game)
           auth.update(status: 'online')
@@ -132,7 +132,7 @@ RSpec.describe 'Games', type: :request do
       end
     end
 
-    context 'WarTime' do
+    context 'WarTime',test:true do
       let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10 } }
       let(:auth_2) { create(:user) }
       let(:access_token) { auth.create_new_auth_token }
@@ -144,11 +144,10 @@ RSpec.describe 'Games', type: :request do
         post "/api/guilds/#{Guild.first.id}/members/#{users[0].id}", headers: access_token
         post "/api/guilds/#{Guild.last.id}/members/#{users[1].id}", headers: access_token_2
         post api_wars_url, headers: access_token, params: attributes
-        post times_api_war_url(War.first.id), headers: access_token, params: { date_start: DateTime.now, date_end: DateTime.new(2022), time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 2 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
         perform_enqueued_jobs(only: WarOpenerJob)
-        perform_enqueued_jobs(only: WarTimeOpenerJob)
         auth.update!(status: 'online')
         auth_2.update!(status: 'online')
       }

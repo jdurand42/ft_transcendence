@@ -73,7 +73,7 @@ RSpec.describe GamePointGiver do
       end
       context 'war_time duel',test:true do
         it "gives points to war on_score" do
-          war_time = WarTime.create(date_start: DateTime.now, date_end: DateTime.now + 1, opened: true, war_id: War.first.id, time_to_answer: 10, max_unanswered: 2)
+          war_time = WarTime.create(day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, war_id: War.first.id, time_to_answer: 10, max_unanswered: 2)
           war_game = create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'war', war_time_id: war_time.id)
           gp.game_points(war_game)
           expect(User.find_by_nickname('tom').guild.id).to eq War.first.on_id
