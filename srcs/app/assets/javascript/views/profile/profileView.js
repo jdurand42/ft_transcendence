@@ -41,8 +41,10 @@ export const ProfileView = Backbone.View.extend({
         await this.ladders.fetch() &&
  				await this.gameRecords.fetch()
         this.renderPannel()
+        // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
+		    // this.$el.find('#profilePicture').html('<img src=\'' + this.users.get(this.id).get('image_url') + '\'></img>')
         if (this.id != this.userId) {
-        	this.renderProfileButtons()
+        	this.renderProfileSubPannel()
         }
         await this.guilds.fetch()
         this.matchHistory()
@@ -106,15 +108,19 @@ export const ProfileView = Backbone.View.extend({
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel({}))
   },
 
-  renderProfileButtons: function () {
+  renderProfileSubPannel: function () {
     const div = this.$el.find('#profileButtons')
+
     div.html(Handlebars.templates.profileButtons())
     const friends = this.users.get(this.userId).get('friends')
     for (let i = 0; i < friends.length; i++) {
       if (friends[i].friend_id == this.id) {
-        document.getElementById('followUser').innerHTML = '<div>followed</div>'
+ 				document.getElementById('followUser').innerHTML = '<div>followed</div>'
+ 				// document.getElementById('followUser').style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
+        return
       }
     }
+    // document.getElementById('followUser').style = ''
   },
 
   matchHistory: function () {
@@ -257,6 +263,7 @@ export const ProfileView = Backbone.View.extend({
             friends.splice(friends.indexOf({ friend_id: parseInt(this.tid) }), 1)
             this.users.get(this.userId).set({ friends: friends })
             e.target.innerHTML = 'follow'
+            // e.target.style = ''
             return
           }
         }
@@ -264,6 +271,7 @@ export const ProfileView = Backbone.View.extend({
         friends.push({ friend_id: parseInt(this.tid) })
         this.users.get(this.userId).set({ friends: friends })
         e.target.innerHTML = 'followed'
+        // e.target.style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
       } catch (e) {
       }
     }
