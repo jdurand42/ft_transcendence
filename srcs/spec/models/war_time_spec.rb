@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe WarTime, type: :model do
   it 'should validate presence of attributes' do
-    should validate_presence_of(:start)
-    should validate_presence_of(:end)
+    should validate_presence_of(:date_start)
+    should validate_presence_of(:date_end)
   end
 
   it 'should have correct association' do

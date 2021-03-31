@@ -2,6 +2,7 @@
 
 module Api
   class WarsController < ApiController
+    include(WarHelper)
     before_action :set_war, except: %i[index create]
     before_action :war_editable?, only: %i[update create_times destroy_times]
     after_action :verify_authorized, except: %i[index show]
@@ -24,7 +25,7 @@ module Api
 
     def update
       authorize @war
-      return render_error('notNegotiated', 403) unless turn_to_negotiate?
+      return render_error('notNegotiated', 403) unless turn_to_negotiate?(@war)
 
       @war.update!(params_update)
       @war.update!(from_agreement: false, on_agreement: false)
@@ -33,24 +34,22 @@ module Api
 
     def agreements
       authorize @war
-      return render_error('timeSlotEntangled', 403) if wars_entangled?
+      return render_error('timeSlotEntangled', 403) if wars_entangled?(@war, @from, @on)
+      return render_error('OutOfWarPeriod', 403) unless war_times_inside_war_period?(@war)
 
-      if current_user.guild_member.guild_id == @from.id
-        @war.update!(from_agreement: param_agreement)
-      else
-        @war.update!(on_agreement: param_agreement)
-      end
+      guild_agrees
       start_war(@war) if @war.from_agreement? && @war.on_agreement?
       json_response(@war, 201)
     end
 
     def create_times
       authorize @war
-      return render_error('timeSlotEntangled', 403) if times_entangled?
+      return render_error('timeSlotEntangled', 403) if times_entangled?(@war)
+      return render_error('OutOfWarPeriod', 403) if war_time_out_of_war_period?(@war)
 
       war_time = WarTime.create!(time_params_create)
-      WarTimeOpenerJob.set(wait_until: war_time.start).perform_later(war_time)
-      WarTimeCloserJob.set(wait_until: war_time.end).perform_later(war_time)
+      WarTimeOpenerJob.set(wait_until: war_time.date_start).perform_later(war_time)
+      WarTimeCloserJob.set(wait_until: war_time.date_end).perform_later(war_time)
       json_response(war_time, 201)
     end
 
@@ -66,10 +65,12 @@ module Api
 
     private
 
-    def start_war(war)
-      war.update!(terms_agreed: true)
-      WarOpenerJob.set(wait_until: war.war_start).perform_later(war)
-      WarCloserJob.set(wait_until: war.war_end).perform_later(war)
+    def guild_agrees
+      if current_user.guild_member.guild_id == @from.id
+        @war.update!(from_agreement: param_agreement)
+      else
+        @war.update!(on_agreement: param_agreement)
+      end
     end
 
     def war_editable?
@@ -81,30 +82,8 @@ module Api
       render_error('termsAccepted', 403) if @war.terms_agreed == true
     end
 
-    def wars_entangled?
-      (@from.wars + @on.wars).uniq.without(@war).filter { |i| i.terms_agreed == true }.each do |t|
-        return true if @war.war_start.between?(t.war_start, t.war_end)
-        return true if @war.war_end.between?(t.war_start, t.war_end)
-      end
-      false
-    end
-
-    def times_entangled?
-      @war.war_times.each do |t|
-        return true if time_params_create[:start].between?(t.start, t.end)
-        return true if time_params_create[:end].between?(t.start, t.end)
-      end
-      false
-    end
-
-    def turn_to_negotiate?
-      return false if @war.last_negotiation == current_user.guild.id
-
-      @war.last_negotiation = current_user.guild.id
-    end
-
     def params_update
-      params.permit(:war_start, :war_end, :prize, :max_unanswered, :ladder_effort, :tournament_effort)
+      params.permit(:war_start, :war_end, :prize, :ladder_effort, :tournament_effort)
     end
 
     def param_agreement
@@ -113,12 +92,12 @@ module Api
     end
 
     def params_create
-      tmp = params.permit(:on_id, :war_start, :war_end, :prize, :max_unanswered)
+      tmp = params.permit(:on_id, :war_start, :war_end, :prize, :ladder_effort, :tournament_effort)
       tmp.merge!(from_id: current_user.guild&.id)
     end
 
     def time_params_create
-      params.permit(:start, :end).merge!(war: @war)
+      params.permit(:date_start, :date_end, :max_unanswered, :time_to_answer).merge!(war: @war)
     end
 
     def set_war

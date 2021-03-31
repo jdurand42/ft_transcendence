@@ -43,7 +43,6 @@ module Api
       return unless @games_params[:mode] == 'war'
 
       @games_params = @games_params.merge(war_time_id: war_time.id) unless war_time.nil?
-
       Game.where(war_time_id: war_time.id).any?
     end
 
@@ -55,6 +54,13 @@ module Api
     def send_invites(game)
       invite(game.player_left.id, game.id)
       invite(game.player_right.id, game.id)
+      war_time_to_answer(game)
+    end
+
+    def war_time_to_answer(game)
+      return unless game.mode == 'war'
+
+      WarTimeToAnswerJob.set(wait: WarTime.find(game.war_time_id).time_to_answer).perform_later(game)
     end
 
     def invite(user_id, game_id)

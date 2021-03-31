@@ -9,7 +9,6 @@ RSpec.describe War, type: :model do
     should validate_presence_of(:war_start)
     should validate_presence_of(:war_end)
     should validate_presence_of(:prize)
-    should validate_presence_of(:max_unanswered)
   end
 
   it 'should have correct association' do

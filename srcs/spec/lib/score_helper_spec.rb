@@ -43,7 +43,7 @@ RSpec.describe GamePointGiver do
     end
     context 'At war' do
       before do
-        create(:war, from: nos, on: bang, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10, opened: true, from_score: 0, on_score: 0)
+        create(:war, from: nos, on: bang, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, opened: true, from_score: 0, on_score: 0)
       end
       context 'unexpected encounter' do
         it "gives points to winner's guild war score (side_on)" do
@@ -61,7 +61,7 @@ RSpec.describe GamePointGiver do
           expect(War.first.from_score).to eq 0
         end
         it "at true gives points" do
-          create(:war, from: bang, on: nos, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10, opened: true, from_score: 0, on_score: 0)
+          create(:war, from: bang, on: nos, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, opened: true, from_score: 0, on_score: 0)
           War.first.toggle!(:ladder_effort)
           War.last.toggle!(:ladder_effort)
           gp.game_points(ladder_game)
@@ -73,7 +73,7 @@ RSpec.describe GamePointGiver do
       end
       context 'war_time duel',test:true do
         it "gives points to war on_score" do
-          war_time = WarTime.create(start: DateTime.now, end: DateTime.now + 1, opened: true, war_id: War.first.id)
+          war_time = WarTime.create(date_start: DateTime.now, date_end: DateTime.now + 1, opened: true, war_id: War.first.id, time_to_answer: 10, max_unanswered: 2)
           war_game = create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'war', war_time_id: war_time.id)
           gp.game_points(war_game)
           expect(User.find_by_nickname('tom').guild.id).to eq War.first.on_id
