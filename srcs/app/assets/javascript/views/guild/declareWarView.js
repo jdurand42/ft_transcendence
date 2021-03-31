@@ -331,7 +331,6 @@ export const DeclareWar = Backbone.View.extend({
           tournamentEffort,
           ladderEffort)
       } catch (response) {
-        console.log(response)
       }
     }
     declareWar()
@@ -373,13 +372,9 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   updateHTML: function (div) {
-    console.log(div)
     const html = this.templateWarTimes(this.context)
-    console.log($(html).find('#' + div))
     const found = $(html).find('#' + div)[0].innerHTML
     const currentDiv = document.getElementById(div)
-    console.log(found)
-    console.log(currentDiv)
     currentDiv.innerHTML = found
   },
 
@@ -422,11 +417,10 @@ export const DeclareWar = Backbone.View.extend({
 
   lessWarTime: function (e) {
     const index = e.currentTarget.getAttribute('for')
-    delete this.context.warTime[index]
-    for (let i = 0; i < this.context.warTime; i++) {
-      for (const [key, value] of Object.entries(this.context.warTime[i])) {
-        value.index = i
-      }
+    this.context.warTime.splice(index, 1)
+
+    for (let i = 0; i < this.context.warTime.length; i++) {
+      this.context.warTime[i].index = i
     }
     this.updateHTML('war-times-table')
   }
