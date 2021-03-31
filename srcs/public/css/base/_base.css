@@ -15,6 +15,8 @@ body {
 
 #app {
     display: flex;
+/*		overflow-y: scroll;*/
+			height: 100%;
 }
 
 h2 {
@@ -42,6 +44,8 @@ label {
     --green-color: #6FCF97;
     --modal-background-color: #202732;
     --header-size: 82px;
+		--pannel-size: 343px;
+		--profilePicture-size: 131px;
 }
 
 button {

@@ -1,15 +1,75 @@
-.content{
+/*.supraContent {
+	min-height: calc(100vh - var(--header-size));
+	overflow-x: hidden;
+	overflow-y: scroll;
+}*/
+
+.supraDiv {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - var(--header-size));
+	overflow-y: auto;
+	overflow-x: hidden;
 	background-color: white;
-	position: absolute;
-	height:100%;
-	margin-top: 343px;
+	height: 100%;
+
+}
+
+.pannel {
+	/*position: absolute;
+	display: flex;
+	width: 100vw;
+	height: 343px;
+	left: 0px;
+	top: 82px;
+
+	/*background: rgba(27, 37, 52, 0.4);*/
+	position: relative;
+	width: 100vw;
+	flex-wrap: nowrap;
+	/*height: 100%;*/
+	/*left: 0px;*/
+	/*top: 82px;/*
+
+
+	/*background: rgba(27, 37, 52, 0.4);*/
+	background: url('../../../images/background.jpg');
+	background-position: 50% 0;
+	background-position: 0 0;
+	background-attachment: fixed;
+}
+
+.pannelContent {
+	height: 343px;
+	min-height: 343px;
+	max-height: 343px;
+}
+
+
+.contentWrapper {
+	height: 100%;
+	position: relative;
+	padding-top: 60px;
+}
+
+
+.content{
+	/*background-color: white;
+	position: relative;
+	/*height:100%;*/
+	/*margin-top: 343px;*/
+	/*top: calc(var(--header-size) + var(--pannel-size));*/
+	/*top: 343px;
 	min-width: 100vw;
   min-height: calc(100vh - var(--header-size));
+	height: auto;
+	height: 100%;
 	overflow-x: hidden;
 	box-sizing: border-box;
 	left:0;
 	margin-left: 0;
-	margin-right: 0;
+	margin-right: 0;*/
+	flex: 0 0 auto;
 }
 
 .usersList {

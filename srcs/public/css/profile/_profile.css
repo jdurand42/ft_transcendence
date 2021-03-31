@@ -1,40 +1,127 @@
-/*#profilePannel {
-	position: absolute;
-	display: flex;
-	width: 100vw;
-	height: 343px;
-	left: 0px;
-	top: 82px;
 
-	background: rgba(27, 37, 52, 0.4);
-}*/
+#profilePicture {
+	position: relative;
+	left: 12.27%;
+	right: 74.22%;
+	top: calc(var(--pannel-size) - var(--header-size) - (var(--profilePicture-size) / 4));
+	/*flex:none;*/
+	width: 173px;
+	height: 131px;
 
-.content #profilePicture {
-	height: 34px;
-	width: 43px;
-	left: 157px;
-	top: 341px;
-
-	border: 7px solid #000000;
+	border: 7px solid #0C0C0C;
 	filter: drop-shadow(7px 7px 5px rgba(0, 0, 0, 0.27));
+	z-index: 1;
+}
+
+.savageButtons {
+	position: relative;
+	left: 500px;
+	top: 185px;
+	min-width: 139.66px;
+	min-height: 31px;
+	z-index: 1;
+}
+
+.savageButtons button {
+	min-width: 139.66px;
+	min-height: 31px;
 }
 
 .profileBlock {
 	margin-top: 30px;
 	margin-right: 2%;
 	margin-left: 2%;
-	width: auto;
+	/*width: auto;
 	height: auto;
+	position: relative;
+	/*min-height: 100%;*/
+	/*overflow-y: scroll;*/
 	/*border: 10px solid;
 	border-color: #1B2534;
 	background-color: #1B2534;
 	border-radius: 10px;*/
-
+	background-color: white;
+	/*flex: 0 0 auto;*/
 	text-align: center;
+	height: 100%;
+}
+
+.profileBlock .bigMessage {
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 30px;
+	line-height: 35px;
+	text-transform: uppercase;
+	padding-top: 100px;
+}
+
+.profileBlock button a {
+	text-decoration: none;
+	color: black;
+}
+
+.profileBlock button #leaveGuild, #manageGuild{
+	width: 185px;
+	height: 46px;
+	border-radius: 10px;
 }
 
 .placeholder {
 	text-align: center;
 	color: black;
 	font-size: 30px;
+}
+
+#guildOptionsContainer {
+	text-align: center;
+	padding-left: 15%;
+}
+
+#guildOptionsContainer #manageGuildButton button{
+	width: 139.66px;
+	height: 31px;
+	left: 894px;
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 19px;
+}
+
+#guildOptionsContainer #leaveGuildButton button{
+	width: 139.66px;
+	height: 31px;
+	left: 894px;
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 19px;
+}
+
+
+#guildNameLabel {
+	font-family: Quantico;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 36px;
+	line-height: 51px;
+	font-style: bold;
+}
+
+
+
+#guildOptions a {
+	color: black;
+	text-decoration: none;
+}
+
+#guildOptions a:hover {
+	text-decoration: underline;
+	align-content: center;
+}
+
+#guildNameLabel span {
+	font-size: 25px;
 }

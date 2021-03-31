@@ -8,8 +8,8 @@ templates['guildPannel'] = template({"compiler":[8,">= 4.3.0"],"main":function(c
         return undefined
     };
 
-  return "<p>\n	Grou grou je suis la pannel de "
+  return "<div class=\"pannelContent\">\n	<p>\n		Grou grou je suis la pannel de "
     + container.escapeExpression(container.lambda((depth0 != null ? lookupProperty(depth0,"name") : depth0), depth0))
-    + "\n</p>\n";
+    + "\n	</p>\n</div>\n";
 },"useData":true});
 })();

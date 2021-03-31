@@ -12,7 +12,9 @@ export const ProfileView = Backbone.View.extend({
     'click #profileGuild': 'loadGuild',
     'click #achievements': 'loadAchievements',
     'click #leaveGuild': 'leaveGuild',
+    'click #manageGuild': function (e) { Backbone.history.navigate('manage_guild', { trigger: true }) },
     'click #followUser': function (e) { this.followUser(e) },
+
     //    'click #followAnUser': function (e) { this.followAnUser(e) },
     'click #sendInvitation': 'sendInvitation',
     'click #playUser': 'playUser'
@@ -42,7 +44,6 @@ export const ProfileView = Backbone.View.extend({
  				await this.gameRecords.fetch()
         this.renderPannel()
         // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
-		    // this.$el.find('#profilePicture').html('<img src=\'' + this.users.get(this.id).get('image_url') + '\'></img>')
         if (this.id != this.userId) {
         	this.renderProfileSubPannel()
         }
@@ -105,7 +106,9 @@ export const ProfileView = Backbone.View.extend({
   },
 
   renderPannel: function () {
-    this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel({}))
+    this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel({ image_url: this.users.get(this.id).get('image_url') }))
+    this.renderProfileSubPannel()
+    // this.$el.find('#profilePictureContainer').html('<img id="profilePicture" src=\'' + this.users.get(this.id).get('image_url') + '\'></img>')
   },
 
   renderProfileSubPannel: function () {
@@ -223,6 +226,10 @@ export const ProfileView = Backbone.View.extend({
     context.membersNumber = context.officers.length + context.members.length + 1
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
+    if (this.userId === this.id) {
+    	this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage Guild</button>')
+    	this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave Guild</button>')
+    }
   },
 
   leaveGuild: function () {
@@ -244,6 +251,7 @@ export const ProfileView = Backbone.View.extend({
 
   playUser: function () {
     // not implemented yet
+    console.log('play with user')
   },
 
   followUser: function (e) {
