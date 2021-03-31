@@ -185,8 +185,10 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
   end
 
   create_table "war_times", force: :cascade do |t|
-    t.datetime "start"
-    t.datetime "end"
+    t.datetime "date_start"
+    t.datetime "date_end"
+    t.integer "time_to_answer"
+    t.integer "max_unanswered"
     t.boolean "opened", default: false
     t.boolean "closed", default: false
     t.bigint "war_id"
@@ -201,7 +203,6 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
     t.integer "prize"
     t.integer "from_score", default: 0
     t.integer "on_score", default: 0
-    t.integer "max_unanswered"
     t.integer "last_negotiation"
     t.boolean "ladder_effort", default: false
     t.boolean "tournament_effort", default: false

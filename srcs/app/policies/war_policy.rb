@@ -2,7 +2,7 @@
 
 class WarPolicy < ApplicationPolicy
   def create?
-    Guild.find(record.from_id).owner == user.guild_member
+    user.guild.present? && GuildMember.where(user_id: user.id, rank: 'owner').first.present?
   end
 
   def update?

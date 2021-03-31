@@ -60,15 +60,13 @@ RSpec.describe 'Games', type: :request do
 
     context 'create' do
       describe 'a valid duel game' do
-        it 'returns status code 201' do
+        it 'returns status code 201',test:true do
           to = create(:user, status: 'online')
           create(:game)
           auth.update(status: 'online')
           expect do
-            post '/api/games', headers: auth.create_new_auth_token,
-                               params: { mode: 'duel', opponent_id: to.id }
-          end.to have_broadcasted_to("user_#{to.id}").exactly(:once).with(sender_id: auth.id,
-                                                                          action: 'game_invitation', id: Game.maximum(:id).next)
+            post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel', opponent_id: to.id }
+          end.to have_broadcasted_to("user_#{to.id}").exactly(:once).with(sender_id: auth.id, action: 'game_invitation', id: Game.maximum(:id).next)
           expect(response).to have_http_status(201)
           expect(json).not_to be_empty
         end
@@ -135,29 +133,35 @@ RSpec.describe 'Games', type: :request do
     end
 
     context 'WarTime' do
-      describe 'There can be only one "War time" match at the same time' do
-        let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10 } }
-        let(:auth_2) { create(:user) }
-        let(:access_token) { auth.create_new_auth_token }
-        let(:access_token_2) { auth_2.create_new_auth_token }
-        it 'should not create a second match',test:true do
-          users = create_list(:user, 2, status: 'online')
-          post api_guilds_url, headers: access_token, params: { name: "NoShroud", anagram: "NOS" }
-          post api_guilds_url, headers: access_token_2, params: { name: "BANG", anagram: "ABCDE" }
-          post "/api/guilds/#{Guild.first.id}/members/#{users[0].id}", headers: access_token
-          post "/api/guilds/#{Guild.last.id}/members/#{users[1].id}", headers: access_token_2
-          post api_wars_url, headers: access_token, params: attributes
-          post times_api_war_url(War.first.id), headers: access_token, params: { start: DateTime.now, end: DateTime.new(2022) }
-          post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-          post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-          perform_enqueued_jobs(only: WarOpenerJob)
-          perform_enqueued_jobs(only: WarTimeOpenerJob)
-          auth.update!(status: 'online')
-          auth_2.update!(status: 'online')
-          post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
-          post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id}
-          expect(json['errors']).to eq ["Your guild is already playing a war time match against this guild"]
-        end
+      let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10 } }
+      let(:auth_2) { create(:user) }
+      let(:access_token) { auth.create_new_auth_token }
+      let(:access_token_2) { auth_2.create_new_auth_token }
+      let(:users) { create_list(:user, 2, status: 'online') }
+      before {
+        post api_guilds_url, headers: access_token, params: { name: "NoShroud", anagram: "NOS" }
+        post api_guilds_url, headers: access_token_2, params: { name: "BANG", anagram: "ABCDE" }
+        post "/api/guilds/#{Guild.first.id}/members/#{users[0].id}", headers: access_token
+        post "/api/guilds/#{Guild.last.id}/members/#{users[1].id}", headers: access_token_2
+        post api_wars_url, headers: access_token, params: attributes
+        post times_api_war_url(War.first.id), headers: access_token, params: { date_start: DateTime.now, date_end: DateTime.new(2022), time_to_answer: 10, max_unanswered: 2 }
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        perform_enqueued_jobs(only: WarOpenerJob)
+        perform_enqueued_jobs(only: WarTimeOpenerJob)
+        auth.update!(status: 'online')
+        auth_2.update!(status: 'online')
+      }
+      it 'should not create a second match' do
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id}
+        expect(json['errors']).to eq ["Your guild is already playing a war time match against this guild"]
+      end
+      it "should forfeit absent opponent at time_to_answer" do
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        expect(WarTimeToAnswerJob).to have_been_enqueued
+        perform_enqueued_jobs(only: WarTimeToAnswerJob)
+        expect(Game.first.winner_id).to eq auth.id
       end
     end
   end
