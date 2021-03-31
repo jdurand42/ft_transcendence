@@ -19,18 +19,13 @@
                     <th></th>
                     <th></th>
                     <th>                    
-                        {{!-- <div class="sub-title max-unanswered-title"> --}}
-                            Max<br>unanswered<br>matches
-                            {{!-- </div> --}}
+                        Max<br>unanswered<br>matches
                     </th>
                     <th>                    
-                        {{!-- <div class="sub-title time-to-answer-title"> --}}
-                            Time<br>to answer<br>(min)
-                            {{!-- </div> --}}
+                        Time<br>to answer<br>(min)
                     </th>
                     <th></th>
                 </tr>
-                {{!-- <div class="all-war-times" id="all-war-times"> --}}
                 {{#each warTime}}
                 <tr class="{{index}}" id={{index}}>
                     <td>
@@ -52,25 +47,25 @@
                         <div class="text-input">From</div>
                     </td>
                     <td class="td-inputHH">
-                        <input type="text" class="inputHH inputWarTimes hh" id="fromHH{{index}}" placeholder="HH" maxlength="2"></input>
+                        <input type="text" class="inputHH inputWarTimes hh fromHH" id="fromHH{{index}}" placeholder="HH" maxlength="2" value={{fromHH}}></input>
                     </td>
                     <td class="td-inputHH">
-                        <input type="text" class="inputHH inputWarTimes mm" id="fromMM{{index}}" placeholder="MM" maxlength="2"></input>
+                        <input type="text" class="inputHH inputWarTimes mm fromMM" id="fromMM{{index}}" placeholder="MM" maxlength="2" value={{fromMM}}></input>
                     </td>
                     <td class="td-text-input">
                         <div class="text-input">To</div>
                     </td>
                     <td class="td-inputHH">
-                        <input type="text" class="inputHH inputWarTimes hh" id="toHH{{index}}" placeholder="HH" maxlength="2"></input>
+                        <input type="text" class="inputHH inputWarTimes hh toHH" id="toHH{{index}}" placeholder="HH" maxlength="2" value={{toHH}}></input>
                     </td>
                     <td class="td-inputHH">
-                        <input type="text" class="inputHH inputWarTimes mm" id="toMM{{index}}" placeholder="MM" maxlength="2"></input>
+                        <input type="text" class="inputHH inputWarTimes mm toMM" id="toMM{{index}}" placeholder="MM" maxlength="2" value={{toMM}}></input>
                     </td>
                     <td class="td-input">
-                        <input type="text" class="input inputWarTimes max-unanswered" id="max-unanswered{{index}}" value="{{maxUnanswered}}"></input>
+                        <input type="text" class="input inputWarTimes max-unanswered" id="max-unanswered{{index}}" for={{index}} value="{{maxUnanswered}}"></input>
                     </td>
                     <td class="td-input">
-                        <input type="text" class="input inputWarTimes time-to-answer" id="time-to-answer{{index}}" value="{{timeToAnswer}}"></input>
+                        <input type="text" class="input inputWarTimes time-to-answer" id="time-to-answer{{index}}" for={{index}} value="{{timeToAnswer}}"></input>
                     </td>
                     <td class="td-minus">
                         <div class="minus-circular-container" id="minus-circular-container" for="{{index}}">
@@ -79,7 +74,6 @@
                     </td>
                 </tr>
                 {{/each}}
-                {{!-- </div> --}}
             </table>
         </div>
         <div class="add-war-time" id="add-war-time">

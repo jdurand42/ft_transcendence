@@ -69,6 +69,12 @@ export const DeclareWar = Backbone.View.extend({
     }
     this.context.warTime.push({
       index: this.context.warTime.length,
+      maxUnanswered: 5,
+      timeToAnswer: 60,
+      fromHH: undefined,
+      fromMM: undefined,
+      toHH: undefined,
+      toMM: undefined,
       fromDay: 'Monday',
       toDay: 'Monday',
       days: newDays
@@ -189,32 +195,109 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   prevWarTimes: function () {
+    const maxUnanswered = document.getElementsByClassName('max-unanswered')
+    const timeToAnswer = document.getElementsByClassName('time-to-answer')
+    const fromHH = document.getElementsByClassName('fromHH')
+    const fromMM = document.getElementsByClassName('fromMM')
+    const toHH = document.getElementsByClassName('toHH')
+    const toMM = document.getElementsByClassName('toMM')
+
+    for (let i = 0; i < fromHH.length; i++) {
+      this.context.warTime[i].fromHH = document.getElementById('fromHH' + i).value
+    }
+
+    for (let i = 0; i < fromMM.length; i++) {
+      this.context.warTime[i].fromMM = document.getElementById('fromMM' + i).value
+    }
+
+    for (let i = 0; i < toHH.length; i++) {
+      this.context.warTime[i].toHH = document.getElementById('toHH' + i).value
+    }
+
+    for (let i = 0; i < toMM.length; i++) {
+      this.context.warTime[i].toMM = document.getElementById('toMM' + i).value
+    }
+
+    for (let i = 0; i < maxUnanswered.length; i++) {
+      this.context.warTime[maxUnanswered[i].getAttribute('for')].maxUnanswered = maxUnanswered[i].value
+    }
+
+    for (let i = 0; i < timeToAnswer.length; i++) {
+      this.context.warTime[timeToAnswer[i].getAttribute('for')].timeToAnswer = timeToAnswer[i].value
+    }
+
     const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
     this.initializeCalendar()
   },
 
   validateWarTimes: function () {
-    const hh = document.getElementsByClassName('hh')
-    const mm = document.getElementsByClassName('mm')
+    const fromHH = document.getElementsByClassName('fromHH')
+    const fromMM = document.getElementsByClassName('fromMM')
+    const toHH = document.getElementsByClassName('toHH')
+    const toMM = document.getElementsByClassName('toMM')
+    const maxUnanswered = document.getElementsByClassName('max-unanswered')
+    const timeToAnswer = document.getElementsByClassName('time-to-answer')
 
     let res = true
 
-    for (let i = 0; i < hh.length; i++) {
-      if (!(hh[i].value >= 0 && hh[i].value <= 23) || hh[i].value === '') {
-        hh[i].style.border = 'solid 2px var(--error-message-color)'
+    for (let i = 0; i < fromHH.length; i++) {
+      if (!(fromHH[i].value >= 0 && fromHH[i].value <= 23) || fromHH[i].value === '') {
+        fromHH[i].style.border = 'solid 2px var(--error-message-color)'
         res = false
       } else {
-        hh[i].style.border = 'solid 1px #C4C4C4'
+        fromHH[i].style.border = 'solid 1px #C4C4C4'
+        this.context.warTime[i].fromHH = document.getElementById('fromHH' + i).value
       }
     }
 
-    for (let i = 0; i < mm.length; i++) {
-      if (!(mm[i].value >= 0 && mm[i].value <= 59) || mm[i].value === '') {
-        mm[i].style.border = 'solid 2px var(--error-message-color)'
+    for (let i = 0; i < toHH.length; i++) {
+      if (!(toHH[i].value >= 0 && toHH[i].value <= 23) || toHH[i].value === '') {
+        toHH[i].style.border = 'solid 2px var(--error-message-color)'
         res = false
       } else {
-        mm[i].style.border = 'solid 1px #C4C4C4'
+        toHH[i].style.border = 'solid 1px #C4C4C4'
+        this.context.warTime[i].toHH = document.getElementById('toHH' + i).value
+      }
+    }
+
+    for (let i = 0; i < fromMM.length; i++) {
+      if (!(fromMM[i].value >= 0 && fromMM[i].value <= 59) || fromMM[i].value === '') {
+        fromMM[i].style.border = 'solid 2px var(--error-message-color)'
+        res = false
+      } else {
+        fromMM[i].style.border = 'solid 1px #C4C4C4'
+        this.context.warTime[i].fromMM = document.getElementById('fromMM' + i).value
+      }
+    }
+
+    for (let i = 0; i < toMM.length; i++) {
+      if (!(toMM[i].value >= 0 && toMM[i].value <= 59) || toMM[i].value === '') {
+        toMM[i].style.border = 'solid 2px var(--error-message-color)'
+        res = false
+      } else {
+        toMM[i].style.border = 'solid 1px #C4C4C4'
+        this.context.warTime[i].toMM = document.getElementById('toMM' + i).value
+      }
+    }
+
+    for (let i = 0; i < maxUnanswered.length; i++) {
+      if ((isNaN(Number((maxUnanswered[i].value))) === false || Number((maxUnanswered[i].value)) === 0) && Number(maxUnanswered[i].value) >= 0) {
+        this.context.warTime[i].maxUnanswered = maxUnanswered[i].value
+        maxUnanswered[i].style.border = '1px solid #000'
+      } else {
+        maxUnanswered[i].style.border = 'solid 2px var(--error-message-color)'
+        res = false
+      }
+    }
+
+    for (let i = 0; i < timeToAnswer.length; i++) {
+      if ((isNaN(Number((timeToAnswer[i].value))) === false || Number((timeToAnswer[i].value)) === 0) && Number(timeToAnswer[i].value) >= 0) {
+        this.context.warTime[i].timeToAnswer = timeToAnswer[i].value
+        timeToAnswer[i].style.border = '1px solid #000'
+      } else {
+        timeToAnswer[i].style.border = 'solid 2px var(--error-message-color)'
+        res = false
       }
     }
 
@@ -257,34 +340,7 @@ export const DeclareWar = Backbone.View.extend({
   filterDay: function (e) {
     const id = e.currentTarget.id
     const dropList = document.getElementById(id + '-open')
-    console.log(id)
-    console.log(dropList)
     if (dropList.style.display === 'none') {
-      const getOffsetLeft = element => {
-        let offsetLeft = 0
-        while (element) {
-          offsetLeft += element.offsetLeft
-          element = element.offsetParent
-        }
-        return offsetLeft
-      }
-      const Y = getOffsetLeft(e.currentTarget)
-
-      const getOffsetTop = element => {
-        let offsetTop = 0
-        while (element) {
-          offsetTop += element.offsetTop
-          console.log(element)
-          console.log(offsetTop)
-          element = element.offsetParent
-        }
-        return offsetTop
-      }
-      const X = getOffsetTop(e.target)
-      console.log(X)
-
-      console.log(e)
-
       function getOffset (el) {
         let _x = 0
         let _y = 0
@@ -296,17 +352,9 @@ export const DeclareWar = Backbone.View.extend({
         return { top: _y, left: _x }
       }
       const off = getOffset(e.currentTarget)
-      console.log(off.top)
-      console.log(off.left)
-      console.log(e.target)
-      console.log(e.currentTarget)
-      console.log(document.getElementById('all-war-times').scrollTop)
-      // dropList.style.top = X + e.currentTarget.offsetHeight + 4
       dropList.style.top = off.top + 45 - document.getElementById('all-war-times').scrollTop
-      console.log(X)
       dropList.style.position = 'fixed'
       dropList.style.left = off.left
-      // dropList.style.left = Y
       dropList.style.display = 'flex'
     } else {
       dropList.style.display = 'none'
@@ -358,6 +406,12 @@ export const DeclareWar = Backbone.View.extend({
 
     this.context.warTime.push({
       index: this.context.warTime.length,
+      maxUnanswered: 5,
+      timeToAnswer: 60,
+      fromHH: undefined,
+      fromMM: undefined,
+      toHH: undefined,
+      toMM: undefined,
       fromDay: 'Monday',
       toDay: 'Monday',
       days: newDays
