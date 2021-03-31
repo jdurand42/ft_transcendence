@@ -165,7 +165,7 @@
     font-size: 14px;
 }
 
-.listsPage.listsBoard .tablesBoard .tableBoard
+.listsPage .listsBoard .tablesBoard .tableBoard
 .unfollow::before {
     content: 'Unfollow';
 }
