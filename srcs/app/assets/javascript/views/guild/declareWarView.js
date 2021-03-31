@@ -422,7 +422,12 @@ export const DeclareWar = Backbone.View.extend({
     let j = 0
     for (let i = 0; i < this.context.warTime.length; i++) {
       if (this.context.warTime[i] !== undefined) {
+        const newDays = JSON.parse(JSON.stringify(this.days))
+        for (const [key, value] of Object.entries(newDays)) {
+          value.index = j
+        }
         this.context.warTime[i].index = j
+        this.context.warTime[i].days = newDays
         j++
       }
     }
