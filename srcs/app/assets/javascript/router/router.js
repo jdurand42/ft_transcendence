@@ -115,7 +115,10 @@ export const Router = Backbone.Router.extend({
   },
 
   accessPage: function (url) {
-    if (this.view != undefined) { this.view.undelegateEvents() }
+    // prevent zombie views
+    if (this.view != undefined) {
+      this.remove_view()
+    }
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
@@ -233,6 +236,14 @@ export const Router = Backbone.Router.extend({
       userLoggedId: window.localStorage.getItem('user_id'),
       router: this
     })
-  }
+  },
 
+  remove_view: function () {
+  		// this._removeElement();
+  	this.view.$el.empty()
+  	this.view.stopListening()
+    this.view.undelegateEvents()
+    this.view = undefined
+  	return this
+  }
 })

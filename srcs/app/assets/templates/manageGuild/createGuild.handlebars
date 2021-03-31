@@ -1,19 +1,30 @@
-<div class="content">
+<div class="manageGuildContainer" id="createGuildContainer">
 	<style>
 		.errorMessage
 		{
 			color: red;
 		}
 	</style>
-	<p>It seems you don't belong in any guild, do you wish to create one?</p>
-	<label for="guildName">Guild name:
-		<input id="guildName" type="text"></input>
-	</label>
-	<div id="nameError" class="errorMessage"></div>
-	<label for="guildAnagram">Guild name:
-		<input id="guildAnagram" type="text"></input>
-	</label>
-	<div id="anagramError" class="errorMessage"></div>
-	<div id="errorField" class="errorMessage"></div>
-	<button class="createGuild">Create guild</button>
+
+	<div class="manageGuildSideBar"></div>
+	<div class="manageGuildContentContainer">
+		<div class="manageGuildContent" id="createGuildContent">
+		<div class="manageGuildTitle"><span> CREATE GUILD </span>
+		<span><a id="ManageGuildExitButton" class="exitButton" href="#guilds/">ESC</a><span></div>
+			<div class="manageGuildForm">
+			<div>Guild name</div>
+			<label for="guildName">
+			<div>	<input id="guildName" class="manageGuildTextInput" type="text"></input> </div>
+			</label>
+			<div id="nameError" class="errorMessage"></div>
+			<div>Anagram</div>
+			<label for="guildAnagram">
+				<div><input id="guildAnagram" class="manageGuildTextInput" type="text"></input></div>
+			</label>
+			<div id="anagramError" class="errorMessage"></div>
+			<div id="errorField" class="errorMessage"></div>
+			<div><button class="createGuild">Save</button></div>
+		</div>
+		</div>
+	</div>
 </div>

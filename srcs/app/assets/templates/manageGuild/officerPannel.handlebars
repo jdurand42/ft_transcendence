@@ -1,16 +1,51 @@
-<p>Officers prerogatives</p>
-<label for="memberToInvite" class="labelGuildField">
+<div class="manageGuildTitle"><span> MANAGE <a href="#guild/{{this.guild.id}}/">{{this.guild.name}}</a>  |  {{this.guild.anagram}}</span>
+<span><a id="ManageGuildExitButton" class="exitButton" href="#guild/{{this.guild.id}}">ESC</a><span></div>
+	<div class="manageGuildForm">
+
+{{#if this.ownerBool}}
+<div>OFFICERS</div>
+<ul class="manageGuildMembersList" id="membersList">
+	{{#each this.officers}}
+	<li>
+		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><span><button id="kickMember" value="{{this.id}}">Kick</button></span>
+	</li>
+	{{/each}}
+</ul>
+{{/if}}
+
+<div>MEMBERS</div>
+<ul class="manageGuildMembersList" id="membersList">
+	{{#each this.members}}
+	<li>
+		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><span><button id="kickMember" value="{{this.id}}">Kick</button></span>
+	</li>
+	{{/each}}
+</ul>
+
+<button id="inviteMemberModalButton">Invite Someone</button>
+<div id="inviteMemberModal" class="manageGuildModal">
+	<div id="inviteMemberModalContent">
+	<span class="close">&times;</span>
+	<label for="nonMemberToInvite" class="labelGuildField">
+		<input class="nicknameSearch" type="text" id="nonMemberToInvite"></input>
+	</label>
+	<div class="nicknameSearchResult" id="inviteMemberResult"></div>
+	<button class="inviteMember">Invite member</button>
+	</div>
+</div>
+
+<!--<label for="memberToInvite" class="labelGuildField">
 	<input class="nicknameSearch" type="text" id="nonMemberToInvite"></input>
 </label>
 <button class="inviteMember">Invite member</button>
 
-<div class="nicknameSearchResult" id="inviteMemberResult"></div>
+<div class="nicknameSearchResult" id="inviteMemberResult"></div>-->
 
-<label for="nonMemberToInvite" class="labelGuildField">
+<!--<label for="nonMemberToInvite" class="labelGuildField">
 	<input class="nicknameSearch" type="text" id="nonMemberToSendInvitation"></input>
 </label>
-<button class="sendInvitation">Send invitation</button>
-
+<button class="sendInvitation">Send invitation</button>-->
+<!--
 <div class="nicknameSearchResult" id="sendInvitationResult"></div>
 
 <label for="memberToKick" class="labelGuildField">
@@ -18,3 +53,4 @@
 </label>
 <button class="kickMember">Kick member</button>
 <div class="nicknameSearchResult" id="kickMemberResult"></div>
+-->

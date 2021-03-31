@@ -9,6 +9,16 @@
 	background: rgba(27, 37, 52, 0.4);
 }*/
 
+.content #profilePicture {
+	height: 34px;
+	width: 43px;
+	left: 157px;
+	top: 341px;
+
+	border: 7px solid #000000;
+	filter: drop-shadow(7px 7px 5px rgba(0, 0, 0, 0.27));
+}
+
 .profileBlock {
 	margin-top: 30px;
 	margin-right: 2%;
