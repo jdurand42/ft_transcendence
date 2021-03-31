@@ -276,21 +276,24 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   addWarTimeHTML: function (div) {
-    console.log(div)
     const html = this.templateWarTimes(this.context)
     const found = $(html).find('#' + div)[0].innerHTML
-    const currentDiv = document.getElementById('all-war-times')
-    const el = document.createElement('div')
+    const currentDiv = document.getElementById((Number(div) - 1).toString())
+    const el = document.createElement('tr')
+    el.setAttribute('class', div)
     el.setAttribute('id', div)
-    el.setAttribute('class', 'war-time')
     el.innerHTML = found
-    currentDiv.insertBefore(el, document.getElementById('add-war-time'))
+    document.getElementById('war-times-table').appendChild(el)
   },
 
   updateHTML: function (div) {
+    console.log(div)
     const html = this.templateWarTimes(this.context)
+    console.log($(html).find('#' + div))
     const found = $(html).find('#' + div)[0].innerHTML
     const currentDiv = document.getElementById(div)
+    console.log(found)
+    console.log(currentDiv)
     currentDiv.innerHTML = found
   },
 
@@ -334,6 +337,6 @@ export const DeclareWar = Backbone.View.extend({
         value.index = i
       }
     }
-    this.updateHTML('all-war-times')
+    this.updateHTML('war-times-table')
   }
 })
