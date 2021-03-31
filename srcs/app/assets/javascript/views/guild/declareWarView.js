@@ -419,8 +419,12 @@ export const DeclareWar = Backbone.View.extend({
     const index = e.currentTarget.getAttribute('for')
     this.context.warTime.splice(index, 1)
 
+    let j = 0
     for (let i = 0; i < this.context.warTime.length; i++) {
-      this.context.warTime[i].index = i
+      if (this.context.warTime[i] !== undefined) {
+        this.context.warTime[i].index = j
+        j++
+      }
     }
     this.updateHTML('war-times-table')
   }
