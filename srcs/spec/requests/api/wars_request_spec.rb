@@ -164,7 +164,7 @@ RSpec.describe "Wars", type: :request do
     }
     context 'opening' do
       before { perform_enqueued_jobs(only: WarOpenerJob) }
-      it 'should open at start time' do
+      it 'should open at start time',test:true do
         expect(War.first.opened?).to be_truthy
       end
       it 'should not let update when opened' do
@@ -196,7 +196,7 @@ RSpec.describe "Wars", type: :request do
       end
     end
   end
-  describe "Times",test:true do
+  describe "Times" do
     let(:war_time_attributes) { { day: Date.today.strftime("%A"), start_hour: 8, end_hour: 20, time_to_answer: 10, max_unanswered: 2 } }
     before { post api_wars_url, headers: access_token, params: attributes }
     context 'create' do

@@ -2,15 +2,13 @@
 
 class WarTime < ApplicationRecord
   validates_presence_of :day, uniqueness: true
-  validates_presence_of :start_hour, uniqueness: true
-  validates_presence_of :end_hour, uniqueness: true
+  validates_presence_of :start_hour
+  validates_presence_of :end_hour
   validates_presence_of :time_to_answer
   validates_presence_of :max_unanswered
-  validate :start_before_end
+  validates_numericality_of :start_hour, less_than: :end_hour
+  validates_numericality_of :end_hour, greater_than: :start_hour
+  validates_numericality_of :time_to_answer, greater_than: -1
+  validates_numericality_of :max_unanswered, greater_than: -1
   belongs_to :war
-
-  def start_before_end
-    valid = start_hour && end_hour && start_hour < end_hour
-    errors.add(:date_start, 'must be before end date') unless valid
-  end
 end

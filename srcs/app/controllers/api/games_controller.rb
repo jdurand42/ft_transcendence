@@ -62,7 +62,7 @@ module Api
     def war_time_to_answer(game)
       return unless game.mode == 'war'
 
-      WarTimeToAnswerJob.set(wait: WarTime.find(game.war_time_id).time_to_answer).perform_later(game)
+      WarTimeToAnswerJob.set(wait: WarTime.find(game.war_time_id).time_to_answer).perform_later(game, war_time)
     end
 
     def invite(user_id, game_id)

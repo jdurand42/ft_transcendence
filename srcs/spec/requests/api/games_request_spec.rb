@@ -144,23 +144,38 @@ RSpec.describe 'Games', type: :request do
         post "/api/guilds/#{Guild.first.id}/members/#{users[0].id}", headers: access_token
         post "/api/guilds/#{Guild.last.id}/members/#{users[1].id}", headers: access_token_2
         post api_wars_url, headers: access_token, params: attributes
-        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 2 }
-        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        perform_enqueued_jobs(only: WarOpenerJob)
         auth.update!(status: 'online')
         auth_2.update!(status: 'online')
       }
       it 'should not create a second match' do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        perform_enqueued_jobs(only: WarOpenerJob)
         post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
         post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id}
         expect(json['errors']).to eq ["Your guild is already playing a war time match against this guild"]
       end
-      it "should forfeit absent opponent at time_to_answer" do
+      it "should forfeit opponent at time_to_answer" do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        perform_enqueued_jobs(only: WarOpenerJob)
         post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
         expect(WarTimeToAnswerJob).to have_been_enqueued
         perform_enqueued_jobs(only: WarTimeToAnswerJob)
         expect(Game.first.winner_id).to eq auth.id
+      end
+      it "should decrement max_unanswered at time_to_answer" do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        perform_enqueued_jobs(only: WarOpenerJob)
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        expect(WarTimeToAnswerJob).to have_been_enqueued
+        perform_enqueued_jobs(only: WarTimeToAnswerJob)
+        expect(Game.first.winner_id).to eq nil
+        expect(WarTime.first.max_unanswered).to eq 0
       end
     end
   end
