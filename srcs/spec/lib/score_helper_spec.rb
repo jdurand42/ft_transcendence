@@ -26,6 +26,9 @@ RSpec.describe GamePointGiver do
       expect(User.find_by_nickname('tom').ladder_games_won).to eq 0
     end
   end
+  context 'Tournament' do
+
+  end
   context 'User has a guild' do
     let!(:duel_game) { create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played') }
     let!(:duel_game_2) { create(:game, player_left: tom, player_right: alan, winner: alan, status: 'played') }

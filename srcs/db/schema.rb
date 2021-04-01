@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_11_090451) do
+ActiveRecord::Schema.define(version: 2021_04_01_131159) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -122,6 +122,13 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "tournaments", force: :cascade do |t|
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "user_achievements", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "achievement_id"
@@ -186,12 +193,10 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
 
   create_table "war_times", force: :cascade do |t|
     t.string "day"
-    t.integer "start_hour"
-    t.integer "end_hour"
+    t.integer "start_hour", default: 1
+    t.integer "end_hour", default: 2
     t.integer "time_to_answer"
     t.integer "max_unanswered"
-    t.boolean "opened", default: false
-    t.boolean "closed", default: false
     t.bigint "war_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

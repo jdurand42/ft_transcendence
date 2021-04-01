@@ -164,7 +164,7 @@ RSpec.describe "Wars", type: :request do
     }
     context 'opening' do
       before { perform_enqueued_jobs(only: WarOpenerJob) }
-      it 'should open at start time',test:true do
+      it 'should open at start time' do
         expect(War.first.opened?).to be_truthy
       end
       it 'should not let update when opened' do
@@ -215,6 +215,16 @@ RSpec.describe "Wars", type: :request do
         post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime("%A"), start_hour: 7, end_hour: 19, time_to_answer: 10, max_unanswered: 2 }
         expect(response.status).to eq 403
         expect(json['errors']).to eq ['Entity dates are entangled with another one']
+      end
+      it 'should not be entangled (start_hour param == existing end_hour)' do
+        post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime("%A"), start_hour: 20, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        expect(response.status).to eq 201
+      end
+      it 'should not be entangled (end_hour param == existing start_hour)' do
+        post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime("%A"), start_hour: 7, end_hour: 8, time_to_answer: 10, max_unanswered: 2 }
+        expect(response.status).to eq 201
       end
     end
     context 'destroy' do

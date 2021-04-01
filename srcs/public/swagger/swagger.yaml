@@ -339,7 +339,18 @@ paths:
                 properties:
                   participant_ids:
                     $ref: '#/components/schemas/integer_list'
-
+  "/api/tournaments":
+    get:
+      summary: Retrieves all tournaments
+      tags:
+        - Tournaments
+      responses:
+        '200':
+          description: Tournaments found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tournament"
   "/api/games":
     get:
       summary: Retrieves all games played
@@ -1278,6 +1289,13 @@ components:
         time_to_answer:
           type: integer
         max_unanswered:
+          type: integer
+    tournament:
+      type: object
+      properties:
+        start_date:
+          type: integer
+        end_date:
           type: integer
     integer_list:
       type: array
