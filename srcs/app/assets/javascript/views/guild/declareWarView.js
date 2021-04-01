@@ -21,6 +21,7 @@ export const DeclareWar = Backbone.View.extend({
 
     this.fromId = options.fromId
     this.onId = options.onId
+    this.router = options.router
     this.fromGuild = new Guild({ id: this.fromId })
     this.onGuild = new Guild({ id: this.onId })
     this.fromWars = new Wars({ id: this.fromId })
@@ -231,85 +232,147 @@ export const DeclareWar = Backbone.View.extend({
     this.initializeCalendar()
   },
 
-  validateWarTimes: function () {
-    const fromHH = document.getElementsByClassName('fromHH')
-    const fromMM = document.getElementsByClassName('fromMM')
-    const toHH = document.getElementsByClassName('toHH')
-    const toMM = document.getElementsByClassName('toMM')
-    const maxUnanswered = document.getElementsByClassName('max-unanswered')
-    const timeToAnswer = document.getElementsByClassName('time-to-answer')
-
+  validateHours: function (div, nb1, nb2) {
     let res = true
-
-    for (let i = 0; i < fromHH.length; i++) {
-      if (!(fromHH[i].value >= 0 && fromHH[i].value <= 23) || fromHH[i].value === '') {
-        fromHH[i].style.border = 'solid 2px var(--error-message-color)'
+    for (let i = 0; i < div.length; i++) {
+      if (!(div[i].value >= nb1 && div[i].value <= nb2) || div[i].value === '') {
+        div[i].style.border = 'solid 2px var(--error-message-color)'
         res = false
       } else {
-        fromHH[i].style.border = 'solid 1px #C4C4C4'
+        div[i].style.border = 'solid 1px #C4C4C4'
         this.context.warTime[i].fromHH = document.getElementById('fromHH' + i).value
       }
     }
+    return res
+  },
 
-    for (let i = 0; i < toHH.length; i++) {
-      if (!(toHH[i].value >= 0 && toHH[i].value <= 23) || toHH[i].value === '') {
+  validateNumbers: function (div) {
+    let res = true
+
+    for (let i = 0; i < div.length; i++) {
+      if ((isNaN(Number((div[i].value))) === false || Number((div[i].value)) === 0) && Number(div[i].value) >= 0) {
+        this.context.warTime[i].maxUnanswered = div[i].value
+        div[i].style.border = '1px solid #000'
+      } else {
+        div[i].style.border = 'solid 2px var(--error-message-color)'
+        res = false
+      }
+    }
+    return res
+  },
+
+  dateRangeOverlaps: function (aStart, aEnd, bStart, bEnd) {
+    if ((bStart >= aStart && bStart < aEnd) ||
+      (bStart < aStart && bEnd > aStart)) {
+      return true
+    }
+    return false
+  },
+
+  multipleDateRangeOverlaps: function (dates) {
+    let i = 0; let j = 0
+
+    if (dates != null && dates.length > 1) {
+      for (i = 0; i < dates.length - 1; i += 1) {
+        for (j = i + 1; j < dates.length; j += 1) {
+          if (this.dateRangeOverlaps(
+            dates[i].from, dates[i].to,
+            dates[j].from, dates[j].to) === true) {
+            return false
+          }
+        }
+      }
+    }
+    return true
+  },
+
+  validateWarTimes: function () {
+    let message
+
+    const fromHH = document.getElementsByClassName('fromHH')
+    // const fromMM = document.getElementsByClassName('fromMM')
+    const toHH = document.getElementsByClassName('toHH')
+    // const toMM = document.getElementsByClassName('toMM')
+    const maxUnanswered = document.getElementsByClassName('max-unanswered')
+    const timeToAnswer = document.getElementsByClassName('time-to-answer')
+    const day = document.getElementsByClassName('day-name')
+
+    let res = true
+
+    if (this.validateHours(fromHH, 0, 23) === false) {
+      message = 'Hours have to be a number between 0 and 23'
+      res = false
+    }
+    if (this.validateHours(toHH, 0, 23) === false) {
+      message = 'Hours have to be a number between 0 and 23'
+      res = false
+    }
+    // if (this.validateHours(fromMM, 0, 59) === false) {
+    //   res = false
+    // }
+    // if (this.validateHours(toMM, 0, 59) === false) {
+    //   res = false
+    // }
+    if (this.validateNumbers(maxUnanswered) === false) {
+      message = 'Max unsanswered and Time to Answer have to be a positive number'
+      res = false
+    }
+    if (this.validateNumbers(timeToAnswer) === false) {
+      message = 'Max unsanswered and Time to Answer have to be a positive number'
+      res = false
+    }
+
+    for (let i = 0; i < fromHH.length; i++) {
+      // const fromHours = new Date()
+      // fromHours.setHours(fromHH[i].value, fromMM[i].value, 0)
+      // const toHours = new Date()
+      // toHours.setHours(toHH[i].value, toMM[i].value, 0)
+      if (Number(fromHH[i].value) >= Number(toHH[i].value)) {
+        message = 'A start hour war time is greater or equal to an end hour war time'
+        fromHH[i].style.border = 'solid 2px var(--error-message-color)'
+        // fromMM[i].style.border = 'solid 2px var(--error-message-color)'
         toHH[i].style.border = 'solid 2px var(--error-message-color)'
-        res = false
-      } else {
-        toHH[i].style.border = 'solid 1px #C4C4C4'
-        this.context.warTime[i].toHH = document.getElementById('toHH' + i).value
-      }
-    }
-
-    for (let i = 0; i < fromMM.length; i++) {
-      if (!(fromMM[i].value >= 0 && fromMM[i].value <= 59) || fromMM[i].value === '') {
-        fromMM[i].style.border = 'solid 2px var(--error-message-color)'
-        res = false
-      } else {
-        fromMM[i].style.border = 'solid 1px #C4C4C4'
-        this.context.warTime[i].fromMM = document.getElementById('fromMM' + i).value
-      }
-    }
-
-    for (let i = 0; i < toMM.length; i++) {
-      if (!(toMM[i].value >= 0 && toMM[i].value <= 59) || toMM[i].value === '') {
-        toMM[i].style.border = 'solid 2px var(--error-message-color)'
-        res = false
-      } else {
-        toMM[i].style.border = 'solid 1px #C4C4C4'
-        this.context.warTime[i].toMM = document.getElementById('toMM' + i).value
-      }
-    }
-
-    for (let i = 0; i < maxUnanswered.length; i++) {
-      if ((isNaN(Number((maxUnanswered[i].value))) === false || Number((maxUnanswered[i].value)) === 0) && Number(maxUnanswered[i].value) >= 0) {
-        this.context.warTime[i].maxUnanswered = maxUnanswered[i].value
-        maxUnanswered[i].style.border = '1px solid #000'
-      } else {
-        maxUnanswered[i].style.border = 'solid 2px var(--error-message-color)'
+        // toMM[i].style.border = 'solid 2px var(--error-message-color)'
         res = false
       }
     }
 
-    for (let i = 0; i < timeToAnswer.length; i++) {
-      if ((isNaN(Number((timeToAnswer[i].value))) === false || Number((timeToAnswer[i].value)) === 0) && Number(timeToAnswer[i].value) >= 0) {
-        this.context.warTime[i].timeToAnswer = timeToAnswer[i].value
-        timeToAnswer[i].style.border = '1px solid #000'
-      } else {
-        timeToAnswer[i].style.border = 'solid 2px var(--error-message-color)'
+    if (res === true) {
+      const dates = []
+      for (let i = 0; i < fromHH.length; i++) {
+        const dayNumber = this.getDay(day[i].innerText)
+        const date = new Date()
+        while (date.getDay() !== dayNumber) {
+          date.setDate(date.getDate() + 1)
+        }
+        const startDate = new Date(date)
+        const endDate = new Date(date)
+        startDate.setHours(Number(fromHH[i].value), 0, 0)
+        endDate.setHours(Number(toHH[i].value), 0, 0)
+        dates.push({ from: startDate, to: endDate })
+      }
+      if (this.multipleDateRangeOverlaps(dates) === false) {
+        message = 'War times are overlapping'
         res = false
       }
     }
 
     if (res === false) {
       document.getElementById('error').style.display = 'flex'
-      document.getElementById('error').textContent = 'Please fill the war times correctly'
+      document.getElementById('error').textContent = message
     } else {
       this.declareWar()
     }
   },
 
   declareWar: function () {
+    const fromHH = document.getElementsByClassName('fromHH')
+    const toHH = document.getElementsByClassName('toHH')
+    const maxUnanswered = document.getElementsByClassName('max-unanswered')
+    const timeToAnswer = document.getElementsByClassName('time-to-answer')
+    const day = document.getElementsByClassName('day-name')
+
+    console.log(day)
     let tournamentEffort = false
     if (this.context.ladder === 'checked') {
       tournamentEffort = true
@@ -327,10 +390,22 @@ export const DeclareWar = Backbone.View.extend({
           this.startDate.toISOString(),
           this.endDate.toISOString(),
           Number(this.context.winReward),
-          Number(this.context.maxUnanswered),
           tournamentEffort,
           ladderEffort)
-      } catch (response) {
+        console.log(day)
+        for (let i = 0; i < fromHH.length; i++) {
+          const response2 = await war.createWarTime(
+            day[i].innerText,
+            Number(fromHH[i].value),
+            Number(toHH[i].value),
+            Number(maxUnanswered[i].value),
+            Number(timeToAnswer[i].value)
+          )
+          this.router.navigate('#guild/' + this.onId, true)
+        }
+      } catch (error) {
+        document.getElementById('error').style.display = 'flex'
+        document.getElementById('error').textContent = error.responseJSON.message
       }
     }
     declareWar()
@@ -432,5 +507,24 @@ export const DeclareWar = Backbone.View.extend({
       }
     }
     this.updateHTML('war-times-table')
+  },
+
+  getDay: function (date) {
+    switch (date) {
+      case 'Sunday':
+        return 0
+      case 'Monday':
+        return 1
+      case 'Tuesday':
+        return 2
+      case 'Wednesday':
+        return 3
+      case 'Thursday':
+        return 4
+      case 'Friday':
+        return 5
+      case 'Saturday':
+        return 6
+    }
   }
 })
