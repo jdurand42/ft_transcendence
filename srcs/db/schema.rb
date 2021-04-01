@@ -185,8 +185,9 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
   end
 
   create_table "war_times", force: :cascade do |t|
-    t.datetime "date_start"
-    t.datetime "date_end"
+    t.string "day"
+    t.integer "start_hour"
+    t.integer "end_hour"
     t.integer "time_to_answer"
     t.integer "max_unanswered"
     t.boolean "opened", default: false

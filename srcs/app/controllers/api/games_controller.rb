@@ -20,7 +20,7 @@ module Api
     def create
       @games_params = params.permit(:mode)
       player_sides
-      return render_error('warTimeMatchLimit', 403) if war_time_match_ongoing?
+      return if war_time_ongoing?
       return render_error('opponentNotAvailable', 403) unless opponent_available?
 
       json_response(create_game, 201)
@@ -39,16 +39,18 @@ module Api
       @games_params[:player_right_id] = params.fetch(:opponent_id).to_i
     end
 
-    def war_time_match_ongoing?
-      return unless @games_params[:mode] == 'war'
+    def war_time_ongoing?
+      return nil unless @games_params[:mode] == 'war'
+      return render_error('noWarTimeOngoing', 403) unless war_time.present?
+      return render_error('warTimeMatchLimit', 403) if Game.where(war_time_id: war_time.id).any?
 
-      @games_params = @games_params.merge(war_time_id: war_time.id) unless war_time.nil?
-      Game.where(war_time_id: war_time.id).any?
+      @games_params.merge!(war_time_id: war_time.id)
+      nil
     end
 
     def war_time
       war = war_opened_side_help(current_user.guild, User.find(params[:opponent_id]).guild)
-      war.war_times.where(opened: true).first
+      running_war_time(war)
     end
 
     def send_invites(game)
@@ -60,7 +62,7 @@ module Api
     def war_time_to_answer(game)
       return unless game.mode == 'war'
 
-      WarTimeToAnswerJob.set(wait: WarTime.find(game.war_time_id).time_to_answer).perform_later(game)
+      WarTimeToAnswerJob.set(wait: WarTime.find(game.war_time_id).time_to_answer).perform_later(game, war_time)
     end
 
     def invite(user_id, game_id)

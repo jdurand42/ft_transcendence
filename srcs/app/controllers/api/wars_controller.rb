@@ -35,7 +35,6 @@ module Api
     def agreements
       authorize @war
       return render_error('timeSlotEntangled', 403) if wars_entangled?(@war, @from, @on)
-      return render_error('OutOfWarPeriod', 403) unless war_times_inside_war_period?(@war)
 
       guild_agrees
       start_war(@war) if @war.from_agreement? && @war.on_agreement?
@@ -44,12 +43,9 @@ module Api
 
     def create_times
       authorize @war
-      return render_error('timeSlotEntangled', 403) if times_entangled?(@war)
-      return render_error('OutOfWarPeriod', 403) if war_time_out_of_war_period?(@war)
+      return render_error('timeSlotEntangled', 403) if war_time_entangled?(@war)
 
       war_time = WarTime.create!(time_params_create)
-      WarTimeOpenerJob.set(wait_until: war_time.date_start).perform_later(war_time)
-      WarTimeCloserJob.set(wait_until: war_time.date_end).perform_later(war_time)
       json_response(war_time, 201)
     end
 
@@ -97,7 +93,7 @@ module Api
     end
 
     def time_params_create
-      params.permit(:date_start, :date_end, :max_unanswered, :time_to_answer).merge!(war: @war)
+      params.permit(:day, :start_hour, :end_hour, :max_unanswered, :time_to_answer).merge!(war: @war)
     end
 
     def set_war

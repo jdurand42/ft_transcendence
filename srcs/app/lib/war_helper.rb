@@ -19,32 +19,38 @@ module WarHelper
     false
   end
 
-  def times_entangled?(war)
+  def war_time_entangled?(war)
     war.war_times.each do |t|
-      return true if time_params_create[:date_start].between?(t.date_start, t.date_end)
-      return true if time_params_create[:date_end].between?(t.date_start, t.date_end)
+      return true if start_hour_entangled?(t)
+      return true if end_hour_entangled?(t)
     end
     false
   end
 
-  def war_time_out_of_war_period?(war)
-    return true unless time_params_create[:date_start].between?(war.war_start, war.war_end)
-    return true unless time_params_create[:date_end].between?(war.war_start, war.war_end)
+  def start_hour_entangled?(war_time)
+    return unless time_params_create[:day].casecmp(war_time.day).zero?
 
-    false
+    time_params_create[:start_hour].to_i.between?(war_time.start_hour, war_time.end_hour)
   end
 
-  def war_times_inside_war_period?(war)
-    war.war_times.each do |t|
-      return false unless t.date_start.between?(war.war_start, war.war_end)
-      return false unless t.date_end.between?(war.war_start, war.war_end)
-    end
-    true
+  def end_hour_entangled?(war_time)
+    return unless time_params_create[:day].casecmp(war_time.day).zero?
+
+    time_params_create[:end_hour].to_i.between?(war_time.start_hour, war_time.end_hour)
   end
 
   def turn_to_negotiate?(war)
     return false if war.last_negotiation == current_user.guild.id
 
     war.last_negotiation = current_user.guild.id
+  end
+
+  def running_war_time(war)
+    war.war_times.each do |t|
+      if t.day.casecmp(Date.today.strftime('%A')).zero? \
+      && Time.now.in_time_zone(1).hour.between?(t.start_hour, t.end_hour)
+        return t
+      end
+    end
   end
 end

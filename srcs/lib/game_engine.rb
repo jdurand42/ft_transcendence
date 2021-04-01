@@ -39,6 +39,11 @@ class GameEngine
     @over = true
   end
 
+  def unanswered
+    notify_all
+    @over = true
+  end
+
   def give_point
     if @ball.x < 1
       right_score
@@ -105,5 +110,10 @@ class GameEngine
 
   def notify_looser(user_id)
     ActionCable.server.broadcast("user_#{user_id}", { action: 'game_lost', id: @game.id })
+  end
+
+  def notify_all
+    ActionCable.server.broadcast("user_#{@game.player_left.id}", { action: 'game_unanswered', id: @game.id })
+    ActionCable.server.broadcast("user_#{@game.player_right.id}", { action: 'game_unanswered', id: @game.id })
   end
 end

@@ -1030,6 +1030,8 @@ components:
         mode:
           type: string
           enum: [duel, ladder, tournament]
+        war_time_id:
+          type: integer
         status:
           type: string
           enum: [pending, inprogress, played]
@@ -1052,7 +1054,7 @@ components:
         mode:
           type: string
           enum: [duel, ladder, war]
-          example: [duel, ladder, war]
+          example: [duel, ladder, war, tournament]
         opponent_id:
           type: integer
           description: user_id of your opponent
@@ -1266,12 +1268,17 @@ components:
     war_time:
       type: object
       properties:
-        start:
+        day:
           type: string
-          format: date-time
-        end:
-          type: string
-          format: date-time
+          example: 'Monday'
+        start_hour:
+          type: integer
+        end_hour:
+          type: integer
+        time_to_answer:
+          type: integer
+        max_unanswered:
+          type: integer
     integer_list:
       type: array
       items:

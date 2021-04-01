@@ -53,4 +53,4 @@ en:
   guildOwnerDeletion: "Officers can't remove guild owner"
   twoFactorFailed: "Your code is either expired or invalid"
   notFound: "Resource can not be found"
-  OutOfWarPeriod: "WarTime date out of War period"
+  noWarTimeOnGoing: "Can't launch game in war mode, no WarTime running"
