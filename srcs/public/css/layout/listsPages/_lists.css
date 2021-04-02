@@ -19,11 +19,21 @@
 .listsPage .listsHeader-container {
     background: url('../../../images/background.jpg');
     box-shadow: inset 0 0 0 1000px rgba(27, 37, 52, 0.4);
-    height: calc(217px - var(--header-size));
-
+    height: 135px;
+    
     background-position: 50% 0;
     background-position: 0 0;
     background-attachment: fixed;
+
+    width: 100vw;
+    z-index: 1;
+    position: fixed;
+}
+
+.listsPage .listsMain-container {
+    position: relative;
+    top: calc(135px + var(--header-size));
+    z-index: 0;
 }
 
 .listsPage .search-list {

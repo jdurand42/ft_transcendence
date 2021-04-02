@@ -1,3 +1,7 @@
+.leaderboardHeader {
+    height: 100%;
+}
+
 .leaderboardHeader
 .filter {
     display: flex;
@@ -44,7 +48,7 @@
     top: 28px;
     left: 471px;
 
-    width: 170px;
+    width: 178px;
 
     flex-direction: column;
 
