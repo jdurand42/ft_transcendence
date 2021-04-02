@@ -59,22 +59,18 @@ RSpec.describe GamePointGiver do
       context "with ladder_effort" do
         let(:user) { create(:user, ladder_games_lost: 0, ladder_games_won: 0) }
         it "at false gives no points" do
-          gp.game_points(ladder_game)
-          expect(War.first.on_score).to eq 0
-          expect(War.first.from_score).to eq 0
+          gp.game_points(ladder_game) # Winner = Tom, BANG, war side_on
+          expect(War.first.on_score).to eq 10 # 10 points (war enemies)
+          expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
         end
         it "at true gives points" do
-          create(:war, from: bang, on: nos, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, opened: true, from_score: 0, on_score: 0)
           War.first.toggle!(:ladder_effort)
-          War.last.toggle!(:ladder_effort)
-          gp.game_points(ladder_game)
-          expect(War.first.from_score).to eq 0
-          expect(War.first.on_score).to eq 10
-          expect(War.last.from_score).to eq 10
-          expect(War.last.on_score).to eq 0
+          gp.game_points(ladder_game) # Winner = Tom, BANG, war side_on
+          expect(War.first.on_score).to eq 20 # 10 points (war enemies) + 10 points (ladder_effort)
+          expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
         end
       end
-      context 'war_time duel',test:true do
+      context 'war_time duel' do
         it "gives points to war on_score" do
           war_time = WarTime.create(day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, war_id: War.first.id, time_to_answer: 10, max_unanswered: 2)
           war_game = create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'war', war_time_id: war_time.id)

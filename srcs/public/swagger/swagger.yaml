@@ -341,7 +341,7 @@ paths:
                     $ref: '#/components/schemas/integer_list'
   "/api/tournaments":
     get:
-      summary: Retrieves all tournaments
+      summary: Retrieves the tournament
       tags:
         - Tournaments
       responses:
@@ -350,7 +350,87 @@ paths:
           content:
             application/json:
               schema:
+                $ref: "#/components/schemas/tournament_response"
+    post:
+      summary: Creates a tournament
+      tags:
+        - Tournaments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/tournament"
+      responses:
+        '201':
+          description: tournament created
+  "/api/tournaments/{id}":
+    put:
+      summary: Modifies a tournament
+      tags:
+        - Tournaments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Tournament ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tournament'
+      responses:
+        '200':
+          description: tournament modified
+          content:
+            application/json:
+              schema:
                 $ref: "#/components/schemas/tournament"
+    delete:
+      summary: Deletes a tournament
+      tags:
+        - Tournaments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Tournament ID
+      responses:
+        '204':
+          description: tournament deleted
+  "/api/tournaments/{id}/participants":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Tournament ID
+    post:
+      summary: Joins a tournament
+      description: Allows current_user to join a tournament
+      tags:
+        - Tournaments
+      responses:
+        '201':
+          description: tournament joined
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tournament_participant"
+    delete:
+      summary: Leaves a tournament
+      description: Allows current_user to leave a tournament
+      tags:
+        - Tournaments
+      responses:
+        '204':
+          description: Tournament left
+
   "/api/games":
     get:
       summary: Retrieves all games played
@@ -395,6 +475,10 @@ paths:
       responses:
         '201':
           description: invitations sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/game_response"
   "/api/games/{id}":
     delete:
       summary: deletes a game
@@ -1290,12 +1374,28 @@ components:
           type: integer
         max_unanswered:
           type: integer
+    tournament_response:
+      allOf:
+        - $ref: '#/components/schemas/tournament'
+        - type: object
+          properties:
+            participant_ids:
+              $ref: '#/components/schemas/integer_list'
     tournament:
       type: object
       properties:
         start_date:
+          type: string
+          format: date-time
+          example: '2021-04-01'
+    tournament_participant:
+      type: object
+      properties:
+        id:
           type: integer
-        end_date:
+        user_id:
+          type: integer
+        tournament_id:
           type: integer
     integer_list:
       type: array

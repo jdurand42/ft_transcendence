@@ -3,6 +3,15 @@
 Rails.application.routes.draw do
   resources :two_factor
   namespace :api do
+    resources :ladders
+    resources :games
+    resources :achievements
+    resources :tournaments do
+      member do
+        post 'participants', to: 'tournaments#join'
+        delete 'participants', to: 'tournaments#leave'
+      end
+    end
     resources :guilds do
       member do
         post 'invitations', to: 'guilds#create_invitation'
@@ -21,9 +30,6 @@ Rails.application.routes.draw do
         post 'agreements'
       end
     end
-    resources :ladders
-    resources :games
-    resources :achievements
     resources :chats do
       resources :messages, only: %i[index create]
       member do

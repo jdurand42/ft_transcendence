@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class Tournament < ApplicationRecord
-  validates_presence_of :start_date
-  validates_presence_of :end_date
-  belongs_to :owner, class_name: 'User'
-  has_many :participants, class_name: 'User'
+  validates :start_date, presence: true
+  has_one :owner, -> { where(role: 'owner') }, class_name: 'TournamentParticipant'
+  has_many :participants, class_name: 'TournamentParticipant', dependent: :destroy
 end
