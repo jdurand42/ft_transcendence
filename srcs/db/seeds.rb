@@ -6,7 +6,7 @@ require 'factory_bot_rails'
 Ladder.create(name: 'Bronze', desc: 'meh.')
 Ladder.create(name: 'Silver', desc: 'hem.')
 Ladder.create(name: 'Gold', desc: 'ehm.')
-Ladder.create(name: 'Platine', desc: 'mhe.')
+Ladder.create(name: 'Platinum', desc: 'mhe.')
 Ladder.create(name: 'Diamond', desc: 'mhe.')
 
 Chat.create(name: 'general', privacy: 'public')
@@ -37,6 +37,8 @@ if Rails.env.development?
     FactoryBot.create(:game, winner: players[0], player_left: players[0], player_right: players[1], mode: 'ladder',
                              status: 'played')
   end
+
+  FactoryBot.create_list(:user, 5)
 
   User.all.each do |t|
     t.update!(ladder_id: Ladder.all.sample.id)

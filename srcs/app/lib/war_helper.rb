@@ -29,12 +29,14 @@ module WarHelper
 
   def start_hour_entangled?(war_time)
     return unless time_params_create[:day].casecmp(war_time.day).zero?
+    return if time_params_create[:start_hour].to_i == war_time.end_hour
 
     time_params_create[:start_hour].to_i.between?(war_time.start_hour, war_time.end_hour)
   end
 
   def end_hour_entangled?(war_time)
     return unless time_params_create[:day].casecmp(war_time.day).zero?
+    return if time_params_create[:end_hour].to_i == war_time.start_hour
 
     time_params_create[:end_hour].to_i.between?(war_time.start_hour, war_time.end_hour)
   end
