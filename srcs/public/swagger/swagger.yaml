@@ -430,6 +430,25 @@ paths:
       responses:
         '204':
           description: Tournament left
+  "/api/tournaments/{id}/games":
+    get:
+      summary: Retrieves tournament's games
+      tags:
+        - Tournaments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Tournament ID
+      responses:
+        '200':
+          description: Games found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/arrayOfGames"
 
   "/api/games":
     get:
@@ -1127,6 +1146,8 @@ components:
           enum: [duel, ladder, tournament]
         war_time_id:
           type: integer
+        tournament_id:
+          type: integer
         status:
           type: string
           enum: [pending, inprogress, played]
@@ -1153,6 +1174,8 @@ components:
         opponent_id:
           type: integer
           description: user_id of your opponent
+        tournament_id:
+          type: integer
     user:
       type: object
       properties:

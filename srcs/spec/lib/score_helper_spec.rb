@@ -69,6 +69,15 @@ RSpec.describe GamePointGiver do
           expect(War.first.on_score).to eq 20 # 10 points (war enemies) + 10 points (ladder_effort)
           expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
         end
+        it "at true gives points to wars with ladder_effort:true",test:true do
+          create(:war, from: bang, on: nos, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, opened: true, from_score: 0, on_score: 0)
+          War.first.toggle!(:ladder_effort)
+          War.last.toggle!(:ladder_effort)
+          gp.game_points(ladder_game) # Winner = Tom, BANG, war side_on
+          expect(War.first.on_score).to eq 20 # 10 points (war enemies) + 10 points (ladder_effort)
+          expect(War.last.from_score).to eq 10 # 10 points (ladder_effort)
+          expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
+        end
       end
       context 'war_time duel' do
         it "gives points to war on_score" do

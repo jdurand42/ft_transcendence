@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
     t.bigint "player_right_id"
     t.integer "connected_players", default: 0
     t.integer "war_time_id"
+    t.integer "tournament_id"
     t.string "status", default: "pending"
     t.string "mode"
     t.datetime "created_at", precision: 6, null: false

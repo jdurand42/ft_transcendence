@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Games', type: :request do
-  let!(:auth) { create(:user) }
+  let!(:auth) { create(:user, admin: true) }
+  let(:access_token) { auth.create_new_auth_token }
 
   describe 'requires auth token' do
     before do
@@ -132,10 +133,9 @@ RSpec.describe 'Games', type: :request do
       end
     end
 
-    context 'WarTime',test:true do
+    context 'WarTime' do
       let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10 } }
       let(:auth_2) { create(:user) }
-      let(:access_token) { auth.create_new_auth_token }
       let(:access_token_2) { auth_2.create_new_auth_token }
       let(:users) { create_list(:user, 2, status: 'online') }
       before {
@@ -176,6 +176,54 @@ RSpec.describe 'Games', type: :request do
         perform_enqueued_jobs(only: WarTimeToAnswerJob)
         expect(Game.first.winner_id).to eq nil
         expect(WarTime.first.max_unanswered).to eq 0
+      end
+    end
+    context 'Tournament', test:true do
+      let(:users) { create_list(:user, 2, status: 'online') }
+      let(:token) { users[0].create_new_auth_token }
+      let(:token_2) { users[1].create_new_auth_token }
+      before {
+        post api_tournaments_url, headers: access_token, params: { start_date: DateTime.now + 1 }
+        post participants_api_tournament_url(Tournament.first.id), headers: token
+        post participants_api_tournament_url(Tournament.first.id), headers: token_2
+      }
+      it "can't play twice against opponent (one way)" do
+        put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+        expect(Game.count).to eq 1
+        expect(Game.first.tournament_id).to eq Tournament.first.id
+        expect(json['errors']).to eq ["You already challenged this player"]
+        expect(status).to eq 403
+      end
+      it "can't play twice against opponent (both ways)" do
+        put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+        post api_games_url, headers: token_2, params: { mode: 'tournament', opponent_id: users[0].id ,tournament_id: Tournament.first.id }
+        expect(Game.count).to eq 1
+        expect(json['errors']).to eq ["You already challenged this player"]
+        expect(status).to eq 403
+      end
+      it "can't play before tournament starts" do
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+        expect(Game.count).to eq 0
+        expect(json['errors']).to eq ["Tournament has not started yet"]
+        expect(status).to eq 403
+      end
+      it "can't play if opponent not participant" do
+        put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
+        user = create(:user, status: 'online')
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: user.id ,tournament_id: Tournament.first.id }
+        expect(Game.count).to eq 0
+        expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
+        expect(status).to eq 403
+      end
+      it "can't play against tournament owner" do
+        put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: auth.id ,tournament_id: Tournament.first.id }
+        expect(Game.count).to eq 0
+        expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
+        expect(status).to eq 403
       end
     end
   end

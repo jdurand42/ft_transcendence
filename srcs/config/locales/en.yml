@@ -56,3 +56,6 @@ en:
   noWarTimeOnGoing: "Can't launch game in war mode, no WarTime running"
   trnmtRunning: "The tournament has begun"
   trnmtUnique: "There can be only one tournament at a time"
+  trnmtNotStarted: "Tournament has not started yet"
+  alreadyPlayed: "You already challenged this player"
+  opponentNotParticipant: "This player doesn't participate to the tournament"

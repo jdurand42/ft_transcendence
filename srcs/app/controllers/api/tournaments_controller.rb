@@ -4,10 +4,14 @@ module Api
   class TournamentsController < ApiController
     before_action :set_tournament, except: %i[index create]
     before_action :tournament_running?, only: %i[update destroy join]
-    after_action :verify_authorized, except: %i[index create join leave] # show]
+    after_action :verify_authorized, except: %i[index create join leave games] # show]
 
     def index
       json_response(Tournament.all)
+    end
+
+    def games
+      json_response(@trnmt.games)
     end
 
     def create
