@@ -186,12 +186,10 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
 
   create_table "war_times", force: :cascade do |t|
     t.string "day"
-    t.integer "start_hour"
-    t.integer "end_hour"
+    t.integer "start_hour", default: 0
+    t.integer "end_hour", default: 1
     t.integer "time_to_answer"
     t.integer "max_unanswered"
-    t.boolean "opened", default: false
-    t.boolean "closed", default: false
     t.bigint "war_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
