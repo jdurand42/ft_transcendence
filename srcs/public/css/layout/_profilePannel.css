@@ -12,12 +12,12 @@
 	line-height: 34px;
 }
 
-#pannelTrophy {
+.pannelContent #pannelTrophy {
 	width: 70px;
 	height: 70px;
 }
 
-#pannelTrophyContainer {
+.pannelContent #pannelTrophyContainer {
 	left: 243px;
 	top: 84px;
 	position: absolute;
@@ -25,7 +25,7 @@
 	transform: translateX(-50%);
 }
 
-#Pannelnickname {
+.pannelContent #Pannelnickname {
 	color: white;
 	position: absolute;
 	left: 243px;
@@ -54,27 +54,27 @@
 	color: #F2C94C;
 }
 
-#pannelLeagueRank {
+.pannelContent #pannelLeagueRank {
 	left: 400px;
 	/*left: 400 + 157*/
 	top: 84px;;
 	transform: translateY(-50%);
 }
 
-#pannelGeneralRank {
+.pannelContent #pannelGeneralRank {
 	left: 800px;
 	top: 84px;;
 	transform: translateY(-50%);
 }
 
-#pannelVictories {
+.pannelContent #pannelVictories {
 	top: 230px;
 	left: 630px;
 	/*left: 400 + 157*/
 	transform: translateY(-50%);
 }
 
-#pannelTotalGames {
+.pannelContent #pannelTotalGames {
 	top: 230px;
 	left: 1030px;
 	transform: translateY(-50%);
