@@ -66,7 +66,7 @@ export const Router = Backbone.Router.extend({
     'chat/:id(/:page)': 'chat_view',
     chat: 'chat_view',
     leaderboard: 'leaderboard_view',
-    tournaments: 'tournaments_view',
+    tournament: 'tournaments_view',
     manage_guild: 'manage_guild_view',
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
     connexion: 'connexion',

@@ -42,7 +42,7 @@ templates['topnav'] = template({"1":function(container,depth0,helpers,partials,d
 
   return "<div class=\"topnav\">\n  <a class=\"btn logo\" href=\"#home\"></a>\n  <a class=\"btn tournaments"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"tournaments") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":3,"column":27},"end":{"line":3,"column":64}}})) != null ? stack1 : "")
-    + "\" href=\"#tournaments\">Tournament</a>\n  <a class=\"btn"
+    + "\" href=\"#tournament\">Tournament</a>\n  <a class=\"btn"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"leaderboard") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":15},"end":{"line":4,"column":52}}})) != null ? stack1 : "")
     + "\" href=\"#leaderboard\">Leaderboard</a>\n  <a class=\"btn"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"guilds") : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":5,"column":15},"end":{"line":5,"column":48}}})) != null ? stack1 : "")
