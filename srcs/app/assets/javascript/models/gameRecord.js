@@ -3,8 +3,12 @@ import { SuperHeaders } from '../services/headers'
 export const GameRecord = Backbone.Model.extend({
   defaults: {
     winner_id: undefined,
-    looser_id: undefined,
-    type_id: undefined,
+    player_left_id: undefined,
+    player_right_id: undefined,
+    mode: undefined,
+    war_time_id: undefined,
+    tournament_id: undefined,
+    status: undefined,
     created_at: undefined
   },
 
@@ -36,4 +40,5 @@ export const GameRecord = Backbone.Model.extend({
       headers: this.headers
     })
   }
+
 })

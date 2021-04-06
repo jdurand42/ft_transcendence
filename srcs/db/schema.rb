@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_11_090451) do
+ActiveRecord::Schema.define(version: 2021_04_01_153639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
     t.bigint "player_right_id"
     t.integer "connected_players", default: 0
     t.integer "war_time_id"
+    t.integer "tournament_id"
     t.string "status", default: "pending"
     t.string "mode"
     t.datetime "created_at", precision: 6, null: false
@@ -118,6 +119,23 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
   create_table "ladders", force: :cascade do |t|
     t.string "name", null: false
     t.text "desc"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "tournament_participants", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "tournament_id"
+    t.integer "role", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tournament_id"], name: "index_tournament_participants_on_tournament_id"
+    t.index ["user_id", "tournament_id"], name: "index_tournament_participants_on_user_id_and_tournament_id", unique: true
+    t.index ["user_id"], name: "index_tournament_participants_on_user_id"
+  end
+
+  create_table "tournaments", force: :cascade do |t|
+    t.datetime "start_date"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -230,6 +248,8 @@ ActiveRecord::Schema.define(version: 2021_03_11_090451) do
   add_foreign_key "games", "users", column: "winner_id"
   add_foreign_key "guild_members", "guilds"
   add_foreign_key "guild_members", "users"
+  add_foreign_key "tournament_participants", "tournaments"
+  add_foreign_key "tournament_participants", "users"
   add_foreign_key "user_achievements", "achievements"
   add_foreign_key "user_achievements", "users"
   add_foreign_key "user_ignores", "users"

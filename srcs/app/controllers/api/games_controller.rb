@@ -18,9 +18,10 @@ module Api
     end
 
     def create
-      @games_params = params.permit(:mode)
+      @games_params = params.permit(:mode, :tournament_id)
       player_sides
-      return if war_time_ongoing?
+      return if war_time_error?
+      return if tournament_error?
       return render_error('opponentNotAvailable', 403) unless opponent_available?
 
       json_response(create_game, 201)
@@ -39,7 +40,32 @@ module Api
       @games_params[:player_right_id] = params.fetch(:opponent_id).to_i
     end
 
-    def war_time_ongoing?
+    def tournament_error?
+      return nil unless @games_params[:mode] == 'tournament'
+      # return nil if golden_game?
+      return render_error('trnmtNotStarted', 403) unless tournament_started?
+      return render_error('alreadyPlayed', 403) if match_played_already?
+      return render_error('opponentNotParticipant', 403) unless opponent_participant?
+
+      nil
+    end
+
+    def tournament_started?
+      DateTime.now.in_time_zone(1) >= Tournament.find(@games_params[:tournament_id]).start_date
+    end
+
+    def match_played_already?
+      trnmt = @games_params[:tournament_id]
+      res = Game.where(tournament_id: trnmt, player_left: current_user, player_right: params[:opponent_id])
+                .or(Game.where(tournament_id: trnmt, player_right: current_user, player_left: params[:opponent_id]))
+      res.present?
+    end
+
+    def opponent_participant?
+      TournamentParticipant.find_by_user_id_and_role(params[:opponent_id], 'participant')
+    end
+
+    def war_time_error?
       return nil unless @games_params[:mode] == 'war'
       return render_error('noWarTimeOngoing', 403) unless war_time.present?
       return render_error('warTimeMatchLimit', 403) if Game.where(war_time_id: war_time.id).any?

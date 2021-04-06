@@ -99,7 +99,7 @@ export const LeaderboardView = Backbone.View.extend({
       } else {
         this.context.users[i].guild = this.guilds.get(user.get('guild_id')).get('name')
       }
-      this.context.users[i].generalRank = '42'
+      // this.context.users[i].generalRank = '42'
       this.context.users[i].victories = user.get('ladder_games_won')
       this.context.users[i].totalGames = user.get('ladder_games_won') + user.get('ladder_games_lost')
 

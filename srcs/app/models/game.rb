@@ -10,6 +10,7 @@ class Game < ApplicationRecord
   validates_uniqueness_of :player_left, conditions: -> { where.not(status: 'played') }
   validates_uniqueness_of :player_right, conditions: -> { where.not(status: 'played') }
   validates_presence_of :war_time_id, if: :war_mode
+  validates_presence_of :tournament_id, if: :tournament_mode
   validate :player_right_uniqueness
   validate :player_left_uniqueness
 
@@ -17,6 +18,10 @@ class Game < ApplicationRecord
 
   def war_mode
     mode == 'war'
+  end
+
+  def tournament_mode
+    mode == 'tournament'
   end
 
   def player_right_uniqueness

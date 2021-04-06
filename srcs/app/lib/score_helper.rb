@@ -48,6 +48,7 @@ module ScoreHelper
       @winner.increment!(:ladder_games_won)
       @looser.increment!(:ladder_games_lost)
       ladder_war_effort
+      war_points(@war) if war_enemies?
     end
 
     def war_time_points

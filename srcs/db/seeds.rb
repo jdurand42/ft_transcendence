@@ -2,12 +2,13 @@
 
 require 'faker'
 require 'factory_bot_rails'
+include(CompetitionHelper)
 
-Ladder.create(name: 'Bronze', desc: 'meh.')
-Ladder.create(name: 'Silver', desc: 'hem.')
-Ladder.create(name: 'Gold', desc: 'ehm.')
-Ladder.create(name: 'Platine', desc: 'mhe.')
-Ladder.create(name: 'Diamond', desc: 'mhe.')
+Ladder.create(name: 'Bronze')
+Ladder.create(name: 'Silver')
+Ladder.create(name: 'Gold')
+Ladder.create(name: 'Platinum')
+Ladder.create(name: 'Diamond')
 
 Chat.create(name: 'general', privacy: 'public')
 
@@ -38,7 +39,9 @@ if Rails.env.development?
                              status: 'played')
   end
 
+  FactoryBot.create_list(:user, 5)
+
   User.all.each do |t|
-    t.update!(ladder_id: Ladder.all.sample.id)
+    assign_ladder(t)
   end
 end
