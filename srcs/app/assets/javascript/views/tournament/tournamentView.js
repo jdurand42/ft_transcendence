@@ -4,7 +4,8 @@ import { GameRecords } from '../../collections/gameRecords'
 
 export const TournamentView = Backbone.View.extend({
   events: {
-    'mouseover .rules-icon-container': 'mouseoverRules'
+    'mouseover .rules-icon-container': 'mouseoverRules',
+    'click .create-new-tournament': 'createTournamentButton'
   },
   initialize: function () {
     this.context = {}
@@ -16,7 +17,6 @@ export const TournamentView = Backbone.View.extend({
       const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
       const response2 = this.tournament.fetch()
       await response1 && await response2
-      console.log(this.tournament)
       // const response3 = this.games.fetchByTournament(this.tournament.get('id')) // routes to modify
 
       this.render()
@@ -69,8 +69,6 @@ export const TournamentView = Backbone.View.extend({
       }
     }
 
-    this.context.winner = 'jdurand' // TEST TO DO DYNAMICALLY
-
     Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
       switch (operator) {
         case '||':
@@ -90,7 +88,10 @@ export const TournamentView = Backbone.View.extend({
     }
 
     this.handleButtonsColor()
-    document.getElementById('winner').style.display = 'flex' // TEST
+
+    // document.getElementById('winner').style.display = 'flex' // TEST
+    // document.getElementById('second-floor').style.bottom = 0 // TEST TO DO WHEN WINNER
+
     return this
   },
 
@@ -107,5 +108,17 @@ export const TournamentView = Backbone.View.extend({
     const rules = document.getElementById('rules')
     rules.style.top = e.pageY
     rules.style.left = e.pageX
+  },
+
+  createTournamentButton: function (e) {
+    if (e.currentTarget.innerHTML === 'Create new tournament') {
+      this.createNewTournament()
+    } else {
+      this.cancelTournament()
+    }
+  },
+
+  createNewTournament: function () {
+    this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentCreation(this.context))
   }
 })
