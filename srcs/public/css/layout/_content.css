@@ -39,6 +39,15 @@
 	background-attachment: fixed;
 }
 
+.notFoundMessage {
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 30px;
+	line-height: 19px;
+	text-align: center;
+}
+
 .pannelContent {
 	height: 343px;
 	min-height: 343px;
