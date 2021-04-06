@@ -1,3 +1,5 @@
+import { SuperHeaders } from '../services/headers'
+
 export const War = Backbone.Model.extend({
   defaults: {
     closed: undefined,
@@ -19,6 +21,8 @@ export const War = Backbone.Model.extend({
   },
 
   initialize: function () {
+    this.superHeaders = new SuperHeaders()
+    this.headers = this.superHeaders.getHeaders()
   },
 
   urlRoot: 'api/wars',
@@ -28,19 +32,30 @@ export const War = Backbone.Model.extend({
     return this.urlRoot
   },
 
-  createWar: function (onId, warStart, warEnd, prize, maxUnanswered, tournamentEffort, ladderEffort) {
+  createWar: function (onId, warStart, warEnd, prize, tournamentEffort, ladderEffort) {
     return this.save({
       on_id: onId,
       war_start: warStart,
       war_end: warEnd,
       prize: prize,
-      max_unanswered: maxUnanswered,
       tournament_effort: tournamentEffort,
       ladder_effort: tournamentEffort
     })
+  },
+
+  createWarTime: function (day, startHour, endHour, timeToAnswer, maxUnanswered) {
+    const header = this.superHeaders.getHeaders()
+    const url = this.urlRoot + '/' + this.id + '/times'
+    return fetch(url, {
+      method: 'POST',
+      headers: header,
+      body: JSON.stringify({
+        day: day,
+        start_hour: startHour,
+        end_hour: endHour,
+        time_to_answer: timeToAnswer,
+        max_unanswered: maxUnanswered
+      })
+    })
   }
-
-  // createWarTime: function (warStart, warEnd) {
-
-  // }
 })

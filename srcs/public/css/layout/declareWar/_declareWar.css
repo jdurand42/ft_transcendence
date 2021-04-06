@@ -11,8 +11,7 @@
 
     border-top: solid #313236;
 
-    overflow-y: hidden;
-    overflow-x: auto;
+    overflow: hidden;
 }
 
 .declareWar
@@ -116,4 +115,19 @@
     font-family: Roboto-Medium;
     font-size: 16px;
     text-align: center;
+}
+
+.declareWar .input {
+    background: #364050;
+    color: var(--secondary-color);
+    border: 1px solid #000;
+
+    font-size: 14px;
+    outline: none;
+    
+    font-family: 'Roboto-Regular';
+    padding-left: 4px;
+
+    height: 32px;
+
 }

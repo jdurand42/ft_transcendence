@@ -1,0 +1,125 @@
+
+.tournament-header-container {
+    background: url('../../../images/background.jpg');
+    box-shadow: inset 0 0 0 1000px rgba(27, 37, 52, 0.4);
+    height: 135px;
+    
+    background-position: 50% 0;
+    background-position: 0 0;
+    background-attachment: fixed;
+
+    width: 100vw;
+}
+
+.tournament-header {
+    display: flex;
+    flex-direction: column;
+}
+
+.tournament-header
+.winner {
+    text-align: center;
+    color: var(--secondary-color);
+    font-family: Roboto-Bold;
+    /* position: absolute; */
+    position: relative;
+    /* left: 50%;
+    top: 103px;
+    transform: translate(-50%, -50%); */
+    font-size: 18px;
+}
+
+.tournament-header .winner 
+.first-sentence {
+    font-size: 24px;
+}
+
+.tournament-header
+.second-floor {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+
+    position: relative;
+    top: 64px;
+    left: 128px;
+}
+
+.tournament-header
+.left {
+    display: flex;
+}
+
+.tournament-header .round-robin-tournament {
+    font-family: Roboto-Bold;
+    color: var(--secondary-color);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.tournament-header .round-robin-tournament
+.rules-icon-container {
+    margin-left: 16px;
+}
+
+.tournament-header
+.create-tournament-container {
+    margin-right: 160px;
+}
+
+.tournament-header
+.create-tournament {
+    width: 250px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.tournament-header
+.register-button {
+    width: 120px;
+    height: 36px;
+
+    border-radius: 10px;
+    font-size: 16px;
+
+    margin-left: 32px;
+}
+
+.tournament-header
+.rules {
+    display: none;
+    position: fixed;
+    background-color: #3B4A62;
+    border: 1px solid var(--secondary-color);
+    font-family: Roboto-Regular;
+    font-size: 16px;
+    padding-top: 8px;
+    padding-right: 16px;
+}
+
+
+.tournament-header
+.rules-icon-container:hover + .rules {
+    display: flex;
+    flex-direction: column;
+}
+
+.tournament-header
+.rules .title {
+    align-self: center;
+    font-family: Roboto-Bold;
+}
+
+.tournament-header
+.rules li {
+    margin-bottom: 8px;
+}
+
+.tournament-header
+.winner {
+    flex-direction: column;
+    justify-content: center;
+}

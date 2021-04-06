@@ -1,0 +1,44 @@
+<div class="tournament-header" id="tournament-header">
+    {{!-- <div class="winner" id="winner" style="display:none;">
+        <div class="first-sentence">Congratulations to {{winner}}!</div>
+        <div class="second-sentence">The tournament is over, see you to the next one.</div>
+    </div> --}}
+    <div class="second-floor">
+        <div class="left">
+        <div class="round-robin-tournament">
+            ROUND-ROBIN TOURNAMENT
+            <div class="rules-icon-container">
+                <img src="./icons/rules.svg"></img>
+            </div>
+            <div class="rules" id="rules">
+                <div class="title">Rules</div>
+                <ul>
+                    <li>A minimum of 4 players is required to begin the tournament<br>
+                        otherwise the tournament is cancelled.</li>
+                    <li>Every registered player has to play against all other players.</li>
+                    <li>The tournament ends when all matches are done.</li>
+                    <li>In the event of a tie, the players are separated according to<br>
+                        their respective gap points.</li>
+                    <li>If the leading players are ex aequo in number of victories at the end <br>
+                        of the tournament, there will be an ultime match between them.</li>
+                    <li>The winner earns points for his guild and a new achievement.</liv>
+                </ul>
+            </div>
+        </div>
+        {{#if tournament}}
+        <div class="register-button-container">
+            <button class="register-button" id="register-button">{{register}}</button>
+        </div>
+        {{/if}}
+        </div>
+            <div class="winner" id="winner" style="display:none;">
+        <div class="first-sentence">Congratulations to {{winner}}!</div>
+        <div class="second-sentence">The tournament is over, see you to the next one.</div>
+    </div>
+        {{#if admin}}
+        <div class="create-tournament-container">
+            <button class="create-tournament" id="create-tournament">{{createTournament}}</button>
+        </div>
+        {{/if}}
+    </div>
+</div>
