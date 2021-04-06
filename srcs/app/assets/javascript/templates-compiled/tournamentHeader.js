@@ -8,7 +8,7 @@ templates['tournamentHeader'] = template({"1":function(container,depth0,helpers,
         return undefined
     };
 
-  return "        <div class=\"register-button-container\">\n            <button class=\"register-button\" id=\"register-button\">"
+  return "        <div class=\"register-button-container\" id=\"register-button-container\">\n            <button class=\"register-button\" id=\"register-button\">"
     + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"register") || (depth0 != null ? lookupProperty(depth0,"register") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"register","hash":{},"data":data,"loc":{"start":{"line":30,"column":65},"end":{"line":30,"column":77}}}) : helper)))
     + "</button>\n        </div>\n";
 },"3":function(container,depth0,helpers,partials,data) {

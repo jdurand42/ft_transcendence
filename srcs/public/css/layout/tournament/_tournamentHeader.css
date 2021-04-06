@@ -44,8 +44,10 @@
 
     position: relative;
     bottom: -32px;
-    left: 128px;
     height: 100%;
+
+    margin-left: 8vw;
+    margin-right: 8vw;
 }
 
 .tournament-header
@@ -67,17 +69,13 @@
 }
 
 .tournament-header
-.create-tournament-container {
-    margin-right: 160px;
-}
-
-.tournament-header
 .create-new-tournament {
     height: 36px;
     border-radius: 10px;
     font-size: 16px;
     padding-left: 16px;
     padding-right: 16px;
+    margin-right: 8px;
 }
 
 .tournament-header

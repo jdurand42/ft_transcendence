@@ -206,7 +206,6 @@ export const Router = Backbone.Router.extend({
   tournaments_view: function () {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
-    // this.view = new TournamentsView({ model: this.loadWrapper() })
     this.view = new TournamentView()
   },
 
@@ -240,11 +239,15 @@ export const Router = Backbone.Router.extend({
   },
 
   remove_view: function () {
-  		// this._removeElement();
-  	this.view.$el.empty()
-  	this.view.stopListening()
+    // this._removeElement();
+    this.view.$el.empty()
+    try {
+      this.view.destroy()
+    } catch (e) {
+    }
+    this.view.stopListening()
     this.view.undelegateEvents()
     this.view = undefined
-  	return this
+    return this
   }
 })
