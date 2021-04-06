@@ -16,6 +16,10 @@
 @import url(layout/declareWar/_declareWar.css);
 @import url(layout/declareWar/_warRules.css);
 @import url(layout/declareWar/_warTimes.css);
+@import url(layout/tournament/_tournament.css);
+@import url(layout/tournament/_tournamentHeader.css);
+@import url(layout/tournament/_tournamentContent.css);
+@import url(layout/tournament/_tournamentNoTournament.css);
 
 @import url(module/_table.css);
 @import url(module/_modals.css);

@@ -1,0 +1,9 @@
+.tournament-main {
+    background: var(--secondary-color);
+    width: 100vw;
+    min-height: calc(100vh - var(--header-size));
+}
+
+.tournament-content-container {
+    min-height: calc(100vh - 135px - var(--header-size));
+}

@@ -3,7 +3,7 @@ import { HomeView } from '../views/home_view'
 import { PongView } from '../views/pong/pong_view'
 import { HeaderView } from '../views/headerView'
 import { LeaderboardView } from '../views/leaderboard/leaderboardView'
-import { TournamentsView } from '../views/tournaments/tournamentsView'
+import { TournamentView } from '../views/tournament/tournamentView'
 import { OauthView } from '../views/oauth/oauthView'
 import { GuildsView } from '../views/guild/guildsView'
 import { DeclareWar } from '../views/guild/declareWarView'
@@ -206,7 +206,8 @@ export const Router = Backbone.Router.extend({
   tournaments_view: function () {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new TournamentsView({ model: this.loadWrapper() })
+    // this.view = new TournamentsView({ model: this.loadWrapper() })
+    this.view = new TournamentView()
   },
 
   test_view: function () {

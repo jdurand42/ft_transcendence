@@ -32,7 +32,7 @@
 
 .listsPage .listsMain-container {
     position: relative;
-    top: calc(135px + var(--header-size));
+    top: 135px;
     z-index: 0;
 }
 
@@ -75,7 +75,7 @@
 .listsPage .listsBoard .nb-list {
     position: relative;
     left: 145px;
-    top: 64px;
+    top: 32px;
 
     font-family: Roboto-Bold;
     font-size: 18px;
@@ -83,7 +83,7 @@
 
 .listsPage .listsBoard .tablesBoard {
     position: relative;
-    top: 96px;
+    top: 64px;
     width: 90%;
     margin-left: auto;
     margin-right: auto; 
