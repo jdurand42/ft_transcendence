@@ -13,6 +13,7 @@
 @import url(layout/guilds/_guilds.css);
 @import url(layout/listsPages/_lists.css);
 @import url(layout/listsPages/_filter.css);
+@import url(layout/listsPages/_profileLists.css);
 @import url(layout/declareWar/_declareWar.css);
 @import url(layout/declareWar/_warRules.css);
 @import url(layout/declareWar/_warTimes.css);
@@ -36,4 +37,5 @@
 @import url(guild/_guild.css);
 @import url(profile/_profile.css);
 
-@import url(layout/manageGuild/manageGuild.css)
+@import url(layout/manageGuild/_manageGuild.css);
+@import url(layout/_profilePannel.css);

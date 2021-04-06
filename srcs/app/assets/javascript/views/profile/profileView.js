@@ -106,15 +106,27 @@ export const ProfileView = Backbone.View.extend({
   },
 
   renderPannel: function () {
-    this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel({ image_url: this.users.get(this.id).get('image_url') }))
+    const user = this.users.get(this.id)
+    const context = {
+      trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
+      rank: this.id,
+      generalRank: 42,
+      totalRank: this.users.length,
+      totalLeagueRank: this.users.length,
+      victories: user.get('ladder_games_won'),
+      totalGames: user.get('ladder_games_won') + user.get('ladder_games_lost'),
+      nickname: user.get('nickname'),
+      image_url: user.get('image_url')
+    }
+    console.log(context.totalGames)
+    console.log(user.get('victories'))
+    this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
     this.renderProfileSubPannel()
     // this.$el.find('#profilePictureContainer').html('<img id="profilePicture" src=\'' + this.users.get(this.id).get('image_url') + '\'></img>')
   },
 
   renderProfileSubPannel: function () {
-    const div = this.$el.find('#profileButtons')
-
-    div.html(Handlebars.templates.profileButtons())
+    this.$el.find('#profileButtons').html(Handlebars.templates.profileButtons())
     const friends = this.users.get(this.userId).get('friends')
     for (let i = 0; i < friends.length; i++) {
       if (friends[i].friend_id == this.id) {
@@ -162,7 +174,10 @@ export const ProfileView = Backbone.View.extend({
     const userFriends = this.users.get(this.userId).get('friends')
     const context = { friends: Array(), friendsNumber: friends.length }
     for (let i = 0; i < friends.length; i++) {
-      context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
+      // context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
+      context.friends.push(
+        this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))), i))
+      // context.friends[i] = this.updateContextForlist(context.friends[i])
       if (userFriends.some(e => e.friend_id === friends[i].friend_id)) {
         context.friends[i].isFriend = true
       } else {
@@ -174,9 +189,27 @@ export const ProfileView = Backbone.View.extend({
         context.friends[i].guild = false
       }
     }
-    console.log(context)
+    console.log(this.users.get(1))
     this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
     return this
+  },
+
+  updateContextForlist: function (user, i) {
+    user.trophy = 'icons/' + this.ladders.get(user.ladder_id).get('name').toLowerCase() + '.svg'
+    user.rank = i + 1
+    user.generalRank = '42'
+    user.victories = user.ladder_games_won
+    user.totalGames = user.victories + user.ladder_games_lost
+    if (user.status === 'ingame') {
+      user.slide_show = './icons/slideshow-ingame.svg'
+    } else {
+      user.slide_show = './icons/slideshow.svg'
+    }
+    user.follow = this.users.get(this.userId).get('friends').some(el => el.friend_id === user.id)
+    if (user.guild_id) {
+      user.guildName = this.guilds.get(user.guild_id).get('name')
+    }
+    return user
   },
 
   achievementsView: function () {
@@ -209,20 +242,24 @@ export const ProfileView = Backbone.View.extend({
     }
     const context = {
       guild: JSON.parse(JSON.stringify(guild)),
-      owner: JSON.parse(JSON.stringify(this.users.get(guild.get('owner_id')[0]))),
+      owner: undefined,
       officers: Array(),
       members: Array(),
       membersNumber: 0
     }
-    for (let i = 0; i < guild.get('officer_ids').length; i++) {
-      context.officers.push(JSON.parse(JSON.stringify(this.users.get(guild.get('officer_ids')[i]))))
+    // console.log(this.users.get(this.userId)
+    for (let i = 1; i <= this.users.length; i++) {
+      if (!this.users.get(i).get('guild_id') || this.users.get(i).get('guild_id') != guild.get('id')) {
+        continue
+      }
+      if (i === parseInt(guild.get('owner_id')[0])) {
+        context.owner = this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i)
+      } else if (guild.get('officer_ids').includes(i)) {
+        context.officers.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+      } else {
+        context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+      }
     }
-
-    for (let i = 0; i < guild.get('member_ids').length; i++) {
-      if (guild.get('member_ids')[i] === guild.get('owner_id')[0]) { continue }
-      context.members.push(JSON.parse(JSON.stringify(this.users.get(guild.get('member_ids')[i]))))
-    }
-
     context.membersNumber = context.officers.length + context.members.length + 1
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))

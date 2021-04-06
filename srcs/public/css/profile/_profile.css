@@ -1,9 +1,9 @@
 
 #profilePicture {
 	position: relative;
-	left: 12.27%;
-	right: 74.22%;
-	top: calc(var(--pannel-size) - var(--header-size) - (var(--profilePicture-size) / 4));
+	left: 157px;
+	right: 341px;
+	top: calc(var(--pannel-size) - var(--header-size));
 	/*flex:none;*/
 	width: 173px;
 	height: 131px;
@@ -15,8 +15,8 @@
 
 .savageButtons {
 	position: relative;
-	left: 500px;
-	top: 185px;
+	left: 350px;
+	top: 200px;
 	min-width: 139.66px;
 	min-height: 31px;
 	z-index: 1;
@@ -61,7 +61,13 @@
 	color: black;
 }
 
-.profileBlock button #leaveGuild, #manageGuild{
+#leaveGuildButton #leaveGuild {
+	width: 185px;
+	height: 46px;
+	border-radius: 10px;
+}
+
+ #manageGuildButton #manageGuild {
 	width: 185px;
 	height: 46px;
 	border-radius: 10px;

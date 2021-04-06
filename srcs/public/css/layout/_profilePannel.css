@@ -1,0 +1,81 @@
+/*	left: 157px;
+	right: 341px;
+	width: 173px;
+	height: 131px;
+*/
+
+.pannelEl {
+	font-family: Quantico;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 24px;
+	line-height: 34px;
+}
+
+#pannelTrophy {
+	width: 70px;
+	height: 70px;
+}
+
+#pannelTrophyContainer {
+	left: 243px;
+	top: 84px;
+	position: absolute;
+	transform: translateY(-50%);
+	transform: translateX(-50%);
+}
+
+#Pannelnickname {
+	color: white;
+	position: absolute;
+	left: 243px;
+	top: 230px;
+	transform: translateY(-50%);
+	transform: translateX(-50%);
+
+}
+
+
+.pannelUl {
+	position: absolute;
+	list-style: none;
+	color: white;
+	text-align: center;
+}
+
+.pannelUl .pannelUlFirstEL {
+	font-family: Quantico;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 36px;
+	line-height: 51px;
+	text-align: center;
+
+	color: #F2C94C;
+}
+
+#pannelLeagueRank {
+	left: 400px;
+	/*left: 400 + 157*/
+	top: 84px;;
+	transform: translateY(-50%);
+}
+
+#pannelGeneralRank {
+	left: 800px;
+	top: 84px;;
+	transform: translateY(-50%);
+}
+
+#pannelVictories {
+	top: 230px;
+	left: 630px;
+	/*left: 400 + 157*/
+	transform: translateY(-50%);
+}
+
+#pannelTotalGames {
+	top: 230px;
+	left: 1030px;
+	transform: translateY(-50%);
+}

@@ -108,32 +108,31 @@ export const GuildView = Backbone.View.extend({
   },
 
   members: function () {
-    const members = []
-    const officers = []
+    const guild = this.guilds.get(this.id)
 
-    for (let i = 1; i <= this.users.length; i++) {
-      if (this.users.get(i).get('guild_id') == this.id &&
-			this.users.get(i).get('id') !== this.guilds.get(this.id).get('owner_id') &&
-			this.guilds.get(this.id).get('officer_ids').includes(this.users.get(i).get('id')) === false &&
-			this.guilds.get(this.id).get('owner_id') != this.users.get(i).get('id')) {
-        members.push(JSON.parse(JSON.stringify(this.users.get(i))))
-      }
-    }
-
-    for (let i = 0; i < this.guilds.get(this.id).get('officer_ids').length; i++) {
-      officers.push(JSON.parse(JSON.stringify(this.users.get(this.guilds.get(this.id).get('officer_ids')[i]))))
-    }
     const context = {
       name: this.guilds.get(this.id).get('name'),
       id: this.id,
       anagram: this.guilds.get(this.id).get('anagram'),
-      owner_id: this.guilds.get(this.id).get('owner_id'),
-      owner_nickname: this.users.get(this.guilds.get(this.id).get('owner_id')).get('nickname'),
-      members: members,
-      officers: officers,
-      membersNumber: members.length + officers.length + 1
+      owner: undefined,
+      members: Array(),
+      officers: Array(),
+      membersNumber: 0
+    }
+    for (let i = 1; i <= this.users.length; i++) {
+      if (!this.users.get(i).get('guild_id') || this.users.get(i).get('guild_id') != guild.get('id')) {
+        continue
+      }
+      if (i === parseInt(guild.get('owner_id')[0])) {
+        context.owner = this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i)
+      } else if (guild.get('officer_ids').includes(i)) {
+        context.officers.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+      } else {
+        context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+      }
     }
 
+    context.membersNumber = context.members.length + context.officers.length + 1
     this.$el.find('#guildcontent').html(Handlebars.templates.guildMembers(context))
     return this
   },
@@ -146,5 +145,23 @@ export const GuildView = Backbone.View.extend({
     const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
     this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
     return this
+  },
+
+  updateContextForlist: function (user, i) {
+    user.trophy = 'icons/' + this.ladders.get(user.ladder_id).get('name').toLowerCase() + '.svg'
+    user.rank = i + 1
+    user.generalRank = '42'
+    user.victories = user.ladder_games_won
+    user.totalGames = user.victories + user.ladder_games_lost
+    if (user.status === 'ingame') {
+      user.slide_show = './icons/slideshow-ingame.svg'
+    } else {
+      user.slide_show = './icons/slideshow.svg'
+    }
+    user.follow = this.users.get(this.userId).get('friends').some(el => el.friend_id === user.id)
+    if (user.guild_id) {
+      user.guildName = this.guilds.get(user.guild_id).get('name')
+    }
+    return user
   }
 })
