@@ -1410,7 +1410,6 @@ components:
         start_date:
           type: string
           format: date-time
-          example: '2021-04-01'
     tournament_participant:
       type: object
       properties:
