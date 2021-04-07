@@ -43,6 +43,10 @@ export const TournamentView = Backbone.View.extend({
     this.context.registered = []
     this.context.allToDo = []
     this.context.allDone = []
+    this.context.nbDone = 0
+    this.context.nbToDo = 0
+    this.matchesToDo = []
+
     this.templateTournamentMain = Handlebars.templates.tournamentMain
     const templateData = this.templateTournamentMain(this.context)
     this.$el.html(templateData)
@@ -59,7 +63,7 @@ export const TournamentView = Backbone.View.extend({
         this.context.tournament = true
         this.participantIds = this.tournament.get('participant_ids')
 
-        for (let i = 1; i < 5; i++) { // TEST
+        for (let i = 1; i < 30; i++) { // TEST
           this.participantIds.push(i) // TEST
         } // TEST
 
@@ -89,21 +93,15 @@ export const TournamentView = Backbone.View.extend({
           const nbParticipants = this.tournament.get('participant_ids').length
           this.context.maxToDo = (nbParticipants / 2) * (nbParticipants - 1)
 
-          for (let i = 0; i < this.games.length; i++) {
-            const game = this.games.at(i)
-            if (game.get('status') === 'played') {
-              this.context.allDone.push()
-              const length = this.context.allDone.length - 1
-              this.context.allDone[length].opponent1 = game.get('player_left_id')
-            }
-          }
+          this.initializeAllMatches()
 
+          console.log(this.context)
           this.tournament.status = 'inprogress'
           this.$el.find('#tournament-nav-container').html(Handlebars.templates.tournamentNav(this.context))
           if (this.participantIds.some(el => el === this.userId) === true) {
-            this.initializeNav(true, 'Rage quit', Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
+            this.initializeContent(true, 'Rage quit', Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
           } else {
-            this.initializeNav(false, undefined, Handlebars.templates.tournamentAllMatches, 'all-matches-nav')
+            this.initializeContent(false, undefined, Handlebars.templates.tournamentAllMatches, 'all-matches-nav')
           }
         }
         this.context.createTournament = 'Cancel tournament'
@@ -150,15 +148,79 @@ export const TournamentView = Backbone.View.extend({
     render()
   },
 
-  registerAllParticipants: async function () {
-    for (let i = 0; i < this.participantIds.length; i++) {
-      await this.registerUser(this.participantIds[i], this.context, this.ladders, this.registered)
+  initializeAllMatches: function () {
+    for (let i = 0; i < this.participantIds.length - 1; i++) {
+      for (let j = i; j < this.participantIds.length; j++) {
+        if (this.participantIds[i] !== this.participantIds[j]) {
+          this.matchesToDo.push({ opponent1: this.participantIds[i], opponent2: this.participantIds[j] })
+        }
+      }
+    }
+
+    console.log(this.matchesToDo)
+
+    this.initializeAllMatchesDone()
+    this.initializeAllMatchesToDo()
+  },
+
+  initializeAllMatchesDone: function () {
+    for (let i = 0; i < this.games.length; i++) {
+      const game = this.games.at(i)
+      if (game.get('status') === 'played') {
+        this.context.allDone.push({})
+        const length = this.context.allDone.length - 1
+        const opponent1 = this.registered.get(game.get('player_left_id'))
+        const opponent2 = this.registered.get(game.get('player_right_id'))
+        this.context.allDone[length].opponent1 = opponent1.get('nickname')
+        this.context.allDone[length].avatarOpponent1 = opponent1.get('image_url')
+        this.context.allDone[length].opponent2 = opponent2.get('nickname')
+        this.context.allDone[length].avatarOpponent2 = opponent2.get('image_url')
+        this.context.allDone[length].score1 = 11
+        this.context.allDone[length].score2 = 11
+        this.context.nbDone += 1
+        let index
+        const found = this.matchesToDo.some(function (el, i) {
+          index = i
+          return ((el.opponent1 === game.get('player_left_id') &&
+          el.opponent2 === game.get('player_right_id')) ||
+          (el.opponent1 === game.get('player_right_id') &&
+          el.opponent2 === game.get('player_left_id')))
+        })
+        this.matchesToDo.slice(index, 1)
+      }
     }
   },
 
-  initializeNav: function (isRegistered, str, template, div) {
+  initializeAllMatchesToDo: function () {
+    for (let i = 0; i < this.matchesToDo.length; i++) {
+      const opponent1 = this.registered.get(this.matchesToDo[i].opponent1)
+      const opponent2 = this.registered.get(this.matchesToDo[i].opponent2)
+
+      this.context.allToDo.push({})
+      const length = this.context.allToDo.length - 1
+      this.context.allToDo[length].opponent1Id = opponent1.get('id')
+      this.context.allToDo[length].opponent2Id = opponent2.get('id')
+      this.context.allToDo[length].opponent1 = opponent1.get('nickname')
+      this.context.allToDo[length].opponent2 = opponent2.get('nickname')
+      this.context.allToDo[length].opponent1Trophy = this.getTrophy(opponent1)
+      this.context.allToDo[length].opponent2Trophy = this.getTrophy(opponent2)
+      this.context.allToDo[length].opponent1Avatar = opponent1.get('image_url')
+      this.context.allToDo[length].opponent2Avatar = opponent2.get('image_url')
+      this.context.nbToDo += 1
+    }
+  },
+
+  registerAllParticipants: async function () {
+    for (let i = 0; i < this.participantIds.length; i++) {
+      console.log(this.participantIds[i])
+      await this.registerUser(this.participantIds[i])
+    }
+  },
+
+  initializeContent: function (isRegistered, str, template, div) {
     this.context.isRegistered = isRegistered
     this.context.register = str
+    console.log(this.context)
     this.$el.find('#tournament-content-container').html(template(this.context))
     const nav = document.getElementById(div)
     nav.classList.add('open')
@@ -270,16 +332,21 @@ export const TournamentView = Backbone.View.extend({
     this.handleButtonsColor()
   },
 
-  registerUser: async function () {
+  registerUser: async function (userId) {
     const newRegistered = new User()
-    newRegistered.set({ id: this.userId })
+    newRegistered.set({ id: userId })
     await newRegistered.fetch()
     this.context.registered.push(newRegistered.attributes)
     this.registered.add(newRegistered)
     if (newRegistered.get('ladder_id') === null) { // BUG IN BACK
       newRegistered.set({ ladder_id: 1 }) // NO NEED TO DO THAT IF BACK IS GOOD
     }
-    this.context.registered[this.context.registered.length - 1].trophy = 'icons/' + this.ladders.get(newRegistered.get('ladder_id')).get('name').toLowerCase() + '.svg'
+    this.context.registered[this.context.registered.length - 1].trophy = this.getTrophy(newRegistered)
+  },
+
+  getTrophy: function (user) {
+    console.log(user)
+    return 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg'
   },
 
   register: function (e) {

@@ -3,24 +3,26 @@
         <div class="to-do title" id="to-do">To do {{nbToDo}}/{{maxToDo}}</div>
         <div class="all-opponent">
         {{#each allToDo}}
-        <div class="opponent1" id="opponent{{id}}" onclick="window.location='#profile/{{id}}/';">
-            <div class="trophy-container">
-                <img class="trophy" src="{{trophy}}">
+        <div class="match thumbnail">
+            <div class="opponent1 registered" id="opponent{{opponent1Id}}" onclick="window.location='#profile/{{opponent1Id}}/';">
+                <div class="trophy-container">
+                    <img class="trophy" src="{{opponent1Trophy}}">
+                </div>
+                <div class="image-container">
+                    <img class="image-url" src="{{opponent1Avatar}}">
+                </div>
+                <div class="nickname">{{opponent1}}</div>
             </div>
-            <div class="image-container">
-                <img class="image-url" src="{{image_url}}">
+            <div class="VS">VS</div>
+            <div class="opponent2 registered" id="opponent{{opponent2Id}}" onclick="window.location='#profile/{{opponent2Id}}/';">
+                <div class="trophy-container">
+                    <img class="trophy" src="{{opponent2Trophy}}">
+                </div>
+                <div class="image-container">
+                    <img class="image-url" src="{{opponent2Avatar}}">
+                </div>
+                <div class="nickname">{{opponent2}}</div>
             </div>
-            <div class="nickname">{{nickname}}</div>
-        </div>
-        <div class="VS">VS</div>
-        <div class="opponent2" id="opponent{{id}}" onclick="window.location='#profile/{{id}}/';">
-            <div class="trophy-container">
-                <img class="trophy" src="{{trophy}}">
-            </div>
-            <div class="image-container">
-                <img class="image-url" src="{{image_url}}">
-            </div>
-            <div class="nickname">{{nickname}}</div>
         </div>
         {{/each}}
         </div>
@@ -34,11 +36,11 @@
             <div class="image-container">
                 <img class="image-url" src="{{avatarOpponent1}}">
             </div>
-            <div class="score1">11</div>
+            <div class="score1">{{score1}}</div>
             <div class="VS">VS</div>
-            <div class="score2" id="score2">{{score}}</div>
+            <div class="score2" id="score2">{{score2}}</div>
             <div class="image-container">
-                <img class="image-url" src="{{avatarOpponent1}}">
+                <img class="image-url" src="{{avatarOpponent2}}">
             </div>
             <div class="opponent2">{{opponent2}}</div>
         </div>

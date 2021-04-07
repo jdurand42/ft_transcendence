@@ -1,49 +1,4 @@
 .tournament-registration
-.registered {
-    background-color: #1B2534;
-    border-radius: 10px;
-
-    width: 250px;
-    height: 52px;
-    
-    color: var(--secondary-color);
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    padding: 8px;
-    margin-bottom: 8px;
-
-    cursor: pointer;
-}
-
-.tournament-registration
-.image-container {
-    width: 42px;
-    height: 42px;
-    margin-left: 16px;
-    margin-right: 8px;
-}
-
-.tournament-registration .image-container
-.image-url {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-
-}
-
-.tournament-registration
-.nickname {
-    margin-left: 8px;
-
-    font-family: Roboto-Regular;
-    color: var(--secondary-color);
-}
-
-.tournament-registration
 .all-registered {
     display: flex;
     flex-wrap: wrap;

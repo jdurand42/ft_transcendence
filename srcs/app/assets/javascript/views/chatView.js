@@ -556,14 +556,16 @@ export const ChatView = Backbone.View.extend({
     }
     this.context.owners = []
     let anagram
-    if (owner.get('anagram') === undefined) {
-      anagram = 'N/A'
-    } else {
-      anagram = owner.get('anagram')
+    if (owner) {
+      if (owner.get('anagram') === undefined) {
+        anagram = 'N/A'
+      } else {
+        anagram = owner.get('anagram')
+      }
+      this.context.owners.push(JSON.parse(JSON.stringify(owner)))
+      this.context.owners[this.context.owners.length - 1].anagram = anagram
+      this.context.owners[this.context.owners.length - 1].channelId = channelId
     }
-    this.context.owners.push(JSON.parse(JSON.stringify(owner)))
-    this.context.owners[this.context.owners.length - 1].anagram = anagram
-    this.context.owners[this.context.owners.length - 1].channelId = channelId
 
     this.updateContextAdmin(currentChannel)
     this.updateContextMembers(currentChannel)
@@ -1110,7 +1112,6 @@ export const ChatView = Backbone.View.extend({
     const newChannel = new ChatModel()
     const participantsIds = []
     participantsIds.push(Number(id))
-    console.log(id)
     const createChannel = async () => {
       try {
         const response = await newChannel.createChannel(undefined, participantsIds, 'direct_message')
@@ -1203,7 +1204,8 @@ export const ChatView = Backbone.View.extend({
     e.stopPropagation()
     const id = e.currentTarget.getAttribute('for')
     if (this.myChannels.get(id).get('privacy') !== 'direct_message') {
-      if (this.myChannels.get(id).get('admin_ids').find(el => el === this.userLogged.get('id'))) {
+      if (this.myChannels.get(id).get('admin_ids').find(el => el === this.userLogged.get('id')) ||
+          this.myChannels.get(id).get('owner_id') === this.userLogged.get('id')) {
         document.getElementById('modalValidationDeleteChannel').style.display = 'flex'
         document.getElementById('modalValidationDeleteChannel').setAttribute('for', id)
       } else {
@@ -1244,14 +1246,22 @@ export const ChatView = Backbone.View.extend({
   },
 
   subscribeChannelModel: function (e, id, password) {
-    if (this.myChannels.find(el => el.id == id) === undefined) {
-      const channel = this.channels.get(id)
-      channel.subscribeChannel(password)
-      this.myChannels.add(channel)
-      this.context.myChannels.push(JSON.parse(JSON.stringify(channel)))
-      this.updateHTML('myChannels')
+    const subscribe = async () => {
+      try {
+        if (this.myChannels.find(el => el.id == id) === undefined) {
+          const channel = this.channels.get(id)
+          const response = await channel.subscribeChannel(password)
+          console.log(response)
+          this.myChannels.add(channel)
+          this.context.myChannels.push(JSON.parse(JSON.stringify(channel)))
+          this.updateHTML('myChannels')
+        }
+        this.updateDOMSubsribeChannel(id, e)
+      } catch (error) {
+        console.log(error)
+      }
     }
-    this.updateDOMSubsribeChannel(id, e)
+    subscribe()
   },
 
   subscribeProtectedChannel: function (e) {

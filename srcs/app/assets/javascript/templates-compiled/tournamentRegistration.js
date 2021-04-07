@@ -29,7 +29,7 @@ templates['tournamentRegistration'] = template({"1":function(container,depth0,he
 
   return "<div class=\"tournament-registration\" id=\"tournament-registration\">\n    <div class=\"number-registered\" id=\"number-registered\">"
     + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"nbRegistered") || (depth0 != null ? lookupProperty(depth0,"nbRegistered") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"nbRegistered","hash":{},"data":data,"loc":{"start":{"line":2,"column":58},"end":{"line":2,"column":74}}}) : helper)))
-    + " registered players</div>\n    <div class=\"all-registered\" id=\"all-registered\">\n"
+    + " registered players</div>\n    <div class=\"all-registered thumbnail\" id=\"all-registered\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"registered") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":4,"column":4},"end":{"line":14,"column":13}}})) != null ? stack1 : "")
     + "    </div>\n</div>";
 },"useData":true});
