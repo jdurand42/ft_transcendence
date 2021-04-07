@@ -1,0 +1,48 @@
+<div class="all-matches" id="all-matches">
+    <div class="to-do-container container" id="to-do-container">
+        <div class="to-do title" id="to-do">To do {{nbToDo}}/{{maxToDo}}</div>
+        <div class="all-opponent">
+        {{#each allToDo}}
+        <div class="opponent1" id="opponent{{id}}" onclick="window.location='#profile/{{id}}/';">
+            <div class="trophy-container">
+                <img class="trophy" src="{{trophy}}">
+            </div>
+            <div class="image-container">
+                <img class="image-url" src="{{image_url}}">
+            </div>
+            <div class="nickname">{{nickname}}</div>
+        </div>
+        <div class="VS">VS</div>
+        <div class="opponent2" id="opponent{{id}}" onclick="window.location='#profile/{{id}}/';">
+            <div class="trophy-container">
+                <img class="trophy" src="{{trophy}}">
+            </div>
+            <div class="image-container">
+                <img class="image-url" src="{{image_url}}">
+            </div>
+            <div class="nickname">{{nickname}}</div>
+        </div>
+        {{/each}}
+        </div>
+    </div>
+    <div class="done-container container" id="done-container">
+        <div class="done title" id="done">Done {{nbDone}}/{{maxToDo}}</div>
+        <div class="all-done">
+        {{#each allDone}}
+        <div class="match-done" id="match-done">
+            <div class="opponent1">{{opponent1}}</div>
+            <div class="image-container">
+                <img class="image-url" src="{{avatarOpponent1}}">
+            </div>
+            <div class="score1">11</div>
+            <div class="VS">VS</div>
+            <div class="score2" id="score2">{{score}}</div>
+            <div class="image-container">
+                <img class="image-url" src="{{avatarOpponent1}}">
+            </div>
+            <div class="opponent2">{{opponent2}}</div>
+        </div>
+        {{/each}}
+        </div>
+    </div>
+</div>

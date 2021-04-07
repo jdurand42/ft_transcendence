@@ -1,0 +1,24 @@
+.all-matches {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.all-matches
+.container {
+    width: 50vw;
+    height: 100%;
+}
+
+.all-matches
+.to-do-container {
+    border-right: 1px solid black;
+    box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.25);
+}
+
+.all-matches
+.title {
+    text-align: center;
+    font-family: Roboto-Bold;
+    font-size: 18px;
+}
