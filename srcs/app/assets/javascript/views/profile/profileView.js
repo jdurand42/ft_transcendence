@@ -115,13 +115,17 @@ export const ProfileView = Backbone.View.extend({
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
       rank: this.id,
-      generalRank: 42,
+      generalRank: this.id,
       totalRank: this.users.length,
       totalLeagueRank: this.users.length,
+      ratio: Math.round(user.get('ladder_games_won') / (user.get('ladder_games_won') + user.get('ladder_games_lost')) * 100 * 100) / 100,
       victories: user.get('ladder_games_won'),
       totalGames: user.get('ladder_games_won') + user.get('ladder_games_lost'),
       nickname: user.get('nickname'),
       image_url: user.get('image_url')
+    }
+    if (isNaN(context.ratio)) {
+      context.ratio = 0
     }
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
     if (this.id != this.userId) {

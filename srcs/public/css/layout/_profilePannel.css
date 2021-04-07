@@ -21,8 +21,7 @@
 	left: 243px;
 	top: 84px;
 	position: absolute;
-	transform: translateY(-50%);
-	transform: translateX(-50%);
+	transform: translate(-50%, -50%);
 }
 
 .pannelContent #Pannelnickname {
