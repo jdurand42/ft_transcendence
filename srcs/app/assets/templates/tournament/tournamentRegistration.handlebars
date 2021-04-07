@@ -1,0 +1,16 @@
+<div class="tournament-registration">
+    <div class="number-registered">{{nbRegistered}} registered players</div>
+    <div class="all-registered" id="all-registered">
+    {{#each registered}}
+    <div class="registered" id="registered{{id}}" onclick="window.location='#profile/{{id}}/';">
+        <div class="trophy-container">
+            <img class="trophy" src="{{trophy}}">
+        </div>
+        <div class="image-container">
+            <img class="image-url" src="{{image_url}}">
+        </div>
+        <div class="nickname">{{nickname}}</div>
+    </div>
+    {{/each}}
+    </div>
+</div>

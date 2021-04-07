@@ -21,6 +21,9 @@
 @import url(layout/tournament/_tournamentHeader.css);
 @import url(layout/tournament/_tournamentContent.css);
 @import url(layout/tournament/_tournamentNoTournament.css);
+@import url(layout/tournament/_tournamentCreation.css);
+@import url(layout/tournament/_tournamentTimer.css);
+@import url(layout/tournament/_tournamentRegistration.css);
 
 @import url(module/_table.css);
 @import url(module/_modals.css);

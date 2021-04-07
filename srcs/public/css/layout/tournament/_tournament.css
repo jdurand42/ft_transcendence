@@ -6,4 +6,6 @@
 
 .tournament-content-container {
     min-height: calc(100vh - 135px - var(--header-size));
+    margin-left: 8vw;
+    margin-right: 8vw;
 }

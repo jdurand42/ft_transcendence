@@ -3,6 +3,7 @@
 module Users
   class OmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksController
     include LetterAvatar::AvatarHelper
+    include CompetitionHelper
 
     def assign_provider_attrs(user, auth_hash)
       return unless @resource.new_record?
@@ -12,6 +13,8 @@ module Users
                                email: auth_hash['info']['email'],
                                nickname: auth_hash['info']['nickname']
                              })
+      user.ladder_games_won = rand(1..999)
+      user.ladder_games_lost = rand(1..999)
     end
 
     def attach_avatar(user, auth_hash)
@@ -27,6 +30,7 @@ module Users
     end
 
     def create_auth_params
+      assign_ladder(@resource)
       @auth_params = {
         auth_token: @token.token,
         client_id: @token.client,

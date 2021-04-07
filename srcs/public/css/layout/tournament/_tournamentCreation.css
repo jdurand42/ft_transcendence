@@ -1,0 +1,62 @@
+.tournament-creation-container {
+    min-height: calc(100vh - 135px - var(--header-size));
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 128px;
+}
+
+.tournament-creation-container
+.title {
+    font-family: Roboto-Regular;
+    font-size: 30px;
+
+    margin-bottom: 64px;
+}
+
+.tournament-creation-container
+.sub-title {
+    font-family: Roboto-Bold;
+    font-size: 18px;
+
+    margin-bottom: 8px;
+}
+
+.tournament-creation-container
+.schedule-container {
+    margin-bottom: 16px;
+}
+
+.tournament-creation-container
+.input {
+    background: #364050;
+    color: var(--secondary-color);
+    border: 1px solid #000;
+
+    font-size: 14px;
+    outline: none;
+    
+    font-family: 'Roboto-Regular';
+    padding-left: 4px;
+
+    height: 32px;
+
+    margin: 16px;
+    margin-bottom: 32px;
+    width: 234px;
+    
+    text-align: center;
+}
+
+.tournament-creation-container
+.create-tournament {
+    width: 190px;   
+    height: 35px;
+    
+    border-radius: 10px;
+    margin-top: 16px;
+
+    font-size: 16px;
+}

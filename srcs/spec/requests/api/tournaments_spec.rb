@@ -45,7 +45,7 @@ RSpec.describe "Tournaments", type: :request do
     end
   end
   describe "PUT /update" do
-    it "should update a tournament" do
+    it "should update a tournament",test:true do
       start_date_param = DateTime.now + 2
       post api_tournaments_url, headers: token, params: { start_date: DateTime.tomorrow }
       put api_tournament_url(Tournament.first.id), headers: token, params: { start_date: start_date_param }
