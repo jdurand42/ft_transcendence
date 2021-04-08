@@ -606,6 +606,7 @@ export const ChatView = Backbone.View.extend({
         document.getElementById('error-password').style.display = 'block'
         document.getElementById('error-password').style.color = 'var(--secondary-color)'
       } catch (error) {
+        console.log(error)
         document.getElementById('error-password').innerHTML = error.responseJSON.message
         document.getElementById('error-password').style.display = 'block'
         document.getElementById('error-password').style.color = 'var(--error-message-color)'
@@ -1259,6 +1260,9 @@ export const ChatView = Backbone.View.extend({
         this.updateDOMSubsribeChannel(id, e)
       } catch (error) {
         console.log(error)
+        document.getElementById('error-password-modal').innerHTML = 'test'
+        document.getElementById('error-password-modal').style.display = 'block'
+        document.getElementById('error-password-modal').style.color = 'var(--error-message-color)'
       }
     }
     subscribe()

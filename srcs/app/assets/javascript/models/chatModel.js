@@ -44,9 +44,15 @@ export const ChatModel = Backbone.Model.extend({
   },
   subscribeChannel: async function (password = '') {
     const url = this.urlRoot + this.id + '/participants?password=' + password
-    const response = fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: this.headers
+    }).then(function (response) {
+      console.log('ok')
+      return response
+    }).catch(function (error) {
+      console.log('error')
+      return error
     })
     const json = await response.json()
     return json
