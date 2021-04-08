@@ -28,6 +28,7 @@ jobs:
           heroku_email: ${{secrets.HEROKU_EMAIL }}
           usedocker: true
           region: "eu"
+		  branch: "master"
         env:
           RAILS_ENV: production
           ALFRED_CODE: 13252eceff439797fa6f35e8172d244db71bf4696df286a8b7ffc2ad88dec88c
