@@ -525,7 +525,8 @@ export const ChatView = Backbone.View.extend({
     this.context.members = []
     for (let i = 0; i < members.length; i++) {
       if (members[i] !== this.userLogged.get('id') &&
-        !admins.find(el => el === members[i])) {
+        !admins.find(el => el === members[i]) &&
+        members[i] !== ownerId) {
         const member = this.users.get(members[i])
         let anagram
         if (owner.get('anagram') === undefined) {
@@ -1258,9 +1259,9 @@ export const ChatView = Backbone.View.extend({
         }
         this.updateDOMSubsribeChannel(id, e)
       } catch (error) {
-        document.getElementById('error-password-modal').innerHTML = 'test'
-        document.getElementById('error-password-modal').style.display = 'block'
-        document.getElementById('error-password-modal').style.color = 'var(--error-message-color)'
+        document.getElementById('error-password-modal' + id).innerHTML = error.responseJSON.error
+        document.getElementById('error-password-modal' + id).style.display = 'block'
+        document.getElementById('error-password-modal' + id).style.color = 'var(--error-message-color)'
       }
     }
     subscribe()

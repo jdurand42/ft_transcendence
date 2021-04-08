@@ -44,18 +44,10 @@ export const ChatModel = Backbone.Model.extend({
   },
   subscribeChannel: async function (password = '') {
     const url = this.urlRoot + this.id + '/participants?password=' + password
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: this.headers
-    }).then(function (response) {
-      console.log('ok')
-      return response
-    }).catch(function (error) {
-      console.log('error')
-      return error
+    return $.ajax({
+      url: url,
+      method: 'POST'
     })
-    const json = await response.json()
-    return json
   },
   invitesToChannel: function (participantsIds) {
     const url = this.urlRoot + this.id + '/invites'
