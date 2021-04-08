@@ -60,9 +60,16 @@ export const User = Backbone.Model.extend({
   },
 
   saveImage: async function (data) {
-    const fetchAPI = new FetchAPI()
     const url = this.urlRoot + this.id + '/avatar'
-    return fetchAPI.saveImage(url, data)
+    fetch(url, {
+      method: 'POST',
+      headers: this.headers,
+      body: data
+    }).then(function (response) {
+      return response.json()
+    }).catch(function (error) {
+      return error
+    })
   },
 
   saveFirstLogin: function (firstLogin) {
