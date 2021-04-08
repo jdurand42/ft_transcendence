@@ -1,0 +1,25 @@
+<div class="listsBoard adminView" id="adminView">
+    <div class="nb-list nbAdmin">{{nbUsers}} users</div>
+    <table class="tablesBoard adminTable">
+        <tr>
+            <th class="first-th">ID</th>
+            <th></th>
+            <th>Nickname</th>
+            <th>Administrator</th>
+            <th>Banned</th>
+        </tr>
+            {{#each users}}
+            <tr class="tableBoard user">
+                <td class="first-th">{{ this.id }} </td>
+                <td>
+                    <div class="image-container">
+                        <img src="{{this.image_url}}" class="list-image"></img>
+                    </div>
+                </td>
+                <td>{{ this.nickname }}</td>
+                <td><input type="checkbox" name="administrator" for={{this.id}} class="administrator checkbox" {{#if this.admin }}checked>{{/if}}</td>
+                <td><input type="checkbox" name="banned" for={{this.id}} class="banned checkbox" {{#if this.banned }}checked>{{/if}}</td>
+            </tr>
+            {{/each}}
+    </table>
+</div>
