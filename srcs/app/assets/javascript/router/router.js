@@ -55,7 +55,7 @@ export const Router = Backbone.Router.extend({
 
   routes:
   {
-    admin: 'admin_view',
+    administration: 'admin_view',
     home: 'home_view',
     pong: 'pong_view',
     'profile/(:id)': 'profile_view',
@@ -88,9 +88,8 @@ export const Router = Backbone.Router.extend({
 
     const fetchUser = async () => {
       this.oauthService.setAjaxEnvironnement()
-      console.log(this.users)
       await this.setUpUser(this.oauthService, this.userLogged)
-      // this.userLogged.save({ first_login: true }, { patch: true })
+      this.userLogged.save({ first_login: true }, { patch: true })
       this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
       if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
         this.navigate('#home', { trigger: true })
@@ -138,6 +137,7 @@ export const Router = Backbone.Router.extend({
   },
 
   twoFactor_view: function () {
+    if (this.accessPage()) { return }
     const twoFactorView = new TwoFactorView()
   },
 
@@ -150,6 +150,7 @@ export const Router = Backbone.Router.extend({
   },
 
   admin_view: function () {
+    if (this.accessPage()) { return }
     const adminView = new AdminView({ model: this.loadWrapper() })
   },
 

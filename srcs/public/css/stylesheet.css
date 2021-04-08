@@ -7,7 +7,6 @@
 @import url(layout/oauth/_oauth.css);
 @import url(layout/oauth/_firstConnexion.css);
 @import url(layout/_twoFactor.css);
-@import url(layout/_admin.css);
 @import url(layout/chat/_chat.css);
 @import url(layout/chat/_params.css);
 @import url(layout/guilds/_guilds.css);
@@ -24,6 +23,9 @@
 @import url(layout/tournament/_tournamentCreation.css);
 @import url(layout/tournament/_tournamentTimer.css);
 @import url(layout/tournament/_tournamentRegistration.css);
+@import url(layout/tournament/_tournamentNav.css);
+@import url(layout/tournament/_tournamentAllMatches.css);
+@import url(layout/admin/_admin.css);
 
 @import url(module/_table.css);
 @import url(module/_modals.css);

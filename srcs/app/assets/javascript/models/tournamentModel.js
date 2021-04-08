@@ -22,13 +22,9 @@ export const Tournament = Backbone.Model.extend({
   },
   register: function (userId) {
     const url = this.url() + '/participants'
-    console.log(url)
     return fetch(url, {
       method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify({
-        user_id: userId
-      })
+      headers: this.headers
     })
   },
   unregister: function (userId) {

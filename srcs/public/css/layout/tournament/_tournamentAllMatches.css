@@ -1,0 +1,49 @@
+.all-matches {
+    display: flex;
+    flex-direction: row;
+    min-height: calc(100vh - 135px - var(--header-size) - 224px);
+    height: fit-content;
+}
+
+.all-matches
+.container {
+    width: 50vw;
+    height: 100%;
+}
+
+.all-matches
+.to-do-container {
+    border-right: 1px solid black;
+    box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.25);
+}
+
+.all-matches
+.title {
+    text-align: center;
+    font-family: Roboto-Bold;
+    font-size: 18px;
+}
+
+.all-matches
+.match {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.all-matches
+.all-opponent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 32px;
+}
+
+.all-matches
+.VS {
+    font-family: Quantico-Regular;
+    font-size: 24px;
+
+    margin-left: 8px;
+    margin-right: 8px;
+}

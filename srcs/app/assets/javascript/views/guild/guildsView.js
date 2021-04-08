@@ -10,6 +10,7 @@ export const GuildsView = Backbone.View.extend({
     this.guilds = new Guilds()
     this.wars = new Wars()
     this.context = {}
+    this.guildsWar = []
 
     const fetchGuilds = async () => {
       const response = this.wars.fetch()
@@ -17,6 +18,7 @@ export const GuildsView = Backbone.View.extend({
       this.displayList()
       await response
       this.displayWars()
+      console.log(this.guildsWar)
     }
     fetchGuilds()
 
@@ -44,18 +46,22 @@ export const GuildsView = Backbone.View.extend({
         let warWons = document.createTextNode('0')
         document.getElementById('totalWars' + guildId).appendChild(totalWars)
         document.getElementById('warsWon' + guildId).appendChild(warWons)
+        this.guildsWar.push({ id: guildId, warWons: 0, totalWars: 0 })
         for (let i = 0; i < wars.length; i++) {
           const totalWars = Number(document.getElementById('totalWars' + guildId).textContent) + 1
+          this.guildsWar[this.guildsWar.length - 1].totalWars = totalWars
           document.getElementById('totalWars' + guildId).textContent = totalWars.toString()
           if (guildId === wars.at(i).get('from_id')) {
             if (wars.at(i).get('from_score') > wars.at(i).get('on_score')) {
               warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
+              this.guildsWar[this.guildsWar.length - 1].warWons = warWons
               document.getElementById('warsWon' + guildId).textContent = warWons.toString()
             }
           } else {
             if (wars.at(i).get('from_score') < wars.at(i).get('on_score')) {
               warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
               document.getElementById('warsWon' + guildId).textContent = warWons.toString()
+              this.guildsWar[this.guildsWar.length - 1].warWons = warWons
             }
           }
         }
@@ -99,5 +105,14 @@ export const GuildsView = Backbone.View.extend({
     })
     this.updateContextGuilds(search)
     this.updateHTML('#guildsList-container', Handlebars.templates.guildsList(this.context))
+    const guilds = document.getElementsByClassName('guildTable')
+    for (let i = 0; i < guilds.length; i++) {
+      const id = guilds[i].getAttribute('id')
+      const guildWar = this.guildsWar.find(el => el.id === Number(id))
+      const warsWonDiv = document.getElementById('warsWon' + id)
+      const totalWarsDiv = document.getElementById('totalWars' + id)
+      warsWonDiv.textContent = guildWar.warWons
+      totalWarsDiv.textContent = guildWar.totalWars
+    }
   }
 })

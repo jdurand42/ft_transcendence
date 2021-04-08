@@ -1,18 +1,45 @@
 <div class="topnav">
-  <a class="btn logo" href="#home"></a>
-  <a class="btn tournaments{{#if tournament}} {{active}}{{/if}}" href="#tournament">Tournament</a>
-  <a class="btn{{#if leaderboard}} {{active}}{{/if}}" href="#leaderboard">Leaderboard</a>
-  <a class="btn{{#if guilds}} {{active}} {{/if}} guilds" href="#guilds">Guilds</a>
-    {{!-- {{#if admin }}
-        <a class="btn admin" href="#admin">Admin</a>
-    {{/if}} --}}
-  <a class="span"></a>
-  <a class="btn {{#if chat}}{{active}}{{/if}}{{#unless chat}}unactive{{/unless}}chat" href="#chat">
-    <img src={{chatIcon}} class="chat">
-  </a>
-  <a class="btn user-page" href="#profile/{{id}}">
-    <img src={{profile_pic}} class="profile_pic"></img>
-    <div class="btn {{#if user_page}} {{active}} {{/if}} user" href="#profile/{{id}}">{{user}}</div>
-  </a>
-  <a class="exit" href="#exit"></a>
+  <div class="btn-container">
+    <a class="btn logo" href="#home"></a>
+  </div>
+  <div class="container menu">
+    <div class="btn-container">
+      <a class="btn tournaments{{#if tournament}} {{active}}{{/if}}" href="#tournament">Tournament</a>
+    </div>
+    <div class="btn-container">
+      <a class="btn{{#if leaderboard}} {{active}}{{/if}}" href="#leaderboard">Leaderboard</a>
+    </div>
+    <div class="btn-container">
+      <a class="btn{{#if guilds}} {{active}} {{/if}} guilds" href="#guilds">Guilds</a>
+    </div>
+      {{#if admin }}
+    <div class="btn-container">
+      <a class="btn{{#if administration}} {{active}} {{/if}}" href="#administration">Admin</a>
+    </div>
+      {{/if}}
+  </div>
+  <div class="container chat-profile-exit">
+    <div class="btn-container">
+      <a class="span"></a>
+    </div>
+    <div class="btn-container">
+      <a class="btn {{#if chat}}{{active}}{{/if}}{{#unless chat}}unactive{{/unless}}chat" href="#chat">
+        <img src={{chatIcon}} class="chat">
+      </a>
+    </div>
+    <div class="btn-container">
+      <a class="btn user-page" href="#profile/{{id}}">
+        <img src={{profile_pic}} class="profile_pic"></img>
+        <div class="btn {{#if user_page}} {{active}} {{/if}} user" href="#profile/{{id}}">{{user}}</div>
+      </a>
+    </div>
+
+  <div class="btn-container">
+    <a class="exit" href="#exit">
+      <img src="icons/exit.svg" class="exit">
+    </a>
+  </div>
+
+  </div>
+
 </div>

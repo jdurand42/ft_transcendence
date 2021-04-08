@@ -372,7 +372,6 @@ export const DeclareWar = Backbone.View.extend({
     const timeToAnswer = document.getElementsByClassName('time-to-answer')
     const day = document.getElementsByClassName('day-name')
 
-    console.log(day)
     let tournamentEffort = false
     if (this.context.ladder === 'checked') {
       tournamentEffort = true
@@ -401,8 +400,8 @@ export const DeclareWar = Backbone.View.extend({
             Number(maxUnanswered[i].value),
             Number(timeToAnswer[i].value)
           )
-          this.router.navigate('#guild/' + this.onId, true)
         }
+        this.router.navigate('#guild/' + this.onId, true)
       } catch (error) {
         document.getElementById('error').style.display = 'flex'
         document.getElementById('error').textContent = error.responseJSON.message
