@@ -14,11 +14,11 @@
     </div>
       {{#if admin }}
     <div class="btn-container">
-      <a class="btn{{#if administration}} {{active}} {{/if}}" href="#administration">Admin</a>
+      <a class="btn{{#if admin}} {{active}} {{/if}}" href="#admin">Admin</a>
     </div>
       {{/if}}
   </div>
-  <div class="container chat-profile-exit">
+  <div class="container chat-profile">
     <div class="btn-container">
       <a class="span"></a>
     </div>
@@ -30,7 +30,7 @@
     <div class="btn-container">
       <a class="btn user-page" href="#profile/{{id}}">
         <img src={{profile_pic}} class="profile_pic"></img>
-        <div class="btn {{#if user_page}} {{active}} {{/if}} user" href="#profile/{{id}}">{{user}}</div>
+        <div class="btn {{#if profile}} {{active}} {{/if}} user" href="#profile/{{id}}">{{user}}</div>
       </a>
     </div>
 
@@ -40,6 +40,5 @@
     </a>
   </div>
 
-  </div>
-
+  
 </div>
