@@ -18,14 +18,13 @@ module Api
       return render_not_allowed unless current_user.admin?
       return render_error('trnmtUnique', 403) unless Tournament.count.zero?
 
-      trnmt = Tournament.create!(params_create)
-      TournamentParticipant.create!(user: current_user, tournament: trnmt, role: 'owner')
+      trnmt = Tournament.create!(tournament_params)
       json_response(trnmt, 201)
     end
 
     def update
       authorize @trnmt
-      @trnmt.update!(params_update)
+      @trnmt.update!(tournament_params)
       json_response(@trnmt, 200)
     end
 
@@ -36,17 +35,13 @@ module Api
     end
 
     def join
-      participant = TournamentParticipant.create!(user: current_user, tournament: @trnmt, role: 'participant')
+      participant = TournamentParticipant.create!(user: current_user, tournament: @trnmt)
       json_response(participant, 201)
     end
 
     private
 
-    def params_create
-      params.permit(:start_date)
-    end
-
-    def params_update
+    def tournament_params
       params.permit(:start_date)
     end
 

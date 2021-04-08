@@ -12,10 +12,10 @@ RSpec.describe "Tournaments", type: :request do
       post participants_api_tournament_url(Tournament.first.id), headers: token_2
       post participants_api_tournament_url(Tournament.first.id), headers: token_3
       put api_tournament_url(Tournament.first.id), headers: token, params: { start_date: DateTime.now }
-      post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+      post api_games_url, headers: token_2, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
     }
     describe "/index" do
-      it "should return tournaments",test:true do
+      it "should return the tournament" do
         get api_tournaments_url, headers: token
         expect(response.status).to eq 200
         expect(json[0]['participant_ids']).to eq [users[0].id, users[1].id]
@@ -34,7 +34,6 @@ RSpec.describe "Tournaments", type: :request do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now }
       expect(response.status).to eq 201
       expect(Tournament.count).to eq 1
-      expect(Tournament.first.owner.user_id).to eq auth.id
     end
     it "should not create two tournaments" do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now }
@@ -45,7 +44,7 @@ RSpec.describe "Tournaments", type: :request do
     end
   end
   describe "PUT /update" do
-    it "should update a tournament",test:true do
+    it "should update a tournament" do
       start_date_param = DateTime.now + 2
       post api_tournaments_url, headers: token, params: { start_date: DateTime.tomorrow }
       put api_tournament_url(Tournament.first.id), headers: token, params: { start_date: start_date_param }
@@ -76,12 +75,7 @@ RSpec.describe "Tournaments", type: :request do
     end
   end
   describe "POST /join" do
-    it "user should not join a tournament twice" do
-      post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
-      post participants_api_tournament_url(Tournament.first.id), headers: token
-      expect(json['message']).to eq "Validation failed: User has already been taken"
-    end
-    it "user should join a tournament" do
+    it "user should join tournament" do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
       user = create(:user)
       token_2 = user.create_new_auth_token

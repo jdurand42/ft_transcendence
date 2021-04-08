@@ -126,7 +126,8 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
   create_table "tournament_participants", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "tournament_id"
-    t.integer "role", default: 0
+    t.integer "win_count", default: 0
+    t.integer "opponents", default: [], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["tournament_id"], name: "index_tournament_participants_on_tournament_id"
@@ -136,6 +137,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
 
   create_table "tournaments", force: :cascade do |t|
     t.datetime "start_date"
+    t.integer "winner_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

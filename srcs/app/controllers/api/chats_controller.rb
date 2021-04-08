@@ -72,7 +72,7 @@ module Api
     def promote
       authorize @chat
       target = params.fetch(:tid)
-      return render_not_allowed if ChatParticipant.where(chat: @chat, user_id: target, role: 'owner').empty? == false
+      return render_not_allowed if ChatParticipant.find_by_user_id_and_chat_id_and_role(target, @chat.id, 'owner')
 
       p = ChatParticipant.where(user_id: target, chat: @chat).first
       return render_error('notFound', 404) if p.nil?

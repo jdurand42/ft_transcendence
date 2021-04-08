@@ -14,6 +14,7 @@ class GameEngineJob < ApplicationJob
     game.update!(status: 'played')
     # stop_stream_from("game_#{game.id}")
     change_players_status(game, 'online')
+    manage_tournament(game)
   end
 
   def turn(pong)

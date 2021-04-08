@@ -4,7 +4,8 @@ class CreateTournamentParticipants < ActiveRecord::Migration[6.0]
       t.references :user, foreign_key: true
       t.references :tournament, foreign_key: true
       t.index %i[user_id tournament_id], unique: true
-      t.integer :role, default: 0
+      t.integer :win_count, default: 0
+      t.integer :opponents, array: true, default: []
       t.timestamps
     end
   end
