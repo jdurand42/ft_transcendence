@@ -88,7 +88,6 @@ export const Router = Backbone.Router.extend({
 
     const fetchUser = async () => {
       this.oauthService.setAjaxEnvironnement()
-      console.log(this.users)
       await this.setUpUser(this.oauthService, this.userLogged)
       this.userLogged.save({ first_login: true }, { patch: true })
       this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
@@ -138,6 +137,7 @@ export const Router = Backbone.Router.extend({
   },
 
   twoFactor_view: function () {
+    if (this.accessPage()) { return }
     const twoFactorView = new TwoFactorView()
   },
 
@@ -150,6 +150,7 @@ export const Router = Backbone.Router.extend({
   },
 
   admin_view: function () {
+    if (this.accessPage()) { return }
     const adminView = new AdminView({ model: this.loadWrapper() })
   },
 

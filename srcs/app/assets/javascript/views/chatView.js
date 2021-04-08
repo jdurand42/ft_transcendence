@@ -1252,14 +1252,12 @@ export const ChatView = Backbone.View.extend({
         if (this.myChannels.find(el => el.id == id) === undefined) {
           const channel = this.channels.get(id)
           const response = await channel.subscribeChannel(password)
-          console.log(response)
           this.myChannels.add(channel)
           this.context.myChannels.push(JSON.parse(JSON.stringify(channel)))
           this.updateHTML('myChannels')
         }
         this.updateDOMSubsribeChannel(id, e)
       } catch (error) {
-        console.log(error)
         document.getElementById('error-password-modal').innerHTML = 'test'
         document.getElementById('error-password-modal').style.display = 'block'
         document.getElementById('error-password-modal').style.color = 'var(--error-message-color)'

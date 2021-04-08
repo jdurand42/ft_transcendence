@@ -1,12 +1,22 @@
+import { Users } from '../../collections/usersCollection'
+
 export const AdminView = Backbone.View.extend({
   events: {
     'click .banned': 'authorize'
   },
   initialize: function () {
-    this.users = this.model.get('users').get('obj')
-    this.listenTo(this.users, 'sync', function () {
+    this.users = new Users()
+
+    const fetch = async () => {
+      await this.users.fetch()
+      console.log(this.users)
       this.render()
-    }, this)
+    }
+    fetch()
+    // this.users = this.model.get('users').get('obj')
+    // this.listenTo(this.users, 'sync', function () {
+    // this.render()
+    // }, this)
   },
   el: $('#app'),
 
