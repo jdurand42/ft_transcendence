@@ -2,6 +2,7 @@ import { Users } from '../../collections/usersCollection'
 
 export const AdminView = Backbone.View.extend({
   events: {
+    'keyup #searchAdmin': 'searchAdmin',
     'click .banned': 'authorize',
     'click .administrator': 'administrator'
   },
@@ -38,5 +39,14 @@ export const AdminView = Backbone.View.extend({
     const userId = e.currentTarget.getAttribute('for')
     const user = this.users.get(userId)
     user.setAsWebsiteAdmin(e.currentTarget.checked)
+  },
+  searchAdmin: function () {
+    const value = document.getElementById('searchAdmin').value
+    const search = this.users.filter(function (el) {
+      if (el.get('nickname').toLowerCase().startsWith(value.toLowerCase()) === true) { return true }
+      return false
+    })
+    this.context.users = JSON.parse(JSON.stringify(search))
+    this.$el.find('#adminList-container').html(Handlebars.templates.adminList(this.context))
   }
 })

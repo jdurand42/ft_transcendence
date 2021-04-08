@@ -30,8 +30,8 @@ templates['topnav'] = template({"1":function(container,depth0,helpers,partials,d
     };
 
   return "    <div class=\"btn-container\">\n      <a class=\"btn"
-    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"admin") : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":17,"column":19},"end":{"line":17,"column":51}}})) != null ? stack1 : "")
-    + "\" href=\"#admin\">Admin</a>\n    </div>\n";
+    + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"administration") : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":17,"column":19},"end":{"line":17,"column":60}}})) != null ? stack1 : "")
+    + "\" href=\"#administration\">Admin</a>\n    </div>\n";
 },"7":function(container,depth0,helpers,partials,data) {
     var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
