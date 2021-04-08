@@ -178,7 +178,8 @@ RSpec.describe 'Games', type: :request do
         expect(WarTime.first.max_unanswered).to eq 0
       end
     end
-    context 'Tournament', test:true do
+    context 'Tournament' do
+      include(TournamentHelper)
       let(:users) { create_list(:user, 2, status: 'online') }
       let(:token) { users[0].create_new_auth_token }
       let(:token_2) { users[1].create_new_auth_token }
@@ -187,18 +188,22 @@ RSpec.describe 'Games', type: :request do
         post participants_api_tournament_url(Tournament.first.id), headers: token
         post participants_api_tournament_url(Tournament.first.id), headers: token_2
       }
-      it "can't play twice against opponent (one way)" do
+      it "can't play twice against same opponent (one way)" do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+        Game.first.update!(status: 'played')
+        TournamentParticipant.find_by_user_id(users[0].id).update!(opponents: [users[1].id])
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
         expect(Game.count).to eq 1
-        expect(Game.first.tournament_id).to eq Tournament.first.id
         expect(json['errors']).to eq ["You already challenged this player"]
         expect(status).to eq 403
       end
-      it "can't play twice against opponent (both ways)" do
+      it "can't play twice against same opponent (both ways)", test:true do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+        Game.first.update!(status: 'played')
+        TournamentParticipant.find_by_user_id(users[0].id).update!(opponents: [users[1].id])
+        TournamentParticipant.find_by_user_id(users[1].id).update!(opponents: [users[0].id])
         post api_games_url, headers: token_2, params: { mode: 'tournament', opponent_id: users[0].id ,tournament_id: Tournament.first.id }
         expect(Game.count).to eq 1
         expect(json['errors']).to eq ["You already challenged this player"]
@@ -214,13 +219,6 @@ RSpec.describe 'Games', type: :request do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
         user = create(:user, status: 'online')
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: user.id ,tournament_id: Tournament.first.id }
-        expect(Game.count).to eq 0
-        expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
-        expect(status).to eq 403
-      end
-      it "can't play against tournament owner" do
-        put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
-        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: auth.id ,tournament_id: Tournament.first.id }
         expect(Game.count).to eq 0
         expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
         expect(status).to eq 403

@@ -42,7 +42,6 @@ module Api
 
     def tournament_error?
       return nil unless @games_params[:mode] == 'tournament'
-      # return nil if golden_game?
       return render_error('trnmtNotStarted', 403) unless tournament_started?
       return render_error('alreadyPlayed', 403) if match_played_already?
       return render_error('opponentNotParticipant', 403) unless opponent_participant?
@@ -55,14 +54,11 @@ module Api
     end
 
     def match_played_already?
-      trnmt = @games_params[:tournament_id]
-      res = Game.where(tournament_id: trnmt, player_left: current_user, player_right: params[:opponent_id])
-                .or(Game.where(tournament_id: trnmt, player_right: current_user, player_left: params[:opponent_id]))
-      res.present?
+      TournamentParticipant.find_by_user_id(current_user.id).opponents.include?(params[:opponent_id].to_i)
     end
 
     def opponent_participant?
-      TournamentParticipant.find_by_user_id_and_role(params[:opponent_id], 'participant')
+      TournamentParticipant.find_by_user_id(params[:opponent_id]).present?
     end
 
     def war_time_error?

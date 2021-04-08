@@ -62,7 +62,7 @@ RSpec.describe 'Chats', type: :request do
         expect(response).to have_http_status(201)
         expect(Chat.first.name).to eq('DISCUSSION')
       end
-      it 'bad participant ID param',test:true do
+      it 'bad participant ID param' do
         post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: [0] }
         expect(response).to have_http_status(201)
       end
@@ -309,18 +309,22 @@ RSpec.describe 'Chats', type: :request do
     end
   end
   describe '#admins' do
-    it 'should promote a participant' do
-      user = create(:user)
+    let(:user) { create(:user) }
+    before {
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
+    }
+    it 'should promote a participant' do
       create(:chat_participant, chat_id: Chat.first.id, user: user)
       post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
       expect(response.status).to eq 201
       expect(ChatParticipant.where(chat: Chat.first, role: 'admin').count).to eq 1
       expect(ChatParticipant.where(user: user, chat: Chat.first, role: 'admin')).to exist
     end
-    it 'should demote an admin' do
-      user = create(:user)
-      post api_chats_url, headers: access_token, params: { name: 'Hop' }
+    it "should not promote an owner" do
+      post "/api/chats/#{Chat.first.id}/admins/#{auth.id}", headers: access_token
+      expect(response.status).to eq 403
+    end
+    it 'should demote an admin',test:true do
       post participants_api_chat_url(Chat.first.id), headers: access_token
       post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
       delete "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token

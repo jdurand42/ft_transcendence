@@ -2,7 +2,7 @@
 
 class TournamentPolicy < ApplicationPolicy
   def update?
-    TournamentParticipant.where(user: user, tournament: record, role: 'owner').first.present?
+    user.admin?
   end
 
   def destroy?
