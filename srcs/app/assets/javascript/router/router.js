@@ -55,7 +55,7 @@ export const Router = Backbone.Router.extend({
 
   routes:
   {
-    admin: 'admin_view',
+    administration: 'admin_view',
     home: 'home_view',
     pong: 'pong_view',
     'profile/(:id)': 'profile_view',
