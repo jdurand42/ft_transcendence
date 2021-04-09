@@ -13,8 +13,6 @@ module Users
                                email: auth_hash['info']['email'],
                                nickname: auth_hash['info']['nickname']
                              })
-      user.ladder_games_won = rand(1..999)
-      user.ladder_games_lost = rand(1..999)
     end
 
     def attach_avatar(user, auth_hash)

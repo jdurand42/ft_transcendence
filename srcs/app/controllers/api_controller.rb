@@ -8,7 +8,7 @@ class ApiController < ApplicationController
 
   class WrongPasswordError < StandardError
     def message
-      I18n.t('passwordIncorrect')
+      [I18n.t('passwordIncorrect')]
     end
   end
   rescue_from WrongPasswordError, with: :response_error

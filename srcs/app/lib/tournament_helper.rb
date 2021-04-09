@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module TournamentHelper
+  include(ScoreHelper)
   def manage_tournament(game)
     return unless game.mode == 'tournament' && game.status == 'played'
 
@@ -35,6 +36,7 @@ module TournamentHelper
 
   def tournament_winner
     Tournament.first.update!(winner_id: TournamentParticipant.order(win_count: :desc).first.user_id)
+    GamePointGiver.new.tournament_points(Tournament.first)
   end
 
   def exaequo?
