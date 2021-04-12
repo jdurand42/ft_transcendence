@@ -8,7 +8,6 @@ export const NotifView = Backbone.View.extend({
   },
   initialize: function () {
     this.users = this.collection
-    this.gameRecord = new GameRecord()
     this.context = {}
   },
   el: $('#notif'),
@@ -36,6 +35,7 @@ export const NotifView = Backbone.View.extend({
     this.$el.append(templateDataGameNotif)
   },
   closeNotif: function (e) {
+    this.gameRecord = new GameRecord()
     const gameId = e.currentTarget.getAttribute('for')
     if (document.getElementById('gameNotif' + gameId) !== null) {
       this.gameRecord.refuseInvitationGame(gameId)
