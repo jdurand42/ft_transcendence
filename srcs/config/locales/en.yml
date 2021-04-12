@@ -35,6 +35,7 @@ en:
   banned: "Your account is currently banned"
   hasGuildAlready: "User already has a guild"
   gameAlreadyStarted: "You are not allowed to cancel invitation after the game has started"
+  gamePlayersAlreadyInGame: "You are not allowed to invite players who are not available"
   UserNotOnline: "You are not allowed to duel someone who is not Online"
   passwordRequired: "You need to provide chat's password"
   passwordIncorrect: "Wrong password"
