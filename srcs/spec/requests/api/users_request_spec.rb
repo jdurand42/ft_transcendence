@@ -88,7 +88,7 @@ RSpec.describe "Users", type: :request do
 
     it 'failed to uploaded file if avatar is missing' do
       headers = auth.create_new_auth_token
-      post "/api/users/#{auth.id}/avatar", headers:  headers
+      post "/api/users/#{auth.id}/avatar", headers: headers
       expect(response).to have_http_status(422)
     end
   end
@@ -132,6 +132,19 @@ RSpec.describe "Users", type: :request do
       end
       it "returns status code 403" do
         expect(response).to have_http_status(403)
+      end
+    end
+
+
+    context "when admin promote another user" do
+      before do
+        auth.update(admin: true)
+        patch "/api/users/#{user.id}", params: { user: {admin: true}}, headers: auth.create_new_auth_token
+      end
+      it "returns status code 200" do
+        expect(response).to have_http_status(200)
+        user.reload
+        expect(user.admin).to eq(true)
       end
     end
 

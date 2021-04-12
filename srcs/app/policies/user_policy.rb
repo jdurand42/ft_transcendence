@@ -35,7 +35,7 @@ class UserPolicy < ApplicationPolicy
 
   def permitted_attributes
     if user.admin?
-      %i[two_factor nickname first_login banned]
+      %i[two_factor nickname first_login banned admin]
     else
       %i[two_factor nickname first_login]
     end
