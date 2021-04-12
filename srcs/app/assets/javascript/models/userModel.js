@@ -61,23 +61,20 @@ export const User = Backbone.Model.extend({
   },
 
   saveImage: async function (data) {
-    let header = new Headers()
-    header = this.headers
-    header.delete('Content-Type')
-    // header.append('Content-Type', 'multipart/form-data')
-    console.log(header)
+    const headers = new Headers()
+    headers.append('access-token', window.localStorage.getItem('access-token'))
+    headers.append('uid', window.localStorage.getItem('uid'))
+    headers.append('client', window.localStorage.getItem('client_id'))
+    headers.append('accept', 'application/json')
     const url = this.urlRoot + this.id + '/avatar'
-    return fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
-      headers: header,
+      headers: headers,
       body: data
-    }).then(function (response) {
-      console.log('ok')
-      return response.json()
-    }).catch(function (error) {
-      console.log('error')
-      return error
     })
+    const json = await response.json()
+    console.log(json)
+    return json
   },
 
   saveFirstLogin: function (firstLogin) {

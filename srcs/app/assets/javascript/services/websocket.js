@@ -33,8 +33,7 @@ export class MyWebSocket {
         objet.receiveMessage(msg)
       }
     }
-    this.socket.onerror = function (error) {
-    }
+    this.socket.onerror = function (error) {}
   }
 
   subscribeChannel (chatRoomId, channelName) {
