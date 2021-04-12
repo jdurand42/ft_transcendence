@@ -16,7 +16,7 @@ export const NotifView = Backbone.View.extend({
   render: function () {
     return this
   },
-  receiveMessage: function (socketId, msg) {
+  receiveMessage: function (msg) {
     if (msg.action === 'game_invitation') {
       this.gameInvitation(msg)
     }

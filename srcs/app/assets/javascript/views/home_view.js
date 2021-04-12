@@ -1,6 +1,10 @@
+import { MyWebSocket } from '../services/websocket'
+
 export const HomeView = Backbone.View.extend({
-  initialize: function () {
+  initialize: function (options) {
     this.templateHome = Handlebars.templates.home
+    this.socket = options.socket
+    this.socket.updateContext(this, options.notifView)
     this.render()
   },
   el: $('#app'),
@@ -10,5 +14,8 @@ export const HomeView = Backbone.View.extend({
     const templateDataHome = this.templateHome(context)
     this.$el.html(templateDataHome)
     return this
+  },
+  destroy: function () {
+    this.socket.close()
   }
 })

@@ -6,11 +6,14 @@ export const GuildsView = Backbone.View.extend({
     'keyup #searchGuilds': 'searchGuilds'
   },
 
-  initialize: function () {
+  initialize: function (options) {
     this.guilds = new Guilds()
     this.wars = new Wars()
     this.context = {}
     this.guildsWar = []
+
+    this.socket = options.socket
+    this.socket.updateContext(this, options.notifView)
 
     const fetchGuilds = async () => {
       const response = this.wars.fetch()
@@ -18,7 +21,6 @@ export const GuildsView = Backbone.View.extend({
       this.displayList()
       await response
       this.displayWars()
-      console.log(this.guildsWar)
     }
     fetchGuilds()
 
