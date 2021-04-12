@@ -46,6 +46,7 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[6.0]
       t.boolean :banned, default: false
       t.integer :ladder_games_won, default: 0
       t.integer :ladder_games_lost, default: 0
+      t.integer :score, default: 0
       t.references :ladder, foreign_key: true
       t.string :status, default: 'offline'
       t.timestamps

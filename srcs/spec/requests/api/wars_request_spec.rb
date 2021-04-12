@@ -7,6 +7,8 @@ RSpec.describe "Wars", type: :request do
   let(:access_token_2) { auth_2.create_new_auth_token }
   let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022, 01, 01, 00, 00, 0), prize: 1000 } }
   let(:attributes_2) { { on_id: Guild.first.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 100 } }
+  let!(:ach) { Achievement.create(name: 'Tonight, We Dine In Hell !', description: 'You must declare a War') }
+  let!(:ach_2) { Achievement.create(name: 'This Is Sparta !', description: 'You must win a War') }
   before {
     post api_guilds_url, headers: access_token, params: { name: "NoShroud", anagram: "NOS", score: 100 }
     post api_guilds_url, headers: access_token_2, params: { name: "BANG", anagram: "ABCDE", score: 100 }
@@ -58,12 +60,15 @@ RSpec.describe "Wars", type: :request do
       expect(response.status).to eq 422
       expect(War.count).to eq(0)
     end
-    it 'should not let guild-less user declare a war' do
+    it 'should not let guildless user declare a war' do
       user = create(:user)
       token = user.create_new_auth_token
       post api_wars_url, headers: token, params: attributes
       expect(response.status).to eq 403
       expect(War.count).to eq(0)
+    end
+    it "unlock an achievement" do
+      expect { post api_wars_url, headers: access_token, params: attributes }.to have_broadcasted_to("user_#{auth.id}").exactly(:once).with(action: 'achievement_unlocked', id: ach.id)
     end
   end
   describe "#update" do
@@ -193,6 +198,14 @@ RSpec.describe "Wars", type: :request do
         perform_enqueued_jobs(only: WarCloserJob)
         expect(War.first.from.score).to eq -100
         expect(War.first.on.score).to eq 100
+      end
+      it "unlock an achievement", test:true do
+        user = create(:user)
+        GuildMember.create(user: user, guild: Guild.first)
+        War.first.update!(from_score: 2, on_score: 1)
+        perform_enqueued_jobs(only: WarCloserJob)
+        expect(UserAchievement.find_by_user_id_and_achievement_id(auth.id, ach_2.id)).to be_present
+        expect(UserAchievement.find_by_user_id_and_achievement_id(user.id, ach_2.id)).to be_present
       end
     end
   end

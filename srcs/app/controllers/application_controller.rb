@@ -5,4 +5,5 @@ class ApplicationController < ActionController::API
   include Response
   include CacheHelper
   include Websocket
+  include AchievementHelper
 end

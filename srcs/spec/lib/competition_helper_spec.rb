@@ -4,25 +4,18 @@ require 'rails_helper'
 include(CompetitionHelper)
 RSpec.describe CompetitionHelper do
   let!(:ladder) { create(:ladder) }
-  let!(:player) { create(:user, status: 'online', ladder: ladder, ladder_games_won: 9, ladder_games_lost: 6)}
-  let!(:player_1) { create(:user, status: 'online', ladder: ladder, ladder_games_won: 10, ladder_games_lost: 10)}
-  let!(:player_2) { create(:user, status: 'online', ladder: ladder, ladder_games_won: 8, ladder_games_lost: 8)}
-  let!(:player_3) { create(:user, status: 'online', ladder: ladder, ladder_games_won: 7, ladder_games_lost: 6)}
-  let!(:player_4) { create(:user, status: 'online', ladder: ladder, ladder_games_won: 6, ladder_games_lost: 6)}
+  let!(:player) { create(:user, status: 'online', ladder: ladder)}
+  let!(:player_1) { create(:user, status: 'online', ladder: ladder)}
   describe "match a player" do
-    it "with more wins" do
+    it "with better score" do
+      player.update!(score: 10)
+      player_1.update!(score: 100)
       expect(match_maker(player)).to eq player_1
     end
-    it "with the most wins if no one with more wins" do
-      expect(match_maker(player_1)).to eq player
-    end
-  end
-  describe "top_ladder?" do
-    it "confirms player is in ladder top 3" do
-      expect(top_ladder?(player)).to be_truthy
-    end
-    it "confirms player_4 is not in ladder top 3" do
-      expect(top_ladder?(player_4)).to be_falsey
+    it "with the best score if no better score" do
+      player.update!(score: 100)
+      player_1.update!(score: 90)
+      expect(match_maker(player)).to eq player_1
     end
   end
   describe "assign_ladder" do
@@ -31,14 +24,33 @@ RSpec.describe CompetitionHelper do
     let(:gold) { Ladder.create(name: 'Gold') }
     let(:platinum) { Ladder.create(name: 'Platinum') }
     let(:diamond) { Ladder.create(name: 'Diamond') }
+    let!(:ach_1) { Achievement.create(name: 'RoadToDiamond I', description: 'You must reach Silver Ladder') }
+    let!(:ach_2) { Achievement.create(name: 'RoadToDiamond II', description: 'You must reach Gold Ladder') }
+    let!(:ach_3) { Achievement.create(name: 'RoadToDiamond III', description: 'You must reach Platinum Ladder') }
+    let!(:ach_4) { Achievement.create(name: 'To Infinity And Beyond !', description: 'You must reach Diamond Ladder') }
+    it "assigns player to bronze" do
+      player.update!(score: 10)
+      expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(bronze.id)
+    end
+    it "assigns player to silver" do
+      player.update!(score: 1010)
+      expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(silver.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_1.id))
+    end
     it "assigns player to gold" do
+      player.update!(score: 2010)
       expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(gold.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_2.id))
     end
-    it "assigns player_4 to bronze", test:true do
-      expect{ assign_ladder(player_4) }.to change{ player_4.ladder_id }
+    it "assigns player to platinum" do
+      player.update!(score: 4010)
+      expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(platinum.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_3.id))
     end
-    it "assigns player_3 to silver" do
-      expect{ assign_ladder(player_3) }.to change{ player_3.ladder_id }.to(silver.id)
+    it "assigns player to diamond" do
+      player.update!(score: 12_010)
+      expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(diamond.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_4.id))
     end
   end
 end

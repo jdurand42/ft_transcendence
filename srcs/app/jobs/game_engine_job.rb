@@ -2,6 +2,8 @@
 
 class GameEngineJob < ApplicationJob
   include(CacheHelper)
+  include(ScoreHelper)
+  include(TournamentHelper)
   include(UserStatusHelper)
   queue_as :default
 
@@ -14,6 +16,7 @@ class GameEngineJob < ApplicationJob
     game.update!(status: 'played')
     # stop_stream_from("game_#{game.id}")
     change_players_status(game, 'online')
+    GamePointGiver.new.game_points(game)
     manage_tournament(game)
   end
 

@@ -112,7 +112,7 @@ RSpec.describe 'Chats', type: :request do
       expect(json['error']).to eq 'param is missing or the value is empty: password'
       expect(ChatParticipant.count).to eq(1)
     end
-    it 'should return error : passwordIncorrect' do
+    it 'should return error : passwordIncorrect',test:true do
       post participants_api_chat_url(Chat.first.id), headers: user_access, params: { password: 'cbd' }
       expect(response.status).to eq 422
       expect(response.body).to match(I18n.t('passwordIncorrect'))
@@ -324,7 +324,7 @@ RSpec.describe 'Chats', type: :request do
       post "/api/chats/#{Chat.first.id}/admins/#{auth.id}", headers: access_token
       expect(response.status).to eq 403
     end
-    it 'should demote an admin',test:true do
+    it 'should demote an admin' do
       post participants_api_chat_url(Chat.first.id), headers: access_token
       post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
       delete "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token

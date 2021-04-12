@@ -185,6 +185,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
     t.boolean "banned", default: false
     t.integer "ladder_games_won", default: 0
     t.integer "ladder_games_lost", default: 0
+    t.integer "score", default: 0
     t.bigint "ladder_id"
     t.string "status", default: "offline"
     t.datetime "created_at", precision: 6, null: false
