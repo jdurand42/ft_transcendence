@@ -2,6 +2,7 @@
 
 module ScoreHelper
   include(WarHelper)
+  include(AchievementHelper)
 
   class WarPrizeGiver
     def prize_points(war)
@@ -14,11 +15,13 @@ module ScoreHelper
     def winner_from(war)
       war.from.increment!(:score, war.prize)
       war.on.decrement!(:score, war.prize)
+      mass_achievement_unlocked(war.from.members.pluck(:user_id), 'This Is Sparta !')
     end
 
     def winner_on(war)
       war.on.increment!(:score, war.prize)
       war.from.decrement!(:score, war.prize)
+      mass_achievement_unlocked(war.on.members.pluck(:user_id), 'This Is Sparta !')
     end
   end
 
@@ -54,6 +57,7 @@ module ScoreHelper
       @looser.decrement!(:score, POINTS) if @looser.score >= POINTS
       @winner.increment!(:ladder_games_won)
       @looser.increment!(:ladder_games_lost)
+      achievement_unlocked(@winner.id, 'Is There No One Else ?') if @winner.ladder_games_won == 100
       ladder_war_effort
     end
 

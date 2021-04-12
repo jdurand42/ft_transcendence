@@ -73,7 +73,7 @@
         </div>
     </div>
     <div class="center" id="center"  style="display: none;">
-        <div class="header">
+        <div class="header" id="header-chat">
             <div class="left-header" id="left-header">
                 {{#unless channel}}
                 <div class="image-container">
@@ -298,6 +298,7 @@
                         </div>
                         <label class="label labelModalPassword" for="labelModalPassword">Password</label>
                         <input class="inputModalPassword" type="password" id="inputModalPassword{{id}}" placeholder="Password" for={{id}}></input>
+                        <p class="error-message error-password" id="error-password-modal{{id}}" style="display: none;"></p>
                         <div class="button-container buttons">
                             <button class="validation-buttons button validate-password" for="{{id}}">Validate</button>
                         </div>

@@ -38,9 +38,7 @@ export const FirstConnexionView = Backbone.View.extend({
         this.model.saveTwoFactor(document.getElementById('2FA').checked)
         Backbone.history.navigate('#home', true)
       } catch (error) {
-        if (error.status !== 200) {
-          this.render(error.responseJSON.message)
-        }
+        this.render(error.responseJSON.message)
       }
     }
     validate()

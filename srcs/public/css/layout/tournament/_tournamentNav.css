@@ -1,0 +1,27 @@
+.tournament-nav {
+    font-family: Quantico-Regular;
+    font-size: clamp(24px, 3vw, 30px);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 64px;
+
+    cursor: pointer;
+}
+
+.tournament-nav
+.open {
+    border-bottom: 2px solid black;
+}
+
+.tournament-nav
+.square {
+    width: 19px;
+    height: 19px;
+
+    background-color: var(--primary-color);
+    transform: rotate(-8deg);
+
+    position: absolute;
+}

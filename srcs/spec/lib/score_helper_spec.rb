@@ -9,6 +9,7 @@ RSpec.describe GamePointGiver do
   let!(:alan) { create(:user, nickname: 'alan', ladder_games_lost: 0, ladder_games_won: 0) }
   let!(:ladder_game) { create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'ladder') }
   let!(:ladder_game_2) { create(:game, player_left: tom, player_right: alan, winner: alan, status: 'played', mode: 'ladder') }
+  let!(:ach) { Achievement.create(name: 'Is There No One Else ?', description: 'You must win 100 ladder games') }
   context 'user_score' do
     it "changes players score" do
       gp.game_points(ladder_game)
@@ -30,6 +31,13 @@ RSpec.describe GamePointGiver do
       expect(User.find_by_nickname('tom').ladder_games_lost).to eq 1
       expect(User.find_by_nickname('alan').ladder_games_lost).to eq 0
       expect(User.find_by_nickname('tom').ladder_games_won).to eq 0
+    end
+    it "unlock an achievement",test:true do
+      tommy = create(:user, nickname: 'tommy', ladder_games_lost: 0, ladder_games_won: 99)
+      al = create(:user, nickname: 'al', ladder_games_lost: 0, ladder_games_won: 0)
+      ladder_game = create(:game, player_left: tommy, player_right: al, winner: tommy, status: 'played', mode: 'ladder')
+      gp.game_points(ladder_game)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(tommy.id, ach.id)).to be_present
     end
   end
   context 'Tournament' do

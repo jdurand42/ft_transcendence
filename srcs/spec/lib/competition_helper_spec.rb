@@ -24,6 +24,10 @@ RSpec.describe CompetitionHelper do
     let(:gold) { Ladder.create(name: 'Gold') }
     let(:platinum) { Ladder.create(name: 'Platinum') }
     let(:diamond) { Ladder.create(name: 'Diamond') }
+    let!(:ach_1) { Achievement.create(name: 'RoadToDiamond I', description: 'You must reach Silver Ladder') }
+    let!(:ach_2) { Achievement.create(name: 'RoadToDiamond II', description: 'You must reach Gold Ladder') }
+    let!(:ach_3) { Achievement.create(name: 'RoadToDiamond III', description: 'You must reach Platinum Ladder') }
+    let!(:ach_4) { Achievement.create(name: 'To Infinity And Beyond !', description: 'You must reach Diamond Ladder') }
     it "assigns player to bronze" do
       player.update!(score: 10)
       expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(bronze.id)
@@ -31,18 +35,22 @@ RSpec.describe CompetitionHelper do
     it "assigns player to silver" do
       player.update!(score: 1010)
       expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(silver.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_1.id))
     end
     it "assigns player to gold" do
       player.update!(score: 2010)
       expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(gold.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_2.id))
     end
     it "assigns player to platinum" do
       player.update!(score: 4010)
       expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(platinum.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_3.id))
     end
     it "assigns player to diamond" do
       player.update!(score: 12_010)
       expect{ assign_ladder(player) }.to change{ player.ladder_id }.to(diamond.id)
+      expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_4.id))
     end
   end
 end

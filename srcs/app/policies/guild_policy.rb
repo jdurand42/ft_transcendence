@@ -45,7 +45,6 @@ class GuildPolicy < ApplicationPolicy
   private
 
   def allowed?
-    GuildMember.where(user_id: user.id,
-                      guild_id: record.id).where.not(rank: 'member').empty? == false || user.admin == true
+    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, record.id, %w[owner officer]) || user.admin == true
   end
 end

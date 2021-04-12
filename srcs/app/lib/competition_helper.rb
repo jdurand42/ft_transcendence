@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module CompetitionHelper
+  include(AchievementHelper)
+
   def match_maker(player)
     user = User.where(status: 'online').where('score > ?', player.score).order('score').without(player).first
     return user if user.present?
@@ -13,13 +15,18 @@ module CompetitionHelper
     when 0...1000
       player.update!(ladder: Ladder.find_by_name('Bronze'))
     when 1000...2000
-      player.update!(ladder: Ladder.find_by_name('Silver'))
+      update_and_unlock(player, 'Silver', 'RoadToDiamond I')
     when 2000...4000
-      player.update!(ladder: Ladder.find_by_name('Gold'))
+      update_and_unlock(player, 'Gold', 'RoadToDiamond II')
     when 4000...8000
-      player.update!(ladder: Ladder.find_by_name('Platinum'))
+      update_and_unlock(player, 'Platinum', 'RoadToDiamond III')
     else
-      player.update!(ladder: Ladder.find_by_name('Diamond')) if player.score > 12_000
+      update_and_unlock(player, 'Diamond', 'To Infinity And Beyond !') if player.score > 12_000
     end
+  end
+
+  def update_and_unlock(player, ladder_name, ach_name)
+    player.update!(ladder: Ladder.find_by_name(ladder_name))
+    achievement_unlocked(player.id, ach_name)
   end
 end

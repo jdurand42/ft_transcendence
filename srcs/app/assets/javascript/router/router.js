@@ -16,6 +16,7 @@ import { NotifView } from '../views/notifView'
 
 // models
 import { User } from '../models/userModel'
+import { Channels } from '../collections/channels'
 
 // controlers
 import { ProfileController } from '../views/profile/profileController'
@@ -55,7 +56,7 @@ export const Router = Backbone.Router.extend({
 
   routes:
   {
-    admin: 'admin_view',
+    administration: 'admin_view',
     home: 'home_view',
     pong: 'pong_view',
     'profile/(:id)': 'profile_view',
@@ -88,10 +89,9 @@ export const Router = Backbone.Router.extend({
 
     const fetchUser = async () => {
       this.oauthService.setAjaxEnvironnement()
-      console.log(this.users)
-      await this.setUpUser(this.oauthService, this.userLogged)
-      // this.userLogged.save({ first_login: true }, { patch: true })
-      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
+      await this.setUpUser(this.users, this.oauthService, this.userLogged)
+      this.userLogged.save({ first_login: true }, { patch: true })
+      await this.initializeSocket()
       if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
         this.navigate('#home', { trigger: true })
       }
@@ -99,24 +99,43 @@ export const Router = Backbone.Router.extend({
     fetchUser()
   },
 
-  setUpUser: async (oauthService, userLogged) => {
+  setUpUser: async (users, oauthService, userLogged) => {
     oauthService.ajaxSetup()
-    // users.fetch()
-    await userLogged.fetchUser(window.localStorage.getItem('user_id'))
+    users.fetch()
+    const response1 = users.fetch()
+    const response2 = userLogged.fetchUser(window.localStorage.getItem('user_id'))
+    await response2
   },
 
   two_factor_connexion: function (url) {
     const fetchUser = async () => {
-      await this.setUpUser(this.oauthService, this.userLogged)
-      this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
+      await this.setUpUser(this.users, this.oauthService, this.userLogged)
+      this.initializeSocket()
       this.navigate('#home', { trigger: true })
     }
     fetchUser()
   },
 
+  initializeSocket: function () {
+    this.socket = new MyWebSocket(this)
+    const fetchChannels = async () => {
+      const myChannels = new Channels()
+      await myChannels.fetchByUserId(window.localStorage.getItem('user_id'))
+      for (let i = 0; i < myChannels.length; i++) {
+        const currentChannel = myChannels.at(i)
+        const channelId = currentChannel.get('id')
+        if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
+          this.socket.subscribeChannel(channelId, 'ActivityChannel')
+          this.socket.subscribeChannel(channelId, 'ChatChannel')
+        }
+      }
+    }
+    fetchChannels()
+  },
+
   accessPage: function (url) {
     // prevent zombie views
-    if (this.view != undefined) {
+    if (this.view !== undefined) {
       this.remove_view()
     }
     if (window.localStorage.getItem('access-token') === null) {
@@ -124,8 +143,8 @@ export const Router = Backbone.Router.extend({
       return 1
     } else if (performance.navigation.type >= 1 && performance.navigation.type <= 2) {
       const fetchUser = async () => {
-        this.socket = new MyWebSocket(window.localStorage.getItem('user_id'), 'UserChannel', this.notifView)
-        await this.setUpUser(this.oauthService, this.userLogged)
+        this.initializeSocket()
+        await this.setUpUser(this.users, this.oauthService, this.userLogged)
         if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
       }
       fetchUser()
@@ -138,18 +157,21 @@ export const Router = Backbone.Router.extend({
   },
 
   twoFactor_view: function () {
+    if (this.accessPage()) { return }
     const twoFactorView = new TwoFactorView()
   },
 
   exit: function () {
+    if (this.accessPage()) { return }
+    this.socket.close()
     const fetchAPI = new FetchAPI()
-    this.socket.getSocket().close()
     fetchAPI.exit()
     window.localStorage.clear()
     this.oauth_view()
   },
 
   admin_view: function () {
+    if (this.accessPage()) { return }
     const adminView = new AdminView({ model: this.loadWrapper() })
   },
 
@@ -161,9 +183,8 @@ export const Router = Backbone.Router.extend({
 
   home_view: function (url) {
     if (this.accessPage()) { return }
-    console.log('home')
     this.headerView.render()
-    this.view = new HomeView()
+    this.view = new HomeView({ socket: this.socket, notifView: this.notifView })
   },
 
   pong_view: function (url) {
@@ -182,7 +203,7 @@ export const Router = Backbone.Router.extend({
   guilds_view: function () {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new GuildsView({ model: this.loadWrapper() })
+    this.view = new GuildsView({ socket: this.socket, notifView: this.notifView })
   },
 
   guild_view: function (id, page) {
@@ -194,19 +215,18 @@ export const Router = Backbone.Router.extend({
   chat_view: function (id, page) {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new ChatView()
+    this.view = new ChatView({ socket: this.socket, notifView: this.notifView })
   },
 
   leaderboard_view: function () {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new LeaderboardView({ model: this.loadWrapper() })
+    this.view = new LeaderboardView({ socket: this.socket, notifView: this.notifView })
   },
 
   tournaments_view: function () {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
-    // this.view = new TournamentsView({ model: this.loadWrapper() })
     this.view = new TournamentView()
   },
 
@@ -240,11 +260,16 @@ export const Router = Backbone.Router.extend({
   },
 
   remove_view: function () {
-  		// this._removeElement();
-  	this.view.$el.empty()
-  	this.view.stopListening()
+    // this._removeElement();
+    this.view.$el.empty()
+    try {
+      // this.socket.updateContext(this.notifView)
+      // this.view.destroy()
+    } catch (e) {
+    }
+    this.view.stopListening()
     this.view.undelegateEvents()
     this.view = undefined
-  	return this
+    return this
   }
 })

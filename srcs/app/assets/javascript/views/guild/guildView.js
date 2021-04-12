@@ -12,7 +12,6 @@ export const GuildView = Backbone.View.extend({
     this.ladders = this.model.get('ladders').get('obj')
     this.userId = this.model.get('userLoggedId')
     this.$el.html(Handlebars.templates.guild({}))
-    this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
     this.loadCurrentWar()
   },
 
@@ -26,12 +25,19 @@ export const GuildView = Backbone.View.extend({
           console.log(this.id)
         }
 	      if (this.id === null || this.id === undefined) {
-          this.$el.find('#guildContent').html('<p>It seems you aren\'t member of a guild</p>')
+          this.$el.find('#guildContent').html(Handlebars.templates.notMemberOfAGuild({}))
           return
 	      }
         await this.ladders.fetch() &&
         await this.guilds.fetch()
+        if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
+          this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
+          return
+        }
+
+        this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
         this.renderPannel()
+
         if (this.users.get(this.userId).get('guild_id') &&
 				this.guilds.get(this.id).get('id') === this.users.get(this.userId).get('guild_id')) {
           this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
@@ -138,7 +144,10 @@ export const GuildView = Backbone.View.extend({
   },
 
   renderPannel: function () {
-    this.$el.find('#guildPannel').html(Handlebars.templates.guildPannel({}))
+    const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
+    context.totalWars = '42'
+    context.warsWon = '42'
+    this.$el.find('#guildPannel').html(Handlebars.templates.guildPannel(context))
   },
 
   calendar: function () {

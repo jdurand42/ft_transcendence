@@ -10,6 +10,15 @@ Ladder.create(name: 'Gold')
 Ladder.create(name: 'Platinum')
 Ladder.create(name: 'Diamond')
 
+Achievement.create(name: 'My Name Is Achilles', description: 'You must win a tournament')
+Achievement.create(name: 'Tonight, We Dine In Hell !', description: 'You must declare a War')
+Achievement.create(name: 'This Is Sparta !', description: 'You must win a War')
+Achievement.create(name: 'Is There No One Else ?', description: 'You must win 100 ladder games')
+Achievement.create(name: 'RoadToDiamond I', description: 'You must reach Silver Ladder')
+Achievement.create(name: 'RoadToDiamond II', description: 'You must reach Gold Ladder')
+Achievement.create(name: 'RoadToDiamond III', description: 'You must reach Platinum Ladder')
+Achievement.create(name: 'To Infinity And Beyond !', description: 'You must reach Diamond Ladder')
+
 Chat.create(name: 'general', privacy: 'public')
 
 if Rails.env.development?

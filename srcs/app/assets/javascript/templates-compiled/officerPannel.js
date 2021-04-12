@@ -23,9 +23,9 @@ templates['officerPannel'] = template({"1":function(container,depth0,helpers,par
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"image_url") : depth0), depth0))
     + "></img><span>"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"nickname") : depth0), depth0))
-    + "</span><span><button id=\"kickMember\" value=\""
+    + "</span><button id=\"kickMember\" value=\""
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"id") : depth0), depth0))
-    + "\">Kick</button></span>\n	</li>\n";
+    + "\">Kick</button>\n	</li>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, alias1=container.lambda, alias2=container.escapeExpression, alias3=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
@@ -34,13 +34,13 @@ templates['officerPannel'] = template({"1":function(container,depth0,helpers,par
         return undefined
     };
 
-  return "<div class=\"manageGuildTitle\"><span> MANAGE <a href=\"#guild/"
+  return "<div class=\"manageGuildTitle\"><span id=\"guildNameIntro\"> MANAGE <a href=\"#guild/"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"id") : stack1), depth0))
     + "/\">"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"name") : stack1), depth0))
-    + "</a>  |  "
+    + "</a></span> <span id=\"guildAnagram\">["
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"anagram") : stack1), depth0))
-    + "</span>\n<span><a id=\"ManageGuildExitButton\" class=\"exitButton\" href=\"#guild/"
+    + "]</span>\n<span><a id=\"ManageGuildExitButton\" class=\"exitButton\" href=\"#guild/"
     + alias2(alias1(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"id") : stack1), depth0))
     + "\">ESC</a><span></div>\n	<div class=\"manageGuildForm\">\n\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"ownerBool") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":5,"column":0},"end":{"line":14,"column":7}}})) != null ? stack1 : "")

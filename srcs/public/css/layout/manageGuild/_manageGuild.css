@@ -2,15 +2,15 @@
 	display: flex;
 	color: white;
 	font-family: roboto;
-	height: 100vh;
+	height: 100%;
 	width:100vw;
 	background: url('../../../images/background.jpg');
 	background-position: 50% 0;
 	background-position: 0 0;
 	background-attachment: fixed;
 
-	overflow: hidden;
 	overflow-x: hidden;
+	overflow-y: scroll;
 }
 
 .manageGuildContainer .manageGuildSideBar {
@@ -135,19 +135,66 @@
 	min-height: 41px;
 }
 
+.manageGuildTitle #guildNameIntro {
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 18px;
+}
+
+.manageGuildTitle #guildNameIntro a {
+	text-decoration: none;
+	color: white;
+}
+
+.manageGuildTitle #guildNameIntro a:hover {
+	text-decoration: underline;
+}
+
+.manageGuildTitle #guildAnagramIntro {
+	font-family: Roboto;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 12px;
+}
+
 .manageGuildContent .manageGuildMembersList {
 	list-style: none;
+	border-top: 1px solid #364050;
 }
+
+.manageGuildContent .manageGuildMembersList li {
+	display: grid;
+  grid-gap: 75px;
+  grid-auto-rows: 50px;
+  grid-template-areas:
+    "a a b b c c";
+  align-items: start;
+	align-items: start;
+	padding-right: 30px;
+	/*border-bottom: 1px solid #364050;*/
+	margin-top: 15px;
+}
+
 
 .manageGuildContent .memberProfilePicture {
 	height: 34px;
 	width: 43px;
+	grid-area: a;
+	align-self: center;
+ 	justify-self: center;
 }
 
 .manageGuildContent .manageGuildMembersList span {
-	padding-left: 40px;
+	grid-area: b;
+	align-self: center;
+ 	justify-self: center;
 }
-
+.manageGuildContent .manageGuildMembersList button{
+	grid-area: c;
+	align-self: center;
+ 	justify-self: center;
+}
 
 .manageGuildModal {
   display: none; /* Hidden by default */
