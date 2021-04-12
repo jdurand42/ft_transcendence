@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Games', type: :request do
   let!(:auth) { create(:user, admin: true) }
   let(:access_token) { auth.create_new_auth_token }
-
+  let!(:ach) { Achievement.create(name: 'Tonight, We Dine In Hell !', description: 'You must declare a War') }
   describe 'requires auth token' do
     before do
       get '/api/games'

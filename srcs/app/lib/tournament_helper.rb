@@ -2,6 +2,7 @@
 
 module TournamentHelper
   include(ScoreHelper)
+  include(AchievementHelper)
   def manage_tournament(game)
     return unless game.mode == 'tournament' && game.status == 'played'
 
@@ -35,8 +36,10 @@ module TournamentHelper
   end
 
   def tournament_winner
-    Tournament.first.update!(winner_id: TournamentParticipant.order(win_count: :desc).first.user_id)
+    winner = TournamentParticipant.order(win_count: :desc).first.user_id
+    Tournament.first.update!(winner_id: winner)
     GamePointGiver.new.tournament_points(Tournament.first)
+    achievement_unlocked(winner, 'My Name Is Achilles')
   end
 
   def exaequo?

@@ -4,6 +4,7 @@ require 'rails_helper'
 include(TournamentHelper)
 RSpec.describe TournamentHelper do
   context "Tournament with 3 participants" do
+    let!(:ach) { Achievement.create(name: 'My Name Is Achilles', description: 'You must win a tournament') }
     let!(:tournament) { create(:tournament_with_participants) }
     let(:participants) { tournament.participants.pluck(:user_id) }
     describe "match_all_played?" do

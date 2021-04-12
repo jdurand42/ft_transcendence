@@ -25,6 +25,7 @@ module Api
     def create
       chat = Chat.create!(chat_params)
       ChatParticipant.create!(user: current_user, chat: chat, role: 'owner')
+      ActionCable.server.broadcast("user_#{current_user.id}", { action: 'chat_invitation', id: chat.id })
       add_participants(chat, params[:participant_ids])
       json_response(chat, 201)
     end
@@ -73,9 +74,7 @@ module Api
       authorize @chat
       target = params.fetch(:tid)
       return render_not_allowed if ChatParticipant.find_by_user_id_and_chat_id_and_role(target, @chat.id, 'owner')
-
-      p = ChatParticipant.where(user_id: target, chat: @chat).first
-      return render_error('notFound', 404) if p.nil?
+      return render_error('notFound', 404) unless (p = ChatParticipant.where(user_id: target, chat: @chat).first)
 
       p.update!(role: 'admin')
       json_response({ user_id: p.id, role: p.role }, 201)
