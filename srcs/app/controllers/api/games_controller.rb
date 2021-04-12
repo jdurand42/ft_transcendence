@@ -22,6 +22,7 @@ module Api
       player_sides
       return if war_time_error?
       return if tournament_error?
+      return render_error('gamePlayersAlreadyInGame', 403) if players_already_in_game?
       return render_error('opponentNotAvailable', 403) unless opponent_available?
 
       json_response(create_game, 201)
@@ -104,6 +105,15 @@ module Api
 
     def set_game
       @game = Game.find(params[:id])
+    end
+
+    def players_already_in_game?
+      Game.where(player_right_id: @games_params['player_right_id'])
+          .or(Game.where(player_left_id: @games_params['player_right_id']))
+          .where.not(status: 'played').empty? == false ||
+        Game.where(player_right_id: @games_params['player_left_id'])
+            .or(Game.where(player_left_id: @games_params['player_left_id']))
+            .where.not(status: 'played').empty? == false
     end
   end
 end

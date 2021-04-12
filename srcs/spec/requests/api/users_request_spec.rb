@@ -136,7 +136,7 @@ RSpec.describe "Users", type: :request do
     end
 
 
-    context "when admin promote another user" do
+    context "when admin promotes another user" do
       before do
         auth.update(admin: true)
         patch "/api/users/#{user.id}", params: { user: {admin: true}}, headers: auth.create_new_auth_token

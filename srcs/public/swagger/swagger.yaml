@@ -1169,8 +1169,7 @@ components:
       properties:
         mode:
           type: string
-          enum: [duel, ladder, war]
-          example: [duel, ladder, war, tournament]
+          enum: [duel, ladder, war, tournament]
         opponent_id:
           type: integer
           description: user_id of your opponent
