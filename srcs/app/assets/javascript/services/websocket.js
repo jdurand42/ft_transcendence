@@ -1,6 +1,10 @@
 export class MyWebSocket {
   constructor (objet) {
-    const url = 'ws://' + window.location.host + '/cable?access-token=' + window.localStorage.getItem('access-token') + '&client=' + window.localStorage.getItem('client_id') + '&uid=' + window.localStorage.getItem('uid')
+    let proto = 'ws'
+    if (window.location.protocol === 'https:') {
+      proto += 's'
+    }
+    const url = proto + '://' + window.location.host + '/cable?access-token=' + window.localStorage.getItem('access-token') + '&client=' + window.localStorage.getItem('client_id') + '&uid=' + window.localStorage.getItem('uid')
     this.socket = new WebSocket(url)
 
     const socket = this.socket
