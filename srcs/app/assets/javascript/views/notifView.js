@@ -32,7 +32,6 @@ export const NotifView = Backbone.View.extend({
       this.context.nickname = sender.get('nickname')
       this.templateGameNotif = Handlebars.templates.gameNotif
     }
-    console.log(this.templateGameNotif)
     const templateDataGameNotif = this.templateGameNotif(this.context)
     this.$el.append(templateDataGameNotif)
   },

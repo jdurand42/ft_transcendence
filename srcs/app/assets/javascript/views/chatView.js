@@ -89,7 +89,6 @@ export const ChatView = Backbone.View.extend({
         if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
           this.socket.subscribeChannel(channelId, 'ActivityChannel')
           this.socket.subscribeChannel(channelId, 'ChatChannel')
-          const participantIds = currentChannel.get('participant_ids')
         } else {
           this.myChannels.remove(channelId)
         }
@@ -131,6 +130,8 @@ export const ChatView = Backbone.View.extend({
         const channel = this.myChannels.at(i)
         if (channel.get('id') !== channelId) {
           const messages = await channel.getMessages()
+          this.socket.subscribeChannel(channel.get('id'), 'ActivityChannel')
+          this.socket.subscribeChannel(channel.get('id'), 'ChatChannel')
           for (let i = 0; i < messages.length; i++) {
             this.receiveMessage(messages[i], channel.get('id'))
           }
@@ -171,6 +172,11 @@ export const ChatView = Backbone.View.extend({
           currentTarget = document.getElementById('DM' + id)
         }
         this.updateDOM(currentTarget, this.myChannels.at(0))
+        if (currentChannel.get('privacy') === 'direct_message' && this.context.status !== 'online') {
+          document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
+          document.getElementById('play-button').style.cursor = 'auto'
+          document.getElementById('pastille').classList.add(this.context.status)
+        }
       } else if (this.channels.length > 0) {
         const id = this.channels.at(0).get('id')
         currentTarget = document.getElementById('all-channel' + id)
@@ -253,7 +259,25 @@ export const ChatView = Backbone.View.extend({
     this.updateContextRightSide(currentChannel)
     if (document.getElementById('messages' + channelId) !== null) {
       if (currentChannel.get('privacy') === 'direct_message') {
-        this.updateHTML('left-header')
+        if (status === 'online') {
+          document.getElementById('pastille').classList.remove('offline')
+          document.getElementById('pastille').classList.remove('ingame')
+        } else if (status === 'offline') {
+          document.getElementById('pastille').classList.remove('online')
+          document.getElementById('pastille').classList.remove('ingame')
+        } else {
+          document.getElementById('pastille').classList.remove('online')
+          document.getElementById('pastille').classList.remove('offline')
+        }
+        this.updateHTML('header-chat')
+        document.getElementById('pastille').classList.add(status)
+        if (status !== 'online') {
+          document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
+          document.getElementById('play-button').style.cursor = 'auto'
+        } else {
+          document.getElementById('play-button').style.backgroundColor = 'var(--primary-color'
+          document.getElementById('play-button').style.cursor = 'pointer'
+        }
       } else {
         this.updateHTML('right-side')
       }
@@ -288,51 +312,6 @@ export const ChatView = Backbone.View.extend({
         this.updateStatus(channelId, message.id, message.status)
       }
     }
-
-    // if (message.message) { // message.action = message TO DO
-    //   if (message.action === 'user_online' ||
-    //     message.action === 'user_offline' ||
-    //     message.action === 'user_ingame') {
-    //     if (message.action === 'user_online') {
-    //       this.users.get(message.id).set({ status: 'online' })
-    //     } else if (message.action === 'user_offline') {
-    //       this.users.get(message.id).set({ status: 'offline' })
-    //     } else if (message.action === 'user_ingame') {
-    //       this.users.get(message.id).set({ status: 'ingame' })
-    //     }
-    //     const currentChannel = this.channels.get(this.channelId)
-    //     this.updateContextCenter(currentChannel)
-    //     this.updateContextRightSide(currentChannel)
-    //     if (currentChannel.get('privacy') === 'direct_message') {
-    //       this.updateHTML('left-header')
-    //     } else {
-    //       this.updateHTML('right-side')
-    //     }
-    //   } else if (message.action === 'chat_invitation') {
-    //     this.socket.subscribeChannel(message.id, 'ActivityChannel')
-    //     this.socket.subscribeChannel(message.id, 'ActivityChannel')
-
-    //     const fetchMyChannels = async () => {
-    //       const response1 = this.channels.fetch()
-    //       const response2 = this.myChannels.fetchByUserId(this.userLoggedId)
-    //       await response1 && await response2
-    //       const messages = await this.myChannels.get(message.id).getMessages()
-    //       for (let i = 0; i < messages.length; i++) {
-    //         this.receiveMessage(message.id, messages[i])
-    //       }
-
-    //       if (message.sender_id !== this.userLoggedId) { // check back ok
-    //         this.updateContextLeftSide()
-    //         if (this.myChannels.get(message.id).get('privacy') === 'direct_message') {
-    //           this.updateHTML('DM')
-    //         } else {
-    //           this.updateHTML('myChannels')
-    //         }
-    //       }
-    //     }
-    //     fetchMyChannels()
-    //   }
-    // }
   },
 
   blockUser: function (e) {
