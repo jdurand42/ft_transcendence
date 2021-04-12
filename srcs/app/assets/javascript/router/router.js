@@ -117,7 +117,7 @@ export const Router = Backbone.Router.extend({
 
   accessPage: function (url) {
     // prevent zombie views
-    if (this.view != undefined) {
+    if (this.view !== undefined) {
       this.remove_view()
     }
     if (window.localStorage.getItem('access-token') === null) {
@@ -147,7 +147,6 @@ export const Router = Backbone.Router.extend({
     if (this.accessPage()) { return }
     this.socket.close()
     const fetchAPI = new FetchAPI()
-    // this.socket.getSocket().close()
     fetchAPI.exit()
     window.localStorage.clear()
     this.oauth_view()
@@ -246,7 +245,7 @@ export const Router = Backbone.Router.extend({
     // this._removeElement();
     this.view.$el.empty()
     try {
-      this.socket.updateContext(this.notifView)
+      // this.socket.updateContext(this.notifView)
       // this.view.destroy()
     } catch (e) {
     }

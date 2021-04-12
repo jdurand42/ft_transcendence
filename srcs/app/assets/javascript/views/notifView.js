@@ -3,11 +3,10 @@ import { GameRecord } from '../models/gameRecord'
 
 export const NotifView = Backbone.View.extend({
   events: {
-    'click .refuseGame': 'refuseGame',
+    'click .refuseGame': 'closeNotif',
     'click .closeNotif': 'closeNotif'
   },
   initialize: function () {
-    console.log('initialize Notif View')
     this.users = this.collection
     this.gameRecord = new GameRecord()
     this.context = {}
@@ -37,13 +36,10 @@ export const NotifView = Backbone.View.extend({
     const templateDataGameNotif = this.templateGameNotif(this.context)
     this.$el.append(templateDataGameNotif)
   },
-  refuseGame: function (e) {
-    const gameId = e.currentTarget.getAttribute('for')
-    this.gameRecord.refuseInvitationGame(gameId)
-  },
   closeNotif: function (e) {
     const gameId = e.currentTarget.getAttribute('for')
     if (document.getElementById('gameNotif' + gameId) !== null) {
+      this.gameRecord.refuseInvitationGame(gameId)
       document.getElementById('gameNotif' + gameId).remove()
     } else if (document.getElementById('senderGameNotif' + gameId) !== null) {
       document.getElementById('senderGameNotif' + gameId).remove()
