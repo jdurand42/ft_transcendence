@@ -111,6 +111,7 @@ export const ChatView = Backbone.View.extend({
   render: function () {
     this.templateChat = Handlebars.templates.chat
 
+    this.updateContextCenter(undefined)
     this.updateContextLeftSide()
 
     let currentChannel
@@ -654,6 +655,7 @@ export const ChatView = Backbone.View.extend({
     const updatePrivacy = async () => {
       try {
         const response = await currentChannel.updatePrivacy(privacy, password)
+        this.channels.fetch()
         this.context.privacy = privacy[0].toUpperCase() + privacy.slice(1)
         document.getElementById('error-password').innerHTML = 'Your changes have been saved.'
         document.getElementById('error-password').style.display = 'block'
@@ -956,53 +958,57 @@ export const ChatView = Backbone.View.extend({
 
     const idUserLogged = this.userLoggedId
 
-    if (currentChannel.get('privacy') === 'direct_message') {
-      this.context.channel = false
-      const id = currentChannel.get('participant_ids').find(el => el !== idUserLogged)
-      const user = this.users.get(id)
-      if (this.userLogged.get('ignores').some(el => el.ignored_id == id) === true) {
-        this.context.image_url = './icons/blocked.svg'
-      } else {
-        this.context.image_url = user.get('image_url')
-      }
-      this.context.anagram = user.get('anagram')
-      this.context.nickname = user.get('nickname')
-      status = user.get('status')
-      this.context.status = status
-
-      if (status === 'ingame') {
-        this.context.slide_show = './icons/slideshow-ingame.svg'
-      } else {
-        this.context.slide_show = './icons/slideshow.svg'
-      }
-      this.context.userId = user.get('id')
+    if (currentChannel === undefined) {
+      this.context.image_url = this.userLogged.get('image_url')
     } else {
-      this.context.channel = true
-      this.context.privacy = currentChannel.get('privacy')[0].toUpperCase() + currentChannel.get('privacy').slice(1)
-      this.context.name = currentChannel.get('name')
-      this.context.owner = this.isOwner(currentChannel)
-      this.context.chatId = currentChannel.get('id')
-    }
-
-    this.context.id = currentChannel.get('id')
-    this.context.messages = []
-    const channelId = currentChannel.get('id')
-    if (this.myMessages[channelId] !== undefined) {
-      for (let i = 0; i < this.myMessages[channelId].length; i++) {
-        const message = this.myMessages[channelId][i]
-        let sender
-        if (message.sender_id === this.userLogged.get('id')) {
-          sender = this.userLogged
+      if (currentChannel.get('privacy') === 'direct_message') {
+        this.context.channel = false
+        const id = currentChannel.get('participant_ids').find(el => el !== idUserLogged)
+        const user = this.users.get(id)
+        if (this.userLogged.get('ignores').some(el => el.ignored_id == id) === true) {
+          this.context.image_url = './icons/blocked.svg'
         } else {
-          sender = this.users.get(message.sender_id)
+          this.context.image_url = user.get('image_url')
         }
-        this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
-        if (message.created_at) {
-          let date = message.created_at.replace('T', ' ')
-          date = date.substr(0, 19)
-          this.context.messages[0].time = date
+        this.context.anagram = user.get('anagram')
+        this.context.nickname = user.get('nickname')
+        status = user.get('status')
+        this.context.status = status
+
+        if (status === 'ingame') {
+          this.context.slide_show = './icons/slideshow-ingame.svg'
+        } else {
+          this.context.slide_show = './icons/slideshow.svg'
         }
-        this.context.messages[0].message = message.content
+        this.context.userId = user.get('id')
+      } else {
+        this.context.channel = true
+        this.context.privacy = currentChannel.get('privacy')[0].toUpperCase() + currentChannel.get('privacy').slice(1)
+        this.context.name = currentChannel.get('name')
+        this.context.owner = this.isOwner(currentChannel)
+        this.context.chatId = currentChannel.get('id')
+      }
+
+      this.context.id = currentChannel.get('id')
+      this.context.messages = []
+      const channelId = currentChannel.get('id')
+      if (this.myMessages[channelId] !== undefined) {
+        for (let i = 0; i < this.myMessages[channelId].length; i++) {
+          const message = this.myMessages[channelId][i]
+          let sender
+          if (message.sender_id === this.userLogged.get('id')) {
+            sender = this.userLogged
+          } else {
+            sender = this.users.get(message.sender_id)
+          }
+          this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
+          if (message.created_at) {
+            let date = message.created_at.replace('T', ' ')
+            date = date.substr(0, 19)
+            this.context.messages[0].time = date
+          }
+          this.context.messages[0].message = message.content
+        }
       }
     }
   },
