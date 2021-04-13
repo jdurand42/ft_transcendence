@@ -1173,8 +1173,6 @@ components:
         opponent_id:
           type: integer
           description: user_id of your opponent
-        tournament_id:
-          type: integer
     user:
       type: object
       properties:

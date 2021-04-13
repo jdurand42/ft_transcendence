@@ -18,7 +18,7 @@ module Api
     end
 
     def create
-      @games_params = params.permit(:mode, :tournament_id)
+      @games_params = params.permit(:mode)
       player_sides
       return if war_time_error?
       return if tournament_error?
@@ -47,11 +47,12 @@ module Api
       return render_error('alreadyPlayed', 403) if match_played_already?
       return render_error('opponentNotParticipant', 403) unless opponent_participant?
 
+      @games_params.merge!(tournament_id: Tournament.last.id)
       nil
     end
 
     def tournament_started?
-      DateTime.now.in_time_zone(1) >= Tournament.find(@games_params[:tournament_id]).start_date
+      DateTime.now.in_time_zone(1) >= Tournament.last.start_date
     end
 
     def match_played_already?

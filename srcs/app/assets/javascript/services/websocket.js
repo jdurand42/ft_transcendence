@@ -1,6 +1,10 @@
 export class MyWebSocket {
-  constructor (chatRoomId, channelName, objet) {
-    const url = 'ws://' + window.location.host + '/cable?access-token=' + window.localStorage.getItem('access-token') + '&client=' + window.localStorage.getItem('client_id') + '&uid=' + window.localStorage.getItem('uid')
+  constructor (objet) {
+    let proto = 'ws'
+    if (window.location.protocol === 'https:') {
+      proto += 's'
+    }
+    const url = proto + '://' + window.location.host + '/cable?access-token=' + window.localStorage.getItem('access-token') + '&client=' + window.localStorage.getItem('client_id') + '&uid=' + window.localStorage.getItem('uid')
     this.socket = new WebSocket(url)
 
     const socket = this.socket
@@ -8,16 +12,17 @@ export class MyWebSocket {
       const msg = {
         command: 'subscribe',
         identifier: JSON.stringify({
-          id: chatRoomId,
-          channel: channelName
+          id: window.localStorage.getItem('user_id'),
+          channel: 'UserChannel'
         })
       }
       socket.send(JSON.stringify(msg))
-      console.log('WebSocket is connected.')
+      console.log('WebSocket is connected: ')
     }
 
     this.socket.onclose = function (event) {
-      console.log('websocket is closed')
+      console.log(event)
+      console.log('websocket is closed: ')
     }
 
     this.socket.onmessage = function (event) {
@@ -27,17 +32,50 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
+      console.log(msg)
       if (msg.message) {
-        console.log(msg.message)
-        objet.receiveMessage(chatRoomId, msg.message)
+        objet.receiveMessage(msg)
       }
     }
-    this.socket.onerror = function (error) {
-      console.log(error)
+    this.socket.onerror = function (error) {}
+  }
+
+  subscribeChannel (chatRoomId, channelName) {
+    const msg = {
+      command: 'subscribe',
+      identifier: JSON.stringify({
+        id: chatRoomId,
+        channel: channelName
+      })
+    }
+    this.socket.send(JSON.stringify(msg))
+  }
+
+  updateContext (objet, notif) {
+    this.socket.onmessage = function (event) {
+      const response = event.data
+      const msg = JSON.parse(response)
+
+      if (msg.type === 'ping') {
+        return
+      }
+      console.log(msg)
+      if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
+        notif.receiveMessage(msg.message)
+      } else if (msg.message) {
+        try {
+          objet.receiveMessage(msg)
+        } catch (e) {
+        }
+      }
     }
   }
 
   getSocket () {
     return this.socket
+  }
+
+  close () {
+    this.socket.close()
   }
 }

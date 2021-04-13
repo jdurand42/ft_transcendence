@@ -46,6 +46,11 @@
 	height: 100%;
 }
 
+#notFoundMatchHistory {
+	padding-top: 50px;
+	font-size: 25px;
+}
+
 .profileBlock .bigMessage {
 	font-family: Roboto;
 	font-style: normal;

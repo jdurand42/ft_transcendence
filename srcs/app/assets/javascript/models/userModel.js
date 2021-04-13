@@ -4,6 +4,7 @@ import { SuperHeaders } from '../services/headers'
 export const User = Backbone.Model.extend({
   defaults: {
     email: undefined,
+    admin: undefined,
     first_login: undefined,
     guild_id: undefined,
     image_url: undefined,
@@ -60,9 +61,20 @@ export const User = Backbone.Model.extend({
   },
 
   saveImage: async function (data) {
-    const fetchAPI = new FetchAPI()
+    const headers = new Headers()
+    headers.append('access-token', window.localStorage.getItem('access-token'))
+    headers.append('uid', window.localStorage.getItem('uid'))
+    headers.append('client', window.localStorage.getItem('client_id'))
+    headers.append('accept', 'application/json')
     const url = this.urlRoot + this.id + '/avatar'
-    return fetchAPI.saveImage(url, data)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: data
+    })
+    const json = await response.json()
+    console.log(json)
+    return json
   },
 
   saveFirstLogin: function (firstLogin) {
@@ -78,6 +90,11 @@ export const User = Backbone.Model.extend({
   updateBanned: function (banned) {
     this.set({ banned: banned })
     this.save({ banned: banned }, { patch: true })
+  },
+
+  setAsWebsiteAdmin: function (admin) {
+    this.set({ admin: admin })
+    this.save({ admin: admin }, { patch: true })
   },
 
   block: function (id) {

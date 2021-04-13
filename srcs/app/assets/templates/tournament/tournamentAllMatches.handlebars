@@ -1,0 +1,50 @@
+<div class="all-matches" id="all-matches">
+    <div class="to-do-container container" id="to-do-container">
+        <div class="to-do title" id="to-do">To do {{nbToDo}}/{{maxToDo}}</div>
+        <div class="all-opponent">
+        {{#each allToDo}}
+        <div class="match thumbnail">
+            <div class="opponent1 registered" id="opponent{{opponent1Id}}" onclick="window.location='#profile/{{opponent1Id}}/';">
+                <div class="trophy-container">
+                    <img class="trophy" src="{{opponent1Trophy}}">
+                </div>
+                <div class="image-container">
+                    <img class="image-url" src="{{opponent1Avatar}}">
+                </div>
+                <div class="nickname">{{opponent1}}</div>
+            </div>
+            <div class="VS">VS</div>
+            <div class="opponent2 registered" id="opponent{{opponent2Id}}" onclick="window.location='#profile/{{opponent2Id}}/';">
+                <div class="trophy-container">
+                    <img class="trophy" src="{{opponent2Trophy}}">
+                </div>
+                <div class="image-container">
+                    <img class="image-url" src="{{opponent2Avatar}}">
+                </div>
+                <div class="nickname">{{opponent2}}</div>
+            </div>
+        </div>
+        {{/each}}
+        </div>
+    </div>
+    <div class="done-container container" id="done-container">
+        <div class="done title" id="done">Done {{nbDone}}/{{maxToDo}}</div>
+        <div class="all-done">
+        {{#each allDone}}
+        <div class="match-done" id="match-done">
+            <div class="opponent1">{{opponent1}}</div>
+            <div class="image-container">
+                <img class="image-url" src="{{avatarOpponent1}}">
+            </div>
+            <div class="score1">{{score1}}</div>
+            <div class="VS">VS</div>
+            <div class="score2" id="score2">{{score2}}</div>
+            <div class="image-container">
+                <img class="image-url" src="{{avatarOpponent2}}">
+            </div>
+            <div class="opponent2">{{opponent2}}</div>
+        </div>
+        {{/each}}
+        </div>
+    </div>
+</div>

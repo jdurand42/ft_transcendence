@@ -34,3 +34,20 @@
 	color: black;
 	font-size: 30px;
 }
+
+/* width height arbitrary */
+#goToCreateGuildButtonContainer {
+	position: relative;
+	padding-top: 15px;
+
+	left: 50%;
+}
+
+#goToCreateGuildButton {
+	transform: translateX(-50%);
+}
+
+#goToCreateGuildButton a {
+	text-decoration: none;
+	color: black;
+}

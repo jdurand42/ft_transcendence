@@ -76,7 +76,6 @@ RSpec.describe "Users", type: :request do
   describe "avatar" do
     before do
       @file = fixture_file_upload(Rails.root.join('public', 'images', 'profile-pic.jpg'), 'image/jpg')
-      auth.avatar.purge
     end
     it 'attaches the uploaded file' do
       expect {

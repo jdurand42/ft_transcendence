@@ -32,21 +32,23 @@ export const ProfileView = Backbone.View.extend({
       this.id = this.userId
     }
     this.$el.html(Handlebars.templates.profile({}))
-    this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
     this.loadMatchHistory()
   },
 
   loadMatchHistory: function () {
     const load = async () => {
       try {
-        await this.users.fetch() &&
+        await this.users.fetch()
+        if (this.id > this.users.length || this.id <= 0) {
+          this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
+          return
+        }
+        this.checkLadderId()
+        this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
         await this.ladders.fetch() &&
  				await this.gameRecords.fetch()
         this.renderPannel()
         // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
-        if (this.id != this.userId) {
-        	this.renderProfileSubPannel()
-        }
         await this.guilds.fetch()
         this.matchHistory()
       } catch (e) {
@@ -61,6 +63,7 @@ export const ProfileView = Backbone.View.extend({
     const load = async () => {
       try {
         await this.users.fetch()
+        this.checkLadderId()
         this.renderPannel()
         await this.guilds.fetch() &&
         await this.ladders.fetch()
@@ -76,7 +79,8 @@ export const ProfileView = Backbone.View.extend({
   loadAchievements: function () {
     const load = async () => {
       try {
-        await this.users.fetch() &&
+        await this.users.fetch()
+        this.checkLadderId()
         await this.achievements.fetch()
         this.renderPannel()
         this.achievementsView()
@@ -91,7 +95,8 @@ export const ProfileView = Backbone.View.extend({
   loadGuild: function () {
 	  const load = async () => {
 	    try {
-	      await this.users.fetch() &&
+	      await this.users.fetch()
+        this.checkLadderId()
         await this.guilds.fetch() &&
         await this.ladders.fetch()
 	      // await this.achivements.fetch()
@@ -110,18 +115,22 @@ export const ProfileView = Backbone.View.extend({
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
       rank: this.id,
-      generalRank: 42,
+      generalRank: this.id,
       totalRank: this.users.length,
       totalLeagueRank: this.users.length,
+      ratio: Math.round(user.get('ladder_games_won') / (user.get('ladder_games_won') + user.get('ladder_games_lost')) * 100 * 100) / 100,
       victories: user.get('ladder_games_won'),
       totalGames: user.get('ladder_games_won') + user.get('ladder_games_lost'),
       nickname: user.get('nickname'),
       image_url: user.get('image_url')
     }
-    console.log(context.totalGames)
-    console.log(user.get('victories'))
+    if (isNaN(context.ratio)) {
+      context.ratio = 0
+    }
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
-    this.renderProfileSubPannel()
+    if (this.id != this.userId) {
+      this.renderProfileSubPannel()
+    }
     // this.$el.find('#profilePictureContainer').html('<img id="profilePicture" src=\'' + this.users.get(this.id).get('image_url') + '\'></img>')
   },
 
@@ -166,7 +175,11 @@ export const ProfileView = Backbone.View.extend({
         context.matchs.push(game)
       }
     }
-    this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
+    if (!context.matchs.length) {
+      this.$el.find('#profileContent').html('<div class="notFoundMessage" id="notFoundMatchHistory">no match history records found</div>')
+    } else {
+    	this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
+    }
   },
 
   friends: function () {
@@ -335,5 +348,11 @@ export const ProfileView = Backbone.View.extend({
       }
     }
     sendInvitation()
+  },
+
+  checkLadderId: function () {
+    if (this.users.get(this.id).get('ladder_id') === null) {
+      this.users.get(this.id).set({ ladder_id: 1 })
+    }
   }
 })

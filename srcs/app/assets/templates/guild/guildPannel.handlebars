@@ -1,5 +1,36 @@
 <div class="pannelContent">
-	<p>
-		Grou grou je suis la pannel de {{this.name}}
-	</p>
+	<div class="pannelLine" id="pannelFirstLine">
+	<div class="pannelEl pannelUl" id="pannelScore">
+		<div class="pannelUlEl profilePanneEl pannelUlFirstEL" id="guildScore">
+			{{this.score}}</div>
+		<div class="pannelUlEl profilePanneEl pannelUlLegend" id=GuildScoreLegend>
+			SCORE</div>
+	</div>
+
+	<div class="pannelEl pannelUl" id="pannelRank">
+		<div class="pannelUlEl profilePanneEl pannelUlFirstEl" id="guildRank">
+			{{this.id}}</div>
+		<div class="pannelUlEl profilePanneEl pannelUlLegend" id="guildRankLegend">
+			RANK</div>
+	</div>
+	</div>
+
+	<div class="pannelLine" id="pannelSecondLine">
+	<div class="pannelEl pannelUl" id="pannelWarsWon">
+		<div class="pannelUlEl profilePanneEl pannelUlFirstEl" id="guildWarsWon">
+			{{this.warsWon}}</div>
+		<div class="pannelUlEl profilePanneEl pannelUlLegend" id="guildWarsWonLegend">
+			WARS WON</div>
+	</div>
+
+	<div class="pannelEl pannelUl" id="pannelTotalWars">
+		<div class="pannelUlEl profilePanneEl pannelUlFirstEL" id="guildTotalWars">
+			{{this.totalWars}}</div>
+		<div class="pannelUlEl profilePanneEl pannelUlLegend" id="guildTotalWarsLegend">
+			TOTAL WARS</div>
+	</div>
+
+	<div class="pannelEL" id="guildInfos"><span id ="guildName">{{this.name}}</span><span class="pannelEl" id="guildAnagram"> [{{this.anagram}}]</span>
+	</div>
+</div>
 </div>

@@ -1,4 +1,4 @@
-<div class="manageGuildTitle"><span> MANAGE <a href="#guild/{{this.guild.id}}/">{{this.guild.name}}</a>  |  {{this.guild.anagram}}</span>
+<div class="manageGuildTitle"><span id="guildNameIntro"> MANAGE <a href="#guild/{{this.guild.id}}/">{{this.guild.name}}</a></span> <span id="guildAnagram">[{{this.guild.anagram}}]</span>
 <span><a id="ManageGuildExitButton" class="exitButton" href="#guild/{{this.guild.id}}">ESC</a><span></div>
 	<div class="manageGuildForm">
 
@@ -7,7 +7,7 @@
 <ul class="manageGuildMembersList" id="membersList">
 	{{#each this.officers}}
 	<li>
-		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><span><button id="kickMember" value="{{this.id}}">Kick</button></span>
+		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><button id="kickMember" value="{{this.id}}">Kick</button>
 	</li>
 	{{/each}}
 </ul>
@@ -17,7 +17,7 @@
 <ul class="manageGuildMembersList" id="membersList">
 	{{#each this.members}}
 	<li>
-		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><span><button id="kickMember" value="{{this.id}}">Kick</button></span>
+		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><button id="kickMember" value="{{this.id}}">Kick</button>
 	</li>
 	{{/each}}
 </ul>

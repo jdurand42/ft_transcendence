@@ -10,7 +10,11 @@ export const HeaderView = Backbone.View.extend({
     const array = {}
 
     if (target === undefined) { target = '#home' }
-    array[target.substring(1)] = true
+    if (target.indexOf('/') !== -1) {
+      array[target.substring(1, target.indexOf('/'))] = true
+    } else {
+      array[target.substring(1)] = true
+    }
     if (target === '#chat') {
       array.chatIcon = './icons/active_chat.svg'
     } else {

@@ -11,18 +11,20 @@ export const LeaderboardView = Backbone.View.extend({
     'click #follow': 'follow'
   },
 
-  initialize: function () {
+  initialize: function (options) {
     this.users = new Users()
     this.guilds = new Guilds()
     this.ladders = new Ladders()
     this.userLogged = new User()
     this.context = {}
 
+    this.socket = options.socket
+    this.socket.updateContext(this, options.notifView)
+
     const fetchUsers = async () => {
       const response1 = this.guilds.fetch()
       const response2 = this.users.fetch()
       await response1 && await response2
-      // this.users.get(window.localStorage.getItem('user_id')).set({ ladder_id: 1 }) // Back undefined doit disparaitre
       this.displayList()
     }
     fetchUsers()

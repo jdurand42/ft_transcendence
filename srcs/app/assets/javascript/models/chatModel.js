@@ -42,11 +42,11 @@ export const ChatModel = Backbone.Model.extend({
       headers: this.headers
     })
   },
-  subscribeChannel: function (password = '') {
+  subscribeChannel: async function (password = '') {
     const url = this.urlRoot + this.id + '/participants?password=' + password
-    fetch(url, {
-      method: 'POST',
-      headers: this.headers
+    return $.ajax({
+      url: url,
+      method: 'POST'
     })
   },
   invitesToChannel: function (participantsIds) {
