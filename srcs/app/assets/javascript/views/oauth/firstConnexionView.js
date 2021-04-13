@@ -32,13 +32,22 @@ export const FirstConnexionView = Backbone.View.extend({
         let response = await this.model.saveNickname(document.getElementById('nickname').value)
         if (this.fileObject !== undefined) {
           response = await this.model.saveImage(this.fileObject)
+          if (response.errors !== undefined) {
+            throw response.errors[0]
+          }
           this.model.set({ image_url: response.image_url })
         }
         this.model.saveFirstLogin(false)
         this.model.saveTwoFactor(document.getElementById('2FA').checked)
         Backbone.history.navigate('#home', true)
       } catch (error) {
-        this.render(error.responseJSON.message)
+        const div = document.getElementById('error-message')
+        if (typeof error === 'string') {
+          div.innerHTML = error
+        } else {
+          div.innerHTML = error.responseJSON.message
+        }
+        div.style.display = 'block'
       }
     }
     validate()

@@ -73,6 +73,7 @@ export const User = Backbone.Model.extend({
       body: data
     })
     const json = await response.json()
+    console.log(json)
     return json
   },
 
