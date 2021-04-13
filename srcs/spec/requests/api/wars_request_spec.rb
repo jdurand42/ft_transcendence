@@ -135,6 +135,12 @@ RSpec.describe "Wars", type: :request do
         expect(response.status).to eq 403
         expect(json['errors']).to eq ['One side has agree war terms, accept or decline agreement']
       end
+      it 'should disagree terms' do
+        #TODO
+      end
+      it 'should agree without war_times' do
+        #TODO
+      end
     end
   end
   describe '#wars_entangled?' do
@@ -238,6 +244,9 @@ RSpec.describe "Wars", type: :request do
         post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
         post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime("%A"), start_hour: 7, end_hour: 8, time_to_answer: 10, max_unanswered: 2 }
         expect(response.status).to eq 201
+      end
+      it 'should not create a war_time after war start' do
+        #TODO
       end
     end
     context 'destroy' do

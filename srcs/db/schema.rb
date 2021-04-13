@@ -138,6 +138,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
   create_table "tournaments", force: :cascade do |t|
     t.datetime "start_date"
     t.integer "winner_id"
+    t.integer "time_to_answer", default: 60
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

@@ -178,6 +178,15 @@ RSpec.describe 'Games', type: :request do
         expect(Game.first.winner_id).to eq nil
         expect(WarTime.first.max_unanswered).to eq 0
       end
+      it "war_time_error if player has no guild or war" do
+        #TODO
+      end
+      it "can't create game if game with status played exists" do
+        #TODO
+      end
+      it "can create game if game exists but is played" do
+        #TODO
+      end
     end
     context 'Tournament' do
       include(TournamentHelper)
@@ -199,7 +208,7 @@ RSpec.describe 'Games', type: :request do
         expect(json['errors']).to eq ["You already challenged this player"]
         expect(status).to eq 403
       end
-      it "can't play twice against same opponent (both ways)", test:true do
+      it "can't play twice against same opponent (both ways)" do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
         Game.first.update!(status: 'played')
@@ -223,6 +232,13 @@ RSpec.describe 'Games', type: :request do
         expect(Game.count).to eq 0
         expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
         expect(status).to eq 403
+      end
+      it "forfeit opponent at TTA",test:true do
+        put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
+        perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
+        expect(Game.first.winner_id).to eq users[0].id
+        expect(Game.first.status).to eq 'played'
       end
     end
   end
