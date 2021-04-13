@@ -154,6 +154,7 @@ export const TournamentView = Backbone.View.extend({
 
   initializeRanking: function () {
     console.log(this.registered)
+
     for (let i = 0; i < this.registered.length; i++) {
       this.context.ranked.push(this.registered.at(i))
       this.context.ranked[i].victories = 0
