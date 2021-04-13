@@ -32,7 +32,7 @@ RSpec.describe GamePointGiver do
       expect(User.find_by_nickname('alan').ladder_games_lost).to eq 0
       expect(User.find_by_nickname('tom').ladder_games_won).to eq 0
     end
-    it "unlock an achievement",test:true do
+    it "unlock an achievement" do
       tommy = create(:user, nickname: 'tommy', ladder_games_lost: 0, ladder_games_won: 99)
       al = create(:user, nickname: 'al', ladder_games_lost: 0, ladder_games_won: 0)
       ladder_game = create(:game, player_left: tommy, player_right: al, winner: tommy, status: 'played', mode: 'ladder')
@@ -43,7 +43,7 @@ RSpec.describe GamePointGiver do
   context 'Tournament' do
     let!(:tournament) { create(:tournament, winner_id: tom.id) }
     let(:game) { create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'tournament', tournament_id: Tournament.first.id) }
-    it "increment winner score" do
+    it "increment winner score",test:true do
       gp.tournament_points(Tournament.first)
       expect(User.find_by_nickname('tom').score).to eq 100
     end
@@ -83,15 +83,6 @@ RSpec.describe GamePointGiver do
           War.first.toggle!(:ladder_effort)
           gp.game_points(ladder_game) # Winner = Tom, BANG, war side_on
           expect(War.first.on_score).to eq 20 # 10 points (war enemies) + 10 points (ladder_effort)
-          expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
-        end
-        it "at true gives points to wars with ladder_effort:true" do
-          create(:war, from: bang, on: nos, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, opened: true, from_score: 0, on_score: 0)
-          War.first.toggle!(:ladder_effort)
-          War.last.toggle!(:ladder_effort)
-          gp.game_points(ladder_game) # Winner = Tom, BANG, war side_on
-          expect(War.first.on_score).to eq 20 # 10 points (war enemies) + 10 points (ladder_effort)
-          expect(War.last.from_score).to eq 10 # 10 points (ladder_effort)
           expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
         end
       end
