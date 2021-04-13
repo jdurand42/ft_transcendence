@@ -271,16 +271,9 @@ export const ChatView = Backbone.View.extend({
         if (currentChannel.get('privacy') === 'direct_message') {
           if (document.getElementById('pastille' + userId) !== null) {
             this.updateContextCenter(currentChannel)
-            if (status === 'online') {
-              document.getElementById('pastille' + userId).classList.remove('offline')
-              document.getElementById('pastille' + userId).classList.remove('ingame')
-            } else if (status === 'offline') {
-              document.getElementById('pastille' + userId).classList.remove('online')
-              document.getElementById('pastille' + userId).classList.remove('ingame')
-            } else {
-              document.getElementById('pastille' + userId).classList.remove('online')
-              document.getElementById('pastille' + userId).classList.remove('offline')
-            }
+            document.getElementById('pastille' + userId).classList.remove('online')
+            document.getElementById('pastille' + userId).classList.remove('offline')
+            document.getElementById('pastille' + userId).classList.remove('ingame')
             this.updateHTML('header-chat')
             document.getElementById('pastille' + userId).classList.add(status)
             if (status !== 'online') {
