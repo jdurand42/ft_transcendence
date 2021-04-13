@@ -21,10 +21,17 @@ export const LeaderboardView = Backbone.View.extend({
     this.socket = options.socket
     this.socket.updateContext(this, options.notifView)
 
+    this.users.on('fetch', function () {
+      this.updateContextLeaderboard(this.users)
+    }, this)
+
     const fetchUsers = async () => {
       const response1 = this.guilds.fetch()
       const response2 = this.users.fetch()
       await response1 && await response2
+      for (let i = 0; i < this.users.length; i++) {
+        this.socket.subscribeChannel(this.users.at(i).get('id'), 'ActivityChannel')
+      }
       this.displayList()
     }
     fetchUsers()
@@ -116,6 +123,7 @@ export const LeaderboardView = Backbone.View.extend({
 
   updateHTML: function (parent, child, template) {
     const html = template(this.context)
+    console.log(html)
     document.getElementById(child).remove()
     document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },
@@ -148,5 +156,36 @@ export const LeaderboardView = Backbone.View.extend({
     this.openFilter()
     this.updateHTML('league-filter', 'league-name', Handlebars.templates.leaderboardHeader)
     this.displayList()
+  },
+
+  receiveMessage: function (msg) {
+    const channelId = Number(JSON.parse(msg.identifier).id)
+    if (channelId === msg.message.id) {
+      this.users.get(msg.message.id).set({ status: msg.status })
+
+      let div = document.getElementById('pastille' + msg.message.id)
+      div.classList.remove('offline')
+      div.classList.remove('ingame')
+      div.classList.remove('online')
+      div.classList.add(msg.message.status)
+
+      div = document.getElementById('status' + msg.message.id)
+      if (msg.message.status === 'online') {
+        div.innerHTML = 'ONLINE'
+      } else if (msg.message.status === 'offline') {
+        div.innerHTML = 'OFFLINE'
+      } else {
+        div.innerHTML = 'IN GAME'
+      }
+
+      div = document.getElementById('slide-show' + msg.message.id)
+      if (msg.message.status === 'ingame') {
+        div.setAttribute('src', './icons/slideshow-ingame.svg')
+      } else {
+        div.setAttribute('src', './icons/slideshow.svg')
+      }
+
+      this.users.fetch()
+    }
   }
 })

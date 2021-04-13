@@ -39,7 +39,10 @@ export class MyWebSocket {
       }
       console.log(msg)
       if (msg.message) {
-        objet.receiveMessage(msg)
+        try {
+          objet.receiveMessage(msg)
+        } catch (e) {
+        }
       }
     }
     this.socket.onerror = function (error) {}
@@ -65,7 +68,10 @@ export class MyWebSocket {
         return
       }
       if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
-        notif.receiveMessage(msg.message)
+        try {
+          notif.receiveMessage(msg.message)
+        } catch (e) {
+        }
       } else if (msg.message) {
         try {
           objet.receiveMessage(msg)

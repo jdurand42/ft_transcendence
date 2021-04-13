@@ -1,6 +1,6 @@
 <div class="listsBoard leaderboardList" id="leaderboardList">
     <div class="nb-list nbGamers">{{nbGamers}} gamers</div>
-    <table class="tablesBoard gamersTable">
+    <table class="tablesBoard gamersTable" id="gamersTable">
         <tr>
             <th class="first-th"></th>
             <th></th>
@@ -14,7 +14,7 @@
             <th></th>
         </tr>
         {{#each users}}
-        <tr class="tableBoard gamerTable" for="{{id}}">
+        <tr class="tableBoard gamerTable" for="{{id}}" id="{{id}}">
             <td class="first-th">
                 <div class="trophy-container">
                     <img class="trophy" src="{{trophy}}">
@@ -38,10 +38,10 @@
             <td>{{totalGames}}</td>
             <td>
                 <div class="status-container">
-                    <div class="pastille {{status}}" id="pastille"></div>
-                    <p class="status">{{status}}</p>
+                    <div class="pastille {{status}}" id="pastille{{id}}"></div>
+                    <p class="status" id="status{{id}}">{{status}}</p>
                     <div class="slide-show-container"></div>
-                    <img src="{{slide_show}}" class="slide-show"></img>
+                    <img src="{{slide_show}}" class="slide-show" id="slide-show{{id}}"></img>
                 </div>
             </td>
             {{#unless follow}}
