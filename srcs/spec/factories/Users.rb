@@ -3,8 +3,7 @@
 FactoryBot.define do
   factory :user, aliases: [:owner] do
     nickname { Faker::Name.unique.first_name }
-    # disabling Avatar upload to avoid filling our disk every time we launch rspec
-    #avatar { Rack::Test::UploadedFile.new(Rails.root.join('public', 'images', 'profile-pic.jpg'), 'image/jpg') }
+    avatar { Rack::Test::UploadedFile.new(Rails.root.join('public', 'images', 'profile-pic.jpg'), 'image/jpg') }
     two_factor { Faker::Boolean.boolean }
     first_login { Faker::Boolean.boolean }
     password { 'secure' }

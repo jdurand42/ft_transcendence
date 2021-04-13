@@ -28,6 +28,8 @@ class User < ApplicationRecord
   validates_inclusion_of :status, in: %w[offline online ingame]
   validates_presence_of :ladder_games_won
   validates_presence_of :ladder_games_lost
+  validates :avatar, attached: true, content_type: ['image/png', 'image/jpg', 'image/jpeg'],
+                     size: { less_than: 6.megabytes, message: 'is not given between size' }
 
   has_secure_password :two_factor_code, validations: false
 end

@@ -39,7 +39,9 @@ module Api
       authorize @user
       return render_error('Malformed', 422) unless params.key?(:avatar)
 
-      attach_avatar
+      @user.avatar.attach(params[:avatar])
+      return render_error('notAnImage', 403) if @user.avatar.persisted? == false
+
       url = url_for(@user.avatar)
       json_response({ image_url: url })
     end
@@ -97,12 +99,6 @@ module Api
 
     def set_user
       @user = User.find(params[:id])
-    end
-
-    def attach_avatar
-      mini_image = MiniMagick::Image.new(params[:avatar].tempfile.path)
-      mini_image.resize '1200x1200'
-      @user.avatar.attach(params[:avatar])
     end
   end
 end

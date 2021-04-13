@@ -18,7 +18,7 @@ class UserSerializer < ActiveModel::Serializer
              :friends
 
   def image_url
-    return '/images/profile-pic.jpg' unless object.avatar.attached?
+    return '/images/profile-pic.jpg' unless object.avatar.attached? && object.avatar.persisted?
 
     Rails.application.routes.url_helpers.rails_blob_url(object.avatar, only_path: true)
   end

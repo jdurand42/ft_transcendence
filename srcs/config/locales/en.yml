@@ -60,3 +60,4 @@ en:
   trnmtNotStarted: "Tournament has not started yet"
   alreadyPlayed: "You already challenged this player"
   opponentNotParticipant: "This player doesn't participate to the tournament"
+  notAnImage: "Image type should be png or jpeg"
