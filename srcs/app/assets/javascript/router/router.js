@@ -123,7 +123,7 @@ export const Router = Backbone.Router.extend({
       for (let i = 0; i < myChannels.length; i++) {
         const currentChannel = myChannels.at(i)
         const channelId = currentChannel.get('id')
-        if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
+        if (currentChannel.get('ban_ids').some(el => el === this.userLoggedId) === false) {
           this.socket.subscribeChannel(channelId, 'ChatChannel')
           const participantIds = currentChannel.get('participant_ids')
           for (let i = 0; i < participantIds.length; i++) {
@@ -159,7 +159,6 @@ export const Router = Backbone.Router.extend({
   },
 
   twoFactor_view: function () {
-    console.log('two factor')
     const twoFactorView = new TwoFactorView()
   },
 
@@ -197,7 +196,6 @@ export const Router = Backbone.Router.extend({
 
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
-    console.log('profile view')
     // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = this.profileController.loadView(id, this.loadWrapper())
   },

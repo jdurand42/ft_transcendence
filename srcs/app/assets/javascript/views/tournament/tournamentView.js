@@ -63,9 +63,9 @@ export const TournamentView = Backbone.View.extend({
         this.context.tournament = true
         this.participantIds = this.tournament.get('participant_ids')
 
-        for (let i = 1; i < 30; i++) { // TEST
-          this.participantIds.push(i) // TEST
-        } // TEST
+        // for (let i = 1; i < 30; i++) { // TEST
+        //   this.participantIds.push(i) // TEST
+        // } // TEST
 
         await this.registerAllParticipants()
 
@@ -85,7 +85,6 @@ export const TournamentView = Backbone.View.extend({
           //   for (let i = 0; i < this.participantIds.length; i++) {
           //     await this.registerUser(this.participantIds[i], this.context, this.ladders)
           //   }
-          console.log(this.context)
           this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentRegistration(this.context))
           // }
           // fetchUser()
@@ -95,10 +94,10 @@ export const TournamentView = Backbone.View.extend({
 
           this.initializeAllMatches()
 
-          console.log(this.context)
           this.tournament.status = 'inprogress'
+          this.context.isRegistered = this.participantIds.some(el => el === this.userId)
           this.$el.find('#tournament-nav-container').html(Handlebars.templates.tournamentNav(this.context))
-          if (this.participantIds.some(el => el === this.userId) === true) {
+          if (this.context.isRegistered === true) {
             this.initializeContent(true, 'Rage quit', Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
           } else {
             this.initializeContent(false, undefined, Handlebars.templates.tournamentAllMatches, 'all-matches-nav')
@@ -218,7 +217,7 @@ export const TournamentView = Backbone.View.extend({
   },
 
   initializeContent: function (isRegistered, str, template, div) {
-    this.context.isRegistered = isRegistered
+    // this.context.isRegistered = isRegistered
     this.context.register = str
     console.log(this.context)
     this.$el.find('#tournament-content-container').html(template(this.context))
