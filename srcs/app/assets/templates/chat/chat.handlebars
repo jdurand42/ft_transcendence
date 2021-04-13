@@ -84,7 +84,7 @@
                     {{#unless channel}}
                     <p class="anagram">{{anagram}}</p>
                     <p class="nickname">{{nickname}}</p>
-                    <div class="pastille" id="pastille"></div>
+                    <div class="pastille" id="pastille{{userId}}"></div>
                     <p class="status">{{status}}</p>
                     <div class="slide-show-container">
                         <img src="{{slide_show}}" class="slide-show"></img>
@@ -110,7 +110,7 @@
                 {{/unless}}
             </div>
         </div>
-        <div class="messages" id="messages{{id}}">
+        <div class="messages" id="messages{{id}}" for={{id}}>
             <div class="scrollable">
                 {{#each messages}}
                 {{#if message}}

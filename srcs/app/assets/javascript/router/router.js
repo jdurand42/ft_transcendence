@@ -81,22 +81,21 @@ export const Router = Backbone.Router.extend({
   connexion: function (url) {
     // Two-Factor redirection
     this.urlParams = new URLSearchParams(window.location.search)
-    if (this.urlParams.get('two_factor')) {
+    if (this.urlParams.get('two_factor') === 'true') {
       window.localStorage.setItem('user_id', this.urlParams.get('user_id'))
       this.navigate('#twoFactor', { trigger: true })
-      return
-    }
-
-    const fetchUser = async () => {
-      this.oauthService.setAjaxEnvironnement()
-      await this.setUpUser(this.users, this.oauthService, this.userLogged)
-      this.userLogged.save({ first_login: true }, { patch: true })
-      await this.initializeSocket()
-      if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
-        this.navigate('#home', { trigger: true })
+    } else {
+      const fetchUser = async () => {
+        this.oauthService.setAjaxEnvironnement()
+        await this.setUpUser(this.users, this.oauthService, this.userLogged)
+        this.userLogged.save({ first_login: true }, { patch: true })
+        await this.initializeSocket()
+        if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
+          this.navigate('#home', { trigger: true })
+        }
       }
+      fetchUser()
     }
-    fetchUser()
   },
 
   setUpUser: async (users, oauthService, userLogged) => {
@@ -125,8 +124,12 @@ export const Router = Backbone.Router.extend({
         const currentChannel = myChannels.at(i)
         const channelId = currentChannel.get('id')
         if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
-          this.socket.subscribeChannel(channelId, 'ActivityChannel')
+          // this.socket.subscribeChannel(channelId, 'ActivityChannel')
           this.socket.subscribeChannel(channelId, 'ChatChannel')
+          const participantIds = currentChannel.get('participant_ids')
+          for (let i = 0; i < participantIds.length; i++) {
+            this.socket.subscribeChannel(participantIds[i], 'ActivityChannel')
+          }
         }
       }
     }
@@ -157,7 +160,7 @@ export const Router = Backbone.Router.extend({
   },
 
   twoFactor_view: function () {
-    if (this.accessPage()) { return }
+    console.log('two factor')
     const twoFactorView = new TwoFactorView()
   },
 

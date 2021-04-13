@@ -2,19 +2,26 @@
     margin: auto;
     text-align: center;
     height: 300px;
+    position: relative;
+    top: -85px;
 }
 .two_factor input {
     margin-bottom: 25px;
-    font-size: 40px;
+    font-size: 36px;
     width: 145px;
+    text-align: center;
+    padding: 8px;
 }
 
 .two_factor button {
     display: block;
     margin: auto;
     font-size: 25px;
+    border-radius: 30px;
+    width: 120px;
+    padding: 8px;
 }
 
 #two_factor_error {
-    color: #F2C94C;
+    color: var(--error-message-color);
 }

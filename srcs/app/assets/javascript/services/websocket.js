@@ -5,11 +5,20 @@ export class MyWebSocket {
 
     const socket = this.socket
     this.socket.onopen = function (event) {
-      const msg = {
+      let msg = {
         command: 'subscribe',
         identifier: JSON.stringify({
           id: window.localStorage.getItem('user_id'),
           channel: 'UserChannel'
+        })
+      }
+      socket.send(JSON.stringify(msg))
+
+      msg = {
+        command: 'subscribe',
+        identifier: JSON.stringify({
+          id: window.localStorage.getItem('user_id'),
+          channel: 'ActivityChannel'
         })
       }
       socket.send(JSON.stringify(msg))
@@ -55,7 +64,6 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
-      console.log(msg)
       if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
         notif.receiveMessage(msg.message)
       } else if (msg.message) {
