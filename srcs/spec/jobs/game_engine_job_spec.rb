@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe GameEngineJob, type: :job do
   include(CacheHelper)
-  let!(:player_left) { create(:user, status: 'offline') }
-  let!(:player_right) { create(:user, status: 'offline') }
+  let!(:player_left) { create(:user, status: 'online') }
+  let!(:player_right) { create(:user, status: 'online') }
   let!(:game) { create(:game, player_left: player_left, player_right: player_right) }
   it 'starts pongEngine' do
     ActiveJob::Base.queue_adapter = :test

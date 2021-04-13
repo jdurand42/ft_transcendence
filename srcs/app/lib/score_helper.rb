@@ -26,6 +26,7 @@ module ScoreHelper
   end
 
   class GamePointGiver
+    include(WarHelper)
     POINTS = 10
     TOURNAMENT_POINTS = 100
 
