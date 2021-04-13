@@ -47,7 +47,7 @@ module Api
       return render_error('alreadyPlayed', 403) if match_played_already?
       return render_error('opponentNotParticipant', 403) unless opponent_participant?
 
-      @games_params.merge!(tournament_id: Tournament.first.id)
+      @games_params.merge!(tournament_id: Tournament.last.id)
       nil
     end
 
