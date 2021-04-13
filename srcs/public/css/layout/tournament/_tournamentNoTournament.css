@@ -2,7 +2,8 @@
 .no-tournament {
     height: 100%;
     width: 100%;
-    line-height: calc(100vh - 135px - var(--header-size));
+
+    padding-top: 25vh;
 
     display: flex;
     justify-content: center;

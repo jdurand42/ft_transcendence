@@ -85,7 +85,6 @@ export const TournamentView = Backbone.View.extend({
           //   for (let i = 0; i < this.participantIds.length; i++) {
           //     await this.registerUser(this.participantIds[i], this.context, this.ladders)
           //   }
-          console.log(this.context)
           this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentRegistration(this.context))
           // }
           // fetchUser()
@@ -95,7 +94,6 @@ export const TournamentView = Backbone.View.extend({
 
           this.initializeAllMatches()
 
-          console.log(this.context)
           this.tournament.status = 'inprogress'
           this.$el.find('#tournament-nav-container').html(Handlebars.templates.tournamentNav(this.context))
           if (this.participantIds.some(el => el === this.userId) === true) {
@@ -157,8 +155,6 @@ export const TournamentView = Backbone.View.extend({
       }
     }
 
-    console.log(this.matchesToDo)
-
     this.initializeAllMatchesDone()
     this.initializeAllMatchesToDo()
   },
@@ -212,7 +208,6 @@ export const TournamentView = Backbone.View.extend({
 
   registerAllParticipants: async function () {
     for (let i = 0; i < this.participantIds.length; i++) {
-      console.log(this.participantIds[i])
       await this.registerUser(this.participantIds[i])
     }
   },
@@ -345,7 +340,6 @@ export const TournamentView = Backbone.View.extend({
   },
 
   getTrophy: function (user) {
-    console.log(user)
     return 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg'
   },
 
