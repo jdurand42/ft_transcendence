@@ -36,6 +36,7 @@ module Api
     def agreements
       authorize @war
       return render_error('timeSlotEntangled', 403) if wars_entangled?(@war, @from, @on)
+      return render_error('noWarTime', 403) if @war.war_times.empty?
 
       guild_agrees
       start_war(@war) if @war.from_agreement? && @war.on_agreement?
@@ -65,8 +66,10 @@ module Api
     def guild_agrees
       if current_user.guild_member.guild_id == @from.id
         @war.update!(from_agreement: param_agreement)
+        @war.update!(on_agreement: false) if param_agreement == false
       else
         @war.update!(on_agreement: param_agreement)
+        @war.update!(from_agreement: false) if param_agreement == false
       end
     end
 

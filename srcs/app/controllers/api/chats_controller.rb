@@ -2,6 +2,7 @@
 
 module Api
   class ChatsController < ApiController
+    include(ChatHelper)
     before_action :set_chat
     skip_before_action :set_chat, only: %i[index create messages]
     after_action :verify_authorized, except: %i[index show create join leave]
@@ -44,10 +45,11 @@ module Api
 
     def kick
       authorize @chat
-      target = params.fetch(:tid)
-      return render_not_allowed if @chat.owner.id == target.to_i
+      target_id = params.fetch(:tid)
+      return render_not_allowed if @chat.owner.id == target_id.to_i
 
-      ChatParticipant.where(chat: @chat, user: target).destroy_all
+      ChatParticipant.find_by_chat_id_and_user_id(@chat.id, target_id).destroy!
+      ActionCable.server.broadcast("user#{target_id}", { action: 'chat_kicked', id: @chat.id })
       head :no_content
     end
 
@@ -108,16 +110,6 @@ module Api
         p.update!(role: 'owner')
       else
         @chat.destroy
-      end
-    end
-
-    def add_participants(chat, participants)
-      return unless participants
-
-      participants = participants[0, 1] if chat.privacy == 'direct_message'
-      participants.each do |t|
-        ChatParticipant.create(user_id: t, chat_id: chat.id)
-        ActionCable.server.broadcast("user_#{t}", { action: 'chat_invitation', id: chat.id })
       end
     end
 

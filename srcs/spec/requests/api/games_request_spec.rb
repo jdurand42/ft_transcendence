@@ -138,7 +138,7 @@ RSpec.describe 'Games', type: :request do
       let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 1000, max_unanswered: 10 } }
       let(:auth_2) { create(:user) }
       let(:access_token_2) { auth_2.create_new_auth_token }
-      let(:users) { create_list(:user, 2, status: 'online') }
+      let(:users) { create_list(:user, 3, status: 'online') }
       before {
         post api_guilds_url, headers: access_token, params: { name: "NoShroud", anagram: "NOS" }
         post api_guilds_url, headers: access_token_2, params: { name: "BANG", anagram: "ABCDE" }
@@ -148,15 +148,6 @@ RSpec.describe 'Games', type: :request do
         auth.update!(status: 'online')
         auth_2.update!(status: 'online')
       }
-      it 'should not create a second match' do
-        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
-        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        perform_enqueued_jobs(only: WarOpenerJob)
-        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
-        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id}
-        expect(json['errors']).to eq ["Your guild is already playing a war time match against this guild"]
-      end
       it "should forfeit opponent at time_to_answer" do
         post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
@@ -178,14 +169,34 @@ RSpec.describe 'Games', type: :request do
         expect(Game.first.winner_id).to eq nil
         expect(WarTime.first.max_unanswered).to eq 0
       end
-      it "war_time_error if player has no guild or war" do
-        #TODO
+      it "returns 'noWarTimeOnGoing' if no guild or warTime" do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        perform_enqueued_jobs(only: WarOpenerJob)
+        token_3 = users[2].create_new_auth_token
+        post '/api/games', headers: token_3, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        expect(json['errors']).to eq ["Can't launch game in war mode, no WarTime running"]
       end
-      it "can't create game if game with status played exists" do
-        #TODO
+      it "can't create a game if existing 'inprogress' game",test:true do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        perform_enqueued_jobs(only: WarOpenerJob)
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        Game.first.update!(status: 'inprogress')
+        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id}
+        expect(json['errors']).to eq ["Your guild is already playing a war time match against this guild"]
       end
-      it "can create game if game exists but is played" do
-        #TODO
+      it "can create a game if existing 'played' game" do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
+        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
+        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
+        perform_enqueued_jobs(only: WarOpenerJob)
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        Game.first.update!(status: 'played')
+        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id}
+        expect(json['player_left_id']).to eq users[0].id
       end
     end
     context 'Tournament' do
@@ -233,7 +244,7 @@ RSpec.describe 'Games', type: :request do
         expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
         expect(status).to eq 403
       end
-      it "forfeit opponent at TTA",test:true do
+      it "forfeit opponent at TTA" do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
         perform_enqueued_jobs(only: TournamentTimeToAnswerJob)

@@ -65,8 +65,8 @@ module Api
 
     def war_time_error?
       return nil unless @games_params[:mode] == 'war'
-      return render_error('noWarTimeOngoing', 403) unless war_time.present?
-      return render_error('warTimeMatchLimit', 403) if Game.where(war_time_id: war_time.id).any?
+      return render_error('noWarTimeOnGoing', 403) unless war_time.present?
+      return render_error('warTimeMatchLimit', 403) if Game.where(war_time_id: war_time.id, status: 'inprogress').any?
 
       @games_params.merge!(war_time_id: war_time.id)
       nil
