@@ -87,8 +87,12 @@ export const ChatView = Backbone.View.extend({
         const currentChannel = this.myChannels.at(i)
         const channelId = currentChannel.get('id')
         if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
-          this.socket.subscribeChannel(channelId, 'ActivityChannel')
+          // this.socket.subscribeChannel(channelId, 'ActivityChannel')
           this.socket.subscribeChannel(channelId, 'ChatChannel')
+          const participantIds = currentChannel.get('participant_ids')
+          for (let i = 0; i < participantIds.length; i++) {
+            this.socket.subscribeChannel(participantIds[i], 'ActivityChannel')
+          }
         } else {
           this.myChannels.remove(channelId)
         }
@@ -176,7 +180,7 @@ export const ChatView = Backbone.View.extend({
         if (currentChannel.get('privacy') === 'direct_message' && this.context.status !== 'online') {
           document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
           document.getElementById('play-button').style.cursor = 'auto'
-          document.getElementById('pastille').classList.add(this.context.status)
+          document.getElementById('pastille' + currentChannel.get('participant_ids').find(el => el !== this.userLoggedId)).classList.add(this.context.status)
         }
       } else if (this.channels.length > 0) {
         const id = this.channels.at(0).get('id')
@@ -229,7 +233,6 @@ export const ChatView = Backbone.View.extend({
   },
 
   chatInvitation: function (channelId, senderId) {
-    this.socket.subscribeChannel(channelId, 'ActivityChannel')
     this.socket.subscribeChannel(channelId, 'ChatChannel')
 
     const fetchMyChannels = async () => {
@@ -239,6 +242,11 @@ export const ChatView = Backbone.View.extend({
       const messages = await this.myChannels.get(channelId).getMessages()
       for (let i = 0; i < messages.length; i++) {
         this.receiveMessage(channelId, messages[i])
+      }
+
+      const partcipantIds = this.myChannels.get(channelId).get('participant_ids')
+      for (let i = 0; i < partcipantIds.length; i++) {
+        this.socket.subscribeChannel(partcipantIds[i], 'ActivityChannel')
       }
 
       if (senderId !== this.userLoggedId) {
@@ -254,33 +262,39 @@ export const ChatView = Backbone.View.extend({
   },
 
   updateStatus: function (channelId, userId, status) {
-    this.users.get(userId).set({ status: status })
-    const currentChannel = this.channels.get(channelId)
-    this.updateContextCenter(currentChannel)
-    this.updateContextRightSide(currentChannel)
-    if (document.getElementById('messages' + channelId) !== null) {
-      if (currentChannel.get('privacy') === 'direct_message') {
-        if (status === 'online') {
-          document.getElementById('pastille').classList.remove('offline')
-          document.getElementById('pastille').classList.remove('ingame')
-        } else if (status === 'offline') {
-          document.getElementById('pastille').classList.remove('online')
-          document.getElementById('pastille').classList.remove('ingame')
+    if (channelId === userId) {
+      this.users.get(userId).set({ status: status })
+      let currentChannelId = document.getElementsByClassName('messages')
+      if (currentChannelId.length > 0) {
+        currentChannelId = Number(currentChannelId[0].getAttribute('for'))
+        const currentChannel = this.channels.get(currentChannelId)
+        if (currentChannel.get('privacy') === 'direct_message') {
+          if (document.getElementById('pastille' + userId) !== null) {
+            this.updateContextCenter(currentChannel)
+            if (status === 'online') {
+              document.getElementById('pastille' + userId).classList.remove('offline')
+              document.getElementById('pastille' + userId).classList.remove('ingame')
+            } else if (status === 'offline') {
+              document.getElementById('pastille' + userId).classList.remove('online')
+              document.getElementById('pastille' + userId).classList.remove('ingame')
+            } else {
+              document.getElementById('pastille' + userId).classList.remove('online')
+              document.getElementById('pastille' + userId).classList.remove('offline')
+            }
+            this.updateHTML('header-chat')
+            document.getElementById('pastille' + userId).classList.add(status)
+            if (status !== 'online') {
+              document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
+              document.getElementById('play-button').style.cursor = 'auto'
+            } else {
+              document.getElementById('play-button').style.backgroundColor = 'var(--primary-color'
+              document.getElementById('play-button').style.cursor = 'pointer'
+            }
+          }
         } else {
-          document.getElementById('pastille').classList.remove('online')
-          document.getElementById('pastille').classList.remove('offline')
+          this.updateContextRightSide(currentChannel)
+          this.updateHTML('right-side')
         }
-        this.updateHTML('header-chat')
-        document.getElementById('pastille').classList.add(status)
-        if (status !== 'online') {
-          document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
-          document.getElementById('play-button').style.cursor = 'auto'
-        } else {
-          document.getElementById('play-button').style.backgroundColor = 'var(--primary-color'
-          document.getElementById('play-button').style.cursor = 'pointer'
-        }
-      } else {
-        this.updateHTML('right-side')
       }
     }
   },
@@ -791,7 +805,7 @@ export const ChatView = Backbone.View.extend({
         id = currentChannel.get('id')
         if (currentChannel.get('privacy') === 'direct_message') {
           document.getElementById('right-side').style.display = 'none'
-          document.getElementById('pastille').classList.add(userChat.get('status'))
+          document.getElementById('pastille' + userChat.get('id')).classList.add(userChat.get('status'))
           document.getElementById('DM' + id).classList.add('open')
         } else {
           document.getElementById('right-side').style.display = 'flex'
