@@ -45,6 +45,15 @@ RSpec.describe 'Games', type: :request do
       end
     end
 
+    context 'search with tournament_id',test:true do
+      it "returns all tournament games" do
+        create(:tournament)
+        create_list(:game, 2, tournament_id: Tournament.first.id)
+        get '/api/games', headers: auth.create_new_auth_token, params: { tournament_id: 'inprogress' }
+        expect(json.count).to eq 2
+      end
+    end
+
     context 'everything' do
       before do
         create_list(:game, 2)
@@ -178,7 +187,7 @@ RSpec.describe 'Games', type: :request do
         post '/api/games', headers: token_3, params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
         expect(json['errors']).to eq ["Can't launch game in war mode, no WarTime running"]
       end
-      it "can't create a game if existing 'inprogress' game",test:true do
+      it "can't create a game if existing 'inprogress' game" do
         post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }

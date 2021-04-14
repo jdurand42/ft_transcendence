@@ -43,7 +43,7 @@ RSpec.describe GamePointGiver do
   context 'Tournament' do
     let!(:tournament) { create(:tournament, winner_id: tom.id) }
     let(:game) { create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'tournament', tournament_id: Tournament.first.id) }
-    it "increment winner score",test:true do
+    it "increment winner score" do
       gp.tournament_points(Tournament.first)
       expect(User.find_by_nickname('tom').score).to eq 100
     end
@@ -57,7 +57,7 @@ RSpec.describe GamePointGiver do
       create(:guild_member, user: tom, guild: bang, rank: 'owner')
       create(:guild_member, user: alan, guild: nos, rank: 'owner')
     }
-    it "gives points to Tom's guild" do
+    it "gives points to Tom's guild",test:true do
       expect { gp.game_points(duel_game) }.to change { Guild.first.score }.by(10)
     end
     it "gives points to Alan's guild" do
