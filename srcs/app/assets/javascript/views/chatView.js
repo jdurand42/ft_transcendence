@@ -262,32 +262,30 @@ export const ChatView = Backbone.View.extend({
   },
 
   updateStatus: function (channelId, userId, status) {
-    if (channelId === userId) {
-      this.users.get(userId).set({ status: status })
-      let currentChannelId = document.getElementsByClassName('messages')
-      if (currentChannelId.length > 0) {
-        currentChannelId = Number(currentChannelId[0].getAttribute('for'))
-        const currentChannel = this.channels.get(currentChannelId)
-        if (currentChannel.get('privacy') === 'direct_message') {
-          if (document.getElementById('pastille' + userId) !== null) {
-            this.updateContextCenter(currentChannel)
-            document.getElementById('pastille' + userId).classList.remove('online')
-            document.getElementById('pastille' + userId).classList.remove('offline')
-            document.getElementById('pastille' + userId).classList.remove('ingame')
-            this.updateHTML('header-chat')
-            document.getElementById('pastille' + userId).classList.add(status)
-            if (status !== 'online') {
-              document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
-              document.getElementById('play-button').style.cursor = 'auto'
-            } else {
-              document.getElementById('play-button').style.backgroundColor = 'var(--primary-color'
-              document.getElementById('play-button').style.cursor = 'pointer'
-            }
+    this.users.get(userId).set({ status: status })
+    let currentChannelId = document.getElementsByClassName('messages')
+    if (currentChannelId.length > 0) {
+      currentChannelId = Number(currentChannelId[0].getAttribute('for'))
+      const currentChannel = this.channels.get(currentChannelId)
+      if (currentChannel.get('privacy') === 'direct_message') {
+        if (document.getElementById('pastille' + userId) !== null) {
+          this.updateContextCenter(currentChannel)
+          document.getElementById('pastille' + userId).classList.remove('online')
+          document.getElementById('pastille' + userId).classList.remove('offline')
+          document.getElementById('pastille' + userId).classList.remove('ingame')
+          this.updateHTML('header-chat')
+          document.getElementById('pastille' + userId).classList.add(status)
+          if (status !== 'online') {
+            document.getElementById('play-button').style.backgroundColor = '#C4C4C4'
+            document.getElementById('play-button').style.cursor = 'auto'
+          } else {
+            document.getElementById('play-button').style.backgroundColor = 'var(--primary-color'
+            document.getElementById('play-button').style.cursor = 'pointer'
           }
-        } else {
-          this.updateContextRightSide(currentChannel)
-          this.updateHTML('right-side')
         }
+      } else {
+        this.updateContextRightSide(currentChannel)
+        this.updateHTML('right-side')
       }
     }
   },
@@ -812,7 +810,7 @@ export const ChatView = Backbone.View.extend({
           const userId = currentChannel.get('participant_ids').find(el => el !== this.userLogged.get('id'))
           const userChat = this.users.get(userId)
           document.getElementById('right-side').style.display = 'none'
-          document.getElementById('pastille').classList.add(userChat.get('status'))
+          document.getElementById('pastille' + userChat.get('id')).classList.add(userChat.get('status'))
           document.getElementById('DM' + id).classList.add('open')
         } else if (currentTarget.getAttribute('id').startsWith('channel') === true) {
           document.getElementById('right-side').style.display = 'flex'

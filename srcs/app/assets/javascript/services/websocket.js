@@ -21,7 +21,7 @@ export class MyWebSocket {
       msg = {
         command: 'subscribe',
         identifier: JSON.stringify({
-          id: window.localStorage.getItem('user_id'),
+          id: undefined,
           channel: 'ActivityChannel'
         })
       }
@@ -71,6 +71,7 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
+      console.log(msg)
       if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
         try {
           notif.receiveMessage(msg.message)
