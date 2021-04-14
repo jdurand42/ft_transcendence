@@ -112,21 +112,23 @@ export const GameView = Backbone.View.extend({
 
   initializeGame: function () {
     this.canvas = document.getElementById('gameWindow')
+    console.log(this.game)
+    console.log(this.game.player_left_id)
    	this.data = [{
       canvas: this.canvas,
       canvasLocation: undefined,
       ctx: undefined,
       playerLeft: {
-	      // nickname: this.users.get(this.game.get('player_left_id')).get('nickname'),
-	      nickname: 'left',
+	      nickname: this.users.get(this.game.player_left_id).get('nickname'),
+	      // nickname: 'left',
 		 		score: 0,
 	      isUser: false,
 	      x: WIDTH / 10,
 	      y: HEIGHT / 2 - PLAYER_SIZE_Y / 2
 	    },
       playerRight: {
-	      // nickname: this.users.get(this.game.get('player_right_id')).get('nickname'),
-	      nickname: 'right',
+	      nickname: this.users.get(this.game.player_right_id).get('nickname'),
+	      // nickname: 'right',
 		 		score: 0,
 	      isUser: false,
 	      x: WIDTH - WIDTH / 10,
@@ -199,26 +201,28 @@ export const GameView = Backbone.View.extend({
     return await $.ajax({
       url: '/api/games/',
       data: { mode: 'duel', opponent_id: '1' },
-      method: 'POST'
+      method: 'POST',
+      context: this,
+      success: function (response) {
+        console.log(response)
+        this.game = response
+        this.initializeGame()
+      }
     })
   },
 
   challengeAlfred: function () {
-    const load = async () => {
-      try {
-        this.callAlfred().then(async function (response) {
-          console.log(response)
-          await this.games.fetch()
-          this.game = this.games.get(this.gameId)
-          this.initializeGame()
-        })
-      	// this.game = this.games.get(this.gameId)
-      } catch (e) {
-        console.log('error while trying to challengeAlfred')
-        console.log(e)
-      }
+    // const load = async () => {
+    try {
+      	this.callAlfred()
+      /* console.log('la')
+      console.log(this.game) */
+    } catch (e) {
+      console.log('error while trying to challengeAlfred')
+      console.log(e)
     }
-    load()
+    // }
+    // load()
   }
 })
 
