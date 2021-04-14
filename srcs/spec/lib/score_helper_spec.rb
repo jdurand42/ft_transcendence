@@ -18,7 +18,7 @@ RSpec.describe GamePointGiver do
     end
   end
   context 'Ladder' do
-    it "increments Tom's ladder games won/lost" do
+    it "increments Tom's ladder games won/lost",test:true do
       gp.game_points(ladder_game)
       expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
       expect(User.find_by_nickname('alan').ladder_games_lost).to eq 1
@@ -57,7 +57,7 @@ RSpec.describe GamePointGiver do
       create(:guild_member, user: tom, guild: bang, rank: 'owner')
       create(:guild_member, user: alan, guild: nos, rank: 'owner')
     }
-    it "gives points to Tom's guild",test:true do
+    it "gives points to Tom's guild" do
       expect { gp.game_points(duel_game) }.to change { Guild.first.score }.by(10)
     end
     it "gives points to Alan's guild" do

@@ -23,7 +23,7 @@ RSpec.describe "Tournaments", type: :request do
       end
     end
     describe "#participants" do
-      it "should return participants",test:true do
+      it "should return participants" do
         get participants_api_tournament_url(Tournament.first.id), headers: token
         expect(json.size).to eq 2
       end

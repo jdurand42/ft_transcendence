@@ -38,6 +38,7 @@ class User < ApplicationRecord
   private
 
   def achievements
-    achievement_unlocked(id, 'Much Secure!') if saved_change_to_two_factor? && two_factor == true
+    achievement_unlocked(id, 'Much Secure!') if saved_change_to_two_factor? && (two_factor == true)
+    achievement_unlocked(id, 'Is There No One Else ?') if saved_change_to_ladder_games_won? && ladder_games_won == 100
   end
 end

@@ -36,10 +36,9 @@ module TournamentHelper
   end
 
   def tournament_winner
-    winner = TournamentParticipant.order(win_count: :desc).first.user_id
-    Tournament.first.update!(winner_id: winner)
+    winner_id = TournamentParticipant.order(win_count: :desc).first.user_id
+    Tournament.first.update!(winner_id: winner_id)
     GamePointGiver.new.tournament_points(Tournament.first)
-    achievement_unlocked(winner, 'My Name Is Achilles')
   end
 
   def exaequo?
