@@ -110,10 +110,50 @@ export const GameView = Backbone.View.extend({
     console.log('bonjour war')
   },
 
+  receiveMessage: function (msg) {
+    // ici on update les data de jeu
+    // console.log('receive message')
+    // console.log(msg)
+    // console.log(msg.message)
+    const message = msg.message
+    if (message.player_left) {
+      // console.log('here in playerLeft')
+      this.data[0].playerLeft.y = message.player_left.pos
+      this.data[0].playerLeft.score = message.player_left.score
+    }
+    if (message.player_right) {
+      this.data[0].playerRight.y = message.player_right.pos
+      this.data[0].playerRight.score = message.player_right.score
+    }
+    if (message.ball) {
+      this.data[0].ball.x = message.ball.x
+      this.data[0].ball.y = message.ball.y
+      this.data[0].ball.dir = message.ball.dir
+    }
+    /* if (message.action && message.action === 'game_joined') {
+			console.log('game joined')
+			this.gameId = message.id
+		} */
+    if (message.action && message.action === 'game_won') {
+      // this.data[0].socket.close()
+      // afficher écran victoire
+      // this.data[0].end = true
+      console.log('win')
+      this.data[0].end = true
+    } else if (message.action && message.action === 'game_won') {
+      // this.data[0].socket.close()
+      // afficher écran défaite
+      // this.data[0].end = true
+      console.log('loose')
+      this.data[0].end = true
+    }
+    // this.data[0].ball.x += 10
+    // this.data[0].playerRight.y -= 10
+  },
+
   initializeGame: function () {
     this.canvas = document.getElementById('gameWindow')
-    console.log(this.game)
-    console.log(this.game.player_left_id)
+    this.gameId = this.game.id
    	this.data = [{
       canvas: this.canvas,
       canvasLocation: undefined,
@@ -158,43 +198,23 @@ export const GameView = Backbone.View.extend({
 	  /* } else if (this.game.get('player_right_id') === this.id) {
 	  this.playerRight.isUser = true
 	  } */
+    const chanId = this.gameId
     const data = this.data[0]
+    data.socket.subscribeChannel(chanId, 'GameChannel')
+    /* data.socket.send(JSON.stringify({
+      command: 'suscribe',
+      identifier: JSON.stringify({
+        id: chatId,
+        channel: 'GameChannel'
+      })
+    })) */
+    data.socket.updateContextForGame(this)
     this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
+
     // join websocket and it's set the receiveMessage method
     // data[0].socket.subscribeChannel(data.gameId, 'GameChannel')
     // data[0].socket.updateContext(this, undefined)
     preGameLoop(this.data)
-  },
-
-  receiveMessage: function (msg) {
-    // ici on update les data de jeu
-    console.log(msg)
-    if (msg.player_left) {
-      this.data[0].playerLeft.y = msg.player_left.pos
-    }
-    if (msg.player_right) {
-      this.data[0].playerRight.y = msg.player_right.pos
-    }
-    if (msg.ball) {
-      this.data[0].ball.x = msg.ball.x
-      this.data[0].ball.y = msg.ball.y
-      this.data[0].ball.dir = msg.ball.dir
-    }
-    if (msg.action && msg.action === 'game_joined') {
-      console.log('game joined')
-      this.gameId = msg.id
-    }
-    if (msg.game_won) {
-      // this.data[0].socket.close()
-      // afficher écran victoire
-      // this.data[0].end = true
-    } else if (msg.game_lost) {
-      // this.data[0].socket.close()
-      // afficher écran défaite
-      // this.data[0].end = true
-    }
-    // this.data[0].ball.x += 10
-    // this.data[0].playerRight.y -= 10
   },
 
   callAlfred: async function () {
@@ -276,15 +296,14 @@ function printTextBoxes (data) {
 function move (e, data) {
   const canvasLocation = data.canvasLocation
   const mouseLocation = event.clientY - canvasLocation.y
+  console.log('moving')
   // console.log(mouseLocation)
-  if (data.playerLeft.isUser) {
+  /* if (data.playerLeft.isUser) {
   	data.playerLeft.y = mouseLocation - PLAYER_SIZE_Y / 2
   } else if (data.playerRight.isUser) {
     data.playerRight.y = mouseLocation - PLAYER_SIZE_Y / 2
-  }
-  /*
-	data.socket.send(JSON.stringify({move: {pos: mouseLocation}})
-	*/
+  } */
+  data.socket.sendForGame(JSON.stringify({ move: { pos: parseInt(mouseLocation) } }))
 }
 
 function updateGameState (data) {
@@ -303,7 +322,6 @@ function gameLoop (data) {
   printTextBoxes(data[0])
   printPaddles(data[0])
   printBall(data[0])
-  console.log(1)
   if (!data[0].end) {
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
   } else {

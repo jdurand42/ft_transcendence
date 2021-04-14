@@ -86,6 +86,21 @@ export class MyWebSocket {
     }
   }
 
+  updateContextForGame (objet) {
+    this.socket.onmessage = function (event) {
+      const response = event.data
+      const msg = JSON.parse(response)
+      // console.log(msg)
+      if (msg.message) {
+        objet.receiveMessage(msg)
+			 }
+		 }
+  }
+
+  sendForGame (data) {
+    this.socket.send(data)
+  }
+
   getSocket () {
     return this.socket
   }
