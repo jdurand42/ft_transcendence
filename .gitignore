@@ -83,3 +83,4 @@ package-lock.json
 # .eslintrc.json
 .eslintignore
 .eslintrc.yml
+.2fa.sh

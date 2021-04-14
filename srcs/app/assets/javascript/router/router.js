@@ -13,6 +13,7 @@ import { ChatView } from '../views/chatView'
 import { ManageGuildView } from '../views/guild/manageGuildView'
 import { AdminView } from '../views/admin/adminView'
 import { NotifView } from '../views/notifView'
+import { GameView } from '../views/GameView'
 
 // models
 import { User } from '../models/userModel'
@@ -70,6 +71,7 @@ export const Router = Backbone.Router.extend({
     tournament: 'tournaments_view',
     manage_guild: 'manage_guild_view',
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
+    'game/(:gameId)': 'playGame',
     connexion: 'connexion',
     exit: 'exit',
     firstConnexion: 'firstConnexion_view',
@@ -143,8 +145,8 @@ export const Router = Backbone.Router.extend({
       return 1
     } else if (performance.navigation.type >= 1 && performance.navigation.type <= 2) {
       const fetchUser = async () => {
-        this.initializeSocket()
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
+        this.initializeSocket()
         if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
       }
       fetchUser()
@@ -247,6 +249,12 @@ export const Router = Backbone.Router.extend({
     const declareWar = new DeclareWar({ fromId: fromId, onId: onId, router: this })
   },
 
+  playGame: function (gameId) {
+    if (this.accessPage()) { return }
+    console.log(gameId)
+    this.view = new GameView({ model: this.loadWrapper(), socket: this.socket, notifView: this.notifView, gameId: gameId })
+  },
+
   loadWrapper: function () {
     return new SuperWrapper({
       users: new Wrapper({ obj: new Users() }),
@@ -262,6 +270,11 @@ export const Router = Backbone.Router.extend({
   remove_view: function () {
     // this._removeElement();
     this.view.$el.empty()
+    if (this.view.canvas) {
+      // console.log('here')
+      // c'est fou que je doive faire ca
+      this.view.data[0].end = true
+    }
     try {
       // this.socket.updateContext(this.notifView)
       // this.view.destroy()

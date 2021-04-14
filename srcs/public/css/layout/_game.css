@@ -1,0 +1,36 @@
+.gameSupraDiv {
+		display: flex;
+		flex-direction: column;
+		min-height: calc(100vh - var(--header-size));
+		overflow-y: auto;
+		overflow-x: hidden;
+
+		width: 100%;
+		background: url('../../../images/background.jpg');
+		background-position: 50% 0;
+		background-position: 0 0;
+		background-attachment: fixed;
+		text-align: center;
+		height: 100%;
+}
+
+.gameTitle {
+	font-family: Press Start 2P;
+	font-style: normal;
+	font-weight: normal;
+	font-size: 36px;
+	line-height: 36px;
+	color: var(--primary-color);
+}
+
+#gameContainer {
+	padding-top: 40px;
+	height: 100%;
+}
+
+#gameWindow {
+	border: solid 3px white;
+	width: 512px;
+	height: 256px;
+	background-color: black;
+}
