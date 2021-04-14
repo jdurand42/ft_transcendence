@@ -123,6 +123,7 @@ export const LeaderboardView = Backbone.View.extend({
 
   updateHTML: function (parent, child, template) {
     const html = template(this.context)
+    console.log(html)
     document.getElementById(child).remove()
     document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },

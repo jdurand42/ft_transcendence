@@ -12,6 +12,6 @@ templates['tournamentNav'] = template({"1":function(container,depth0,helpers,par
 
   return "<div class=\"tournament-nav\" id=\"tournament-nav\">\n    <div class=\"square\" id=\"square\"></div>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? lookupProperty(depth0,"isRegistered") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":3,"column":4},"end":{"line":7,"column":11}}})) != null ? stack1 : "")
-    + "    <div class=\"all-matches-nav\" id=\"all-matches-nav\">\n        ALL MATCHES\n    </div>\n    <div class=\"classement-nav\" id=\"classement-nav\">\n        CLASSEMENT\n    </div>\n</div>";
+    + "    <div class=\"all-matches-nav\" id=\"all-matches-nav\">\n        ALL MATCHES\n    </div>\n    <div class=\"ranking-nav\" id=\"ranking-nav\">\n        RANKING\n    </div>\n</div>";
 },"useData":true});
 })();

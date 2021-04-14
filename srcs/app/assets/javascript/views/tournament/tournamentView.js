@@ -10,7 +10,9 @@ export const TournamentView = Backbone.View.extend({
     'mouseover .rules-icon-container': 'mouseoverRules',
     'click .create-new-tournament': 'createTournamentButton',
     'click .create-tournament': 'valideCreationTournament',
-    'click .register-button': 'registerButton'
+    'click .register-button': 'registerButton',
+    'click .ranking-nav': 'rankingNav',
+    'click .all-matches-nav': 'allMatchesNav'
   },
   initialize: function () {
     this.userLogged = new User()
@@ -41,6 +43,7 @@ export const TournamentView = Backbone.View.extend({
   render: function () {
     this.context = {}
     this.context.registered = []
+    this.context.ranked = []
     this.context.allToDo = []
     this.context.allDone = []
     this.context.nbDone = 0
@@ -56,10 +59,11 @@ export const TournamentView = Backbone.View.extend({
       this.context.createTournament = 'Create new tournament'
       this.context.register = undefined
 
+      // If tournament tournament is not scheduled
       if (this.tournament.get('start_date') === undefined) {
         this.context.tournament = false
         this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentNoTournament(this.context))
-      } else {
+      } else { // Tournament is scheduled or finished
         this.context.tournament = true
         this.participantIds = this.tournament.get('participant_ids')
 
@@ -69,6 +73,7 @@ export const TournamentView = Backbone.View.extend({
 
         await this.registerAllParticipants()
 
+        // If tournament has not started yet
         if (this.tournament.get('start_date') > new Date().toISOString()) {
           if (this.participantIds && this.participantIds.find(el => el === this.userLogged.get('id')) !== undefined) {
             this.context.register = 'Unregister'
@@ -81,14 +86,12 @@ export const TournamentView = Backbone.View.extend({
           this.initializeTimer()
 
           this.context.nbRegistered = this.participantIds.length
-          // const fetchUser = async () => {
-          //   for (let i = 0; i < this.participantIds.length; i++) {
-          //     await this.registerUser(this.participantIds[i], this.context, this.ladders)
-          //   }
           this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentRegistration(this.context))
-          // }
-          // fetchUser()
-        } else {
+        } else { // Tournament is pending
+          this.initializeRanking()
+
+          this.context.pending = true
+
           const nbParticipants = this.tournament.get('participant_ids').length
           this.context.maxToDo = (nbParticipants / 2) * (nbParticipants - 1)
 
@@ -97,10 +100,13 @@ export const TournamentView = Backbone.View.extend({
           this.tournament.status = 'inprogress'
           this.context.isRegistered = this.participantIds.some(el => el === this.userId)
           this.$el.find('#tournament-nav-container').html(Handlebars.templates.tournamentNav(this.context))
+          this.context.isRegistered = this.participantIds.some(el => el === this.userId)
           if (this.context.isRegistered === true) {
-            this.initializeContent(true, 'Rage quit', Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
+            this.context.register = 'Rage quit'
+            this.initializeContent(Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
           } else {
-            this.initializeContent(false, undefined, Handlebars.templates.tournamentAllMatches, 'all-matches-nav')
+            this.context.register = undefined
+            this.initializeContent(Handlebars.templates.tournamentAllMatches, 'all-matches-nav')
           }
         }
         this.context.createTournament = 'Cancel tournament'
@@ -147,6 +153,47 @@ export const TournamentView = Backbone.View.extend({
     render()
   },
 
+  initializeRanking: function () {
+    console.log(this.registered)
+
+    for (let i = 0; i < this.registered.length; i++) {
+      this.context.ranked.push(this.registered.at(i))
+      this.context.ranked[i].victories = 0
+      this.context.ranked[i].defeats = 0
+    }
+    for (let i = 0; i < this.games.length; i++) {
+      const game = this.games.at(i)
+      if (game.get('status') === 'played') {
+        let index = 0
+        this.context.ranked.some(el => {
+          index += 1
+          return el.id === game.get('winner_id')
+        })
+        this.context.ranked[index].victories += 1
+        let id
+        if (game.get('player_left_id') !== game.get('winner_id')) {
+          id = game.get('player_left_id')
+        } else {
+          id = game.get('player_right_id')
+        }
+        index = 0
+        this.context.ranked.some(el => {
+          index += 1
+          return el.id === game.get(id)
+        })
+        this.context.ranked[index].defeats += 1
+      }
+    }
+  },
+
+  allMatchesNav: function () {
+    this.initializeContent(Handlebars.templates.tournamentAllMatches, 'all-matches-nav')
+  },
+
+  rankingNav: function () {
+    this.initializeContent(Handlebars.templates.tournamentRanking, 'ranking-nav')
+  },
+
   initializeAllMatches: function () {
     for (let i = 0; i < this.participantIds.length - 1; i++) {
       for (let j = i; j < this.participantIds.length; j++) {
@@ -155,8 +202,6 @@ export const TournamentView = Backbone.View.extend({
         }
       }
     }
-
-    console.log(this.matchesToDo)
 
     this.initializeAllMatchesDone()
     this.initializeAllMatchesToDo()
@@ -211,16 +256,18 @@ export const TournamentView = Backbone.View.extend({
 
   registerAllParticipants: async function () {
     for (let i = 0; i < this.participantIds.length; i++) {
-      console.log(this.participantIds[i])
       await this.registerUser(this.participantIds[i])
     }
   },
 
-  initializeContent: function (isRegistered, str, template, div) {
-    // this.context.isRegistered = isRegistered
-    this.context.register = str
-    console.log(this.context)
+  initializeContent: function (template, div) {
     this.$el.find('#tournament-content-container').html(template(this.context))
+    try {
+      document.getElementById('all-matches-nav').classList.remove('open')
+      document.getElementById('ranking-nav').classList.remove('open')
+      document.getElementById('my-matches-nav').classList.remove('open')
+    } catch (e) {
+    }
     const nav = document.getElementById(div)
     nav.classList.add('open')
     this.positionSquare(nav.getBoundingClientRect())
@@ -337,14 +384,10 @@ export const TournamentView = Backbone.View.extend({
     await newRegistered.fetch()
     this.context.registered.push(newRegistered.attributes)
     this.registered.add(newRegistered)
-    if (newRegistered.get('ladder_id') === null) { // BUG IN BACK
-      newRegistered.set({ ladder_id: 1 }) // NO NEED TO DO THAT IF BACK IS GOOD
-    }
     this.context.registered[this.context.registered.length - 1].trophy = this.getTrophy(newRegistered)
   },
 
   getTrophy: function (user) {
-    console.log(user)
     return 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg'
   },
 
