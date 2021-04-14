@@ -9,11 +9,20 @@ export class MyWebSocket {
 
     const socket = this.socket
     this.socket.onopen = function (event) {
-      const msg = {
+      let msg = {
         command: 'subscribe',
         identifier: JSON.stringify({
           id: window.localStorage.getItem('user_id'),
           channel: 'UserChannel'
+        })
+      }
+      socket.send(JSON.stringify(msg))
+
+      msg = {
+        command: 'subscribe',
+        identifier: JSON.stringify({
+          id: undefined,
+          channel: 'ActivityChannel'
         })
       }
       socket.send(JSON.stringify(msg))
@@ -34,7 +43,10 @@ export class MyWebSocket {
       }
       console.log(msg)
       if (msg.message) {
-        objet.receiveMessage(msg)
+        try {
+          objet.receiveMessage(msg)
+        } catch (e) {
+        }
       }
     }
     this.socket.onerror = function (error) {}
@@ -61,7 +73,10 @@ export class MyWebSocket {
       }
       console.log(msg)
       if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
-        notif.receiveMessage(msg.message)
+        try {
+          notif.receiveMessage(msg.message)
+        } catch (e) {
+        }
       } else if (msg.message) {
         try {
           objet.receiveMessage(msg)

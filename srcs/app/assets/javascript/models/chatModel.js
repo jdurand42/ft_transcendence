@@ -30,8 +30,6 @@ export const ChatModel = Backbone.Model.extend({
       success: function (response) {
       },
       error: function (response) {
-        console.log('error')
-        console.log(response)
       }
     })
   },

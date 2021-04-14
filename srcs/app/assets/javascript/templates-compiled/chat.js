@@ -114,7 +114,9 @@ templates['chat'] = template({"1":function(container,depth0,helpers,partials,dat
     + alias4(((helper = (helper = lookupProperty(helpers,"anagram") || (depth0 != null ? lookupProperty(depth0,"anagram") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"anagram","hash":{},"data":data,"loc":{"start":{"line":85,"column":39},"end":{"line":85,"column":50}}}) : helper)))
     + "</p>\n                    <p class=\"nickname\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"nickname") || (depth0 != null ? lookupProperty(depth0,"nickname") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nickname","hash":{},"data":data,"loc":{"start":{"line":86,"column":40},"end":{"line":86,"column":52}}}) : helper)))
-    + "</p>\n                    <div class=\"pastille\" id=\"pastille\"></div>\n                    <p class=\"status\">"
+    + "</p>\n                    <div class=\"pastille\" id=\"pastille"
+    + alias4(((helper = (helper = lookupProperty(helpers,"userId") || (depth0 != null ? lookupProperty(depth0,"userId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"userId","hash":{},"data":data,"loc":{"start":{"line":87,"column":54},"end":{"line":87,"column":64}}}) : helper)))
+    + "\"></div>\n                    <p class=\"status\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"status") || (depth0 != null ? lookupProperty(depth0,"status") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"status","hash":{},"data":data,"loc":{"start":{"line":88,"column":38},"end":{"line":88,"column":48}}}) : helper)))
     + "</p>\n                    <div class=\"slide-show-container\">\n                        <img src=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"slide_show") || (depth0 != null ? lookupProperty(depth0,"slide_show") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"slide_show","hash":{},"data":data,"loc":{"start":{"line":90,"column":34},"end":{"line":90,"column":48}}}) : helper)))
@@ -553,7 +555,9 @@ templates['chat'] = template({"1":function(container,depth0,helpers,partials,dat
     + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(depth0 != null ? lookupProperty(depth0,"channel") : depth0),{"name":"unless","hash":{},"fn":container.program(18, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":106,"column":16},"end":{"line":110,"column":27}}})) != null ? stack1 : "")
     + "            </div>\n        </div>\n        <div class=\"messages\" id=\"messages"
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":113,"column":42},"end":{"line":113,"column":48}}}) : helper)))
-    + "\">\n            <div class=\"scrollable\">\n"
+    + "\" for="
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":113,"column":54},"end":{"line":113,"column":60}}}) : helper)))
+    + ">\n            <div class=\"scrollable\">\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"messages") : depth0),{"name":"each","hash":{},"fn":container.program(20, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":115,"column":16},"end":{"line":144,"column":25}}})) != null ? stack1 : "")
     + "            </div>\n        <div class=\"input-container\">\n            <input class=\"textInput input\" type=\"text\"  id=\"textInput\" for="
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":147,"column":75},"end":{"line":147,"column":81}}}) : helper)))

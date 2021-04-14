@@ -1,20 +1,20 @@
-<div class="listsBoard leaderboardList" id="leaderboardList">
-    <div class="nb-list nbGamers">{{nbGamers}} gamers</div>
-    <table class="tablesBoard gamersTable" id="gamersTable">
+<div class="listsBoard rankingList" id="rankingList">
+    <div class="nb-list nbGamers">{{nbRegistered}} players</div>
+    <table class="tablesBoard rankingTables" id="rankingTables">
         <tr>
             <th class="first-th"></th>
             <th></th>
             <th></th>
             <th>Nickname</th>
             <th>Guild</th>
-            {{!-- <th>General Rank</th> --}}
             <th>Victories</th>
-            <th>Total games</th>
+            <th>Defeats</th>
+            <th>Gap points</th>
             <th>Status</th>
             <th></th>
         </tr>
-        {{#each users}}
-        <tr class="tableBoard gamerTable" for="{{id}}" id="{{id}}">
+        {{#each ranked}}
+        <tr class="tableBoard rankingTable" for="{{id}}" id="{{id}}">
             <td class="first-th">
                 <div class="trophy-container">
                     <img class="trophy" src="{{trophy}}">
@@ -33,9 +33,9 @@
             {{#unless guild_id}}
             <td>{{guild}}</td>
             {{/unless}}
-            {{!-- <td>{{generalRank}}</td> --}}
             <td>{{victories}}</td>
-            <td>{{totalGames}}</td>
+            <td>{{defeats}}</td>
+            <td>{{gapPoints}}</td>
             <td>
                 <div class="status-container">
                     <div class="pastille {{status}}" id="pastille{{id}}"></div>

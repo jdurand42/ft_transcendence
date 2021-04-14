@@ -6,7 +6,7 @@ export const Guild = Backbone.Model.extend({
     owner_id: undefined,
     score: undefined,
     officer_ids: undefined,
-    member_ids: undefined,
+    member_ids: undefined
   },
 
   initialize: function (id) {
@@ -23,12 +23,8 @@ export const Guild = Backbone.Model.extend({
       name: name,
       anagram: anagram,
       success: function (response) {
-        console.log('Success while creating guild')
-        console.log(response)
       },
       error: function (response) {
-        console.log('error while creating guild')
-        console.log(response)
       }
     })
   },

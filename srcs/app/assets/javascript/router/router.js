@@ -83,22 +83,21 @@ export const Router = Backbone.Router.extend({
   connexion: function (url) {
     // Two-Factor redirection
     this.urlParams = new URLSearchParams(window.location.search)
-    if (this.urlParams.get('two_factor')) {
+    if (this.urlParams.get('two_factor') === 'true') {
       window.localStorage.setItem('user_id', this.urlParams.get('user_id'))
       this.navigate('#twoFactor', { trigger: true })
-      return
-    }
-
-    const fetchUser = async () => {
-      this.oauthService.setAjaxEnvironnement()
-      await this.setUpUser(this.users, this.oauthService, this.userLogged)
-      this.userLogged.save({ first_login: true }, { patch: true })
-      await this.initializeSocket()
-      if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
-        this.navigate('#home', { trigger: true })
+    } else {
+      const fetchUser = async () => {
+        this.oauthService.setAjaxEnvironnement()
+        this.socket = new MyWebSocket(this)
+        await this.setUpUser(this.users, this.oauthService, this.userLogged)
+        this.userLogged.save({ first_login: true }, { patch: true })
+        if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
+          this.navigate('#home', { trigger: true })
+        }
       }
+      fetchUser()
     }
-    fetchUser()
   },
 
   setUpUser: async (users, oauthService, userLogged) => {
@@ -111,28 +110,11 @@ export const Router = Backbone.Router.extend({
 
   two_factor_connexion: function (url) {
     const fetchUser = async () => {
+      this.socket = new MyWebSocket(this)
       await this.setUpUser(this.users, this.oauthService, this.userLogged)
-      this.initializeSocket()
       this.navigate('#home', { trigger: true })
     }
     fetchUser()
-  },
-
-  initializeSocket: function () {
-    this.socket = new MyWebSocket(this)
-    const fetchChannels = async () => {
-      const myChannels = new Channels()
-      await myChannels.fetchByUserId(window.localStorage.getItem('user_id'))
-      for (let i = 0; i < myChannels.length; i++) {
-        const currentChannel = myChannels.at(i)
-        const channelId = currentChannel.get('id')
-        if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
-          this.socket.subscribeChannel(channelId, 'ActivityChannel')
-          this.socket.subscribeChannel(channelId, 'ChatChannel')
-        }
-      }
-    }
-    fetchChannels()
   },
 
   accessPage: function (url) {
@@ -145,6 +127,7 @@ export const Router = Backbone.Router.extend({
       return 1
     } else if (performance.navigation.type >= 1 && performance.navigation.type <= 2) {
       const fetchUser = async () => {
+        this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
         this.initializeSocket()
         if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
@@ -159,7 +142,6 @@ export const Router = Backbone.Router.extend({
   },
 
   twoFactor_view: function () {
-    if (this.accessPage()) { return }
     const twoFactorView = new TwoFactorView()
   },
 
@@ -197,7 +179,6 @@ export const Router = Backbone.Router.extend({
 
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
-    console.log('profile view')
     // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = this.profileController.loadView(id, this.loadWrapper())
   },
