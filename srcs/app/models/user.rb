@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  include(AchievementHelper)
   devise :database_authenticatable, :registerable, :validatable, :omniauthable
   include DeviseTokenAuth::Concerns::User
+  after_save :achievements
 
   belongs_to :ladder, optional: true
 
@@ -32,4 +34,10 @@ class User < ApplicationRecord
                      size: { less_than: 6.megabytes, message: 'is not given between size' }
 
   has_secure_password :two_factor_code, validations: false
+
+  private
+
+  def achievements
+    achievement_unlocked(id, 'Much Secure!') if saved_change_to_two_factor? && (two_factor == true)
+  end
 end
