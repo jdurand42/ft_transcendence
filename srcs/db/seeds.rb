@@ -18,6 +18,7 @@ Achievement.create(name: 'RoadToDiamond I', description: 'You must reach Silver 
 Achievement.create(name: 'RoadToDiamond II', description: 'You must reach Gold Ladder')
 Achievement.create(name: 'RoadToDiamond III', description: 'You must reach Platinum Ladder')
 Achievement.create(name: 'To Infinity And Beyond !', description: 'You must reach Diamond Ladder')
+Achievement.create(name: 'Much Secure!', description: '2FA is activated')
 
 Chat.create(name: 'general', privacy: 'public')
 

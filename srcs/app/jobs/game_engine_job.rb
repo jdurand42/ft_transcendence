@@ -2,9 +2,8 @@
 
 class GameEngineJob < ApplicationJob
   include(CacheHelper)
-  include(ScoreHelper)
   include(TournamentHelper)
-  include(UserStatusHelper)
+  include(GameOverHelper)
   queue_as :default
 
   def perform(game, turns_limit)
@@ -13,10 +12,7 @@ class GameEngineJob < ApplicationJob
     pong = GameEngine.new(game, turns_limit)
     pong.start
     turn(pong) until pong.over
-    game.update!(status: 'played')
-    # stop_stream_from("game_#{game.id}")
-    change_players_status(game, 'online')
-    GamePointGiver.new.game_points(game)
+    game_over(game)
     manage_tournament(game)
   end
 
@@ -25,10 +21,5 @@ class GameEngineJob < ApplicationJob
     paddle_right = game_get_paddle_pos(pong.game.id, pong.game.player_right.id)
     pong.tick(paddle_left, paddle_right)
     sleep(0.01.seconds)
-  end
-
-  def change_players_status(game, status)
-    update_user_status(game.player_left, status)
-    update_user_status(game.player_right, status)
   end
 end
