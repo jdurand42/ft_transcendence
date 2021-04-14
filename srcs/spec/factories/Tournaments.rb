@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :tournament do
     start_date { Faker::Date.between(from: DateTime.yesterday, to: DateTime.now + 1) }
+    time_to_answer { 60 }
     factory :tournament_with_participants do
       transient do
         count { 3 }

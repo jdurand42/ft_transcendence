@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_01_153639) do
+ActiveRecord::Schema.define(version: 2021_05_01_153639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,14 +87,16 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
     t.bigint "player_left_id"
     t.bigint "player_right_id"
     t.integer "connected_players", default: 0
-    t.integer "war_time_id"
-    t.integer "tournament_id"
+    t.bigint "war_time_id"
+    t.bigint "tournament_id"
     t.string "status", default: "pending"
     t.string "mode"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["player_left_id"], name: "index_games_on_player_left_id"
     t.index ["player_right_id"], name: "index_games_on_player_right_id"
+    t.index ["tournament_id"], name: "index_games_on_tournament_id"
+    t.index ["war_time_id"], name: "index_games_on_war_time_id"
     t.index ["winner_id"], name: "index_games_on_winner_id"
   end
 
@@ -138,6 +140,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
   create_table "tournaments", force: :cascade do |t|
     t.datetime "start_date"
     t.integer "winner_id"
+    t.integer "time_to_answer", default: 60
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -246,9 +249,11 @@ ActiveRecord::Schema.define(version: 2021_04_01_153639) do
   add_foreign_key "chat_participants", "users"
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
+  add_foreign_key "games", "tournaments"
   add_foreign_key "games", "users", column: "player_left_id"
   add_foreign_key "games", "users", column: "player_right_id"
   add_foreign_key "games", "users", column: "winner_id"
+  add_foreign_key "games", "war_times"
   add_foreign_key "guild_members", "guilds"
   add_foreign_key "guild_members", "users"
   add_foreign_key "tournament_participants", "tournaments"

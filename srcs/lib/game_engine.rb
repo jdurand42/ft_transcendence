@@ -35,12 +35,6 @@ class GameEngine
 
   def forfeit(user_id)
     winner(other_one(user_id))
-    notify_looser(user_id)
-    @over = true
-  end
-
-  def unanswered
-    notify_all
     @over = true
   end
 
@@ -100,20 +94,6 @@ class GameEngine
   end
 
   def winner(winner_id)
-    notify_winner(winner_id)
     @game.update!(winner_id: winner_id)
-  end
-
-  def notify_winner(user_id)
-    ActionCable.server.broadcast("user_#{user_id}", { action: 'game_won', id: @game.id })
-  end
-
-  def notify_looser(user_id)
-    ActionCable.server.broadcast("user_#{user_id}", { action: 'game_lost', id: @game.id })
-  end
-
-  def notify_all
-    ActionCable.server.broadcast("user_#{@game.player_left.id}", { action: 'game_unanswered', id: @game.id })
-    ActionCable.server.broadcast("user_#{@game.player_right.id}", { action: 'game_unanswered', id: @game.id })
   end
 end

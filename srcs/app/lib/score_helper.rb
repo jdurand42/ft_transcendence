@@ -26,6 +26,7 @@ module ScoreHelper
   end
 
   class GamePointGiver
+    include(WarHelper)
     POINTS = 10
     TOURNAMENT_POINTS = 100
 
@@ -44,11 +45,6 @@ module ScoreHelper
     end
 
     private
-
-    def tournament_war_effort(winner)
-      wars = winner.guild&.wars&.where(tournament_effort: true)
-      wars&.each { |war| war_points(war, TOURNAMENT_POINTS, winner) }
-    end
 
     def ladder_points
       return unless @game.mode['ladder'] == 'ladder'
@@ -69,9 +65,14 @@ module ScoreHelper
       end
     end
 
+    def tournament_war_effort(winner)
+      war = winner.guild&.wars&.where(tournament_effort: true, opened: true)
+      war_points(war.first, TOURNAMENT_POINTS, winner) if war.present?
+    end
+
     def ladder_war_effort
-      wars = @winner.guild&.wars&.where(ladder_effort: true)
-      wars&.each { |war| war_points(war, POINTS, @winner) }
+      war = @winner.guild&.wars&.where(ladder_effort: true, opened: true)
+      war_points(war.first, POINTS, @winner) if war.present?
     end
 
     def war_enemies?

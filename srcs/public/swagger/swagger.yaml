@@ -1409,6 +1409,8 @@ components:
         start_date:
           type: string
           format: date-time
+        time_to_answer:
+          type: integer
     tournament_participant:
       type: object
       properties:
