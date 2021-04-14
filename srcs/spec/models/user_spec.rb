@@ -20,4 +20,12 @@ RSpec.describe User, type: :model do
     create(:user, nickname: 'unique name')
     should validate_uniqueness_of(:nickname)
   end
+
+  it 'validates achievement when two_factor is toggled' do
+    user = FactoryBot.create(:user, two_factor: false)
+    create(:achievement, name: "Much Secure!")
+    user.two_factor = true
+    user.save
+    expect(UserAchievement.count).to eq(1)
+  end
 end

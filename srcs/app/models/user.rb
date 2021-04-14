@@ -4,7 +4,7 @@ class User < ApplicationRecord
   include(AchievementHelper)
   devise :database_authenticatable, :registerable, :validatable, :omniauthable
   include DeviseTokenAuth::Concerns::User
-  after_save :achievements
+  after_update :achievements
 
   belongs_to :ladder, optional: true
 
