@@ -4,6 +4,7 @@ import { GameRecords } from '../../collections/gameRecords'
 import { Tournaments } from '../../collections/tournamentCollection'
 import { Users } from '../../collections/usersCollection'
 import { Ladders } from '../../collections/laddersCollection'
+import { Guilds } from '../../collections/guildsCollection'
 
 export const TournamentView = Backbone.View.extend({
   events: {
@@ -12,13 +13,15 @@ export const TournamentView = Backbone.View.extend({
     'click .create-tournament': 'valideCreationTournament',
     'click .register-button': 'registerButton',
     'click .ranking-nav': 'rankingNav',
-    'click .all-matches-nav': 'allMatchesNav'
+    'click .all-matches-nav': 'allMatchesNav',
+    'click .my-matches-nav': 'myMatchesNav'
   },
   initialize: function () {
     this.userLogged = new User()
     this.tournaments = new Tournaments()
     this.tournament = new Tournament()
     this.games = new GameRecords()
+    this.guilds = new Guilds()
     this.ladders = new Ladders()
     this.registered = new Users()
     this.participantIds = []
@@ -28,12 +31,14 @@ export const TournamentView = Backbone.View.extend({
       const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
       const response2 = this.tournaments.fetch()
       const response3 = this.ladders.fetch()
+      const response4 = this.guilds.fetch()
       await response1 && await response2 && await response3
       this.userId = this.userLogged.get('id')
       if (this.tournaments.length > 0) {
         this.tournament = this.tournaments.at(0)
         await this.games.fetchByTournament(this.tournament.get('id'))
       }
+      await response4
       this.render()
     }
     fetch()
@@ -66,6 +71,7 @@ export const TournamentView = Backbone.View.extend({
       } else { // Tournament is scheduled or finished
         this.context.tournament = true
         this.participantIds = this.tournament.get('participant_ids')
+        this.context.nbRegistered = this.participantIds.length
 
         // for (let i = 1; i < 30; i++) { // TEST
         //   this.participantIds.push(i) // TEST
@@ -85,7 +91,6 @@ export const TournamentView = Backbone.View.extend({
           this.$el.find('#tournament-nav-container').html(Handlebars.templates.tournamentTimer(this.context))
           this.initializeTimer()
 
-          this.context.nbRegistered = this.participantIds.length
           this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentRegistration(this.context))
         } else { // Tournament is pending
           this.initializeRanking()
@@ -153,14 +158,27 @@ export const TournamentView = Backbone.View.extend({
     render()
   },
 
-  initializeRanking: function () {
-    console.log(this.registered)
-
+  listAllUsers: function () {
     for (let i = 0; i < this.registered.length; i++) {
-      this.context.ranked.push(this.registered.at(i))
+      const user = this.registered.at(i)
+      this.context.ranked.push(JSON.parse(JSON.stringify(user)))
+      if (user.get('status') === 'ingame') {
+        this.context.ranked[i].slide_show = './icons/slideshow-ingame.svg'
+      } else {
+        this.context.ranked[i].slide_show = './icons/slideshow.svg'
+      }
+      if (user.get('guild_id') === null) {
+        this.context.ranked[i].guild = 'N/A'
+      } else {
+        this.context.ranked[i].guild = this.guilds.get(user.get('guild_id')).get('name')
+      }
       this.context.ranked[i].victories = 0
       this.context.ranked[i].defeats = 0
+      this.context.ranked[i].follow = this.userLogged.get('friends').some(el => el.friend_id === user.get('id'))
     }
+  },
+
+  fillVictoriesDefeats: function () {
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
       if (game.get('status') === 'played') {
@@ -184,6 +202,42 @@ export const TournamentView = Backbone.View.extend({
         this.context.ranked[index].defeats += 1
       }
     }
+  },
+
+  sortUsers: function () {
+    this.context.ranked = this.context.ranked.sort(function (el1, el2) {
+      if (el1.victories === el2.victories) {
+        return (el1.gapPoints < el2.gapPoints ? 1 : -1)
+      }
+      return (el1.victories < el2.victories ? 1 : -1)
+    })
+    for (let i = 0; i < this.context.ranked.length; i++) {
+      this.context.ranked[i].rank = i + 1
+    }
+  },
+
+  fillGapPoints: function () {
+    for (let i = 0; i < this.context.ranked.length; i++) {
+      this.context.ranked[i].gapPoints = 0 // TO DO
+    }
+  },
+
+  initializeRanking: function () {
+    // List all users
+    this.listAllUsers()
+
+    // Fill victories / defeats
+    this.fillVictoriesDefeats()
+
+    // Fill Gap points
+    this.fillGapPoints()
+
+    // Sort users
+    this.sortUsers()
+  },
+
+  myMatchesNav: function () {
+    this.initializeContent(Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
   },
 
   allMatchesNav: function () {

@@ -243,8 +243,7 @@ export const Router = Backbone.Router.extend({
     // this._removeElement();
     this.view.$el.empty()
     try {
-      // this.socket.updateContext(this.notifView)
-      // this.view.destroy()
+      this.view.destroy()
     } catch (e) {
     }
     this.view.stopListening()
