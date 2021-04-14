@@ -3,15 +3,15 @@
 module Api
   class TournamentsController < ApiController
     before_action :set_tournament, except: %i[index create]
-    before_action :tournament_running?, only: %i[update destroy join]
-    after_action :verify_authorized, except: %i[index create join leave games] # show]
+    before_action :tournament_running?, only: %i[update join]
+    after_action :verify_authorized, except: %i[index create join leave games participants]
 
     def index
       json_response(Tournament.all)
     end
 
-    def games
-      json_response(@trnmt.games)
+    def participants
+      json_response(@trnmt.participants)
     end
 
     def create
@@ -25,6 +25,7 @@ module Api
     def update
       authorize @trnmt
       @trnmt.update!(tournament_params)
+      TournamentAbortJob.set(wait_until: @trnmt.start_date).perform_later(@trnmt)
       json_response(@trnmt, 200)
     end
 
@@ -37,6 +38,14 @@ module Api
     def join
       participant = TournamentParticipant.create!(user: current_user, tournament: @trnmt)
       json_response(participant, 201)
+    end
+
+    def leave
+      target_id = params.fetch(:tid)
+      return render_not_allowed unless current_user.admin? || current_user.id == target_id.to_i
+
+      TournamentParticipant.find_by_user_id(target_id).destroy!
+      head :no_content
     end
 
     private
