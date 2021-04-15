@@ -296,16 +296,15 @@ function printTextBoxes (data) {
 }
 
 function move (e, data) {
-  const canvasLocation = data.canvasLocation
-  const mouseLocation = event.clientY - canvasLocation.y
-  console.log('moving')
+  const mouseLocation = event.clientY - data.canvasLocation.y
+  // console.log('moving')
   // console.log(mouseLocation)
   /* if (data.playerLeft.isUser) {
   	data.playerLeft.y = mouseLocation - PLAYER_SIZE_Y / 2
   } else if (data.playerRight.isUser) {
     data.playerRight.y = mouseLocation - PLAYER_SIZE_Y / 2
   } */
-  data.socket.sendForGame(JSON.stringify({ position: parseInt(mouseLocation), action: 'received' }))
+  data.socket.sendForGame({ position: parseInt(mouseLocation), action: 'received' }, data.gameId)
 }
 
 function updateGameState (data) {
