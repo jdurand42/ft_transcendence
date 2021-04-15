@@ -14,7 +14,7 @@ RSpec.describe "Tournaments", type: :request do
       put api_tournament_url(Tournament.first.id), headers: token, params: { start_date: DateTime.now }
       post api_games_url, headers: token_2, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
     }
-    describe "/index" do
+    describe "#index" do
       it "should return the tournament" do
         get api_tournaments_url, headers: token
         expect(response.status).to eq 200
@@ -22,10 +22,10 @@ RSpec.describe "Tournaments", type: :request do
         expect(json.size).to eq 1
       end
     end
-    describe "/games" do
-      it "should return tournament games" do
-        get games_api_tournament_url(Tournament.first.id), headers: token
-        expect(json[0]['id']).to eq Game.first.id
+    describe "#participants" do
+      it "should return participants" do
+        get participants_api_tournament_url(Tournament.first.id), headers: token
+        expect(json.size).to eq 2
       end
     end
   end
@@ -60,21 +60,14 @@ RSpec.describe "Tournaments", type: :request do
     end
   end
   describe "DELETE /destroy" do
-    it "should not delete running tournament" do
-      post api_tournaments_url, headers: token, params: { start_date: DateTime.now }
-      delete api_tournament_url(Tournament.first.id), headers: token
-      expect(json['errors']).to eq ["The tournament has begun"]
-      expect(response.status).to eq 403
-      expect(Tournament.count).to eq 1
-    end
-    it "should delete upcoming tournament" do
+    it "should delete tournament" do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
       delete api_tournament_url(Tournament.first.id), headers: token
       expect(response.status).to eq 204
       expect(Tournament.count).to eq 0
     end
   end
-  describe "POST /join" do
+  describe "#join" do
     it "user should join tournament" do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
       user = create(:user)
@@ -89,6 +82,33 @@ RSpec.describe "Tournaments", type: :request do
       post participants_api_tournament_url(Tournament.first.id), headers: token_2
       expect(json['errors']).to eq ["The tournament has begun"]
       expect(Tournament.first.participants.count).to eq 0
+    end
+  end
+  describe "#leave" do
+    it "user should leave tournament" do
+      post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
+      user = create(:user)
+      token_2 = user.create_new_auth_token
+      post participants_api_tournament_url(Tournament.first.id), headers: token_2
+      delete "/api/tournaments/#{Tournament.first.id}/participants/#{user.id}", headers: token_2
+      expect(status).to eq 204
+    end
+    it "admin should kick a participant" do
+      post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
+      user = create(:user)
+      token_2 = user.create_new_auth_token
+      post participants_api_tournament_url(Tournament.first.id), headers: token_2
+      delete "/api/tournaments/#{Tournament.first.id}/participants/#{user.id}", headers: token
+      expect(status).to eq 204
+    end
+    it "only admins should kick" do
+      post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
+      users = create_list(:user, 2)
+      token_2 = users[0].create_new_auth_token
+      token_3 = users[1].create_new_auth_token
+      post participants_api_tournament_url(Tournament.first.id), headers: token_2
+      delete "/api/tournaments/#{Tournament.first.id}/participants/#{users[0].id}", headers: token_3
+      expect(status).to eq 403
     end
   end
 end

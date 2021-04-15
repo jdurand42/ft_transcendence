@@ -410,6 +410,17 @@ paths:
         schema:
           type: integer
         description: Tournament ID
+    get:
+      summary: Retrieves the tournament participants
+      tags:
+        - Tournaments
+      responses:
+        '200':
+          description: Tournament participants found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/arrayOfTournamentParticipant"
     post:
       summary: Joins a tournament
       description: Allows current_user to join a tournament
@@ -430,26 +441,6 @@ paths:
       responses:
         '204':
           description: Tournament left
-  "/api/tournaments/{id}/games":
-    get:
-      summary: Retrieves tournament's games
-      tags:
-        - Tournaments
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Tournament ID
-      responses:
-        '200':
-          description: Games found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/arrayOfGames"
-
   "/api/games":
     get:
       summary: Retrieves all games played
@@ -473,6 +464,11 @@ paths:
             type: string
             enum: [ pending, inprogress, played ]
           description: filter by status
+        - in: query
+          name: tournament_id
+          schema:
+            type: integer
+          description: filter by tournament_id
       responses:
         '200':
           description: Games found
@@ -1121,6 +1117,10 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/message'
+    arrayOfTournamentParticipant:
+      type: array
+      items:
+        $ref: '#/components/schemas/tournament_participant'
     achievement:
       type: object
       properties:

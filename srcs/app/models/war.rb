@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class War < ApplicationRecord
+  after_create :achievement
+
   validates_presence_of :from
   validates_presence_of :on
   validates_presence_of :war_start
@@ -24,7 +26,7 @@ class War < ApplicationRecord
     errors.add(:war_start, 'must be before end time') unless valid
   end
 
-  # def guilds
-  #  [from] + [on]
-  # end
+  def achievement
+    mass_achievement_unlocked(from.members.pluck(:user_id), 'Tonight, We Dine In Hell !')
+  end
 end

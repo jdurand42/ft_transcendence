@@ -20,7 +20,6 @@ module Api
       authorize war
       war.last_negotiation = current_user.guild.id
       war.save!
-      achievement_unlocked(current_user.id, 'Tonight, We Dine In Hell !')
       json_response(war, 201)
     end
 

@@ -9,8 +9,8 @@ Rails.application.routes.draw do
     resources :tournaments do
       member do
         post 'participants', to: 'tournaments#join'
-        delete 'participants', to: 'tournaments#leave'
-        get 'games'
+        delete 'participants/:tid', to: 'tournaments#leave'
+        get 'participants'
       end
     end
     resources :guilds do

@@ -18,7 +18,7 @@ RSpec.describe GamePointGiver do
     end
   end
   context 'Ladder' do
-    it "increments Tom's ladder games won/lost" do
+    it "increments Tom's ladder games won/lost",test:true do
       gp.game_points(ladder_game)
       expect(User.find_by_nickname('tom').ladder_games_won).to eq 1
       expect(User.find_by_nickname('alan').ladder_games_lost).to eq 1
@@ -43,7 +43,7 @@ RSpec.describe GamePointGiver do
   context 'Tournament' do
     let!(:tournament) { create(:tournament, winner_id: tom.id) }
     let(:game) { create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'tournament', tournament_id: Tournament.first.id) }
-    it "increment winner score",test:true do
+    it "increment winner score" do
       gp.tournament_points(Tournament.first)
       expect(User.find_by_nickname('tom').score).to eq 100
     end

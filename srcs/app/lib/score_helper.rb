@@ -51,9 +51,8 @@ module ScoreHelper
 
       @winner.increment!(:score, POINTS)
       @looser.decrement!(:score, POINTS) if @looser.score >= POINTS
-      @winner.increment!(:ladder_games_won)
-      @looser.increment!(:ladder_games_lost)
-      achievement_unlocked(@winner.id, 'Is There No One Else ?') if @winner.ladder_games_won == 100
+      @winner.update!(ladder_games_won: @winner.ladder_games_won += 1)
+      @looser.update!(ladder_games_lost: @looser.ladder_games_lost += 1)
       ladder_war_effort
     end
 
