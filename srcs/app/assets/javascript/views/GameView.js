@@ -303,7 +303,7 @@ function move (e, data) {
   } else if (data.playerRight.isUser) {
     data.playerRight.y = mouseLocation - PLAYER_SIZE_Y / 2
   } */
-  data.socket.sendForGame(JSON.stringify({ move: { pos: parseInt(mouseLocation) } }))
+  data.socket.sendForGame(JSON.stringify({ position: parseInt(mouseLocation), action: 'received' }))
 }
 
 function updateGameState (data) {
