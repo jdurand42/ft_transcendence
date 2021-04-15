@@ -11,6 +11,8 @@ class CreateGames < ActiveRecord::Migration[6.0]
       t.references :tournament, foreign_key: { to_table: :tournaments, null: true }
       t.string :status, default: 'pending'
       t.string :mode
+      t.integer :player_left_points, unsigned: true, default: 0
+      t.integer :player_right_points, unsigned: true, default: 0
       t.timestamps
     end
   end
