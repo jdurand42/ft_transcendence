@@ -8,7 +8,7 @@ templates['firstConnexion'] = template({"compiler":[8,">= 4.3.0"],"main":functio
         return undefined
     };
 
-  return "<div class=\"firstConnexion\">\n  <div class=\"nickname\">\n    <label class=\"status\" for=\"nickname\">Choose your nickname</label>\n    <input class=\"input\" type=\"text\" id=\"nickname\" name=\"nickname\" minlength=\"2\" maxlength=\"26\" value="
+  return "<div class=\"firstConnexion\">\n  <div class=\"nickname\">\n    <label class=\"status\" for=\"nickname\">Choose your nickname</label>\n    <input class=\"input\" type=\"text\" id=\"nickname\" name=\"nickname\" minlength=\"2\" maxlength=\"20\" value="
     + alias4(((helper = (helper = lookupProperty(helpers,"nickname") || (depth0 != null ? lookupProperty(depth0,"nickname") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nickname","hash":{},"data":data,"loc":{"start":{"line":4,"column":102},"end":{"line":4,"column":114}}}) : helper)))
     + ">\n    <p class=\"error-message\" id=\"error-message\" style=\"display: none;\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"message") || (depth0 != null ? lookupProperty(depth0,"message") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"message","hash":{},"data":data,"loc":{"start":{"line":5,"column":71},"end":{"line":5,"column":82}}}) : helper)))

@@ -1,2 +1,47 @@
-<div class="my-matches" id="my-matches">
+<div class="my-matches matches-page" id="my-matches">
+    <div class="to-do-container container" id="to-do-container">
+        <div class="to-do title" id="to-do">To do {{nbMyToDo}}/{{maxMyToDo}}</div>
+        <div class="all-opponent">
+        {{#each myToDo}}
+        <div class="match thumbnail thumbnail-my-matches">
+            <div class="opponent1 registered" id="opponent{{opponentId}}">
+                <div class="trophy-container">
+                    <img class="trophy" src="{{opponentTrophy}}">
+                </div>
+                <div class="right-side">
+                    <div class="image-nickname" onclick="window.location='#profile/{{opponentId}}/';">
+                        <div class="image-container">
+                            <img class="image-url" src="{{opponentAvatar}}">
+                        </div>
+                        <div class="nickname">{{opponent}}</div>
+                    </div>
+                    <button class="play play-my-matches" id="play-my-matches{{opponentId}}" for={{opponentId}}>{{play}}</button>
+                </div>
+            </div>
+            {{#if waiting}}
+            <div class="timer" id="timer{{id}}"></div>
+            {{/if}}
+        </div>
+        {{/each}}
+        </div>
+    </div>
+    <div class="done-container container" id="done-container">
+        <div class="done title" id="done">Done {{nbMyDone}}/{{maxMyToDo}}</div>
+        <div class="all-done">
+        {{#each myDone}}
+        <div class="match-done" id="match-done">
+            <div class="opponent1">{{opponent1}}</div>
+            <div class="image-container">
+                <img class="image-url" src="{{avatarOpponent1}}">
+            </div>
+            <div class="score1">{{score1}}</div>
+            <div class="VS">VS</div>
+            <div class="score2" id="score2">{{score2}}</div>
+            <div class="image-container">
+                <img class="image-url" src="{{avatarOpponent2}}">
+            </div>
+            <div class="opponent2">{{opponent2}}</div>
+        </div>
+        {{/each}}
+    </div>
 </div>

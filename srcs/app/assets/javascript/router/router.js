@@ -207,7 +207,7 @@ export const Router = Backbone.Router.extend({
   tournaments_view: function () {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new TournamentView()
+    this.view = new TournamentView({ socket: this.socket, notifView: this.notifView })
   },
 
   test_view: function () {

@@ -4,7 +4,9 @@ export const Tournament = Backbone.Model.extend({
   defaults: {
     id: undefined,
     start_date: undefined,
-    participant_ids: undefined
+    participant_ids: undefined,
+    time_to_answer: undefined,
+    winner_id: undefined
   },
   initialize: function () {
     this.superHeaders = new SuperHeaders()

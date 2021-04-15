@@ -5,6 +5,8 @@ import { Tournaments } from '../../collections/tournamentCollection'
 import { Users } from '../../collections/usersCollection'
 import { Ladders } from '../../collections/laddersCollection'
 import { Guilds } from '../../collections/guildsCollection'
+import { TournamentParticipants } from '../../collections/tournamentParticipantCollection'
+import { GameRecord } from '../../models/gameRecord'
 
 export const TournamentView = Backbone.View.extend({
   events: {
@@ -14,18 +16,25 @@ export const TournamentView = Backbone.View.extend({
     'click .register-button': 'registerButton',
     'click .ranking-nav': 'rankingNav',
     'click .all-matches-nav': 'allMatchesNav',
-    'click .my-matches-nav': 'myMatchesNav'
+    'click .my-matches-nav': 'myMatchesNav',
+    'click .play-my-matches': 'play'
   },
-  initialize: function () {
+  initialize: function (options) {
     this.userLogged = new User()
     this.tournaments = new Tournaments()
     this.tournament = new Tournament()
     this.games = new GameRecords()
+    this.myGamesDone = new GameRecords()
+    this.myGamesPending = new GameRecords()
     this.guilds = new Guilds()
     this.ladders = new Ladders()
     this.registered = new Users()
     this.participantIds = []
     this.userId = undefined
+    this.tournamentParticipants = undefined
+
+    this.socket = options.socket
+    this.socket.updateContext(this, options.notifView)
 
     const fetch = async () => {
       const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
@@ -35,8 +44,22 @@ export const TournamentView = Backbone.View.extend({
       await response1 && await response2 && await response3
       this.userId = this.userLogged.get('id')
       if (this.tournaments.length > 0) {
+        // try {
         this.tournament = this.tournaments.at(0)
-        await this.games.fetchByTournament(this.tournament.get('id'))
+        const response5 = this.games.fetchByTournament(this.tournament.get('id'))
+        console.log('1')
+        const response6 = this.myGamesDone.fetchTournamentMyGames(this.userLogged.get('id'), 'played', this.tournament.get('id'))
+        console.log('2')
+        const response7 = this.myGamesPending.fetchTournamentMyGames(this.userLogged.get('id'), 'pending', this.tournament.get('id'))
+        console.log('3')
+        await response5 && await response6 && await response7
+        console.log('4')
+        console.log(this.games)
+        console.log(this.myGamesDone)
+        console.log(this.myGamesPending)
+        this.tournamentParticipants = new TournamentParticipants({ tournament_id: this.tournament.get('id') })
+        await this.tournamentParticipants.fetch()
+        // } catch (e) {}
       }
       await response4
       this.render()
@@ -51,8 +74,12 @@ export const TournamentView = Backbone.View.extend({
     this.context.ranked = []
     this.context.allToDo = []
     this.context.allDone = []
+    this.context.myToDo = []
+    this.context.myDone = []
     this.context.nbDone = 0
     this.context.nbToDo = 0
+    this.context.nbMyToDo = 0
+    this.context.nbMyDone = 0
     this.matchesToDo = []
 
     this.templateTournamentMain = Handlebars.templates.tournamentMain
@@ -99,6 +126,7 @@ export const TournamentView = Backbone.View.extend({
 
           const nbParticipants = this.tournament.get('participant_ids').length
           this.context.maxToDo = (nbParticipants / 2) * (nbParticipants - 1)
+          this.context.maxMyToDo = (nbParticipants - 1)
 
           this.initializeAllMatches()
 
@@ -156,6 +184,14 @@ export const TournamentView = Backbone.View.extend({
       return this
     }
     render()
+  },
+
+  play: function (e) {
+    e.stopPropagation()
+    const userId = Number(e.currentTarget.getAttribute('for'))
+    const newGame = new GameRecord()
+
+    newGame.inviteTournamentGame(userId)
   },
 
   listAllUsers: function () {
@@ -284,7 +320,37 @@ export const TournamentView = Backbone.View.extend({
           (el.opponent1 === game.get('player_right_id') &&
           el.opponent2 === game.get('player_left_id')))
         })
-        this.matchesToDo.slice(index, 1)
+        if (index !== -1) {
+          this.matchesToDo.slice(index, 1)
+        }
+      } else if (game.get('status') === 'pending') {
+        if (game.get('player_left_id') === this.userLogged.get('id')) {
+          const found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
+          found.play = 'Pending'
+        } else {
+          const found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
+          found.play = 'Accept'
+          found.waiting = true
+
+          // To do create function
+          const countDownDate = new Date(this.tournament.get('time_to_answer') + game.get('created_at')).getTime()
+          this.x = setInterval(function () {
+            const now = new Date().getTime()
+            const distance = countDownDate - now
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24))
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+            const secondes = Math.floor((distance % (1000 * 60)) / 1000)
+
+            if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
+              document.getElementById('timer' + game.get('player_left_id')).innerHTML = days + 'd ' + hours + 'h ' + minutes + 'm ' + secondes + 's'
+            }
+            if (distance < 0) {
+              clearInterval(this.x)
+              window.location.reload()
+            }
+          }, 1000)
+        }
       }
     }
   },
@@ -298,13 +364,29 @@ export const TournamentView = Backbone.View.extend({
       const length = this.context.allToDo.length - 1
       this.context.allToDo[length].opponent1Id = opponent1.get('id')
       this.context.allToDo[length].opponent2Id = opponent2.get('id')
-      this.context.allToDo[length].opponent1 = opponent1.get('nickname')
-      this.context.allToDo[length].opponent2 = opponent2.get('nickname')
+      this.context.allToDo[length].opponent1 = opponent1.get('nickname').substring(0, 11)
+      this.context.allToDo[length].opponent2 = opponent2.get('nickname').substring(0, 11)
       this.context.allToDo[length].opponent1Trophy = this.getTrophy(opponent1)
       this.context.allToDo[length].opponent2Trophy = this.getTrophy(opponent2)
       this.context.allToDo[length].opponent1Avatar = opponent1.get('image_url')
       this.context.allToDo[length].opponent2Avatar = opponent2.get('image_url')
       this.context.nbToDo += 1
+      if (opponent1.get('id') === this.userLogged.get('id') || opponent2.get('id') === this.userLogged.get('id')) {
+        let opponent
+        if (opponent1.get('id') === this.userLogged.get('id')) {
+          opponent = opponent2
+        } else {
+          opponent = opponent1
+        }
+        this.context.myToDo.push({})
+        const length = this.context.myToDo.length - 1
+        this.context.myToDo[length].opponentId = opponent.get('id')
+        this.context.myToDo[length].opponent = opponent.get('nickname')
+        this.context.myToDo[length].opponentTrophy = this.getTrophy(opponent)
+        this.context.myToDo[length].opponentAvatar = opponent.get('image_url')
+        this.context.myToDo[length].play = 'Challenged'
+        this.context.nbMyToDo += 1
+      }
     }
   },
 

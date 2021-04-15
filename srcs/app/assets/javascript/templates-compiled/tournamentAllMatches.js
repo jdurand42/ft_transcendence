@@ -58,7 +58,7 @@ templates['tournamentAllMatches'] = template({"1":function(container,depth0,help
         return undefined
     };
 
-  return "<div class=\"all-matches\" id=\"all-matches\">\n    <div class=\"to-do-container container\" id=\"to-do-container\">\n        <div class=\"to-do title\" id=\"to-do\">To do "
+  return "<div class=\"all-matches  matches-page\" id=\"all-matches\">\n    <div class=\"to-do-container container\" id=\"to-do-container\">\n        <div class=\"to-do title\" id=\"to-do\">To do "
     + alias4(((helper = (helper = lookupProperty(helpers,"nbToDo") || (depth0 != null ? lookupProperty(depth0,"nbToDo") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nbToDo","hash":{},"data":data,"loc":{"start":{"line":3,"column":50},"end":{"line":3,"column":60}}}) : helper)))
     + "/"
     + alias4(((helper = (helper = lookupProperty(helpers,"maxToDo") || (depth0 != null ? lookupProperty(depth0,"maxToDo") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"maxToDo","hash":{},"data":data,"loc":{"start":{"line":3,"column":61},"end":{"line":3,"column":72}}}) : helper)))

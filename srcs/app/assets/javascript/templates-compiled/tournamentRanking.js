@@ -103,8 +103,8 @@ templates['tournamentRanking'] = template({"1":function(container,depth0,helpers
         return undefined
     };
 
-  return "<div class=\"listsBoard rankingList\" id=\"rankingList\">\n    <div class=\"nb-list nbGamers\">"
-    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"nbRegistered") || (depth0 != null ? lookupProperty(depth0,"nbRegistered") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"nbRegistered","hash":{},"data":data,"loc":{"start":{"line":2,"column":34},"end":{"line":2,"column":50}}}) : helper)))
+  return "<div class=\"listsBoard rankingList\" id=\"rankingList\">\n    <div class=\"nb-list nbGamers\" id=\"nbRegistered\">"
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"nbRegistered") || (depth0 != null ? lookupProperty(depth0,"nbRegistered") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"nbRegistered","hash":{},"data":data,"loc":{"start":{"line":2,"column":52},"end":{"line":2,"column":68}}}) : helper)))
     + " players</div>\n    <table class=\"tablesBoard rankingTables\" id=\"rankingTables\">\n        <tr>\n            <th class=\"first-th\"></th>\n            <th></th>\n            <th></th>\n            <th>Nickname</th>\n            <th>Guild</th>\n            <th>Victories</th>\n            <th>Defeats</th>\n            <th>Gap points</th>\n            <th>Status</th>\n            <th></th>\n        </tr>\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"ranked") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":16,"column":8},"end":{"line":54,"column":17}}})) != null ? stack1 : "")
     + "    </table>\n</div>";
