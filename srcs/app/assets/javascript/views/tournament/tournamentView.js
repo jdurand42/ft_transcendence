@@ -44,22 +44,14 @@ export const TournamentView = Backbone.View.extend({
       await response1 && await response2 && await response3
       this.userId = this.userLogged.get('id')
       if (this.tournaments.length > 0) {
-        // try {
         this.tournament = this.tournaments.at(0)
         const response5 = this.games.fetchByTournament(this.tournament.get('id'))
-        console.log('1')
         const response6 = this.myGamesDone.fetchTournamentMyGames(this.userLogged.get('id'), 'played', this.tournament.get('id'))
-        console.log('2')
         const response7 = this.myGamesPending.fetchTournamentMyGames(this.userLogged.get('id'), 'pending', this.tournament.get('id'))
-        console.log('3')
         await response5 && await response6 && await response7
-        console.log('4')
-        console.log(this.games)
-        console.log(this.myGamesDone)
         console.log(this.myGamesPending)
         this.tournamentParticipants = new TournamentParticipants({ tournament_id: this.tournament.get('id') })
         await this.tournamentParticipants.fetch()
-        // } catch (e) {}
       }
       await response4
       this.render()
@@ -100,10 +92,6 @@ export const TournamentView = Backbone.View.extend({
         this.participantIds = this.tournament.get('participant_ids')
         this.context.nbRegistered = this.participantIds.length
 
-        // for (let i = 1; i < 30; i++) { // TEST
-        //   this.participantIds.push(i) // TEST
-        // } // TEST
-
         await this.registerAllParticipants()
 
         // If tournament has not started yet
@@ -137,6 +125,7 @@ export const TournamentView = Backbone.View.extend({
           if (this.context.isRegistered === true) {
             this.context.register = 'Rage quit'
             this.initializeContent(Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
+            this.initializePlayButtons()
           } else {
             this.context.register = undefined
             this.initializeContent(Handlebars.templates.tournamentAllMatches, 'all-matches-nav')
@@ -186,6 +175,18 @@ export const TournamentView = Backbone.View.extend({
     render()
   },
 
+  initializePlayButtons: function () {
+    const playButtons = document.getElementsByClassName('play-my-matches')
+    for (let i = 0; i < playButtons.length; i++) {
+      console.log(this.registered)
+      const user = this.registered.get(Number(playButtons[i].getAttribute('for')))
+      if (user.get('status') !== 'online') {
+        playButtons[i].style.backgroundColor = '#C4C4C4'
+        playButtons[i].style.cursor = 'auto'
+      }
+    }
+  },
+
   play: function (e) {
     e.stopPropagation()
     const userId = Number(e.currentTarget.getAttribute('for'))
@@ -203,7 +204,8 @@ export const TournamentView = Backbone.View.extend({
       } else {
         this.context.ranked[i].slide_show = './icons/slideshow.svg'
       }
-      if (user.get('guild_id') === null) {
+      // eslint-disable-next-line eqeqeq
+      if (user.get('guild_id') == undefined) {
         this.context.ranked[i].guild = 'N/A'
       } else {
         this.context.ranked[i].guild = this.guilds.get(user.get('guild_id')).get('name')
@@ -223,6 +225,7 @@ export const TournamentView = Backbone.View.extend({
           index += 1
           return el.id === game.get('winner_id')
         })
+        console.log(index)
         this.context.ranked[index].victories += 1
         let id
         if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -235,18 +238,21 @@ export const TournamentView = Backbone.View.extend({
           index += 1
           return el.id === game.get(id)
         })
+        console.log(index)
         this.context.ranked[index].defeats += 1
       }
     }
   },
 
   sortUsers: function () {
+    console.log(this.context.ranked)
     this.context.ranked = this.context.ranked.sort(function (el1, el2) {
       if (el1.victories === el2.victories) {
         return (el1.gapPoints < el2.gapPoints ? 1 : -1)
       }
       return (el1.victories < el2.victories ? 1 : -1)
     })
+    console.log(this.context.ranked)
     for (let i = 0; i < this.context.ranked.length; i++) {
       this.context.ranked[i].rank = i + 1
     }
@@ -274,6 +280,7 @@ export const TournamentView = Backbone.View.extend({
 
   myMatchesNav: function () {
     this.initializeContent(Handlebars.templates.tournamentMyMatches, 'my-matches-nav')
+    this.initializePlayButtons()
   },
 
   allMatchesNav: function () {
@@ -381,7 +388,7 @@ export const TournamentView = Backbone.View.extend({
         this.context.myToDo.push({})
         const length = this.context.myToDo.length - 1
         this.context.myToDo[length].opponentId = opponent.get('id')
-        this.context.myToDo[length].opponent = opponent.get('nickname')
+        this.context.myToDo[length].opponent = opponent.get('nickname').substring(0, 15)
         this.context.myToDo[length].opponentTrophy = this.getTrophy(opponent)
         this.context.myToDo[length].opponentAvatar = opponent.get('image_url')
         this.context.myToDo[length].play = 'Challenged'
@@ -518,9 +525,11 @@ export const TournamentView = Backbone.View.extend({
     const newRegistered = new User()
     newRegistered.set({ id: userId })
     await newRegistered.fetch()
+    const name = newRegistered.get('nickname')
     this.context.registered.push(newRegistered.attributes)
-    this.registered.add(newRegistered)
+    this.context.registered[this.context.registered.length - 1].nickname = name.substring(0, 13)
     this.context.registered[this.context.registered.length - 1].trophy = this.getTrophy(newRegistered)
+    this.registered.add(newRegistered)
   },
 
   getTrophy: function (user) {
@@ -562,6 +571,44 @@ export const TournamentView = Backbone.View.extend({
     this.context.nbRegistered = this.participantIds.length
     document.getElementById('registered' + userId).remove()
     document.getElementById('number-registered').innerHTML = this.context.nbRegistered + ' registered players'
+  },
+
+  receiveMessage: function (msg) {
+    if (msg.message.action && msg.message.action === 'user_update_status') {
+      this.registered.set({ status: msg.message.status })
+      let div = document.getElementById('play-my-matches' + msg.message.id)
+      if (div !== null) {
+        if (msg.message.status === 'online') {
+          div.style.backgroundColor = 'var(--primary-color)'
+          div.style.cursor = 'pointer'
+        } else {
+          div.style.backgroundColor = '#C4C4C4'
+          div.style.cursor = 'auto'
+        }
+      }
+      div = document.getElementById('pastille' + msg.message.id)
+      if (div !== null) {
+        div.classList.remove('offline')
+        div.classList.remove('ingame')
+        div.classList.remove('online')
+        div.classList.add(msg.message.status)
+      }
+      div = document.getElementById('status' + msg.message.id)
+      if (msg.message.status === 'online') {
+        div.innerHTML = 'ONLINE'
+      } else if (msg.message.status === 'offline') {
+        div.innerHTML = 'OFFLINE'
+      } else {
+        div.innerHTML = 'IN GAME'
+      }
+
+      div = document.getElementById('slide-show' + msg.message.id)
+      if (msg.message.status === 'ingame') {
+        div.setAttribute('src', './icons/slideshow-ingame.svg')
+      } else {
+        div.setAttribute('src', './icons/slideshow.svg')
+      }
+    }
   },
 
   destroy: function () {
