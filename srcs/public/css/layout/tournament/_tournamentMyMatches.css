@@ -1,0 +1,25 @@
+.my-matches .registered {
+    width: 346px;
+}
+
+.my-matches .play-my-matches {
+    margin-left: 16px;
+    height: 22px;
+    width: 80px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.my-matches .image-nickname {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.my-matches .thumbnail-my-matches .right-side {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}

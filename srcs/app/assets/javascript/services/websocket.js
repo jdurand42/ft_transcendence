@@ -138,6 +138,7 @@ export class MyWebSocket {
   }
 
   close () {
+    console.log('close')
     this.socket.close()
   }
 }

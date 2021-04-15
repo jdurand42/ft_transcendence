@@ -14,8 +14,5 @@ export const HomeView = Backbone.View.extend({
     const templateDataHome = this.templateHome(context)
     this.$el.html(templateDataHome)
     return this
-  },
-  destroy: function () {
-    this.socket.close()
   }
 })

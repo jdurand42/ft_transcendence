@@ -314,7 +314,7 @@ export const ChatView = Backbone.View.extend({
     } else if (message.action !== undefined) {
       if (message.action === 'chat_invitation') {
         this.chatInvitation(message.id, senderId)
-      } else if (message.action === 'status_update') {
+      } else if (message.action === 'user_update_status') {
         this.updateStatus(channelId, message.id, message.status)
       }
     }

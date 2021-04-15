@@ -21,13 +21,13 @@ export const GuildView = Backbone.View.extend({
         await this.users.fetch()
         if (this.id === null || this.id === undefined) {
           console.log(this.userId)
-	        this.id = this.users.get(this.userId).get('guild_id')
+          this.id = this.users.get(this.userId).get('guild_id')
           console.log(this.id)
         }
-	      if (this.id === null || this.id === undefined) {
+        if (this.id === null || this.id === undefined) {
           this.$el.find('#guildContent').html(Handlebars.templates.notMemberOfAGuild({}))
           return
-	      }
+        }
         await this.ladders.fetch() &&
         await this.guilds.fetch()
         if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
@@ -39,7 +39,7 @@ export const GuildView = Backbone.View.extend({
         this.renderPannel()
 
         if (this.users.get(this.userId).get('guild_id') &&
-				this.guilds.get(this.id).get('id') === this.users.get(this.userId).get('guild_id')) {
+            this.guilds.get(this.id).get('id') === this.users.get(this.userId).get('guild_id')) {
           this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
           this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
         }
