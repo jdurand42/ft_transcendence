@@ -118,10 +118,12 @@ export const GameView = Backbone.View.extend({
     const message = msg.message
     if (message.player_left) {
       // console.log('here in playerLeft')
+      // console.log(message.player_left.pos)
       this.data[0].playerLeft.y = message.player_left.pos
       this.data[0].playerLeft.score = message.player_left.score
     }
     if (message.player_right) {
+      // console.log(message.player_right.pos)
       this.data[0].playerRight.y = message.player_right.pos
       this.data[0].playerRight.score = message.player_right.score
     }
@@ -163,7 +165,7 @@ export const GameView = Backbone.View.extend({
 	      // nickname: 'left',
 		 		score: 0,
 	      isUser: false,
-	      x: WIDTH / 10,
+	      x: 10,
 	      y: HEIGHT / 2 - PLAYER_SIZE_Y / 2
 	    },
       playerRight: {
@@ -171,7 +173,7 @@ export const GameView = Backbone.View.extend({
 	      // nickname: 'right',
 		 		score: 0,
 	      isUser: false,
-	      x: WIDTH - WIDTH / 10,
+	      x: WIDTH - 10,
 	      y: HEIGHT / 2 - PLAYER_SIZE_Y / 2
 	    },
       ball: {

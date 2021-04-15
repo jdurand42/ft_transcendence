@@ -255,6 +255,7 @@ export const Router = Backbone.Router.extend({
       // console.log('here')
       // c'est fou que je doive faire ca
       this.view.data[0].end = true
+      this.view.socket.close()
     }
     try {
       // this.socket.updateContext(this.notifView)
