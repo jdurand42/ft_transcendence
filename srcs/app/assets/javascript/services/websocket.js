@@ -86,6 +86,53 @@ export class MyWebSocket {
     }
   }
 
+  updateContextForGame (objet) {
+    this.socket.onmessage = function (event) {
+      const response = event.data
+      // console.log(event)
+      const msg = JSON.parse(response)
+      // console.log(msg)
+      // console.log(msg)
+      if (msg.message) {
+        objet.receiveMessage(msg)
+			 }
+		 }
+  }
+
+  /*
+	func (b *Bot) SendMessage(channelName string, channelID int, content string) {
+    data, err := json.Marshal(Command{
+        Channel: channelName,
+        ID: channelID,
+    })
+    if err != nil {
+        log.Fatal("Unable to marshal:", err)
+    }
+    b.sendCh <- &Message{
+        Command: "message",
+        Identifier: string(data),
+        Data: content,
+    }
+	} */
+
+  sendForGame (data, id) {
+    /* const message = {
+      command: 'message',
+      identifier: { id: id, channel: 'GameChannel' },
+      data: data
+    } */
+    const msg = {
+      command: 'message',
+      identifier: JSON.stringify({
+        id: id,
+        channel: 'GameChannel'
+      }),
+      data: JSON.stringify(data)
+    }
+    // console.log(msg)
+    this.socket.send(JSON.stringify(msg))
+  }
+
   getSocket () {
     return this.socket
   }

@@ -4,6 +4,6 @@ class TournamentAbortJob < ApplicationJob
   queue_as :default
 
   def perform(trnmt)
-    trnmt.destroy!
+    trnmt.destroy! if trnmt && trnmt.participants.count < 3
   end
 end

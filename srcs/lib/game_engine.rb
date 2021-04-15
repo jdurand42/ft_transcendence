@@ -4,8 +4,8 @@ class GameEngine
   attr_accessor :ball, :over, :turns_limit
   attr_reader :left, :right, :game
 
-  SCORE_LIMIT = 21
-  REFRESH_RATE = 100
+  SCORE_LIMIT = 4
+  REFRESH_RATE = 1
 
   def initialize(game, turns_limit)
     @game = game
