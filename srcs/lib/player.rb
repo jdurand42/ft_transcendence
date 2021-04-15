@@ -7,7 +7,7 @@ class Player < BoardObject
   attr_reader :user_id, :position
 
   PADDLE_PADDING = 10
-  PADDLE_SIZE = 10
+  PADDLE_SIZE = 28
 
   def initialize(side, user_id)
     super()

@@ -1,27 +1,16 @@
+const MULT = 1
 const WIDTH = 512
 const HEIGHT = 256
 const MIDDLEX = WIDTH / 2
 const MIDDLEY = HEIGHT / 2
 const PLAYER_SIZE_X = 2
 const PLAYER_SIZE_Y = 28
+const PADDING = 10
 
 export const GameView = Backbone.View.extend({
-  /* events: {
-    // For test archi only
-    'click #gameWindow': function (e) {
-      this.receiveMessage({
-        ball: {
-          x: 150,
-          y: 45,
-          dir: 12
-        },
-        player_left: { pos: 25 },
-        player_right: { pos: 12 }
-      })
-    }
-  }, */
   el: $('#app'),
   initialize: function (options) {
+    this.$el.html(Handlebars.templates.game({ width: WIDTH * MULT, height: HEIGHT * MULT }))
     this.users = this.model.get('users').get('obj')
     this.id = this.model.get('userLoggedId')
     // this.opponentId = options.opponentId
@@ -38,19 +27,24 @@ export const GameView = Backbone.View.extend({
       try {
         await this.users.fetch() &&
 				// await this.guilds.fetch() &&
-				await this.games.fetch()
-        this.loadDocument()
+				await this.games.fetch() // par sur d'avoir besoin de games
+        // this.loadFullDocument()
         this.user = this.users.get(this.id)
-        if (this.gameId === undefined || this.gameId === '' || this.gameId === null) {
+        if (this.gameId === undefined || this.gameId === '' || this.gameId === null ||
+				isNaN(this.gameId) || this.gameId <= 0 || this.gameId > this.games.length) {
           // $(document).ready(this.playLadder())
+          this.$el.find('#gameTitle').html('Playing Ladder or Alfred, for now')
           $(document).ready(this.challengeAlfred())
         } else {
-          this.game = this.games.get(this.gameId)
+          this.game = JSON.parse(JSON.stringify(this.games.get(this.gameId)))
+          // console.log(this.game)
           // gérer game not found
-          this.mode = this.game.get('mode')
+          this.mode = this.game.mode
           if (this.mode === 'duel') {
+            this.$el.find('#gameTitle').html('Playing Duel')
             $(document).ready(this.playDuel())
           } else if (this.mode === 'war') {
+            this.$el.find('#gameTitle').html('Playing War match')
             $(document).ready(this.playWar())
           }
         }
@@ -63,36 +57,37 @@ export const GameView = Backbone.View.extend({
     load()
   },
 
-  loadDocument: function () {
-    if (this.game) {
-      this.$el.html(Handlebars.templates.game({ mode: this.game.get('mode') }))
+  loadFullDocument: function () {
+    /* if (this.game) {
+      this.$el.html(Handlebars.templates.game({ mode: this.game.get('mode'), width: WIDTH * MULT, height: HEIGHT * MULT }))
     } else {
-    	this.$el.html(Handlebars.templates.game({ mode: 'ladder' }))
-    }
+    	this.$el.html(Handlebars.templates.game({ mode: 'ladder', width: WIDTH * MULT, height: HEIGHT * MULT }))
+    } */
   },
 
-  callmatchmaking: function (f) {
-    return $.ajax({
+  requestMatchmaking: async function () {
+    return await $.ajax({
       url: '/api/games/',
-      data: { mode: 'ladder', opponent_id: '5' },
+      data: { mode: 'ladder' },
       method: 'POST',
-      success: f
+      context: this,
+      success: function (response) {
+        console.log(response)
+        this.gameId = response.id
+        this.game = response
+        // navigate to game/{{this.gameId}}
+      }
     })
   },
 
-  setLadderGame: function (response) {
-    console.log('In setLadderGame')
-    console.log(response)
-    this.game = response
-  },
-
-  playLadder: function () {
+  playLadder: function () { // a refaire comme pour alfred
     console.log('bonjour ladder')
     // lancer matchMaking
     const loadMatchMaking = async () => {
       // afficher Waiting
       try {
-      	await this.callmatchmaking(this.setLadderGame)
+      	this.requestMatchmaking()
+        this.initializeGame()
       } catch (e) {
         console.log('error while requesting ladder match')
         console.log(e)
@@ -103,27 +98,20 @@ export const GameView = Backbone.View.extend({
   },
 
   playDuel: function () {
-    console.log('bonjour duel')
+    this.initializeGame()
   },
 
   playWar: function () {
-    console.log('bonjour war')
+    this.initializeGame()
   },
 
   receiveMessage: function (msg) {
-    // ici on update les data de jeu
-    // console.log('receive message')
-    // console.log(msg)
-    // console.log(msg.message)
     const message = msg.message
     if (message.player_left) {
-      // console.log('here in playerLeft')
-      // console.log(message.player_left.pos)
       this.data[0].playerLeft.y = message.player_left.pos
       this.data[0].playerLeft.score = message.player_left.score
     }
     if (message.player_right) {
-      // console.log(message.player_right.pos)
       this.data[0].playerRight.y = message.player_right.pos
       this.data[0].playerRight.score = message.player_right.score
     }
@@ -132,22 +120,23 @@ export const GameView = Backbone.View.extend({
       this.data[0].ball.y = message.ball.y
       this.data[0].ball.dir = message.ball.dir
     }
-    /* if (message.action && message.action === 'game_joined') {
-			console.log('game joined')
-			this.gameId = message.id
-		} */
+
     if (message.action && message.action === 'game_won') {
       // this.data[0].socket.close()
       // afficher écran victoire
       // this.data[0].end = true
       console.log('win')
       this.data[0].end = true
-    } else if (message.action && message.action === 'game_won') {
+      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
+      printEndScreen(data[0], true)
+    } else if (message.action && message.action === 'game_lost') {
       // this.data[0].socket.close()
       // afficher écran défaite
       // this.data[0].end = true
       console.log('loose')
       this.data[0].end = true
+      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
+      printEndScreen(this.data[0], false)
     }
     // this.data[0].ball.x += 10
     // this.data[0].playerRight.y -= 10
@@ -165,7 +154,7 @@ export const GameView = Backbone.View.extend({
 	      // nickname: 'left',
 		 		score: 0,
 	      isUser: false,
-	      x: 10,
+	      x: PADDING,
 	      y: HEIGHT / 2 - PLAYER_SIZE_Y / 2
 	    },
       playerRight: {
@@ -173,7 +162,7 @@ export const GameView = Backbone.View.extend({
 	      // nickname: 'right',
 		 		score: 0,
 	      isUser: false,
-	      x: WIDTH - 10,
+	      x: WIDTH - PADDING,
 	      y: HEIGHT / 2 - PLAYER_SIZE_Y / 2
 	    },
       ball: {
@@ -202,6 +191,8 @@ export const GameView = Backbone.View.extend({
 	  } */
     const chanId = this.gameId
     const data = this.data[0]
+    console.log(this.gameId)
+    console.log('here')
     data.socket.subscribeChannel(chanId, 'GameChannel')
     /* data.socket.send(JSON.stringify({
       command: 'suscribe',
@@ -262,8 +253,8 @@ function printField (data) {
 function printPaddles (data) {
   data.ctx.strokeStyle = 'white'
   data.ctx.fillStyle = 'white'
-  data.ctx.fillRect(data.playerLeft.x, data.playerLeft.y, PLAYER_SIZE_X, PLAYER_SIZE_Y)
-  data.ctx.fillRect(data.playerRight.x, data.playerRight.y, PLAYER_SIZE_X, PLAYER_SIZE_Y)
+  data.ctx.fillRect(data.playerLeft.x, data.playerLeft.y - (PLAYER_SIZE_Y / 2), PLAYER_SIZE_X, PLAYER_SIZE_Y)
+  data.ctx.fillRect(data.playerRight.x, data.playerRight.y - (PLAYER_SIZE_Y / 2), PLAYER_SIZE_X, PLAYER_SIZE_Y)
 }
 
 function printBall (data) {
@@ -295,6 +286,23 @@ function printTextBoxes (data) {
   data.ctx.fillText(boxes_text, WIDTH - (data.ctx.measureText(boxes_text).width), px_height + 5)
 }
 
+function printEndScreen (data) {
+  const px_height = 35
+  let arg
+  if (data.playerRight.score > data.playerLeft.score) {
+    if (data.playerRight.isUser) {
+      arg = 'WON - GG'
+    } else {
+      arg = 'lost - Boo'
+    }
+  }
+  data.ctx.fillStyle = 'yellow'
+  data.ctx.font = px_height + 'px serif'
+  data.ctx.textAlign = 'center'
+  data.ctx.fillText(`you ${arg}`, WIDTH / 2, HEIGHT / 2)
+  console.log('yeah')
+}
+
 function move (e, data) {
   const mouseLocation = event.clientY - data.canvasLocation.y
   // console.log('moving')
@@ -323,10 +331,13 @@ function gameLoop (data) {
   printTextBoxes(data[0])
   printPaddles(data[0])
   printBall(data[0])
+  console.log('prout')
   if (!data[0].end) {
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
   } else {
     data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data[0]) }) // ca marche???
+    printEndScreen(data[0])
+
     // data[0].socket.close()
   }
 }

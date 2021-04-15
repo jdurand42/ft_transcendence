@@ -117,6 +117,23 @@ export const Router = Backbone.Router.extend({
     fetchUser()
   },
 
+  initializeSocket: function () {
+	 this.socket = new MyWebSocket(this)
+	 const fetchChannels = async () => {
+		 const myChannels = new Channels()
+		 await myChannels.fetchByUserId(window.localStorage.getItem('user_id'))
+		 for (let i = 0; i < myChannels.length; i++) {
+			 const currentChannel = myChannels.at(i)
+			 const channelId = currentChannel.get('id')
+			 if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
+				 this.socket.subscribeChannel(channelId, 'ActivityChannel')
+				 this.socket.subscribeChannel(channelId, 'ChatChannel')
+			 }
+		 }
+	 }
+	 fetchChannels()
+  },
+
   accessPage: function (url) {
     // prevent zombie views
     if (this.view !== undefined) {
@@ -255,7 +272,7 @@ export const Router = Backbone.Router.extend({
       // console.log('here')
       // c'est fou que je doive faire ca
       this.view.data[0].end = true
-      this.view.socket.close()
+      // this.view.socket.close()
     }
     try {
       // this.socket.updateContext(this.notifView)

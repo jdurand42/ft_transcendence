@@ -299,9 +299,55 @@ export const ProfileView = Backbone.View.extend({
     leave()
   },
 
+  /*
+	callAlfred: async function () {
+		return await $.ajax({
+			url: '/api/games/',
+			data: { mode: 'duel', opponent_id: '1' },
+			method: 'POST',
+			context: this,
+			success: function (response) {
+				console.log(response)
+				this.game = response
+				this.initializeGame()
+			}
+		})
+	},
+
+	challengeAlfred: function () {
+		// const load = async () => {
+		try {
+				this.callAlfred()
+		} catch (e) {
+		}
+		// }
+		// load()
+	} */
+  requestDuel: async function () {
+    return await $.ajax({
+      url: '/api/games/',
+      data: { mode: 'duel', opponent_id: this.id },
+      method: 'POST',
+      context: this,
+      success: function (response) {
+        console.log(response)
+        // this.gameId = response.id
+        window.location.href = `#game/${response.id}`
+        // navigate to game/{{this.gameId}}
+      }
+    })
+  },
+
   playUser: function () {
     // not implemented yet
     console.log('play with user')
+    try {
+      this.requestDuel()
+    } catch (e) {
+      console.log('error while requesting duel')
+      // gérer dans la notif l'erreur?
+      console.log(e)
+    }
   },
 
   followUser: function (e) {
