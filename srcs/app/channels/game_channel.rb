@@ -19,10 +19,9 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def received(data)
-    return if player? == false || data.key?('message') == false
+    return if player? == false || data.key?('position') == false
 
-    msg = JSON.parse(data['message'])
-    game_set_paddle_pos(@game.id, current_user.id, msg['position']) if msg.key?('position')
+    game_set_paddle_pos(@game.id, current_user.id, data['position'])
   end
 
   def unsubscribed
