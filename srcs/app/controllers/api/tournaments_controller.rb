@@ -25,7 +25,6 @@ module Api
     def update
       authorize @trnmt
       @trnmt.update!(tournament_params)
-      TournamentAbortJob.set(wait_until: @trnmt.start_date).perform_later(@trnmt)
       json_response(@trnmt, 200)
     end
 
@@ -51,7 +50,7 @@ module Api
     private
 
     def tournament_params
-      params.permit(:start_date)
+      params.permit(:start_date, :time_to_answer)
     end
 
     def tournament_running?

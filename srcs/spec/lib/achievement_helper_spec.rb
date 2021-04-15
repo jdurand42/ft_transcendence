@@ -13,6 +13,11 @@ RSpec.describe AchievementHelper do
     it "broadcasts" do
       expect{ achievement_unlocked(winner.id, 'My Name Is Achilles') }.to have_broadcasted_to("user_#{winner.id}").exactly(:once).with(action: 'achievement_unlocked', id: ach.id)
     end
+    it "unlock achievement once max",test:true do
+      expect{ achievement_unlocked(winner.id, 'My Name Is Achilles') }.to have_broadcasted_to("user_#{winner.id}")
+      expect{ achievement_unlocked(winner.id, 'My Name Is Achilles') }.to_not have_broadcasted_to("user_#{winner.id}")
+      expect(UserAchievement.count).to eq 1
+    end
   end
 end
 

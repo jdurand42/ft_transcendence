@@ -1,5 +1,10 @@
 version: '3.0'
 services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
   pg:
     container_name: postgres
     image: postgres:12.1
@@ -16,6 +21,7 @@ services:
       - "3000:3000"
     depends_on:
       - pg
+      - redis
     environment:
       ALFRED_CODE: 13252eceff439797fa6f35e8172d244db71bf4696df286a8b7ffc2ad88dec88c
       PG_PASSWORD: secure
