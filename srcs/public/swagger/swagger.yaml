@@ -1153,6 +1153,10 @@ components:
           enum: [pending, inprogress, played]
         created_at:
           type: string
+        player_left_points:
+          type: integer
+        player_right_points:
+          type: integer
     message:
       type: object
       properties:

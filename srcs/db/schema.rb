@@ -91,6 +91,8 @@ ActiveRecord::Schema.define(version: 2021_05_01_153639) do
     t.bigint "tournament_id"
     t.string "status", default: "pending"
     t.string "mode"
+    t.integer "player_left_points", default: 0
+    t.integer "player_right_points", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["player_left_id"], name: "index_games_on_player_left_id"

@@ -4,7 +4,7 @@ class TournamentTimeToAnswerJob < ApplicationJob
   queue_as :default
 
   def perform(game)
-    GameEngine.new(game, 0).forfeit(game.player_right.id)
-    game.update!(status: 'played')
+    game.update!(winner_id: game.player_left.id)
+    game_over(game)
   end
 end
