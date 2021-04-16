@@ -41,18 +41,21 @@ RSpec.describe "Wars", type: :request do
     end
   end
   describe "#create" do
-    it 'should declare a war' do
+    it 'owner should declare a war' do
       post api_wars_url, headers: access_token, params: attributes
       expect(response.status).to eq 201
       expect(War.count).to eq(1)
     end
-    it 'should not let a member create a war' do
-      user_1 = create(:user)
-      user_1_access = user_1.create_new_auth_token
-      post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
-      post api_wars_url, headers: user_1_access, params: attributes
-      expect(response.status).to eq 403
-      expect(response.message).to eq 'Forbidden'
+    it 'officer should declare a war' do
+      GuildMember.find_by_user_id(auth.id).update!(rank: 'officer')
+      post api_wars_url, headers: access_token, params: attributes
+      expect(response.status).to eq 201
+      expect(War.count).to eq(1)
+    end
+    it 'member should not declare a war',test:true do
+      GuildMember.find_by_user_id(auth.id).update!(rank: 'member')
+      post api_wars_url, headers: access_token, params: attributes
+      expect(status).to eq 403
       expect(War.count).to eq 0
     end
     it 'should not let declare a war against himself' do
@@ -77,11 +80,22 @@ RSpec.describe "Wars", type: :request do
       post api_wars_url, headers: access_token, params: attributes
       post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime("%A"), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
     }
-    it 'should update a war' do
+    it 'on_side should update the war' do
       put api_war_url(War.first.id), headers: access_token_2, params: { war_end: DateTime.new(2022, 03, 10, 11, 11, 0), prize: 200 }
-      expect(response.status).to eq 200
+      expect(status).to eq 200
       expect(War.first.war_end).to eq(DateTime.new(2022, 03, 10, 11, 11,0))
       expect(War.first.prize).to eq(200)
+    end
+    it 'on_side officer should update the war' do
+      GuildMember.find_by_user_id(auth_2.id).update!(rank: 'officer')
+      put api_war_url(War.first.id), headers: access_token_2, params: { war_end: DateTime.new(2022) }
+      expect(status).to eq 200
+      expect(War.first.war_end).to eq(DateTime.new(2022))
+    end
+    it 'on_side member should not update the war' do
+      GuildMember.find_by_user_id(auth_2.id).update!(rank: 'member')
+      put api_war_url(War.first.id), headers: access_token_2, params: { war_end: DateTime.new(2022) }
+      expect(status).to eq 403
     end
     it 'should not let owner update after creation' do
       put api_war_url(War.first.id), headers: access_token, params: { prize: 1200 }
@@ -223,7 +237,7 @@ RSpec.describe "Wars", type: :request do
         expect(War.first.from.score).to eq -100
         expect(War.first.on.score).to eq 100
       end
-      it "unlock an achievement",test:true do
+      it "unlock an achievement" do
         user = create(:user)
         GuildMember.create(user: user, guild: Guild.first)
         War.first.update!(from_score: 2, on_score: 1)

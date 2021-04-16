@@ -11,23 +11,23 @@ class GuildPolicy < ApplicationPolicy
   end
 
   def update?
-    GuildMember.where(user_id: user.id, guild_id: record.id, rank: 'owner').empty? == false || user.admin == true
+    owner_admin?
   end
 
   def create_members?
-    allowed?
+    owner_admin? || officer?
   end
 
   def destroy_members?
-    allowed?
+    owner_admin? || officer? || GuildMember.find_by_user_id_and_guild_id(user.id, record.id).rank == 'member'
   end
 
   def create_officers?
-    allowed?
+    owner_admin? || officer?
   end
 
   def destroy_officers?
-    allowed?
+    owner_admin? || officer?
   end
 
   def accept_invites?
@@ -39,12 +39,16 @@ class GuildPolicy < ApplicationPolicy
   end
 
   def create_invitation?
-    allowed?
+    owner_admin? || officer?
   end
 
   private
 
-  def allowed?
-    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, record.id, %w[owner officer]) || user.admin == true
+  def officer?
+    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, record.id, 'officer')
+  end
+
+  def owner_admin?
+    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, record.id, 'owner') || user.admin == true
   end
 end
