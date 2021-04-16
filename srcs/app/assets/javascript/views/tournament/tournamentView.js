@@ -233,6 +233,9 @@ export const TournamentView = Backbone.View.extend({
           index += 1
           return el.id === game.get('winner_id')
         })
+        index--
+        console.log(index)
+        console.log(this.context.ranked[index])
         this.context.ranked[index].victories += 1
         let id
         if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -245,6 +248,7 @@ export const TournamentView = Backbone.View.extend({
           index += 1
           return el.id === game.get(id)
         })
+        index--
         this.context.ranked[index].defeats += 1
       }
     }
