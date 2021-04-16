@@ -17,10 +17,12 @@ export const ProfileView = Backbone.View.extend({
 
     //    'click #followAnUser': function (e) { this.followAnUser(e) },
     'click #sendInvitation': 'sendInvitation',
-    'click #playUser': 'playUser'
+    'click #playUser': 'playUser',
+    'change input[type=file]': 'loadFile'
   },
 
   initialize: function () {
+    this.headerView = this.model.get('headerView').get('obj')
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
     this.ladders = this.model.get('ladders').get('obj')
@@ -34,6 +36,31 @@ export const ProfileView = Backbone.View.extend({
     this.loadMatchHistory()
   },
   el: $('#app'),
+
+  loadFile: function (event) {
+    this.fileObject = new FormData()
+    const image = document.getElementById('profilePicture')
+    image.src = URL.createObjectURL(event.target.files[0])
+    const changeImage = async () => {
+      try {
+        await fetch(image.src)
+          .then((response) => response.blob())
+          .then((blob) => {
+            this.fileObject.append('avatar',
+              new File([blob], event.target.files[0].name, {
+                type: event.target.files[0].type
+              }))
+          })
+        const response = await this.users.get(this.userId).saveImage(this.fileObject)
+        if (response.errors) { throw response }
+        await this.users.get(this.userId).fetch()
+        this.headerView.render('#profile/' + this.userId, this.users.get(this.userId).get('image_url'))
+      } catch (e) {
+        document.getElementById('profilePicture').src = this.users.get(this.userId).get('image_url')
+      }
+    }
+    changeImage()
+  },
 
   loadMatchHistory: function () {
     const load = async () => {
@@ -176,7 +203,7 @@ export const ProfileView = Backbone.View.extend({
       }
     }
     if (!context.matchs.length) {
-      this.$el.find('#profileContent').html('<div class="notFoundMessage" id="notFoundMatchHistory">no match history records found</div>')
+      this.$el.find('#profileContent').html('<div class="notFoundMessage" id="notFoundMatchHistory">No match history found</div>')
     } else {
       this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
     }

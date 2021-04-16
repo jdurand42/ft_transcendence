@@ -43,9 +43,7 @@
 }
 
 .notFoundMessage {
-	font-family: Roboto;
-	font-style: normal;
-	font-weight: normal;
+	font-family: Roboto-Regular;
 	font-size: 30px;
 	line-height: 19px;
 	text-align: center;
@@ -80,7 +78,7 @@
 }
 
 .contentWrapper #profileSubNavBar {
-	margin-top: 32px;
+	margin-top: 64px;
 }
 
 .content{

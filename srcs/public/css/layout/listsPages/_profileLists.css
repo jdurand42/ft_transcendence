@@ -49,7 +49,7 @@
     left: 0;
     top: 0px;
 
-    margin-top: 32px;
+    margin-top: 16px;
 
     font-family: Roboto-Bold;
     font-size: 18px;
@@ -129,6 +129,7 @@
     border-radius: 50%;
     margin-left: 8px;
 }
+
 
 .profileBlock .listsBoard .tablesBoard .tableBoard
 .follow {

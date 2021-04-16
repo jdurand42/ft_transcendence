@@ -117,23 +117,6 @@ export const Router = Backbone.Router.extend({
     fetchUser()
   },
 
-  initializeSocket: function () {
-	 this.socket = new MyWebSocket(this)
-	 const fetchChannels = async () => {
-		 const myChannels = new Channels()
-		 await myChannels.fetchByUserId(window.localStorage.getItem('user_id'))
-		 for (let i = 0; i < myChannels.length; i++) {
-			 const currentChannel = myChannels.at(i)
-			 const channelId = currentChannel.get('id')
-			 if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
-				 this.socket.subscribeChannel(channelId, 'ActivityChannel')
-				 this.socket.subscribeChannel(channelId, 'ChatChannel')
-			 }
-		 }
-	 }
-	 fetchChannels()
-  },
-
   accessPage: function (url) {
     // prevent zombie views
     if (this.view !== undefined) {
@@ -146,7 +129,6 @@ export const Router = Backbone.Router.extend({
       const fetchUser = async () => {
         this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
-        this.initializeSocket()
         if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
       }
       fetchUser()
@@ -255,6 +237,7 @@ export const Router = Backbone.Router.extend({
 
   loadWrapper: function () {
     return new SuperWrapper({
+      headerView: new Wrapper({ obj: this.headerView }),
       users: new Wrapper({ obj: new Users() }),
       guilds: new Wrapper({ obj: new Guilds() }),
       ladders: new Wrapper({ obj: new Ladders() }),

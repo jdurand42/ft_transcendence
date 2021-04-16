@@ -24,8 +24,8 @@ templates['profilePannel'] = template({"compiler":[8,">= 4.3.0"],"main":function
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"trophy") : depth0), depth0))
     + "\">\n		</div>\n		<div class=\"\" id =\"Pannelnickname\">"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"nickname") : depth0), depth0))
-    + "</div>\n		<div class=\"image-container\">\n			<img id=\"profilePicture\" src="
+    + "</div>\n\n		<label class=\"image-container\">\n		<input type=\"file\"  accept=\"image/*\" name=\"image\" id=\"file\"  style=\"display: none;\">\n		<img id=\"profilePicture\" alt=\"avatar\" src=\""
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"image_url") : depth0), depth0))
-    + "></img>\n		</div>\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n</div>\n";
+    + "\" width=\"200\" style=\"cursor: pointer;\" />\n		</label>\n\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n</div>\n";
 },"useData":true});
 })();
