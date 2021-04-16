@@ -49,9 +49,18 @@ export const TournamentView = Backbone.View.extend({
         const response6 = this.myGamesDone.fetchTournamentMyGames(this.userLogged.get('id'), 'played', this.tournament.get('id'))
         const response7 = this.myGamesPending.fetchTournamentMyGames(this.userLogged.get('id'), 'pending', this.tournament.get('id'))
         await response5 && await response6 && await response7
+        console.log('this.games')
+        console.log(this.games)
+        console.log('this.myGamesDone')
+        console.log(this.myGamesDone)
+        console.log('this.myGamesPending')
         console.log(this.myGamesPending)
         this.tournamentParticipants = new TournamentParticipants({ tournament_id: this.tournament.get('id') })
         await this.tournamentParticipants.fetch()
+        console.log('this.tournamentParticipants')
+        console.log(this.tournamentParticipants)
+        console.log(this.userLogged.get('id'))
+        console.log(this.tournamentParticipants.get(this.userLogged.get('id')))
       }
       await response4
       this.render()
@@ -178,7 +187,6 @@ export const TournamentView = Backbone.View.extend({
   initializePlayButtons: function () {
     const playButtons = document.getElementsByClassName('play-my-matches')
     for (let i = 0; i < playButtons.length; i++) {
-      console.log(this.registered)
       const user = this.registered.get(Number(playButtons[i].getAttribute('for')))
       if (user.get('status') !== 'online') {
         playButtons[i].style.backgroundColor = '#C4C4C4'
@@ -225,7 +233,6 @@ export const TournamentView = Backbone.View.extend({
           index += 1
           return el.id === game.get('winner_id')
         })
-        console.log(index)
         this.context.ranked[index].victories += 1
         let id
         if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -238,21 +245,18 @@ export const TournamentView = Backbone.View.extend({
           index += 1
           return el.id === game.get(id)
         })
-        console.log(index)
         this.context.ranked[index].defeats += 1
       }
     }
   },
 
   sortUsers: function () {
-    console.log(this.context.ranked)
     this.context.ranked = this.context.ranked.sort(function (el1, el2) {
       if (el1.victories === el2.victories) {
         return (el1.gapPoints < el2.gapPoints ? 1 : -1)
       }
       return (el1.victories < el2.victories ? 1 : -1)
     })
-    console.log(this.context.ranked)
     for (let i = 0; i < this.context.ranked.length; i++) {
       this.context.ranked[i].rank = i + 1
     }

@@ -818,7 +818,7 @@ export const ChatView = Backbone.View.extend({
     this.context.myChannels = []
     for (let i = 0; i < channels.length; i++) {
       this.context.myChannels.push(JSON.parse(JSON.stringify(channels[i])))
-      if (channels[i].get('owner_id') && (channels[i].get('admin_ids').find(el => el === this.userLogged.get('id')) === true ||
+      if (channels[i].get('owner_id') && (channels[i].get('admin_ids').find(el => el === this.userLogged.get('id')) ||
       channels[i].get('owner_id') === this.userLogged.get('id'))) {
         this.context.myChannels[i].admin = true
       } else {
