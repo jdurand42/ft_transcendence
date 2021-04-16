@@ -9,6 +9,40 @@
 	font-weight: normal;
 	font-size: 24px;
 	line-height: 34px;
+	margin-right: 10%;
+}
+
+#pannelFirstLine {
+	justify-content: start;
+}
+
+#pannelSecondLine {
+	justify-content: space-evenly;
+}
+
+#pannelWarsWon {
+	margin-left: 29%;
+}
+
+#pannelRank {
+	margin-left: 58%;
+}
+
+#pannelScore {
+	margin-right: 21%;
+	margin-left: 10%;
+	position: absolute;
+	top: 76px;
+	left: 8%;
+}
+
+#pannelTotalWars {
+	margin-right: 5%;
+}
+
+#guildInfos {
+	justify-content: flex-start;
+	align-items: baseline;
 }
 
 .pannelContent #pannelTrophy {
@@ -35,7 +69,7 @@
 
 
 .pannelUl {
-	position: absolute;
+	/* position: absolute; */
 	list-style: none;
 	color: white;
 	text-align: center;
