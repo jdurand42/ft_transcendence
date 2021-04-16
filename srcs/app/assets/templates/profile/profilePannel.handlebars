@@ -1,8 +1,6 @@
 <div class="pannelContent">
-	<div class="pannelLine" id="pannelFirstLine">
-	<div class="pannelEl" id="pannelTrophyContainer">
-			<img id="pannelTrophy" src="{{this.trophy}}">
-	</div>
+
+	<div class="pannelLine" id="pannelFirstLineProfile">
 
 	<div class="pannelEl pannelUl" id="pannelLeagueRank">
 		<div class="pannelUlEl profilePanneEl pannelUlFirstEL" id="leagueRank">
@@ -23,25 +21,29 @@
 	</div>
 	</div>
 
-	<div class="pannelLine" id="pannelSecondLine">
-	<div class="pannelEl pannelUl" id="pannelVictories">
-		<div class="pannelUlEl profilePanneEl pannelUlFirstEl" id="victories">
-			{{this.victories}}</div>
-		<div class="pannelUlEl profilePanneEl pannelUlLegend" id="victoriesLegend">
-			VICTORIES</div>
-	</div>
+	<div class="pannelLine" id="pannelSecondLineProfile">
+		<div class="pannelEl pannelUl" id="pannelVictories">
+			<div class="pannelUlEl profilePanneEl pannelUlFirstEl" id="victories">
+				{{this.victories}}</div>
+			<div class="pannelUlEl profilePanneEl pannelUlLegend" id="victoriesLegend">
+				VICTORIES</div>
+		</div>
 
-	<div class="pannelEl pannelUl" id="pannelTotalGames">
-		<div class="pannelUlEl profilePanneEl pannelUlFirstEL" id="totalGames">
-			{{this.totalGames}}</div>
-		<div class="pannelUlEl profilePanneEl pannelUlLegend" id="totalGamesLegend">
-			TOTAL GAMES</div>
+		<div class="pannelEl pannelUl" id="pannelTotalGames">
+			<div class="pannelUlEl profilePanneEl pannelUlFirstEL" id="totalGames">
+				{{this.totalGames}}</div>
+			<div class="pannelUlEl profilePanneEl pannelUlLegend" id="totalGamesLegend">
+				TOTAL GAMES</div>
+		</div>
 	</div>
-
-	<span class="pannelEL" id ="Pannelnickname">{{this.nickname}}</span>
-</div>
-	<div>
-		<img id="profilePicture" src={{this.image_url}}></img>
+	<div class="image-nickname">
+		<div class="" id="pannelTrophyContainer">
+			<img id="pannelTrophy" src="{{this.trophy}}">
+		</div>
+		<div class="" id ="Pannelnickname">{{this.nickname}}</div>
+		<div class="image-container">
+			<img id="profilePicture" src={{this.image_url}}></img>
+		</div>
 		<div id="profileButtons" class="savageButtons"></div>
 	</div>
 </div>
