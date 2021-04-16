@@ -20,7 +20,6 @@ export const ProfileView = Backbone.View.extend({
     'click #playUser': 'playUser'
   },
 
-  el: $('#app'),
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
@@ -34,6 +33,7 @@ export const ProfileView = Backbone.View.extend({
     this.$el.html(Handlebars.templates.profile({}))
     this.loadMatchHistory()
   },
+  el: $('#app'),
 
   loadMatchHistory: function () {
     const load = async () => {
@@ -46,7 +46,7 @@ export const ProfileView = Backbone.View.extend({
         this.checkLadderId()
         this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
         await this.ladders.fetch() &&
- 				await this.gameRecords.fetch()
+        await this.gameRecords.fetch()
         this.renderPannel()
         // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
         await this.guilds.fetch()
@@ -93,21 +93,21 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadGuild: function () {
-	  const load = async () => {
-	    try {
-	      await this.users.fetch()
+    const load = async () => {
+      try {
+        await this.users.fetch()
         this.checkLadderId()
         await this.guilds.fetch() &&
         await this.ladders.fetch()
-	      // await this.achivements.fetch()
-	      this.renderPannel()
-	      this.profileGuild()
-	    	} catch (e) {
-	      	console.log(e)
-	      	this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-	    	}
-	  	}
-	  	load()
+        // await this.achivements.fetch()
+        this.renderPannel()
+        this.profileGuild()
+      } catch (e) {
+        console.log(e)
+        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+      }
+    }
+    load()
   },
 
   renderPannel: function () {
@@ -139,8 +139,8 @@ export const ProfileView = Backbone.View.extend({
     const friends = this.users.get(this.userId).get('friends')
     for (let i = 0; i < friends.length; i++) {
       if (friends[i].friend_id == this.id) {
- 				document.getElementById('followUser').innerHTML = '<div>followed</div>'
- 				// document.getElementById('followUser').style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
+        document.getElementById('followUser').innerHTML = '<div>Unfollow</div>'
+        // document.getElementById('followUser').style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
         return
       }
     }
@@ -164,7 +164,7 @@ export const ProfileView = Backbone.View.extend({
     for (let i = 1; i <= this.gameRecords.length; i++) {
       const game = {}
       if (context.id == this.gameRecords.get(i).get('player_left_id') ||
-					context.id == this.gameRecords.get(i).get('player_right_id')) {
+          context.id == this.gameRecords.get(i).get('player_right_id')) {
         game.player_left_id = this.gameRecords.get(i).get('player_left_id')
         game.player_right_id = this.gameRecords.get(i).get('player_right_id')
         game.player_left_nickname = this.users.get(game.player_left_id).get('nickname')
@@ -178,7 +178,7 @@ export const ProfileView = Backbone.View.extend({
     if (!context.matchs.length) {
       this.$el.find('#profileContent').html('<div class="notFoundMessage" id="notFoundMatchHistory">no match history records found</div>')
     } else {
-    	this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
+      this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
     }
   },
 
@@ -366,7 +366,10 @@ export const ProfileView = Backbone.View.extend({
             const response = await this.users.get(this.userId).unfollow(this.tid)
             friends.splice(friends.indexOf({ friend_id: parseInt(this.tid) }), 1)
             this.users.get(this.userId).set({ friends: friends })
-            e.target.innerHTML = 'follow'
+            const div = document.getElementById('followUser')
+            div.innerHTML = 'Follow'
+            div.style.backgroundColor = 'var(--primary-color)'
+            div.style.border = '0px'
             // e.target.style = ''
             return
           }
@@ -374,7 +377,10 @@ export const ProfileView = Backbone.View.extend({
         const response = await this.users.get(this.userId).follow(this.tid)
         friends.push({ friend_id: parseInt(this.tid) })
         this.users.get(this.userId).set({ friends: friends })
-        e.target.innerHTML = 'followed'
+        const div = document.getElementById('followUser')
+        div.innerHTML = 'Unfollow'
+        div.style.backgroundColor = '#C4C4C4'
+        div.style.border = '2px solid #606060'
         // e.target.style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
       } catch (e) {
       }

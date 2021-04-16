@@ -40,18 +40,37 @@
 }
 
 .savageButtons {
-	position: relative;
-	left: 350px;
-	top: 200px;
-	min-width: 139.66px;
-	min-height: 31px;
+	display: flex;
+	flex-direction: row;
+	position: absolute;
+	left: 224px;
+	top: 264px;
 	z-index: 1;
 }
 
 .savageButtons button {
-	min-width: 139.66px;
-	min-height: 31px;
+	width: 142px;
+	height: 36px;
+	border-radius: 10px;
+	font-size: 18px;
 }
+
+.savageButtons #playUser {
+	margin-left: 8px;
+    border-radius: 11px;
+    color: black;
+    font-size: 16px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.savageButtons #playUser::after {
+    content: 'Play';
+    margin-left: 6px;
+}
+
 
 .profileBlock {
 	margin-top: 30px;
@@ -112,7 +131,6 @@
 
 #guildOptionsContainer {
 	text-align: center;
-	padding-left: 15%;
 }
 
 #guildOptionsContainer #manageGuildButton button{
@@ -139,12 +157,8 @@
 
 
 #guildNameLabel {
-	font-family: Quantico;
-	font-style: normal;
-	font-weight: normal;
+	font-family: Quantico-Regular;
 	font-size: 36px;
-	line-height: 51px;
-	font-style: bold;
 }
 
 
