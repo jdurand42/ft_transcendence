@@ -111,17 +111,17 @@
 	color: black;
 }
 
-#leaveGuildButton #leaveGuild {
+/* #leaveGuildButton #leaveGuild {
 	width: 185px;
 	height: 46px;
 	border-radius: 10px;
-}
+} */
 
- #manageGuildButton #manageGuild {
-	width: 185px;
-	height: 46px;
-	border-radius: 10px;
-}
+ /* #manageGuildButton #manageGuild { */
+	/* width: 185px; */
+	/* height: 46px; */
+	/* border-radius: 10px; */
+/* } */
 
 .placeholder {
 	text-align: center;
@@ -131,37 +131,43 @@
 
 #guildOptionsContainer {
 	text-align: center;
+	margin-top: 32px;
 }
 
-#guildOptionsContainer #manageGuildButton button{
-	width: 139.66px;
+#guildOptionsContainer button {
+	width: 140px;
 	height: 31px;
 	left: 894px;
-	font-family: Roboto;
-	font-style: normal;
-	font-weight: normal;
+	font-family: Roboto-Regular;
 	font-size: 16px;
 	line-height: 19px;
+	border-radius: 10px;
 }
 
-#guildOptionsContainer #leaveGuildButton button{
-	width: 139.66px;
-	height: 31px;
-	left: 894px;
-	font-family: Roboto;
-	font-style: normal;
-	font-weight: normal;
-	font-size: 16px;
-	line-height: 19px;
+#guildOptionsContainer #leaveGuild {
+	background-color: #C4C4C4;
 }
 
+#guildName-container {
+	position: relative;
+	transform: translate(-50%);
+	left: 50%;
+	right: 50%;
+}
 
 #guildNameLabel {
 	font-family: Quantico-Regular;
 	font-size: 36px;
 }
 
-
+#guildOptions {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	width: 90%;
+	margin: auto;
+}
 
 #guildOptions a {
 	color: black;
@@ -169,7 +175,7 @@
 }
 
 #guildOptions a:hover {
-	text-decoration: underline;
+	text-decoration: none;
 	align-content: center;
 }
 

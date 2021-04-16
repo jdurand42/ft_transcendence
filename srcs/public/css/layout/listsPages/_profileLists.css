@@ -46,11 +46,16 @@
 
 .profileBlock .listsBoard .nb-list {
     position: relative;
-    left: 145px;
-    top: 64px;
+    left: 0;
+    top: 0px;
+
+    margin-top: 32px;
 
     font-family: Roboto-Bold;
     font-size: 18px;
+
+    text-align: initial;
+    margin-left: 128px;
 }
 
 .profileBlock .listsBoard .tablesBoard {
@@ -65,6 +70,8 @@
 
     border-collapse:separate;
     border-spacing: 0 1em;
+
+    margin-top: 16px;
 }
 
 .profileBlock .listsBoard .tablesBoard

@@ -277,8 +277,8 @@ export const ProfileView = Backbone.View.extend({
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
     if (this.userId === this.id) {
-    	this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage Guild</button>')
-    	this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave Guild</button>')
+      this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
+      this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
     }
   },
 
