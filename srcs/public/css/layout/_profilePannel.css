@@ -66,7 +66,7 @@
 }
 
 .pannelContent #pannelSecondLineProfile {
-	margin-left: 25%;
+	margin-left: 28%;
 }
 
 .pannelContent #Pannelnickname {
@@ -114,6 +114,7 @@
 }
 
 .pannelContent #pannelVictories {
+	margin-right: 0;
 	/* top: 230px; */
 	/* left: 630px; */
 	/*left: 400 + 157*/
@@ -121,6 +122,8 @@
 }
 
 .pannelContent #pannelTotalGames {
+	right: 32px;
+	position: relative;
 	/* top: 230px;
 	left: 1030px;
 	transform: translateY(-50%); */
