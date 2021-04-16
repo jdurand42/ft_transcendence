@@ -23,7 +23,7 @@
 
 .profileBlock
 .listsBoard {
-    height: calc(100vh - 217px);
+    height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
 }
