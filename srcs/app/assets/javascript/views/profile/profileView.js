@@ -33,7 +33,14 @@ export const ProfileView = Backbone.View.extend({
       this.id = this.userId
     }
     this.$el.html(Handlebars.templates.profile({}))
-    this.loadMatchHistory()
+    const fetchUsers = async () => {
+      const response1 = this.users.fetch()
+      const response2 = this.ladders.fetch()
+      await response1 && await response2
+      this.renderPannel()
+      this.loadMatchHistory()
+    }
+    fetchUsers()
   },
   el: $('#app'),
 
@@ -74,7 +81,7 @@ export const ProfileView = Backbone.View.extend({
         this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
         await this.ladders.fetch() &&
         await this.gameRecords.fetch()
-        this.renderPannel()
+        // this.renderPannel()
         // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
         await this.guilds.fetch()
         this.matchHistory()
@@ -91,7 +98,7 @@ export const ProfileView = Backbone.View.extend({
       try {
         await this.users.fetch()
         this.checkLadderId()
-        this.renderPannel()
+        // this.renderPannel()
         await this.guilds.fetch() &&
         await this.ladders.fetch()
         this.friends()
@@ -109,7 +116,7 @@ export const ProfileView = Backbone.View.extend({
         await this.users.fetch()
         this.checkLadderId()
         await this.achievements.fetch()
-        this.renderPannel()
+        // this.renderPannel()
         this.achievementsView()
       } catch (e) {
         console.log(e)
@@ -127,7 +134,7 @@ export const ProfileView = Backbone.View.extend({
         await this.guilds.fetch() &&
         await this.ladders.fetch()
         // await this.achivements.fetch()
-        this.renderPannel()
+        // this.renderPannel()
         this.profileGuild()
       } catch (e) {
         console.log(e)
