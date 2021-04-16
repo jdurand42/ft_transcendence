@@ -87,12 +87,7 @@ export const ChatView = Backbone.View.extend({
         const currentChannel = this.myChannels.at(i)
         const channelId = currentChannel.get('id')
         if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
-          // this.socket.subscribeChannel(channelId, 'ActivityChannel')
           this.socket.subscribeChannel(channelId, 'ChatChannel')
-          const participantIds = currentChannel.get('participant_ids')
-          for (let i = 0; i < participantIds.length; i++) {
-            this.socket.subscribeChannel(participantIds[i], 'ActivityChannel')
-          }
         } else {
           this.myChannels.remove(channelId)
         }
@@ -135,7 +130,6 @@ export const ChatView = Backbone.View.extend({
         const channel = this.myChannels.at(i)
         if (channel.get('id') !== channelId) {
           const messages = await channel.getMessages()
-          this.socket.subscribeChannel(channel.get('id'), 'ActivityChannel')
           this.socket.subscribeChannel(channel.get('id'), 'ChatChannel')
           for (let i = 0; i < messages.length; i++) {
             this.receiveMessage(messages[i], channel.get('id'))
@@ -242,11 +236,6 @@ export const ChatView = Backbone.View.extend({
       const messages = await this.myChannels.get(channelId).getMessages()
       for (let i = 0; i < messages.length; i++) {
         this.receiveMessage(channelId, messages[i])
-      }
-
-      const partcipantIds = this.myChannels.get(channelId).get('participant_ids')
-      for (let i = 0; i < partcipantIds.length; i++) {
-        this.socket.subscribeChannel(partcipantIds[i], 'ActivityChannel')
       }
 
       if (senderId !== this.userLoggedId) {
