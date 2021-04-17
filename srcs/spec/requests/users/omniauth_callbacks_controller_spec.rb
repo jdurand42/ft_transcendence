@@ -14,6 +14,12 @@ RSpec.describe "OmniauthCallbacksController", type: :request do
       expect(response.status).to eq 200
     end
 
+    it "should promote owner, admin" do
+      login(ENV['P42NG_OWNER_UID'])
+      expect(response.status).to eq 200
+      expect(User.first.admin?).to eq(true)
+    end
+
     it "should not sign-in a banned user" do
       FactoryBot.create(:user, banned: true, uid: 1000, provider: "marvin", two_factor: false)
       login
@@ -36,22 +42,22 @@ RSpec.describe "OmniauthCallbacksController", type: :request do
     end
   end
 
-  def login
+  def login(uid = "1000")
     Rails.application.env_config["devise.mapping"] = Devise.mappings[:user] # If using Devise
     Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:marvin]
-    valid_marvin_login_setup
+    valid_marvin_login_setup(uid)
     get "/auth/marvin", params: {
       auth_origin_url: "http://www.example.com/"
     }
     follow_all_redirects!
   end
 
-  def valid_marvin_login_setup
+  def valid_marvin_login_setup(uid)
     if Rails.env.test?
       OmniAuth.config.test_mode = true
       OmniAuth.config.mock_auth[:marvin] = OmniAuth::AuthHash.new({
         provider: "marvin",
-        uid: "1000",
+        uid: uid,
         info: {
           nickname: "herve",
           email: "test@example.com",

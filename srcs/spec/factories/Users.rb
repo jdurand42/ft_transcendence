@@ -12,6 +12,8 @@ FactoryBot.define do
     ladder_games_won { Faker::Number.number(digits: 3) }
     ladder_games_lost { Faker::Number.number(digits: 3) }
     status { 'offline' }
+    uid { Faker::Internet.uuid }
+    provider { 'marvin' }
 
     factory :user_with_guild do
       transient do
