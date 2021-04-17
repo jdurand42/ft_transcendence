@@ -20,6 +20,7 @@ export const Tournament = Backbone.Model.extend({
   createTournament: function (startDate) {
     return this.save({
       start_date: startDate
+      // time_to_answer: 500 // TEST
     })
   },
   register: function (userId) {

@@ -2,7 +2,6 @@ export const TournamentParticipant = Backbone.Model.extend({
   defaults: {
     id: undefined,
     user: undefined,
-    tournament_id: undefined,
     win_count: undefined,
     opponents: undefined,
     tournament: undefined

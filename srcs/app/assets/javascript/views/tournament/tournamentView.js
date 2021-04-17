@@ -17,7 +17,8 @@ export const TournamentView = Backbone.View.extend({
     'click .ranking-nav': 'rankingNav',
     'click .all-matches-nav': 'allMatchesNav',
     'click .my-matches-nav': 'myMatchesNav',
-    'click .play-my-matches': 'play'
+    'click .play-my-matches': 'play',
+    'click #follow': 'follow'
   },
   initialize: function (options) {
     this.userLogged = new User()
@@ -32,6 +33,7 @@ export const TournamentView = Backbone.View.extend({
     this.participantIds = []
     this.userId = undefined
     this.tournamentParticipants = undefined
+    this.tta = []
 
     this.socket = options.socket
     this.socket.updateContext(this, options.notifView)
@@ -49,18 +51,8 @@ export const TournamentView = Backbone.View.extend({
         const response6 = this.myGamesDone.fetchTournamentMyGames(this.userLogged.get('id'), 'played', this.tournament.get('id'))
         const response7 = this.myGamesPending.fetchTournamentMyGames(this.userLogged.get('id'), 'pending', this.tournament.get('id'))
         await response5 && await response6 && await response7
-        console.log('this.games')
-        console.log(this.games)
-        console.log('this.myGamesDone')
-        console.log(this.myGamesDone)
-        console.log('this.myGamesPending')
-        console.log(this.myGamesPending)
         this.tournamentParticipants = new TournamentParticipants({ tournament_id: this.tournament.get('id') })
         await this.tournamentParticipants.fetch()
-        console.log('this.tournamentParticipants')
-        console.log(this.tournamentParticipants)
-        console.log(this.userLogged.get('id'))
-        console.log(this.tournamentParticipants.get(this.userLogged.get('id')))
       }
       await response4
       this.render()
@@ -86,6 +78,17 @@ export const TournamentView = Backbone.View.extend({
     this.templateTournamentMain = Handlebars.templates.tournamentMain
     const templateData = this.templateTournamentMain(this.context)
     this.$el.html(templateData)
+
+    Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+      switch (operator) {
+        case '||':
+          return (v1 || v2) ? options.fn(this) : options.inverse(this)
+        case '==':
+          return (v1 === v2) ? options.fin(this) : options.inverse(this)
+        default:
+          return options.inverse(this)
+      }
+    })
 
     const render = async () => {
       this.context.admin = this.userLogged.get('admin')
@@ -159,17 +162,6 @@ export const TournamentView = Backbone.View.extend({
         }
       }
 
-      Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
-        switch (operator) {
-          case '||':
-            return (v1 || v2) ? options.fn(this) : options.inverse(this)
-          case '==':
-            return (v1 === v2) ? options.fin(this) : options.inverse(this)
-          default:
-            return options.inverse(this)
-        }
-      })
-
       this.$el.find('#tournament-header-container').html(Handlebars.templates.tournamentHeader(this.context))
 
       if (this.tournament.status === 'inprogress' &&
@@ -184,11 +176,28 @@ export const TournamentView = Backbone.View.extend({
     render()
   },
 
+  follow: function (e) {
+    const userId = Number(e.currentTarget.getAttribute('for'))
+    let newFriends = this.userLogged.get('friends')
+    if (e.currentTarget.className === 'follow') {
+      e.currentTarget.classList.remove('follow')
+      e.currentTarget.classList.add('unfollow')
+      this.userLogged.follow(userId)
+      newFriends.push({ friend_id: Number(userId) })
+    } else {
+      e.currentTarget.classList.remove('unfollow')
+      e.currentTarget.classList.add('follow')
+      this.userLogged.unfollow(userId)
+      newFriends = newFriends.slice().filter(el => el.friend_id != userId)
+    }
+    this.userLogged.set({ friends: newFriends })
+  },
+
   initializePlayButtons: function () {
     const playButtons = document.getElementsByClassName('play-my-matches')
     for (let i = 0; i < playButtons.length; i++) {
       const user = this.registered.get(Number(playButtons[i].getAttribute('for')))
-      if (user.get('status') !== 'online') {
+      if (user && user.get('status') !== 'online') {
         playButtons[i].style.backgroundColor = '#C4C4C4'
         playButtons[i].style.cursor = 'auto'
       }
@@ -203,25 +212,44 @@ export const TournamentView = Backbone.View.extend({
     newGame.inviteTournamentGame(userId)
   },
 
+  fillContextRanked: function (user) {
+    this.context.ranked.push(JSON.parse(JSON.stringify(user)))
+    const length = this.context.ranked.length - 1
+    if (user.get('status') === 'ingame') {
+      this.context.ranked[length].slide_show = './icons/slideshow-ingame.svg'
+    } else {
+      this.context.ranked[length].slide_show = './icons/slideshow.svg'
+    }
+    // eslint-disable-next-line eqeqeq
+    if (user.get('guild_id') == undefined) {
+      this.context.ranked[length].guild = 'N/A'
+    } else {
+      this.context.ranked[length].guild = this.guilds.get(user.get('guild_id')).get('name')
+    }
+    this.context.ranked[length].victories = 0
+    this.context.ranked[length].defeats = 0
+    this.context.ranked[length].follow = this.userLogged.get('friends').some(el => el.friend_id === user.get('id'))
+  },
+
   listAllUsers: function () {
     for (let i = 0; i < this.registered.length; i++) {
       const user = this.registered.at(i)
-      this.context.ranked.push(JSON.parse(JSON.stringify(user)))
-      if (user.get('status') === 'ingame') {
-        this.context.ranked[i].slide_show = './icons/slideshow-ingame.svg'
-      } else {
-        this.context.ranked[i].slide_show = './icons/slideshow.svg'
-      }
-      // eslint-disable-next-line eqeqeq
-      if (user.get('guild_id') == undefined) {
-        this.context.ranked[i].guild = 'N/A'
-      } else {
-        this.context.ranked[i].guild = this.guilds.get(user.get('guild_id')).get('name')
-      }
-      this.context.ranked[i].victories = 0
-      this.context.ranked[i].defeats = 0
-      this.context.ranked[i].follow = this.userLogged.get('friends').some(el => el.friend_id === user.get('id'))
+      this.fillContextRanked(user)
     }
+    const register = async () => {
+      for (let i = 0; i < this.games.length; i++) {
+        const game = this.games.at(i)
+        if (this.registered.find(el => el.get('id') === game.get('player_left_id')) == null) {
+          await this.registerUser(game.get('player_left_id'))
+          this.fillContextRanked(this.registered.at(this.registered.length - 1))
+        }
+        if (this.registered.find(el => el.get('id') === game.get('player_right_id')) == null) {
+          await this.registerUser(game.get('player_right_id'))
+          this.fillContextRanked(this.registered.at(this.registered.length - 1))
+        }
+      }
+    }
+    register()
   },
 
   fillVictoriesDefeats: function () {
@@ -234,8 +262,6 @@ export const TournamentView = Backbone.View.extend({
           return el.id === game.get('winner_id')
         })
         index--
-        console.log(index)
-        console.log(this.context.ranked[index])
         this.context.ranked[index].victories += 1
         let id
         if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -300,10 +326,16 @@ export const TournamentView = Backbone.View.extend({
   },
 
   initializeAllMatches: function () {
-    for (let i = 0; i < this.participantIds.length - 1; i++) {
-      for (let j = i; j < this.participantIds.length; j++) {
-        if (this.participantIds[i] !== this.participantIds[j]) {
-          this.matchesToDo.push({ opponent1: this.participantIds[i], opponent2: this.participantIds[j] })
+    for (let i = 0; i < this.tournamentParticipants.length; i++) {
+      const user = this.tournamentParticipants.at(i)
+      const opponents = user.get('opponents')
+      for (let i = 0; i < this.participantIds.length; i++) {
+        if (opponents.find(el => el === this.participantIds[i]) == null) {
+          if (this.matchesToDo.find(el => {
+            return (el.opponent1 === user.get('user').id && el.opponent2 === this.participantIds[i])
+          }) == null && this.participantIds[i] !== user.get('user').id) {
+            this.matchesToDo.push({ opponent1: this.participantIds[i], opponent2: user.get('user').id })
+          }
         }
       }
     }
@@ -312,60 +344,92 @@ export const TournamentView = Backbone.View.extend({
     this.initializeAllMatchesToDo()
   },
 
+  pushDone: function (context, game) {
+    context.push({})
+    const length = context.length - 1
+    const opponentId1 = game.get('winner_id')
+    const getOpponentId2 = function () {
+      if (game.get('player_left_id') !== game.get('winner_id')) {
+        return game.get('player_left_id')
+      } else {
+        return game.get('player_right_id')
+      }
+    }
+    const getScore1 = function () {
+      if (game.get('player_left_id') === game.get('winner_id')) {
+        return game.get('player_left_points')
+      }
+      return game.get('player_right_points')
+    }
+    const getScore2 = function () {
+      if (game.get('player_right_id') === game.get('winner_id')) {
+        return game.get('player_right_points')
+      }
+      return game.get('player_left_points')
+    }
+    const opponentId2 = getOpponentId2()
+    const opponent1 = this.registered.get(opponentId1)
+    const opponent2 = this.registered.get(opponentId2)
+    context[length].opponent1 = opponent1.get('nickname')
+    context[length].avatarOpponent1 = opponent1.get('image_url')
+    context[length].opponent2 = opponent2.get('nickname')
+    context[length].avatarOpponent2 = opponent2.get('image_url')
+    context[length].score1 = getScore1()
+    context[length].score2 = getScore2()
+    if (context[length].score1 === 0 && context[length].score2 === 0) {
+      context[length].forfeit = true
+    }
+  },
+
   initializeAllMatchesDone: function () {
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
       if (game.get('status') === 'played') {
-        this.context.allDone.push({})
-        const length = this.context.allDone.length - 1
-        const opponent1 = this.registered.get(game.get('player_left_id'))
-        const opponent2 = this.registered.get(game.get('player_right_id'))
-        this.context.allDone[length].opponent1 = opponent1.get('nickname')
-        this.context.allDone[length].avatarOpponent1 = opponent1.get('image_url')
-        this.context.allDone[length].opponent2 = opponent2.get('nickname')
-        this.context.allDone[length].avatarOpponent2 = opponent2.get('image_url')
-        this.context.allDone[length].score1 = 11
-        this.context.allDone[length].score2 = 11
+        console.log(game)
+        this.pushDone(this.context.allDone, game)
+        if (game.get('player_left_id') === this.userLogged.get('id') ||
+            game.get('player_right_id') === this.userLogged.get('id')) {
+          this.pushDone(this.context.myDone, game)
+          this.context.nbMyDone += 1
+        }
         this.context.nbDone += 1
-        let index
-        const found = this.matchesToDo.some(function (el, i) {
-          index = i
-          return ((el.opponent1 === game.get('player_left_id') &&
+        this.matchesToDo = this.matchesToDo.filter(el => {
+          return (!((el.opponent1 === game.get('player_left_id') &&
           el.opponent2 === game.get('player_right_id')) ||
           (el.opponent1 === game.get('player_right_id') &&
-          el.opponent2 === game.get('player_left_id')))
+          el.opponent2 === game.get('player_left_id'))))
         })
-        if (index !== -1) {
-          this.matchesToDo.slice(index, 1)
-        }
       } else if (game.get('status') === 'pending') {
+        let found
         if (game.get('player_left_id') === this.userLogged.get('id')) {
-          const found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
+          found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
           found.play = 'Pending'
+          found.pending = true
         } else {
-          const found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
+          found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
           found.play = 'Accept'
           found.waiting = true
-
-          // To do create function
-          const countDownDate = new Date(this.tournament.get('time_to_answer') + game.get('created_at')).getTime()
-          this.x = setInterval(function () {
-            const now = new Date().getTime()
-            const distance = countDownDate - now
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24))
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-            const secondes = Math.floor((distance % (1000 * 60)) / 1000)
-
-            if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
-              document.getElementById('timer' + game.get('player_left_id')).innerHTML = days + 'd ' + hours + 'h ' + minutes + 'm ' + secondes + 's'
-            }
-            if (distance < 0) {
-              clearInterval(this.x)
-              window.location.reload()
-            }
-          }, 1000)
         }
+
+        const date = new Date(game.get('created_at'))
+        date.setSeconds(date.getSeconds() + 60)
+        // date.setSeconds(date.getSeconds() + this.tournament.get('time_to_answer'))
+        const countDownDate = new Date(date).getTime()
+        this.tta.push(setInterval(function () {
+          const now = new Date().getTime()
+          const distance = countDownDate - now
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24))
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+          const secondes = Math.floor((distance % (1000 * 60)) / 1000)
+
+          if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
+            document.getElementById('timer' + found.opponentId).innerHTML = minutes + 'm ' + secondes + 's'
+          }
+          if (distance < 0) {
+            clearInterval(this)
+          }
+        }, 1000))
       }
     }
   },
@@ -531,6 +595,7 @@ export const TournamentView = Backbone.View.extend({
 
   registerUser: async function (userId) {
     const newRegistered = new User()
+    console.log(userId)
     newRegistered.set({ id: userId })
     await newRegistered.fetch()
     const name = newRegistered.get('nickname')
@@ -621,5 +686,9 @@ export const TournamentView = Backbone.View.extend({
 
   destroy: function () {
     clearInterval(this.x)
+
+    for (let i = 0; i < this.tta.length; i++) {
+      clearInterval(this.tta[i])
+    }
   }
 })

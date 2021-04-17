@@ -27,6 +27,7 @@
 @import url(layout/tournament/_tournamentAllMatches.css);
 @import url(layout/tournament/_tournamentRanking.css);
 @import url(layout/tournament/_tournamentMyMatches.css);
+@import url(layout/tournament/_tournamentMatchesDone.css);
 @import url(layout/admin/_admin.css);
 
 @import url(module/_table.css);

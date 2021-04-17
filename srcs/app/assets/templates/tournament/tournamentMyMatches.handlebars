@@ -15,12 +15,26 @@
                         </div>
                         <div class="nickname">{{opponent}}</div>
                     </div>
-                    <button class="play play-my-matches" id="play-my-matches{{opponentId}}" for={{opponentId}}>{{play}}</button>
+                    <div class="button-timer">
+                        {{#unless waiting}}
+                        <button class="play play-my-matches" id="play-my-matches{{opponentId}}" for="{{opponentId}}">{{play}}</button>
+                        {{/unless}}
+                        {{#if waiting}}
+                        <div class="buttons">
+                            <div class="accept-container check-container">
+                                <img class="accept-button check-button" src="./icons/check.svg">
+                            </div>
+                            <div class="accept-container close-container">
+                                <img class="accept-button close-button" src="./icons/close.svg">
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#ifCond waiting '||' pending}}
+                        <div class="timer" id="timer{{opponentId}}"></div>
+                        {{/ifCond}}
+                    </div>
                 </div>
             </div>
-            {{#if waiting}}
-            <div class="timer" id="timer{{id}}"></div>
-            {{/if}}
         </div>
         {{/each}}
         </div>
@@ -29,18 +43,28 @@
         <div class="done title" id="done">Done {{nbMyDone}}/{{maxMyToDo}}</div>
         <div class="all-done">
         {{#each myDone}}
-        <div class="match-done" id="match-done">
-            <div class="opponent1">{{opponent1}}</div>
-            <div class="image-container">
-                <img class="image-url" src="{{avatarOpponent1}}">
+        <div class="match-done-container">
+            <div class="match-done">
+                <div class="image-nickname" onclick="window.location='#profile/{{opponentId1}}/';">
+                    <div class="opponent1">{{opponent1}}</div>
+                    <div class="image-container">
+                        <img class="image-url" src="{{avatarOpponent1}}">
+                    </div>
+                </div>
+                <div class="score score1">{{score1}}</div>
+                <div class="VS">VS</div>
+                <div class="score score2">{{score2}}</div>
+                <div class="image-nickname" onclick="window.location='#profile/{{opponentId2}}/';">
+                    <div class="image-container">
+                        <img class="image-url" src="{{avatarOpponent2}}">
+                    </div>
+                    <div class="opponent2">{{opponent2}}</div>
+                </div>
             </div>
-            <div class="score1">{{score1}}</div>
-            <div class="VS">VS</div>
-            <div class="score2" id="score2">{{score2}}</div>
-            <div class="image-container">
-                <img class="image-url" src="{{avatarOpponent2}}">
-            </div>
-            <div class="opponent2">{{opponent2}}</div>
+            {{#if forfeit}}
+            <div class="forfeit">Victory by forfeit</div>
+            {{/if}}
+        </div>
         </div>
         {{/each}}
     </div>

@@ -1,0 +1,75 @@
+.matches-page .done-container 
+.match-done-container {
+    width: 525px;
+    height: 60px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--table-color);
+    color: var(--secondary-color);
+
+    font-family: Roboto-Regular;
+    font-size: 16px;
+
+    border-radius: 10px;
+}
+
+.matches-page .done-container .match-done {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.matches-page .done-container .match-done
+.image-container {
+    width: 42px;
+    height: 42px;
+}
+
+.matches-page .done-container .match-done
+.image-url {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.matches-page .done-container .match-done
+.score {
+    font-size: 36px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.matches-page .done-container .match-done
+.score1 {
+    color: var(--primary-color);
+    font-family: Roboto-Black;
+}
+
+.matches-page .done-container .match-done
+.opponent1 {
+    margin-right: 8px;
+}
+
+.matches-page .done-container .match-done
+.opponent2 {
+    margin-left: 8px;
+}
+
+.matches-page .done-container .match-done
+.image-nickname {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+.matches-page .done-container .match-done-container
+.forfeit {
+    font-size: 12px;
+}
+
