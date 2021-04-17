@@ -3,10 +3,6 @@
 class UserPolicy < ApplicationPolicy
   attr_reader :user
 
-  def initialize(user, record)
-    super
-  end
-
   def update?
     allowed?
   end
