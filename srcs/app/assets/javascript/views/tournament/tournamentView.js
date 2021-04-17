@@ -234,7 +234,9 @@ export const TournamentView = Backbone.View.extend({
   listAllUsers: function () {
     for (let i = 0; i < this.registered.length; i++) {
       const user = this.registered.at(i)
-      this.fillContextRanked(user)
+      if (user.get('nickname') !== undefined) { // plaster
+        this.fillContextRanked(user)
+      }
     }
     const register = async () => {
       for (let i = 0; i < this.games.length; i++) {
@@ -385,7 +387,6 @@ export const TournamentView = Backbone.View.extend({
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
       if (game.get('status') === 'played') {
-        console.log(game)
         this.pushDone(this.context.allDone, game)
         if (game.get('player_left_id') === this.userLogged.get('id') ||
             game.get('player_right_id') === this.userLogged.get('id')) {
@@ -406,7 +407,6 @@ export const TournamentView = Backbone.View.extend({
           found.play = 'Pending'
           found.pending = true
         } else {
-          console.log(this.context.myToDo)
           found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
           found.play = 'Accept'
           found.waiting = true
@@ -464,7 +464,7 @@ export const TournamentView = Backbone.View.extend({
         this.context.myToDo[length].opponent = opponent.get('nickname').substring(0, 15)
         this.context.myToDo[length].opponentTrophy = this.getTrophy(opponent)
         this.context.myToDo[length].opponentAvatar = opponent.get('image_url')
-        this.context.myToDo[length].play = 'Challenged'
+        this.context.myToDo[length].play = 'Challenge'
         this.context.nbMyToDo += 1
       }
     }
@@ -596,7 +596,6 @@ export const TournamentView = Backbone.View.extend({
 
   registerUser: async function (userId) {
     const newRegistered = new User()
-    console.log(userId)
     newRegistered.set({ id: userId })
     await newRegistered.fetch()
     const name = newRegistered.get('nickname')
