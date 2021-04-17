@@ -340,8 +340,8 @@ export const TournamentView = Backbone.View.extend({
       }
     }
 
-    this.initializeAllMatchesDone()
     this.initializeAllMatchesToDo()
+    this.initializeAllMatchesDone()
   },
 
   pushDone: function (context, game) {
@@ -406,6 +406,7 @@ export const TournamentView = Backbone.View.extend({
           found.play = 'Pending'
           found.pending = true
         } else {
+          console.log(this.context.myToDo)
           found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
           found.play = 'Accept'
           found.waiting = true
