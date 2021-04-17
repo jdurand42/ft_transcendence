@@ -23,7 +23,7 @@ module Api
     def update
       authorize @user
 
-      return render_not_allowed if banning? && @user.id == current_user.id
+      return render_not_allowed if banning? && (@user.id == current_user.id || @user.uid.to_s == ENV['P42NG_OWNER_UID'])
 
       ban_hammer if banning?
 

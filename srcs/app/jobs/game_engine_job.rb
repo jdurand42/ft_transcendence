@@ -12,6 +12,7 @@ class GameEngineJob < ApplicationJob
     pong = GameEngine.new(game, turns_limit)
     pong.start
     turn(pong) until pong.over
+    game.update!(player_left_points: pong.left.score, player_right_points: pong.right.score)
     game_over(game)
     manage_tournament(game)
   end

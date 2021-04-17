@@ -4,6 +4,7 @@ describe GuildPolicy do
   include(CacheHelper)
   include_context 'with cache'
   let(:user) { create(:user) }
+  let(:admin) { create(:user, admin: true) }
   let!(:guild) { create(:guild, name: "test", anagram: "t3st") }
   let(:owner) { create(:user_with_guild, guild: guild, rank: 'owner') }
   let(:member) { create(:user_with_guild, guild: guild, rank: 'member') }
@@ -43,9 +44,26 @@ describe GuildPolicy do
       expect(subject).not_to permit(user, guild)
     end
   end
+  permissions :destroy_members? do
+    it "allows destroy if admin" do
+      expect(subject).to permit(admin, guild)
+    end
+    it "allows destroy if owner" do
+      expect(subject).to permit(owner, guild)
+    end
+    it "allows destroy if officer" do
+      expect(subject).to permit(officer, guild)
+    end
+    it "allows destroy if member" do
+      expect(subject).to permit(member, guild)
+    end
+  end
 
-  [:create_members?, :destroy_members?, :create_officers?, :destroy_officers?, :create_invitation?].each do |e|
+  [:create_members?, :create_officers?, :destroy_officers?, :create_invitation?].each do |e|
     permissions e do
+      it "allows #{e} to an admin" do
+        expect(subject).to permit(admin, guild)
+      end
       it "allows #{e} if member is an officer" do
         expect(subject).to permit(officer, guild)
       end

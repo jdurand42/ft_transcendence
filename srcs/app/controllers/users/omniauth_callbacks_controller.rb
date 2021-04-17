@@ -13,6 +13,7 @@ module Users
                                email: auth_hash['info']['email'],
                                nickname: auth_hash['info']['nickname']
                              })
+      user.assign_attributes({ admin: true }) if ENV['P42NG_OWNER_UID'] == auth_hash['uid'].to_s
     end
 
     def attach_avatar(user, auth_hash)
