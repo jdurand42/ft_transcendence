@@ -339,10 +339,6 @@ function checkFrames (data) {
 function gameLoop (data) {
   let animation
   data[0].frameLimiter = !data[0].frameLimiter
-  // data[0].frames += 1
-  // checkFrames(data)
-  // if (data[0].frameLimiter) {
-  // }
   printField(data[0])
   printTextBoxes(data[0])
   printPaddles(data[0])
