@@ -233,8 +233,8 @@ export const GameView = Backbone.View.extend({
 
     const chanId = this.gameId
     const data = this.data[0]
-    data.socket.subscribeChannel(chanId, 'GameChannel')
-    data.socket.updateContextForGame(this)
+    data.socket.subscribeChannel(parseInt(chanId), 'GameChannel')
+    data.socket.updateContext(this, this.model.get('notifView').get('obj'))
     if (this.data[0].playerRight.isUser || this.data[0].playerLeft.isUser) {
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
@@ -343,6 +343,7 @@ function gameLoop (data) {
   printTextBoxes(data[0])
   printPaddles(data[0])
   printBall(data[0])
+  console.log('frame')
   // printPing(data[0])
   if (!data[0].end) {
     // if (data[0].frameLimiter) {
@@ -366,6 +367,7 @@ function preGameLoop (data) {
 
 	*/
   // setInterval(printPing(data[0]), 1000)
+  console.log(data[0].end)
   gameLoop(data)
   console.log(data[0].socket)
 }

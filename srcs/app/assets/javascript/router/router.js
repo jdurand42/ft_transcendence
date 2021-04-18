@@ -244,6 +244,7 @@ export const Router = Backbone.Router.extend({
       gameRecords: new Wrapper({ obj: new GameRecords() }),
       achievements: new Wrapper({ obj: new Achievements() }),
       userLoggedId: window.localStorage.getItem('user_id'),
+      notifView: new Wrapper({ obj: this.notifView }),
       router: this
     })
   },
