@@ -29,6 +29,7 @@ export const LeaderboardView = Backbone.View.extend({
       const response1 = this.guilds.fetch()
       const response2 = this.users.fetch()
       await response1 && await response2
+      console.log(this.users)
       // for (let i = 0; i < this.users.length; i++) {
       // this.socket.subscribeChannel(this.users.at(i).get('id'), 'ActivityChannel')
       // }
