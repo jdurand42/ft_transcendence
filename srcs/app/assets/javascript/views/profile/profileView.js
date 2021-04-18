@@ -238,7 +238,7 @@ export const ProfileView = Backbone.View.extend({
   },
 
   pushDone: function (context, game) {
-    context.push({})
+    context.unshift({})
     const length = context.length - 1
     context[length].nb = length + 1
     const opponentId1 = game.get('winner_id')
@@ -302,6 +302,8 @@ export const ProfileView = Backbone.View.extend({
         this.pushDone(context.myDone, this.myTournamentGames.at(i))
       }
     }
+
+    context.nbMatches = context.myDone.length
 
     this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
   },

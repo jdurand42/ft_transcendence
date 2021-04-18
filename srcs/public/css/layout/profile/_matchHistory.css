@@ -1,5 +1,18 @@
 #matchHistoryBlock {
+    display: flex;
+    flex-direction: column;
+
     font-family: Roboto-Regular;
+}
+
+#matchHistoryBlock
+.nb-matches {
+    text-align: left;
+    margin-left: 10%;
+    margin-bottom: 16px;
+
+    font-family: Roboto-Bold;
+    font-size: 18px;
 }
 
 #matchHistoryBlock
