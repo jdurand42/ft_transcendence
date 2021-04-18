@@ -20,7 +20,12 @@ export const ProfileView = Backbone.View.extend({
     //    'click #followAnUser': function (e) { this.followAnUser(e) },
     'click #sendInvitation': 'sendInvitation',
     'click #playUser': 'playUser',
-    'change input[type=file]': 'loadFile'
+    'change input[type=file]': 'loadFile',
+    'click #matches-filter': 'openFilters',
+    'click #All': 'allMatches',
+    'click #Tournament': 'tournamentMatches',
+    'click #Duel': 'duelMatches',
+    'click #Ladder': 'ladderMatches'
   },
 
   initialize: function () {
@@ -81,6 +86,45 @@ export const ProfileView = Backbone.View.extend({
     changeImage()
   },
 
+  openFilters: function (e) {
+    if (document.getElementById('matches-list').style.display === 'none') {
+      const dropList = document.getElementById('matches-list')
+      function getOffset (el) {
+        let _x = 0
+        let _y = 0
+        while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+          _x += el.offsetLeft - el.scrollLeft
+          _y += el.offsetTop - el.scrollTop
+          el = el.offsetParent
+        }
+        return { top: _y, left: _x }
+      }
+      const off = getOffset(e.currentTarget)
+      dropList.style.top = off.top + 45 - document.getElementById('matches-filter').scrollTop
+      dropList.style.position = 'abosulte'
+      dropList.style.left = off.left
+      dropList.style.display = 'flex'
+    } else {
+      document.getElementById('matches-list').style.display = 'none'
+    }
+  },
+
+  ladderMatches: function () {
+    this.matchHistory('Ladder')
+  },
+
+  tournamentMatches: function () {
+    this.matchHistory('Tournament')
+  },
+
+  allMatches: function () {
+    this.matchHistory('All')
+  },
+
+  duelMatches: function () {
+    this.matchHistory('Duel')
+  },
+
   loadMatchHistory: function () {
     // const load = async () => {
     // try {
@@ -96,7 +140,7 @@ export const ProfileView = Backbone.View.extend({
     // this.renderPannel()
     // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
     // await this.guilds.fetch()
-    this.matchHistory()
+    this.matchHistory('All')
     // } catch (e) {
     // console.log(e)
     // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
@@ -231,65 +275,35 @@ export const ProfileView = Backbone.View.extend({
     }
   },
 
-  matchHistory: function () {
+  matchHistory: function (type) {
     const template = Handlebars.templates.matchHistory
     const context = {}
     context.match = []
     context.myDone = []
-    context.type = 'All'
+    context.type = type
 
-    context.match.push({ type: 'All ' })
+    context.match.push({ type: 'All' })
     context.match.push({ type: 'Ladder' })
     context.match.push({ type: 'Duel' })
     context.match.push({ type: 'Tournament' })
 
-    for (let i = 0; i < this.myLadderGames.length; i++) {
-      console.log('this.myLadderGames[' + i + ']')
-      console.log(this.myLadderGames.at(i))
-      this.pushDone(context.myDone, this.myLadderGames.at(i))
+    if (type === 'All' || type === 'Ladder') {
+      for (let i = 0; i < this.myLadderGames.length; i++) {
+        this.pushDone(context.myDone, this.myLadderGames.at(i))
+      }
     }
-    for (let i = 0; i < this.myDuelGames.length; i++) {
-      console.log('this.myDuelGames[' + i + ']')
-      console.log(this.myDuelGames.at(i))
-      this.pushDone(context.myDone, this.myDuelGames.at(i))
+    if (type === 'All' || type === 'Duel') {
+      for (let i = 0; i < this.myDuelGames.length; i++) {
+        this.pushDone(context.myDone, this.myDuelGames.at(i))
+      }
     }
-    for (let i = 0; i < this.myTournamentGames.length; i++) {
-      console.log('this.myTournamentGames[' + i + ']')
-      console.log(this.myTournamentGames.at(i))
-      this.pushDone(context.myDone, this.myTournamentGames.at(i))
+    if (type === 'All' || type === 'Tournament') {
+      for (let i = 0; i < this.myTournamentGames.length; i++) {
+        this.pushDone(context.myDone, this.myTournamentGames.at(i))
+      }
     }
 
-    console.log(context)
-
-    // context.player = this.users.get(this.id).get('nickname')
-    // if (this.users.get(this.id).get('guild_id') != null) {
-    //   context.guild = this.guilds.get(this.users.get(this.id).get('guild_id')).get('anagram')
-    // } else { context.guild = this.users.get(this.id).get('guild_id') }
-
-    // context.guild_id = this.users.get(this.id).get('guild_id')
-    // context.id = this.id
-
-    // context.matchs = []
-
-    // for (let i = 1; i <= this.gameRecords.length; i++) {
-    //   const game = {}
-    //   if (context.id == this.gameRecords.get(i).get('player_left_id') ||
-    //       context.id == this.gameRecords.get(i).get('player_right_id')) {
-    //     game.player_left_id = this.gameRecords.get(i).get('player_left_id')
-    //     game.player_right_id = this.gameRecords.get(i).get('player_right_id')
-    //     game.player_left_nickname = this.users.get(game.player_left_id).get('nickname')
-    //     game.player_right_nickname = this.users.get(game.player_right_id).get('nickname')
-    //     game.game_type = this.gameRecords.get(i).get('game_type')
-    //     game.created_at = this.gameRecords.get(i).get('created_at')
-    //     if (context.id == this.gameRecords.get(i).get('winner_id')) { game.result = 'win' } else { game.result = 'loose' }
-    //     context.matchs.push(game)
-    //   }
-    // }
-    // if (!context.matchs.length) {
-    //   this.$el.find('#profileContent').html('<div class="notFoundMessage" id="notFoundMatchHistory">No match history found</div>')
-    // } else {
     this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
-    // }
   },
 
   friends: function () {

@@ -7,6 +7,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
 
     width: 167px;
     height: 37px;
@@ -14,6 +15,51 @@
     background-color: #C4C4C4;
 
     border-radius: 10px;
+
+    margin-left: 10%;
+    margin-bottom: 32px;
+
+    cursor: pointer;
+}
+
+#matchHistoryBlock
+.matches-list {
+    position: absolute;
+
+    width: 167px;
+
+    flex-direction: column;
+
+    border-radius: 10px;
+
+    background-color: #C4C4C4;
+    z-index: 1;
+
+    text-align: left;
+}
+
+#matchHistoryBlock
+.matches-list .el {
+    height: 32px;
+    line-height: 32px;
+
+    font-family: Roboto-Regular;
+    padding-left: 8px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+#matchHistoryBlock
+.matches-list .el:hover {
+    background-color: #565656;
+    color: white;
+}
+
+#matchHistoryBlock
+.arrow-down-container {
+    margin-right: 8px;
 }
 
 #matchHistoryBlock
@@ -69,7 +115,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    
+
     position: relative;
     right: 8px;
 }
