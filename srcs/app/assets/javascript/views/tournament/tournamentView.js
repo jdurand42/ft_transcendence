@@ -364,7 +364,7 @@ export const TournamentView = Backbone.View.extend({
       return game.get('player_right_points')
     }
     const getScore2 = function () {
-      if (game.get('player_right_id') === game.get('winner_id')) {
+      if (game.get('player_right_id') !== game.get('winner_id')) {
         return game.get('player_right_points')
       }
       return game.get('player_left_points')

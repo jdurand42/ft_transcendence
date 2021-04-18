@@ -1,5 +1,18 @@
 #matchHistoryBlock {
+    display: flex;
+    flex-direction: column;
+
     font-family: Roboto-Regular;
+}
+
+#matchHistoryBlock
+.nb-matches {
+    text-align: left;
+    margin-left: 10%;
+    margin-bottom: 16px;
+
+    font-family: Roboto-Bold;
+    font-size: 18px;
 }
 
 #matchHistoryBlock
@@ -74,6 +87,7 @@
     /* justify-content: center; */
     align-items: center;
     margin: auto;
+    margin-bottom: 8px;
 
     width: 90%;
     height: 60px;
@@ -137,13 +151,20 @@
 }
 
 #matchHistoryBlock
+.opponent {
+    width: 200px;
+}
+
+#matchHistoryBlock
 .opponent1 {
     margin-right: 8px;
+    text-align: right;
 }
 
 #matchHistoryBlock
 .opponent2 {
     margin-left: 8px;
+    text-align: left;
 }
 
 #matchHistoryBlock
@@ -157,6 +178,7 @@
     font-size: 36px;
     margin-left: 8px;
     margin-right: 8px;
+    width: 52px;
 }
 
 #matchHistoryBlock

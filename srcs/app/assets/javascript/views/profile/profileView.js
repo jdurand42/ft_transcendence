@@ -47,9 +47,9 @@ export const ProfileView = Backbone.View.extend({
     const fetchUsers = async () => {
       const response1 = this.users.fetch()
       const response2 = this.ladders.fetch()
-      const response3 = this.myTournamentGames.fetchMyGames(this.userId, 'tournament')
-      const response4 = this.myLadderGames.fetchMyGames(this.userId, 'ladder')
-      const response5 = this.myDuelGames.fetchMyGames(this.userId, 'duel')
+      const response3 = this.myTournamentGames.fetchMyGames(this.id, 'tournament')
+      const response4 = this.myLadderGames.fetchMyGames(this.id, 'ladder')
+      const response5 = this.myDuelGames.fetchMyGames(this.id, 'duel')
       await response1 && await response2 && await response3 && await response4 && await response5
       console.log(this.myTournamentGames)
       console.log(this.myLadderGames)
@@ -238,9 +238,10 @@ export const ProfileView = Backbone.View.extend({
   },
 
   pushDone: function (context, game) {
-    context.push({})
-    const length = context.length - 1
-    context[length].nb = length + 1
+    context.unshift({})
+    console.log(game)
+    const length = 0
+    context[length].nb = context.length
     const opponentId1 = game.get('winner_id')
     const getOpponentId2 = function () {
       if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -256,7 +257,7 @@ export const ProfileView = Backbone.View.extend({
       return game.get('player_right_points')
     }
     const getScore2 = function () {
-      if (game.get('player_right_id') === game.get('winner_id')) {
+      if (game.get('player_right_id') !== game.get('winner_id')) {
         return game.get('player_right_points')
       }
       return game.get('player_left_points')
@@ -302,6 +303,8 @@ export const ProfileView = Backbone.View.extend({
         this.pushDone(context.myDone, this.myTournamentGames.at(i))
       }
     }
+
+    context.nbMatches = context.myDone.length
 
     this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
   },
