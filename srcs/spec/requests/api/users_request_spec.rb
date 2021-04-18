@@ -134,6 +134,17 @@ RSpec.describe "Users", type: :request do
       end
     end
 
+    context "when one admin is trying to ban owner" do
+      before do
+        owner = FactoryBot.create(:user, nickname: "owner", admin: true, uid: ENV['P42NG_OWNER_UID'])
+
+        auth.update(admin: true)
+        patch "/api/users/#{owner.id}", params: { user: {banned: true}}, headers: auth.create_new_auth_token
+      end
+      it "returns status code 403" do
+        expect(response).to have_http_status(403)
+      end
+    end
 
     context "when admin promotes another user" do
       before do

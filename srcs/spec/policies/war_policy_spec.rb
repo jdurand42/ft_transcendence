@@ -16,7 +16,7 @@ RSpec.describe WarPolicy, type: :policy do
         expect(subject).to permit(owner, war)
       end
       it "denies #{e} to guild officer" do
-        expect(subject).to_not permit(officer, war)
+        expect(subject).to permit(officer, war)
       end
       it "denies #{e} to guild member" do
         expect(subject).to_not permit(member, war)

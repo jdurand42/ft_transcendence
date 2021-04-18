@@ -3,13 +3,13 @@
 }*/
 
 .subNavBar {
-	list-style-type: none;
-	padding-top: 25px;
-	margin: 0px;
-	width: 100%;
+	/* list-style-type: none; */
+	/* padding-top: 25px; */
+	/* margin: 0px; */
+	/* width: 100%; */
 	/*height: 100%;*/
 	/* width = 100vw*/
-	text-align: center;
+	/* text-align: center; */
 }
 
 .subNavBar li {
@@ -19,10 +19,22 @@
 }
 
 .subNavBar .subNavBarEl {
-	border: 15px solid transparent;
-	padding: 15px;
 }
 
 .subNavBar .subNavBarEl:hover {
-	text-decoration: underline;
+    border-bottom: 2px solid black;
+	/* text-decoration: underline; */
+}
+
+.subNavBar  {
+    font-family: Quantico-Regular;
+    font-size: clamp(24px, 3vw, 30px);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    cursor: pointer;
+
+	margin: auto;
 }

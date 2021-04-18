@@ -1,8 +1,7 @@
-
-#profilePicture {
-	position: relative;
+.pannelContent .image-container {
+	/* position: relative;
 	left: 157px;
-	right: 341px;
+	right: 341px; */
 	top: calc(var(--pannel-size) - var(--header-size));
 	/*flex:none;*/
 	width: 173px;
@@ -13,22 +12,73 @@
 	z-index: 1;
 }
 
+.pannelContent .image-nickname {
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+	align-items: center;
+	position: absolute;
+	top: 98px;
+}
+
+#profilePicture {
+	/* position: relative;
+	left: 157px;
+	right: 341px;
+	top: calc(var(--pannel-size) - var(--header-size));
+	flex:none;
+	width: 173px;
+	height: 131px;
+
+	border: 7px solid #0C0C0C;
+	filter: drop-shadow(7px 7px 5px rgba(0, 0, 0, 0.27));
+	z-index: 1; */
+
+	object-fit: cover;
+	width: 100%;
+	height: 100%;
+}
+
+#profilePicture:hover {
+    box-shadow:  0 0 16px  rgba(196, 196, 196, 0.5);
+    background-color: rgba(196, 196, 196, 0.8);
+}
+
 .savageButtons {
-	position: relative;
-	left: 350px;
-	top: 200px;
-	min-width: 139.66px;
-	min-height: 31px;
+	display: flex;
+	flex-direction: row;
+	position: absolute;
+	left: 224px;
+	top: 264px;
 	z-index: 1;
 }
 
 .savageButtons button {
-	min-width: 139.66px;
-	min-height: 31px;
+	width: 142px;
+	height: 36px;
+	border-radius: 10px;
+	font-size: 18px;
 }
 
+.savageButtons #playUser {
+	margin-left: 8px;
+    border-radius: 11px;
+    color: black;
+    font-size: 16px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.savageButtons #playUser::after {
+    content: 'Play';
+    margin-left: 6px;
+}
+
+
 .profileBlock {
-	margin-top: 30px;
+	margin-top: 64px;
 	margin-right: 2%;
 	margin-left: 2%;
 	/*width: auto;
@@ -46,19 +96,27 @@
 	height: 100%;
 }
 
+.profileBlock .button {
+	margin-top: 32px;
+}
+
+.profileBlock .button button {
+	width: 185px;
+	height: 46px;
+	border-radius: 10px;
+	font-size: 16px;
+}
+
 #notFoundMatchHistory {
-	padding-top: 50px;
+	padding-top: 128px;
 	font-size: 25px;
 }
 
 .profileBlock .bigMessage {
-	font-family: Roboto;
-	font-style: normal;
-	font-weight: normal;
+	font-family: Roboto-Regular;
 	font-size: 30px;
 	line-height: 35px;
 	text-transform: uppercase;
-	padding-top: 100px;
 }
 
 .profileBlock button a {
@@ -66,17 +124,17 @@
 	color: black;
 }
 
-#leaveGuildButton #leaveGuild {
+/* #leaveGuildButton #leaveGuild {
 	width: 185px;
 	height: 46px;
 	border-radius: 10px;
-}
+} */
 
- #manageGuildButton #manageGuild {
-	width: 185px;
-	height: 46px;
-	border-radius: 10px;
-}
+ /* #manageGuildButton #manageGuild { */
+	/* width: 185px; */
+	/* height: 46px; */
+	/* border-radius: 10px; */
+/* } */
 
 .placeholder {
 	text-align: center;
@@ -86,42 +144,43 @@
 
 #guildOptionsContainer {
 	text-align: center;
-	padding-left: 15%;
+	margin-top: 32px;
 }
 
-#guildOptionsContainer #manageGuildButton button{
-	width: 139.66px;
+#guildOptionsContainer button {
+	width: 140px;
 	height: 31px;
 	left: 894px;
-	font-family: Roboto;
-	font-style: normal;
-	font-weight: normal;
+	font-family: Roboto-Regular;
 	font-size: 16px;
 	line-height: 19px;
+	border-radius: 10px;
 }
 
-#guildOptionsContainer #leaveGuildButton button{
-	width: 139.66px;
-	height: 31px;
-	left: 894px;
-	font-family: Roboto;
-	font-style: normal;
-	font-weight: normal;
-	font-size: 16px;
-	line-height: 19px;
+#guildOptionsContainer #leaveGuild {
+	background-color: #C4C4C4;
 }
 
+#guildName-container {
+	position: relative;
+	transform: translate(-50%);
+	left: 50%;
+	right: 50%;
+}
 
 #guildNameLabel {
-	font-family: Quantico;
-	font-style: normal;
-	font-weight: normal;
+	font-family: Quantico-Regular;
 	font-size: 36px;
-	line-height: 51px;
-	font-style: bold;
 }
 
-
+#guildOptions {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	width: 90%;
+	margin: auto;
+}
 
 #guildOptions a {
 	color: black;
@@ -129,7 +188,7 @@
 }
 
 #guildOptions a:hover {
-	text-decoration: underline;
+	text-decoration: none;
 	align-content: center;
 }
 

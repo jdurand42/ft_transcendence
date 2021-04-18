@@ -433,6 +433,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tournament_participant"
+  "/api/tournaments/{id}/participants/{tid}":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Tournament ID
+      - name: tid
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Target ID
     delete:
       summary: Leaves a tournament
       description: Allows current_user to leave a tournament
@@ -1153,6 +1167,10 @@ components:
           enum: [pending, inprogress, played]
         created_at:
           type: string
+        player_left_points:
+          type: integer
+        player_right_points:
+          type: integer
     message:
       type: object
       properties:

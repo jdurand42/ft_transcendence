@@ -48,8 +48,9 @@ RSpec.describe 'Games', type: :request do
     context 'search with tournament_id',test:true do
       it "returns all tournament games" do
         create(:tournament)
+        create_list(:game, 2)
         create_list(:game, 2, tournament_id: Tournament.first.id)
-        get '/api/games', headers: auth.create_new_auth_token, params: { tournament_id: 'inprogress' }
+        get '/api/games', headers: auth.create_new_auth_token, params: { tournament_id: Tournament.first.id }
         expect(json.count).to eq 2
       end
     end

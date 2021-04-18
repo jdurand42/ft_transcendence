@@ -11,6 +11,7 @@ describe 'Guild', type: :request do
   let(:attributes_2) { { name: 'Bang', anagram: 'BBANG' } }
   let(:user_1) { create(:user) }
   let(:user_2) { create(:user) }
+  let(:user_1_access) { user_1.create_new_auth_token }
   describe '#get' do
     it 'should return guilds' do
       create_list(:guild, 2)
@@ -87,7 +88,6 @@ describe 'Guild', type: :request do
       expect(response.status).to eq 201
     end
     it 'should let officers add members' do
-      user_1_access = user_1.create_new_auth_token
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       post "/api/guilds/#{Guild.first.id}/officers/#{user_1.id}", headers: access_token
       post "/api/guilds/#{Guild.first.id}/members/#{user_2.id}", headers: user_1_access
@@ -95,7 +95,6 @@ describe 'Guild', type: :request do
       expect(response.status).to eq 201
     end
     it 'should not let members add members' do
-      user_1_access = user_1.create_new_auth_token
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       post "/api/guilds/#{Guild.first.id}/members/#{user_2.id}", headers: user_1_access
       expect(response.status).to eq 403
@@ -110,12 +109,18 @@ describe 'Guild', type: :request do
   end
   describe '#destroy_members' do
     before { post api_guilds_url, headers: access_token, params: attributes }
-    it 'should destroy a member' do
+    it 'owner should kick a member' do
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       expect(Guild.first.members.count).to eq 2
       delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       expect(Guild.first.members.count).to eq 1
       expect(response.status).to eq 204
+    end
+    it "member should leave",test:true do
+      GuildMember.create!(user_id: user_1.id, guild_id: Guild.first.id)
+      expect(Guild.first.members.count).to eq 2
+      delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: user_1_access
+      expect(Guild.first.members.count).to eq 1
     end
     it 'should not destroy a member of another guild' do
       post api_guilds_url, headers: access_token_2, params: attributes_2

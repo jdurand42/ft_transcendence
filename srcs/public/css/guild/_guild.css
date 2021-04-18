@@ -11,7 +11,7 @@
 }
 */
 .guildBlock {
-	margin-top: 30px;
+	margin-top: 32px;
 	margin-right: 2%;
 	margin-left: 2%;
 	/*width: auto;
@@ -26,7 +26,7 @@
 	background-color: white;
 	/*flex: 0 0 auto;*/
 	text-align: center;
-	height: 100%;
+	height: 110%;
 }
 
 .placeholder {
@@ -50,4 +50,9 @@
 #goToCreateGuildButton a {
 	text-decoration: none;
 	color: black;
+}
+
+.guildBlock .table {
+	position: relative;
+	top: 0;
 }

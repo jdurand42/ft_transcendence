@@ -62,7 +62,7 @@ RSpec.describe Ball do
     ball.x = BoardObject::HORIZONTAL_LIMIT - Player::PADDLE_PADDING - 1
     ball.y = 128
     ball.left = false
-    ball.move(1, 117)
+    ball.move(1, 128 - (Player::PADDLE_SIZE + 1))
     expect(ball.left).to eq(false)
     expect(ball.x).to eq(BoardObject::HORIZONTAL_LIMIT - Player::PADDLE_PADDING)
   end
@@ -71,7 +71,7 @@ RSpec.describe Ball do
     ball.x = Player::PADDLE_PADDING + 1
     ball.y = 128
     ball.left = true
-    ball.move(139, 1)
+    ball.move(128 + (Player::PADDLE_SIZE + 1), 1)
     expect(ball.left).to eq(true)
     expect(ball.x).to eq(Player::PADDLE_PADDING)
   end

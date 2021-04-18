@@ -1,0 +1,12 @@
+#nbRegistered {
+    top: 0;
+}
+
+#rankingTables {
+    top: 32px;
+}
+
+#rankingList {
+    overflow-y: auto;
+    height: calc(100vh - var(--header-size) - 330px);
+}

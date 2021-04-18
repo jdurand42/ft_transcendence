@@ -1,32 +1,32 @@
 .pannelContent  #pannelScore {
-	left: 400px;
-	top: 84px;
-	transform: translateY(-50%);
+	/* left: 400px; */
+	/* top: 84px; */
+	/* transform: translateY(-50%); */
 }
 
 .pannelContent #pannelRank {
-	left: 800px;
-	top: 84px;
-	transform: translateY(-50%);
+	/* left: 800px;
+	top: 84px; */
+	/* transform: translateY(-50%); */
 }
 
 .pannelContent #pannelWarsWon {
-	top: 230px;
-	left: 630px;
-	transform: translateY(-50%);
+	/* top: 230px; */
+	/* left: 630px; */
+	/* transform: translateY(-50%); */
 }
 
 .pannelContent #pannelTotalWars {
-	top: 230px;
-	left: 1030px;
-	transform: translateY(-50%);
+	/* top: 230px;
+	left: 1030px; */
+	/* transform: translateY(-50%); */
 }
 
 .pannelContent #guildInfos {
 	color: white;
 	position: relative;
-	top: calc(var(--pannel-size) - (var(--header-size) / 2));
-	left: 157px;
+	/* top: calc(var(--pannel-size) - (var(--header-size) / 2)); */
+	/* left: 157px; */
 }
 
 .pannelContent #guildInfos #guildName {

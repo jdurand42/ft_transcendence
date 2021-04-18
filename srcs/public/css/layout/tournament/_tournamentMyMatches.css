@@ -1,0 +1,60 @@
+.my-matches .registered {
+    width: 346px;
+}
+
+.my-matches .play-my-matches {
+    height: 22px;
+    width: 80px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.my-matches .image-nickname {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.my-matches .thumbnail-my-matches .right-side {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.my-matches .thumbnail-my-matches .button-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Roboto-Regular;
+    font-size: 14px;
+    margin-left: 16px;
+}
+
+.my-matches .thumbnail-my-matches .button-timer
+.timer {
+    margin-top: 8px;
+}
+
+.my-matches .thumbnail-my-matches .button-timer
+.accept-container {
+    width: 18px;
+    height: 18px;
+}
+
+.my-matches .thumbnail-my-matches .button-timer
+.accept-button {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.my-matches .thumbnail-my-matches .button-timer
+.buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 50px;
+}

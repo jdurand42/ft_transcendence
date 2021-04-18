@@ -12,9 +12,13 @@ export const GameRecords = Backbone.Collection.extend({
     return this.urlRoot
   },
   fetchByTournament: function (tournamentId) {
-    return fetch('/api/tournaments/' + tournamentId + '/games', {
-      method: 'GET',
-      headers: this.headers
+    return this.fetch({
+      url: '/api/games?tournament_id=' + tournamentId
+    })
+  },
+  fetchTournamentMyGames: function (userId, status, tournamentId) {
+    return this.fetch({
+      url: '/api/games?user_id=' + userId + '&status=' + status + '&tournament_id=' + tournamentId
     })
   }
 })

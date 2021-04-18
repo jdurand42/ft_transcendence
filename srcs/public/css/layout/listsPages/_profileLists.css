@@ -23,7 +23,7 @@
 
 .profileBlock
 .listsBoard {
-    height: calc(100vh - 217px);
+    height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -46,16 +46,21 @@
 
 .profileBlock .listsBoard .nb-list {
     position: relative;
-    left: 145px;
-    top: 64px;
+    left: 0;
+    top: 0px;
+
+    margin-top: 16px;
 
     font-family: Roboto-Bold;
     font-size: 18px;
+
+    text-align: initial;
+    margin-left: 128px;
 }
 
 .profileBlock .listsBoard .tablesBoard {
     position: relative;
-    top: 96px;
+    top: 0;
     width: 90%;
     margin-left: auto;
     margin-right: auto;
@@ -65,6 +70,8 @@
 
     border-collapse:separate;
     border-spacing: 0 1em;
+
+    margin-top: 16px;
 }
 
 .profileBlock .listsBoard .tablesBoard
@@ -122,6 +129,7 @@
     border-radius: 50%;
     margin-left: 8px;
 }
+
 
 .profileBlock .listsBoard .tablesBoard .tableBoard
 .follow {
@@ -221,7 +229,8 @@
 
 .guildBlock
 .listsBoard {
-    height: calc(100vh - 217px);
+    /* height: calc(100vh - 217px); */
+    height: 110%;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -243,9 +252,9 @@
 }
 
 .guildBlock .listsBoard .nb-list {
-    position: relative;
+    /* position: relative;
     left: 145px;
-    top: 64px;
+    top: 64px; */
 
     font-family: Roboto-Bold;
     font-size: 18px;
@@ -253,7 +262,8 @@
 
 .guildBlock .listsBoard .tablesBoard {
     position: relative;
-    top: 96px;
+    margin-top: 32px;
+    top: 0;
     width: 90%;
     margin-left: auto;
     margin-right: auto;
@@ -392,4 +402,15 @@
 
 .guildBlock .listsBoard .guildTable {
     cursor: pointer;
+}
+
+#memberGuildListTable {
+    height: fit-content;
+    margin-top: 64px;
+}
+
+.guildBlock .nbMembers {
+    left: 0;
+    float: left;
+    margin-left: 128px;
 }

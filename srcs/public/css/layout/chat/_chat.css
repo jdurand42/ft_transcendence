@@ -8,6 +8,8 @@
 
     display: flex;
     flex-direction: row;
+    position: fixed;
+    top: var(--header-size);
 
     overflow: hidden;
     overflow-x: auto;

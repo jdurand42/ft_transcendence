@@ -87,12 +87,7 @@ export const ChatView = Backbone.View.extend({
         const currentChannel = this.myChannels.at(i)
         const channelId = currentChannel.get('id')
         if (currentChannel.get('ban_ids').some(el => el == this.userLoggedId) === false) {
-          // this.socket.subscribeChannel(channelId, 'ActivityChannel')
           this.socket.subscribeChannel(channelId, 'ChatChannel')
-          const participantIds = currentChannel.get('participant_ids')
-          for (let i = 0; i < participantIds.length; i++) {
-            this.socket.subscribeChannel(participantIds[i], 'ActivityChannel')
-          }
         } else {
           this.myChannels.remove(channelId)
         }
@@ -135,7 +130,6 @@ export const ChatView = Backbone.View.extend({
         const channel = this.myChannels.at(i)
         if (channel.get('id') !== channelId) {
           const messages = await channel.getMessages()
-          this.socket.subscribeChannel(channel.get('id'), 'ActivityChannel')
           this.socket.subscribeChannel(channel.get('id'), 'ChatChannel')
           for (let i = 0; i < messages.length; i++) {
             this.receiveMessage(messages[i], channel.get('id'))
@@ -244,11 +238,6 @@ export const ChatView = Backbone.View.extend({
         this.receiveMessage(channelId, messages[i])
       }
 
-      const partcipantIds = this.myChannels.get(channelId).get('participant_ids')
-      for (let i = 0; i < partcipantIds.length; i++) {
-        this.socket.subscribeChannel(partcipantIds[i], 'ActivityChannel')
-      }
-
       if (senderId !== this.userLoggedId) {
         this.updateContextLeftSide()
         if (this.myChannels.get(channelId).get('privacy') === 'direct_message') {
@@ -314,7 +303,7 @@ export const ChatView = Backbone.View.extend({
     } else if (message.action !== undefined) {
       if (message.action === 'chat_invitation') {
         this.chatInvitation(message.id, senderId)
-      } else if (message.action === 'status_update') {
+      } else if (message.action === 'user_update_status') {
         this.updateStatus(channelId, message.id, message.status)
       }
     }
@@ -829,7 +818,7 @@ export const ChatView = Backbone.View.extend({
     this.context.myChannels = []
     for (let i = 0; i < channels.length; i++) {
       this.context.myChannels.push(JSON.parse(JSON.stringify(channels[i])))
-      if (channels[i].get('owner_id') && (channels[i].get('admin_ids').find(el => el === this.userLogged.get('id')) === true ||
+      if (channels[i].get('owner_id') && (channels[i].get('admin_ids').find(el => el === this.userLogged.get('id')) ||
       channels[i].get('owner_id') === this.userLogged.get('id'))) {
         this.context.myChannels[i].admin = true
       } else {

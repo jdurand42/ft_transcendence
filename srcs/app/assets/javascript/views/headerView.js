@@ -5,7 +5,7 @@ export const HeaderView = Backbone.View.extend({
   initialize: function () {
   },
   el: $('#header'),
-  render: function (target) {
+  render: function (target, image = undefined) {
     this.templateTopNav = Handlebars.templates.topnav
     const array = {}
 
@@ -23,7 +23,12 @@ export const HeaderView = Backbone.View.extend({
     array.active = 'active'
     array.user = this.model.get('nickname')
     array.admin = this.model.get('admin')
-    array.profile_pic = this.model.get('image_url')
+    if (image === undefined) {
+      array.profile_pic = this.model.get('image_url')
+    } else {
+      array.profile_pic = image
+      this.model.fetch()
+    }
     array.id = this.model.get('id')
     const context = JSON.parse(JSON.stringify(array))
     const templateDataTopNav = this.templateTopNav(context)
