@@ -19,7 +19,8 @@ export const User = Backbone.Model.extend({
     updated_at: undefined,
     id: undefined,
     friends: [],
-    ignores: []
+    ignores: [],
+    score: undefined
   },
 
   initialize: function (url) {

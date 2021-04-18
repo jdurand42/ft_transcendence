@@ -47,7 +47,8 @@
 @import url(layout/_subTopNav.css);
 
 @import url(guild/_guild.css);
-@import url(profile/_profile.css);
+@import url(layout/profile/_profile.css);
+@import url(layout/profile/_matchHistory.css);
 
 @import url(layout/manageGuild/_manageGuild.css);
 @import url(layout/_profilePannel.css);

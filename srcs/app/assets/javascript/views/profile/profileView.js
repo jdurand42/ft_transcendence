@@ -5,6 +5,8 @@ import { FriendsView } from './friendsView.js'
 import { ProfileOverviewView } from './overviewView.js'
 import { NoGuildView } from './noGuildView.js' */
 
+import { GameRecords } from '../../collections/gameRecords'
+
 export const ProfileView = Backbone.View.extend({
   events: {
     'click #matchHistory': 'loadMatchHistory',
@@ -18,7 +20,12 @@ export const ProfileView = Backbone.View.extend({
     //    'click #followAnUser': function (e) { this.followAnUser(e) },
     'click #sendInvitation': 'sendInvitation',
     'click #playUser': 'playUser',
-    'change input[type=file]': 'loadFile'
+    'change input[type=file]': 'loadFile',
+    'click #matches-filter': 'openFilters',
+    'click #All': 'allMatches',
+    'click #Tournament': 'tournamentMatches',
+    'click #Duel': 'duelMatches',
+    'click #Ladder': 'ladderMatches'
   },
 
   initialize: function () {
@@ -29,6 +36,10 @@ export const ProfileView = Backbone.View.extend({
     this.gameRecords = this.model.get('gameRecords').get('obj')
     this.achievements = this.model.get('achievements').get('obj')
     this.userId = this.model.get('userLoggedId')
+    this.myTournamentGames = new GameRecords()
+    this.myLadderGames = new GameRecords()
+    this.myDuelGames = new GameRecords()
+    // this.myWarGames = new GameRecords()
     if (this.id === null) {
       this.id = this.userId
     }
@@ -36,7 +47,13 @@ export const ProfileView = Backbone.View.extend({
     const fetchUsers = async () => {
       const response1 = this.users.fetch()
       const response2 = this.ladders.fetch()
-      await response1 && await response2
+      const response3 = this.myTournamentGames.fetchMyGames(this.userId, 'tournament')
+      const response4 = this.myLadderGames.fetchMyGames(this.userId, 'ladder')
+      const response5 = this.myDuelGames.fetchMyGames(this.userId, 'duel')
+      await response1 && await response2 && await response3 && await response4 && await response5
+      console.log(this.myTournamentGames)
+      console.log(this.myLadderGames)
+      console.log(this.myDuelGames)
       this.renderPannel()
       this.loadMatchHistory()
     }
@@ -69,28 +86,67 @@ export const ProfileView = Backbone.View.extend({
     changeImage()
   },
 
-  loadMatchHistory: function () {
-    const load = async () => {
-      try {
-        await this.users.fetch()
-        if (this.id > this.users.length || this.id <= 0) {
-          this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
-          return
+  openFilters: function (e) {
+    if (document.getElementById('matches-list').style.display === 'none') {
+      const dropList = document.getElementById('matches-list')
+      function getOffset (el) {
+        let _x = 0
+        let _y = 0
+        while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+          _x += el.offsetLeft - el.scrollLeft
+          _y += el.offsetTop - el.scrollTop
+          el = el.offsetParent
         }
-        this.checkLadderId()
-        this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
-        await this.ladders.fetch() &&
-        await this.gameRecords.fetch()
-        // this.renderPannel()
-        // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
-        await this.guilds.fetch()
-        this.matchHistory()
-      } catch (e) {
-        console.log(e)
-        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+        return { top: _y, left: _x }
       }
+      const off = getOffset(e.currentTarget)
+      dropList.style.top = off.top + 45 - document.getElementById('matches-filter').scrollTop
+      dropList.style.position = 'abosulte'
+      dropList.style.left = off.left
+      dropList.style.display = 'flex'
+    } else {
+      document.getElementById('matches-list').style.display = 'none'
     }
-    load()
+  },
+
+  ladderMatches: function () {
+    this.matchHistory('Ladder')
+  },
+
+  tournamentMatches: function () {
+    this.matchHistory('Tournament')
+  },
+
+  allMatches: function () {
+    this.matchHistory('All')
+  },
+
+  duelMatches: function () {
+    this.matchHistory('Duel')
+  },
+
+  loadMatchHistory: function () {
+    // const load = async () => {
+    // try {
+    // await this.users.fetch()
+    // if (this.id > this.users.length || this.id <= 0) {
+    //   this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
+    //   return
+    // }
+    // this.checkLadderId()
+    this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
+    // await this.ladders.fetch() &&
+    // await this.gameRecords.fetch()
+    // this.renderPannel()
+    // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
+    // await this.guilds.fetch()
+    this.matchHistory('All')
+    // } catch (e) {
+    // console.log(e)
+    // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+    // }
+    // }
+    // load()
   },
 
   loadFriends: function () {
@@ -181,39 +237,73 @@ export const ProfileView = Backbone.View.extend({
     // document.getElementById('followUser').style = ''
   },
 
-  matchHistory: function () {
-    const template = Handlebars.templates.matchHistory
-    const context = {}
-
-    context.player = this.users.get(this.id).get('nickname')
-    if (this.users.get(this.id).get('guild_id') != null) {
-      context.guild = this.guilds.get(this.users.get(this.id).get('guild_id')).get('anagram')
-    } else { context.guild = this.users.get(this.id).get('guild_id') }
-
-    context.guild_id = this.users.get(this.id).get('guild_id')
-    context.id = this.id
-
-    context.matchs = []
-
-    for (let i = 1; i <= this.gameRecords.length; i++) {
-      const game = {}
-      if (context.id == this.gameRecords.get(i).get('player_left_id') ||
-          context.id == this.gameRecords.get(i).get('player_right_id')) {
-        game.player_left_id = this.gameRecords.get(i).get('player_left_id')
-        game.player_right_id = this.gameRecords.get(i).get('player_right_id')
-        game.player_left_nickname = this.users.get(game.player_left_id).get('nickname')
-        game.player_right_nickname = this.users.get(game.player_right_id).get('nickname')
-        game.game_type = this.gameRecords.get(i).get('game_type')
-        game.created_at = this.gameRecords.get(i).get('created_at')
-        if (context.id == this.gameRecords.get(i).get('winner_id')) { game.result = 'win' } else { game.result = 'loose' }
-        context.matchs.push(game)
+  pushDone: function (context, game) {
+    context.push({})
+    const length = context.length - 1
+    context[length].nb = length + 1
+    const opponentId1 = game.get('winner_id')
+    const getOpponentId2 = function () {
+      if (game.get('player_left_id') !== game.get('winner_id')) {
+        return game.get('player_left_id')
+      } else {
+        return game.get('player_right_id')
       }
     }
-    if (!context.matchs.length) {
-      this.$el.find('#profileContent').html('<div class="notFoundMessage" id="notFoundMatchHistory">No match history found</div>')
-    } else {
-      this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
+    const getScore1 = function () {
+      if (game.get('player_left_id') === game.get('winner_id')) {
+        return game.get('player_left_points')
+      }
+      return game.get('player_right_points')
     }
+    const getScore2 = function () {
+      if (game.get('player_right_id') === game.get('winner_id')) {
+        return game.get('player_right_points')
+      }
+      return game.get('player_left_points')
+    }
+    const opponentId2 = getOpponentId2()
+    const opponent1 = this.users.get(opponentId1)
+    const opponent2 = this.users.get(opponentId2)
+    context[length].opponent1 = opponent1.get('nickname')
+    context[length].avatarOpponent1 = opponent1.get('image_url')
+    context[length].opponent2 = opponent2.get('nickname')
+    context[length].avatarOpponent2 = opponent2.get('image_url')
+    context[length].score1 = getScore1()
+    context[length].score2 = getScore2()
+    if (context[length].score1 === 0 && context[length].score2 === 0) {
+      context[length].forfeit = true
+    }
+  },
+
+  matchHistory: function (type) {
+    const template = Handlebars.templates.matchHistory
+    const context = {}
+    context.match = []
+    context.myDone = []
+    context.type = type
+
+    context.match.push({ type: 'All' })
+    context.match.push({ type: 'Ladder' })
+    context.match.push({ type: 'Duel' })
+    context.match.push({ type: 'Tournament' })
+
+    if (type === 'All' || type === 'Ladder') {
+      for (let i = 0; i < this.myLadderGames.length; i++) {
+        this.pushDone(context.myDone, this.myLadderGames.at(i))
+      }
+    }
+    if (type === 'All' || type === 'Duel') {
+      for (let i = 0; i < this.myDuelGames.length; i++) {
+        this.pushDone(context.myDone, this.myDuelGames.at(i))
+      }
+    }
+    if (type === 'All' || type === 'Tournament') {
+      for (let i = 0; i < this.myTournamentGames.length; i++) {
+        this.pushDone(context.myDone, this.myTournamentGames.at(i))
+      }
+    }
+
+    this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
   },
 
   friends: function () {
@@ -281,9 +371,9 @@ export const ProfileView = Backbone.View.extend({
     } else {
       this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       if (this.users.get(this.userId).get('guild_id') &&
-			(this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
-			this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.officer_ids)))) {
-      	this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
+      (this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
+      this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.officer_ids)))) {
+        this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
       }
       return
     }
