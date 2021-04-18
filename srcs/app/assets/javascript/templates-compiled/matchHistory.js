@@ -25,8 +25,8 @@ templates['matchHistory'] = template({"1":function(container,depth0,helpers,part
     + alias4(((helper = (helper = lookupProperty(helpers,"nb") || (depth0 != null ? lookupProperty(depth0,"nb") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nb","hash":{},"data":data,"loc":{"start":{"line":35,"column":20},"end":{"line":35,"column":26}}}) : helper)))
     + "</div>\n				<div class=\"center\">\n					<div class=\"image-nickname\" onclick=\"window.location='#profile/"
     + alias4(((helper = (helper = lookupProperty(helpers,"opponentId1") || (depth0 != null ? lookupProperty(depth0,"opponentId1") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"opponentId1","hash":{},"data":data,"loc":{"start":{"line":37,"column":68},"end":{"line":37,"column":83}}}) : helper)))
-    + "/';\">\n						<div class=\"opponent1\">"
-    + alias4(((helper = (helper = lookupProperty(helpers,"opponent1") || (depth0 != null ? lookupProperty(depth0,"opponent1") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"opponent1","hash":{},"data":data,"loc":{"start":{"line":38,"column":29},"end":{"line":38,"column":42}}}) : helper)))
+    + "/';\">\n						<div class=\"opponent opponent1\">"
+    + alias4(((helper = (helper = lookupProperty(helpers,"opponent1") || (depth0 != null ? lookupProperty(depth0,"opponent1") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"opponent1","hash":{},"data":data,"loc":{"start":{"line":38,"column":38},"end":{"line":38,"column":51}}}) : helper)))
     + "</div>\n						<div class=\"image-container\">\n							<img class=\"image-url\" src=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"avatarOpponent1") || (depth0 != null ? lookupProperty(depth0,"avatarOpponent1") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"avatarOpponent1","hash":{},"data":data,"loc":{"start":{"line":40,"column":35},"end":{"line":40,"column":54}}}) : helper)))
     + "\">\n						</div>\n					</div>\n					<div class=\"score score1\">"
@@ -37,8 +37,8 @@ templates['matchHistory'] = template({"1":function(container,depth0,helpers,part
     + alias4(((helper = (helper = lookupProperty(helpers,"opponentId2") || (depth0 != null ? lookupProperty(depth0,"opponentId2") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"opponentId2","hash":{},"data":data,"loc":{"start":{"line":46,"column":68},"end":{"line":46,"column":83}}}) : helper)))
     + "/';\">\n						<div class=\"image-container\">\n							<img class=\"image-url\" src=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"avatarOpponent2") || (depth0 != null ? lookupProperty(depth0,"avatarOpponent2") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"avatarOpponent2","hash":{},"data":data,"loc":{"start":{"line":48,"column":35},"end":{"line":48,"column":54}}}) : helper)))
-    + "\">\n						</div>\n						<div class=\"opponent2\">"
-    + alias4(((helper = (helper = lookupProperty(helpers,"opponent2") || (depth0 != null ? lookupProperty(depth0,"opponent2") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"opponent2","hash":{},"data":data,"loc":{"start":{"line":50,"column":29},"end":{"line":50,"column":42}}}) : helper)))
+    + "\">\n						</div>\n						<div class=\"opponent opponent2\">"
+    + alias4(((helper = (helper = lookupProperty(helpers,"opponent2") || (depth0 != null ? lookupProperty(depth0,"opponent2") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"opponent2","hash":{},"data":data,"loc":{"start":{"line":50,"column":38},"end":{"line":50,"column":51}}}) : helper)))
     + "</div>\n					</div>\n				</div>\n            </div>\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"forfeit") : depth0),{"name":"if","hash":{},"fn":container.program(4, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":54,"column":12},"end":{"line":56,"column":19}}})) != null ? stack1 : "")
     + "        </div>\n";
