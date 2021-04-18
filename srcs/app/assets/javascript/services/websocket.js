@@ -49,7 +49,7 @@ export class MyWebSocket {
         }
       }
     }
-    this.socket.onerror = function (error) {}
+    this.socket.onerror = function (error) { console.log(error) }
   }
 
   subscribeChannel (chatRoomId, channelName) {
@@ -93,6 +93,10 @@ export class MyWebSocket {
       const msg = JSON.parse(response)
       // console.log(msg)
       // console.log(msg)
+      if (msg.type === 'ping') {
+        objet.receivePing()
+        return
+      }
       if (msg.message) {
         objet.receiveMessage(msg)
 			 }
