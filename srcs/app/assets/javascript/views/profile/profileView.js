@@ -5,6 +5,7 @@ import { FriendsView } from './friendsView.js'
 import { ProfileOverviewView } from './overviewView.js'
 import { NoGuildView } from './noGuildView.js' */
 
+import { Achievements } from '../../collections/achievements'
 import { GameRecords } from '../../collections/gameRecords'
 
 export const ProfileView = Backbone.View.extend({
@@ -35,6 +36,7 @@ export const ProfileView = Backbone.View.extend({
     this.ladders = this.model.get('ladders').get('obj')
     this.gameRecords = this.model.get('gameRecords').get('obj')
     this.achievements = this.model.get('achievements').get('obj')
+    this.myAchievements = new Achievements()
     this.userId = this.model.get('userLoggedId')
     this.myTournamentGames = new GameRecords()
     this.myLadderGames = new GameRecords()
@@ -43,6 +45,7 @@ export const ProfileView = Backbone.View.extend({
     if (this.id === null) {
       this.id = this.userId
     }
+
     this.$el.html(Handlebars.templates.profile({}))
     const fetchUsers = async () => {
       const response1 = this.users.fetch()
@@ -50,16 +53,32 @@ export const ProfileView = Backbone.View.extend({
       const response3 = this.myTournamentGames.fetchMyGames(this.id, 'tournament')
       const response4 = this.myLadderGames.fetchMyGames(this.id, 'ladder')
       const response5 = this.myDuelGames.fetchMyGames(this.id, 'duel')
-      const response6 = this.achievements.fetchByUserId(this.id)
-      await response1 && await response2 && await response3 && await response4 && await response5 && await response6
+      const response6 = this.myAchievements.fetchByUserId(this.id)
+      const response7 = this.achievements.fetch()
+      await response1 && await response2 && await response3 && await response4 && await response5 && await response6 && await response7
       console.log(this.users.get(this.id))
       console.log(this.achievements)
-      this.renderPannel()
-      this.loadMatchHistory()
+      this.render()
     }
     fetchUsers()
   },
   el: $('#app'),
+
+  render: function () {
+    Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+      switch (operator) {
+        case '||':
+          return (v1 || v2) ? options.fn(this) : options.inverse(this)
+        case '==':
+          return (v1 === v2) ? options.fn(this) : options.inverse(this)
+        default:
+          return options.inverse(this)
+      }
+    })
+    this.renderPannel()
+    this.loadMatchHistory()
+    return this
+  },
 
   loadFile: function (event) {
     this.fileObject = new FormData()
@@ -101,8 +120,6 @@ export const ProfileView = Backbone.View.extend({
         return { top: _y, left: _x }
       }
       const off = getOffset(e.currentTarget)
-      console.log(e)
-      console.log(e.screenY)
       // dropList.style.top = off.top + 45 - e.screenY
       dropList.style.top = e.pageY + 30
       dropList.style.position = 'absolute'
@@ -353,12 +370,44 @@ export const ProfileView = Backbone.View.extend({
   },
 
   achievementsView: function () {
-    const context = {
-      name: this.users.get(this.id).get('nickname'),
-      ladder_id: this.users.get(this.id).get('ladder_id'),
-      // ladder_name: this.ladders.get(this.users.get(this.id).get('ladder_id')).get('name'),
-      guild_id: this.users.get(this.id).get('guild_id'),
-      id: this.id
+    const context = {}
+    context.achievement = []
+
+    const getIcon = function (id) {
+      if (id === 1) {
+        return './icons/tournament.svg'
+      } else if (id === 2) {
+        return './icons/war.svg'
+      } else if (id === 3) {
+        return './icons/war.svg'
+      } else if (id === 4) {
+        return './icons/100.svg'
+      } else if (id === 5) {
+        return './icons/silver_achievement.svg'
+      } else if (id === 6) {
+        return './icons/gold_achievement.svg'
+      } else if (id === 7) {
+        return './icons/platinum_achievement.svg'
+      } else if (id === 8) {
+        return './icons/diamond_achievement.svg'
+      } else if (id === 9) {
+        return './icons/padlock.svg'
+      }
+    }
+
+    for (let i = 0; i < this.myAchievements.length; i++) {
+      context.achievement.push(JSON.parse(JSON.stringify(this.myAchievements.at(i))))
+      context.achievement[i].icon = getIcon(this.myAchievements.at(i).get('id'))
+      context.achievement[i].achieved = 'achieved'
+    }
+    for (let i = 0; i < this.achievements.length; i++) {
+      console.log(context)
+      if (this.myAchievements.some(el => el.get('id') === this.achievements.at(i).get('id')) === false) {
+        context.achievement.push(JSON.parse(JSON.stringify(this.achievements.at(i))))
+        const length = context.achievement.length - 1
+        context.achievement[length].icon = getIcon(this.achievements.at(i).get('id'))
+        context.achievement[length].achieved = 'not-achieved'
+      }
     }
     this.$el.find('#profileContent').html(Handlebars.templates.achievements(context))
   },
