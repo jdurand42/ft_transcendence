@@ -53,12 +53,6 @@ export const TournamentView = Backbone.View.extend({
         await response5 && await response6 && await response7
         this.tournamentParticipants = new TournamentParticipants({ tournament_id: this.tournament.get('id') })
         await this.tournamentParticipants.fetch()
-        console.log('this.tournamentParticipants')
-        console.log(this.tournamentParticipants)
-        console.log('this.myGamesDone')
-        console.log(this.myGamesDone)
-        console.log('this.myGamesPending')
-        console.log(this.myGamesPending)
       }
       await response4
       this.render()

@@ -41,12 +41,6 @@ export const LeaderboardView = Backbone.View.extend({
       const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
       const response2 = this.ladders.fetch()
       await response1 && await response2
-      if (this.userLogged.get('ladder_id') === null) { // Back undefined doit disparaitre
-        this.ladderId = 1
-        this.userLogged.set({ ladder_id: 1 })
-      } else {
-        this.ladderId = this.userLogged.get('ladder_id')
-      }
       this.render()
     }
     fetchLadders()

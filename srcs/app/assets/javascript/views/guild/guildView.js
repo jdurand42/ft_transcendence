@@ -1,3 +1,5 @@
+import { Users } from '../../collections/usersCollection'
+
 export const GuildView = Backbone.View.extend({
   events: {
     'click #currentWar': 'loadCurrentWar',
@@ -5,16 +7,22 @@ export const GuildView = Backbone.View.extend({
     'click #members': 'loadMembers',
     'click #calendar': 'loadCalendar'
   },
-  el: $('#app'),
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
     this.ladders = this.model.get('ladders').get('obj')
     this.userId = this.model.get('userLoggedId')
     this.$el.html(Handlebars.templates.guild({}))
-    this.loadCurrentWar()
-  },
+    this.members = new Users()
 
+    const fetch = async () => {
+      await this.members.fetchByGuildId(this.id)
+      console.log(this.members)
+      this.loadCurrentWar()
+    }
+    fetch()
+  },
+  el: $('#app'),
   loadCurrentWar: function () {
     const load = async () => {
       try {
@@ -30,6 +38,9 @@ export const GuildView = Backbone.View.extend({
         }
         await this.ladders.fetch() &&
         await this.guilds.fetch()
+        this.guild = this.guilds.get(this.id)
+        console.log(this.guild)
+
         if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
           this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
           return
@@ -44,6 +55,12 @@ export const GuildView = Backbone.View.extend({
           this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
         }
         this.currentWar()
+        document.getElementById('lastWars').classList.remove('open')
+        document.getElementById('members').classList.remove('open')
+
+        const div = document.getElementById('currentWar')
+        div.classList.add('open')
+        this.positionSquare(div.getBoundingClientRect())
       } catch (e) {
         console.log(e)
         this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
@@ -52,7 +69,18 @@ export const GuildView = Backbone.View.extend({
     load()
   },
 
+  positionSquare: function (offsets) {
+    document.getElementById('square').style.left = offsets.left - 32
+  },
+
   loadLastWars: function () {
+    document.getElementById('currentWar').classList.remove('open')
+    document.getElementById('members').classList.remove('open')
+
+    const div = document.getElementById('lastWars')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
+
     const load = async () => {
       try {
         await this.users.fetch() &&
@@ -69,19 +97,19 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadMembers: function () {
-    const load = async () => {
-      try {
-        await this.users.fetch() &&
-        await this.ladders.fetch() &&
-        await this.guilds.fetch() &&
-        this.renderPannel()
-        this.members()
-      } catch (e) {
-        console.log(e)
-        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    // const load = async () => {
+    // try {
+    // await this.users.fetch() &&
+    // await this.ladders.fetch() &&
+    // await this.guilds.fetch() &&
+    // this.renderPannel()
+    this.updateMembers()
+    // } catch (e) {
+    // console.log(e)
+    // this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
+    // }
+    // }
+    // load()
   },
 
   loadCalendar: function () {
@@ -113,32 +141,32 @@ export const GuildView = Backbone.View.extend({
     return this
   },
 
-  members: function () {
-    const guild = this.guilds.get(this.id)
-
+  updateMembers: function () {
     const context = {
-      name: this.guilds.get(this.id).get('name'),
+      name: this.guild.get('name'),
       id: this.id,
       anagram: this.guilds.get(this.id).get('anagram'),
       owner: undefined,
-      members: Array(),
-      officers: Array(),
+      members: [],
+      officers: [],
       membersNumber: 0
     }
-    for (let i = 1; i <= this.users.length; i++) {
-      if (!this.users.get(i).get('guild_id') || this.users.get(i).get('guild_id') != guild.get('id')) {
-        continue
-      }
-      if (i === parseInt(guild.get('owner_id')[0])) {
-        context.owner = this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i)
-      } else if (guild.get('officer_ids').includes(i)) {
-        context.officers.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+    for (let i = 0; i < this.members.length; i++) {
+      console.log(this.members)
+      const member = this.members.at(i)
+
+      context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(member)), i))
+
+      if (this.guild.get('owner_id')[0] === member.get('id')) {
+        context.members[i].member = 'Owner'
+      } else if (this.guild.get('officer_ids').some(el => el === member.get('id')) === true) {
+        context.members[i].member = 'Officer'
       } else {
-        context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+        context.members[i].member = 'Member'
       }
     }
 
-    context.membersNumber = context.members.length + context.officers.length + 1
+    context.membersNumber = this.members.length
     this.$el.find('#guildcontent').html(Handlebars.templates.guildMembers(context))
     return this
   },

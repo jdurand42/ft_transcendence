@@ -55,9 +55,7 @@ export const ProfileView = Backbone.View.extend({
       const response5 = this.myDuelGames.fetchMyGames(this.id, 'duel')
       const response6 = this.myAchievements.fetchByUserId(this.id)
       const response7 = this.achievements.fetch()
-      await response1 && await response2 && await response3 && await response4 && await response5 && await response6 && await response7
-      console.log(this.users.get(this.id))
-      console.log(this.achievements)
+      await response1 && await response2 && await response3 && await response4 && await response5
       this.render()
     }
     fetchUsers()
@@ -257,21 +255,23 @@ export const ProfileView = Backbone.View.extend({
 
   renderPannel: function () {
     const user = this.users.get(this.id)
+    console.log(user)
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
       rank: this.id,
       generalRank: this.id,
       totalRank: this.users.length,
       totalLeagueRank: this.users.length,
-      ratio: Math.round(user.get('ladder_games_won') / (user.get('ladder_games_won') + user.get('ladder_games_lost')) * 100 * 100) / 100,
+      // ratio: Math.round(user.get('ladder_games_won') / (user.get('ladder_games_won') + user.get('ladder_games_lost')) * 100 * 100) / 100,
+      score: user.get('score'),
       victories: user.get('ladder_games_won'),
       totalGames: user.get('ladder_games_won') + user.get('ladder_games_lost'),
       nickname: user.get('nickname'),
       image_url: user.get('image_url')
     }
-    if (isNaN(context.ratio)) {
-      context.ratio = 0
-    }
+    // if (isNaN(context.ratio)) {
+    //   context.ratio = 0
+    // }
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
     if (this.id != this.userId) {
       this.renderProfileSubPannel()
