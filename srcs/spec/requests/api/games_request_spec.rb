@@ -45,7 +45,7 @@ RSpec.describe 'Games', type: :request do
       end
     end
 
-    context 'search with tournament_id',test:true do
+    context 'search with tournament_id' do
       it "returns all tournament games" do
         create(:tournament)
         create_list(:game, 2)
@@ -254,12 +254,14 @@ RSpec.describe 'Games', type: :request do
         expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
         expect(status).to eq 403
       end
-      it "forfeit opponent at TTA" do
+      it "forfeit opponent at TTA",test:true do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
         perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
         expect(Game.first.winner_id).to eq users[0].id
         expect(Game.first.status).to eq 'played'
+        expect(TournamentParticipant.find_by(user_id: users[0].id).win_count).to eq 1
+        expect(TournamentParticipant.find_by(user_id: users[0].id).opponents).to include(users[1].id)
       end
     end
   end
