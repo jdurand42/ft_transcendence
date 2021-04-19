@@ -156,6 +156,14 @@ export const ProfileView = Backbone.View.extend({
     // }
     // this.checkLadderId()
     this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
+    document.getElementById('friends').classList.remove('open')
+    document.getElementById('achievements').classList.remove('open')
+    document.getElementById('profileGuild').classList.remove('open')
+
+    const div = document.getElementById('matchHistory')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
+
     // await this.ladders.fetch() &&
     // await this.gameRecords.fetch()
     // this.renderPannel()
@@ -171,6 +179,14 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadFriends: function () {
+    document.getElementById('matchHistory').classList.remove('open')
+    document.getElementById('achievements').classList.remove('open')
+    document.getElementById('profileGuild').classList.remove('open')
+
+    const div = document.getElementById('friends')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
+
     const load = async () => {
       try {
         await this.users.fetch()
@@ -187,6 +203,10 @@ export const ProfileView = Backbone.View.extend({
     load()
   },
 
+  positionSquare: function (offsets) {
+    document.getElementById('square').style.left = offsets.left - 32
+  },
+
   loadAchievements: function () {
     // const load = async () => {
     // try {
@@ -194,6 +214,15 @@ export const ProfileView = Backbone.View.extend({
     // this.checkLadderId()
     // await this.achievements.fetch()
     // this.renderPannel()
+
+    document.getElementById('matchHistory').classList.remove('open')
+    document.getElementById('profileGuild').classList.remove('open')
+    document.getElementById('friends').classList.remove('open')
+
+    const div = document.getElementById('achievements')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
+
     this.achievementsView()
     // } catch (e) {
     // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
@@ -203,6 +232,13 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadGuild: function () {
+    document.getElementById('matchHistory').classList.remove('open')
+    document.getElementById('achievements').classList.remove('open')
+    document.getElementById('friends').classList.remove('open')
+
+    const div = document.getElementById('profileGuild')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
     const load = async () => {
       try {
         await this.users.fetch()
