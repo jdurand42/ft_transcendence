@@ -50,20 +50,22 @@ export const GuildsView = Backbone.View.extend({
         document.getElementById('warsWon' + guildId).appendChild(warWons)
         this.guildsWar.push({ id: guildId, warWons: 0, totalWars: 0 })
         for (let i = 0; i < wars.length; i++) {
-          const totalWars = Number(document.getElementById('totalWars' + guildId).textContent) + 1
-          this.guildsWar[this.guildsWar.length - 1].totalWars = totalWars
-          document.getElementById('totalWars' + guildId).textContent = totalWars.toString()
-          if (guildId === wars.at(i).get('from_id')) {
-            if (wars.at(i).get('from_score') > wars.at(i).get('on_score')) {
-              warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
-              this.guildsWar[this.guildsWar.length - 1].warWons = warWons
-              document.getElementById('warsWon' + guildId).textContent = warWons.toString()
-            }
-          } else {
-            if (wars.at(i).get('from_score') < wars.at(i).get('on_score')) {
-              warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
-              document.getElementById('warsWon' + guildId).textContent = warWons.toString()
-              this.guildsWar[this.guildsWar.length - 1].warWons = warWons
+          if (wars.at(i).get('closed') === true) {
+            const totalWars = Number(document.getElementById('totalWars' + guildId).textContent) + 1
+            this.guildsWar[this.guildsWar.length - 1].totalWars = totalWars
+            document.getElementById('totalWars' + guildId).textContent = totalWars.toString()
+            if (guildId === wars.at(i).get('from_id')) {
+              if (wars.at(i).get('from_score') > wars.at(i).get('on_score')) {
+                warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
+                this.guildsWar[this.guildsWar.length - 1].warWons = warWons
+                document.getElementById('warsWon' + guildId).textContent = warWons.toString()
+              }
+            } else {
+              if (wars.at(i).get('from_score') < wars.at(i).get('on_score')) {
+                warWons = Number(document.getElementById('warsWon' + guildId).textContent) + 1
+                document.getElementById('warsWon' + guildId).textContent = warWons.toString()
+                this.guildsWar[this.guildsWar.length - 1].warWons = warWons
+              }
             }
           }
         }

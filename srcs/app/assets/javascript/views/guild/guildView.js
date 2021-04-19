@@ -1,4 +1,5 @@
 import { Users } from '../../collections/usersCollection'
+import { Wars } from '../../collections/warCollection'
 
 export const GuildView = Backbone.View.extend({
   events: {
@@ -14,10 +15,12 @@ export const GuildView = Backbone.View.extend({
     this.userId = this.model.get('userLoggedId')
     this.$el.html(Handlebars.templates.guild({}))
     this.members = new Users()
+    this.wars = new Wars()
 
     const fetch = async () => {
-      await this.members.fetchByGuildId(this.id)
-      console.log(this.members)
+      const response1 = this.members.fetchByGuildId(this.id)
+      const response2 = this.wars.fetchByGuildId(this.id)
+      await response1 && await response2
       this.loadCurrentWar()
     }
     fetch()
@@ -89,7 +92,6 @@ export const GuildView = Backbone.View.extend({
         this.renderPannel()
         this.lastWars()
       } catch (e) {
-        console.log(e)
         this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
       }
     }
@@ -97,19 +99,14 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadMembers: function () {
-    // const load = async () => {
-    // try {
-    // await this.users.fetch() &&
-    // await this.ladders.fetch() &&
-    // await this.guilds.fetch() &&
-    // this.renderPannel()
+    document.getElementById('currentWar').classList.remove('open')
+    document.getElementById('lastWars').classList.remove('open')
+
+    const div = document.getElementById('members')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
+
     this.updateMembers()
-    // } catch (e) {
-    // console.log(e)
-    // this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
-    // }
-    // }
-    // load()
   },
 
   loadCalendar: function () {
@@ -173,8 +170,22 @@ export const GuildView = Backbone.View.extend({
 
   renderPannel: function () {
     const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
-    context.totalWars = '42'
-    context.warsWon = '42'
+    context.totalWars = 0
+    context.warsWon = 0
+    console.log(this.wars)
+    for (let i = 0; i < this.wars.length; i++) {
+      const war = this.wars.at(i)
+      if (war.get('closed') === true) {
+        context.totalWars += 1
+        if ((war.get('from_id') === this.id &&
+            war.get('from_score') > war.get('on_score')) ||
+            (war.get('on_id') === this.id &&
+            war.get('on_score') > war.get('from_score'))) {
+          context.warsWon += 1
+        }
+      }
+    }
+
     this.$el.find('#guildPannel').html(Handlebars.templates.guildPannel(context))
   },
 

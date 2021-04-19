@@ -8,7 +8,7 @@
 	            <th></th>
 	            <th></th>
 	            <th>Nickname</th>
-	            <th>Guild</th>
+	            {{!-- <th>Guild</th> --}}
 	            {{!-- <th>General Rank</th> --}}
 	            <th>Victories</th>
 	            <th>Total games</th>
@@ -29,12 +29,12 @@
 	                </div>
 	            </td>
 	            <td class="tableBoard-nickname" onclick="window.location='#profile/{{id}}/';">{{nickname}}</td>
-	            {{#if guild_id}}
+	            {{!-- {{#if guild_id}}
 	            <td class="tableBoard-guild" onclick="window.location='#guild/{{guild_id}}/';">{{guildName}}</td>
-	            {{/if}}
-	            {{#unless guild_id}}
+	            {{/if}} --}}
+	            {{!-- {{#unless guild_id}}
 	            <td>N/A</td>
-	            {{/unless}}
+	            {{/unless}} --}}
 	            {{!-- <td>{{generalRank}}</td> --}}
 	            <td>{{victories}}</td>
 	            <td>{{totalGames}}</td>
