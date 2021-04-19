@@ -15,6 +15,7 @@ RSpec.describe "OmniauthCallbacksController", type: :request do
     end
 
     it "should promote owner, admin" do
+      ENV['P42NG_OWNER_UID'] = '42'
       login(ENV['P42NG_OWNER_UID'])
       expect(response.status).to eq 200
       expect(User.first.admin?).to eq(true)

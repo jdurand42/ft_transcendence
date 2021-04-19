@@ -135,6 +135,7 @@ RSpec.describe "Users", type: :request do
     end
 
     context "when one admin is trying to ban owner" do
+      ENV['P42NG_OWNER_UID'] = '42'
       before do
         owner = FactoryBot.create(:user, nickname: "owner", admin: true, uid: ENV['P42NG_OWNER_UID'])
 
