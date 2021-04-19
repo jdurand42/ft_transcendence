@@ -1,5 +1,6 @@
 import { Users } from '../../collections/usersCollection'
 import { Wars } from '../../collections/warCollection'
+import { User } from '../../models/userModel'
 
 export const GuildView = Backbone.View.extend({
   events: {
@@ -16,47 +17,73 @@ export const GuildView = Backbone.View.extend({
     this.$el.html(Handlebars.templates.guild({}))
     this.members = new Users()
     this.wars = new Wars()
+    this.userLogged = new User()
 
     const fetch = async () => {
       const response1 = this.members.fetchByGuildId(this.id)
       const response2 = this.wars.fetchByGuildId(this.id)
-      await response1 && await response2
-      this.loadCurrentWar()
+      const response4 = this.ladders.fetch()
+      const response5 = this.guilds.fetch()
+      const response6 = this.userLogged.fetchUser(this.userId)
+      await response2 && await response5 && await response6
+      this.render()
+      // this.loadCurrentWar()
     }
     fetch()
   },
   el: $('#app'),
+  render: function () {
+    if (this.id === null || this.id === undefined) {
+      console.log(this.userId)
+      this.id = this.users.get(this.userId).get('guild_id')
+      console.log(this.id)
+    }
+    if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
+      this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
+      return
+    }
+    this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
+    this.renderPannel()
+    if (this.userLogged.get('guild_id') &&
+        this.guild.get('id') === this.userLogged.get('guild_id')) {
+      this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
+      this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
+    }
+    this.loadCurrentWar()
+    return this
+  },
+
   loadCurrentWar: function () {
     const load = async () => {
       try {
-        await this.users.fetch()
-        if (this.id === null || this.id === undefined) {
-          console.log(this.userId)
-          this.id = this.users.get(this.userId).get('guild_id')
-          console.log(this.id)
-        }
-        if (this.id === null || this.id === undefined) {
-          this.$el.find('#guildContent').html(Handlebars.templates.notMemberOfAGuild({}))
-          return
-        }
-        await this.ladders.fetch() &&
-        await this.guilds.fetch()
+        // await this.users.fetch()
+        // if (this.id === null || this.id === undefined) {
+        //   console.log(this.userId)
+        //   this.id = this.users.get(this.userId).get('guild_id')
+        //   console.log(this.id)
+        // }
+        // if (this.id === null || this.id === undefined) {
+        //   this.$el.find('#guildContent').html(Handlebars.templates.notMemberOfAGuild({}))
+        //   return
+        // }
+        // await this.ladders.fetch() &&
+        // await this.guilds.fetch()
         this.guild = this.guilds.get(this.id)
         console.log(this.guild)
 
-        if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
-          this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
-          return
-        }
+        // if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
+        //   this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
+        //   return
+        // }
 
-        this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
-        this.renderPannel()
+        // this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
+        // this.renderPannel()
 
-        if (this.users.get(this.userId).get('guild_id') &&
-            this.guilds.get(this.id).get('id') === this.users.get(this.userId).get('guild_id')) {
-          this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
-          this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
-        }
+        // if (this.users.get(this.userId).get('guild_id') &&
+        //     this.guilds.get(this.id).get('id') === this.users.get(this.userId).get('guild_id')) {
+        //   this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
+        //   this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
+        // }
         this.currentWar()
         document.getElementById('lastWars').classList.remove('open')
         document.getElementById('members').classList.remove('open')
@@ -86,10 +113,10 @@ export const GuildView = Backbone.View.extend({
 
     const load = async () => {
       try {
-        await this.users.fetch() &&
-        await this.ladders.fetch() &&
-        await this.guilds.fetch()
-        this.renderPannel()
+        // await this.users.fetch() &&
+        // await this.ladders.fetch() &&
+        // await this.guilds.fetch()
+        // this.renderPannel()
         this.lastWars()
       } catch (e) {
         this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
