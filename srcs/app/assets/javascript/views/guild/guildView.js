@@ -33,6 +33,7 @@ export const GuildView = Backbone.View.extend({
   },
   el: $('#app'),
   render: function () {
+    this.guild = this.guilds.get(this.id)
     if (this.id === null || this.id === undefined) {
       console.log(this.userId)
       this.id = this.users.get(this.userId).get('guild_id')
@@ -44,63 +45,26 @@ export const GuildView = Backbone.View.extend({
     }
     this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
     this.renderPannel()
-    if (this.userLogged.get('guild_id') &&
-        this.guild.get('id') === this.userLogged.get('guild_id')) {
+    if (this.guild.get('id') === this.userLogged.get('guild_id')) {
       this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
-      this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
+      this.$el.find('#calendar').html('<div class=\"subNavBarEl\">Calendar</div>')
     }
     this.loadCurrentWar()
     return this
   },
 
   loadCurrentWar: function () {
-    const load = async () => {
-      try {
-        // await this.users.fetch()
-        // if (this.id === null || this.id === undefined) {
-        //   console.log(this.userId)
-        //   this.id = this.users.get(this.userId).get('guild_id')
-        //   console.log(this.id)
-        // }
-        // if (this.id === null || this.id === undefined) {
-        //   this.$el.find('#guildContent').html(Handlebars.templates.notMemberOfAGuild({}))
-        //   return
-        // }
-        // await this.ladders.fetch() &&
-        // await this.guilds.fetch()
-        this.guild = this.guilds.get(this.id)
-        console.log(this.guild)
+    document.getElementById('lastWars').classList.remove('open')
+    document.getElementById('members').classList.remove('open')
 
-        // if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
-        //   this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
-        //   return
-        // }
-
-        // this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
-        // this.renderPannel()
-
-        // if (this.users.get(this.userId).get('guild_id') &&
-        //     this.guilds.get(this.id).get('id') === this.users.get(this.userId).get('guild_id')) {
-        //   this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
-        //   this.$el.find('#calendar').html('<span class=\"subNavBarEl\">Calendar</span>')
-        // }
-        this.currentWar()
-        document.getElementById('lastWars').classList.remove('open')
-        document.getElementById('members').classList.remove('open')
-
-        const div = document.getElementById('currentWar')
-        div.classList.add('open')
-        this.positionSquare(div.getBoundingClientRect())
-      } catch (e) {
-        console.log(e)
-        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    const div = document.getElementById('currentWar')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
+    this.currentWar()
   },
 
   positionSquare: function (offsets) {
-    document.getElementById('square').style.left = offsets.left - 32
+    document.getElementById('square').style.left = offsets.left - 24
   },
 
   loadLastWars: function () {
@@ -153,7 +117,19 @@ export const GuildView = Backbone.View.extend({
   },
 
   currentWar: function () {
-    const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
+    const context = JSON.parse(JSON.stringify(this.guild))
+    let war
+    for (let i = 0; i < this.wars.length; i++) {
+      if (this.wars.at(i).get('opened') === true) {
+        war = this.wars.at(i)
+        break
+      }
+    }
+    if (war === undefined) {
+      context.war = false
+    } else {
+      context.war = true
+    }
     this.$el.find('#guildcontent').html(Handlebars.templates.currentWar(context))
     return this
   },
@@ -176,7 +152,6 @@ export const GuildView = Backbone.View.extend({
       membersNumber: 0
     }
     for (let i = 0; i < this.members.length; i++) {
-      console.log(this.members)
       const member = this.members.at(i)
 
       context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(member)), i))
@@ -233,7 +208,7 @@ export const GuildView = Backbone.View.extend({
     } else {
       user.slide_show = './icons/slideshow.svg'
     }
-    user.follow = this.users.get(this.userId).get('friends').some(el => el.friend_id === user.id)
+    user.follow = this.userLogged.get('friends').some(el => el.friend_id === user.id)
     if (user.guild_id) {
       user.guildName = this.guilds.get(user.guild_id).get('name')
     }

@@ -202,7 +202,7 @@ export const ProfileView = Backbone.View.extend({
   },
 
   positionSquare: function (offsets) {
-    document.getElementById('square').style.left = offsets.left - 32
+    document.getElementById('square').style.left = offsets.left - 24
   },
 
   loadAchievements: function () {

@@ -44,12 +44,17 @@
     font-family: Quantico-Regular;
     font-size: clamp(24px, 3vw, 30px);
 
+    cursor: pointer;
+}
+
+.subNavBarProfile {
+    margin-top: 64px;
+}
+
+.subNavBar .nav {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    margin-top: 64px;
-
-    cursor: pointer;
 }
 
 .subNavBar
