@@ -50,10 +50,10 @@ export const ProfileView = Backbone.View.extend({
       const response3 = this.myTournamentGames.fetchMyGames(this.id, 'tournament')
       const response4 = this.myLadderGames.fetchMyGames(this.id, 'ladder')
       const response5 = this.myDuelGames.fetchMyGames(this.id, 'duel')
-      await response1 && await response2 && await response3 && await response4 && await response5
-      console.log(this.myTournamentGames)
-      console.log(this.myLadderGames)
-      console.log(this.myDuelGames)
+      const response6 = this.achievements.fetchByUserId(this.id)
+      await response1 && await response2 && await response3 && await response4 && await response5 && await response6
+      console.log(this.users.get(this.id))
+      console.log(this.achievements)
       this.renderPannel()
       this.loadMatchHistory()
     }
@@ -94,16 +94,20 @@ export const ProfileView = Backbone.View.extend({
         let _y = 0
         while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
           _x += el.offsetLeft - el.scrollLeft
-          _y += el.offsetTop - el.scrollTop
+          // _y += el.offsetTop - el.scrollTop
+          _y += el.offsetTop
           el = el.offsetParent
         }
         return { top: _y, left: _x }
       }
       const off = getOffset(e.currentTarget)
-      dropList.style.top = off.top + 45 - document.getElementById('matches-filter').scrollTop
-      dropList.style.position = 'abosulte'
+      console.log(e)
+      console.log(e.screenY)
+      // dropList.style.top = off.top + 45 - e.screenY
+      dropList.style.top = e.pageY + 30
+      dropList.style.position = 'absolute'
       dropList.style.left = off.left
-      dropList.style.display = 'flex'
+      dropList.style.display = 'block'
     } else {
       document.getElementById('matches-list').style.display = 'none'
     }
@@ -167,19 +171,18 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadAchievements: function () {
-    const load = async () => {
-      try {
-        await this.users.fetch()
-        this.checkLadderId()
-        await this.achievements.fetch()
-        // this.renderPannel()
-        this.achievementsView()
-      } catch (e) {
-        console.log(e)
-        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    // const load = async () => {
+    // try {
+    // await this.users.fetch()
+    // this.checkLadderId()
+    // await this.achievements.fetch()
+    // this.renderPannel()
+    this.achievementsView()
+    // } catch (e) {
+    // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
+    // }
+    // }
+    // load()
   },
 
   loadGuild: function () {
@@ -193,7 +196,6 @@ export const ProfileView = Backbone.View.extend({
         // this.renderPannel()
         this.profileGuild()
       } catch (e) {
-        console.log(e)
         this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
       }
     }
@@ -239,7 +241,6 @@ export const ProfileView = Backbone.View.extend({
 
   pushDone: function (context, game) {
     context.unshift({})
-    console.log(game)
     const length = 0
     context[length].nb = context.length
     const opponentId1 = game.get('winner_id')
@@ -329,7 +330,6 @@ export const ProfileView = Backbone.View.extend({
         context.friends[i].guild = false
       }
     }
-    console.log(this.users.get(1))
     this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
     return this
   },
@@ -360,7 +360,6 @@ export const ProfileView = Backbone.View.extend({
       guild_id: this.users.get(this.id).get('guild_id'),
       id: this.id
     }
-    console.log(this.achievements)
     this.$el.find('#profileContent').html(Handlebars.templates.achievements(context))
   },
 
@@ -387,7 +386,6 @@ export const ProfileView = Backbone.View.extend({
       members: Array(),
       membersNumber: 0
     }
-    // console.log(this.users.get(this.userId)
     for (let i = 1; i <= this.users.length; i++) {
       if (!this.users.get(i).get('guild_id') || this.users.get(i).get('guild_id') != guild.get('id')) {
         continue
@@ -420,7 +418,6 @@ export const ProfileView = Backbone.View.extend({
         this.users.get(this.userId).set({ guild_id: null })
         this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
-        console.log(e)
       }
     }
     leave()
@@ -457,7 +454,6 @@ export const ProfileView = Backbone.View.extend({
       method: 'POST',
       context: this,
       success: function (response) {
-        console.log(response)
         // this.gameId = response.id
         window.location.href = `#game/${response.id}`
         // navigate to game/{{this.gameId}}
@@ -467,24 +463,19 @@ export const ProfileView = Backbone.View.extend({
 
   playUser: function () {
     // not implemented yet
-    console.log('play with user')
     try {
       this.requestDuel()
     } catch (e) {
-      console.log('error while requesting duel')
       // gérer dans la notif l'erreur?
-      console.log(e)
     }
   },
 
   followUser: function (e) {
-    console.log(e.target.value)
     if (e.target.value) {
       this.tid = e.target.value
     } else {
       this.tid = this.id
     }
-    console.log(this.tid)
     const follow = async () => {
       try {
         const friends = this.users.get(this.userId).get('friends')
@@ -523,7 +514,6 @@ export const ProfileView = Backbone.View.extend({
         const response = await guild.sendInvitation(this.id)
         this.$el.find('#sendInvitationButton').html('<span>Invited</span>')
       } catch (e) {
-        console.log(e)
       }
     }
     sendInvitation()

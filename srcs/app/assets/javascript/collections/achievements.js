@@ -8,8 +8,13 @@ export const Achievements = Backbone.Collection.extend({
     // this.fetch('success')
   },
   model: Achievement,
-  urlRoot: '/api/achievements/',
+  urlRoot: '/api/achievements',
   url: function () {
     return this.urlRoot
+  },
+  fetchByUserId: function (userId) {
+    return this.fetch({
+      url: this.urlRoot + '?user_id=' + userId
+    })
   }
 })
