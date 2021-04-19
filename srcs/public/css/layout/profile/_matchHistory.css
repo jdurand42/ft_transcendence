@@ -106,15 +106,21 @@
     flex-direction: row;
     align-items: center;
     justify-content: center; */
-    line-height: 60px;
+    /* line-height: 60px; */
     float: left;
     width: 100%;
+}
+
+#matchHistoryBlock
+.forfeit {
+    font-size: 14px;
 }
 
 #matchHistoryBlock
 .nb {
     float: left;
     padding-left: 16px;
+    line-height: 60px;
 }
 
 #matchHistoryBlock
@@ -126,12 +132,22 @@
 #matchHistoryBlock
 .center {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 
+    height: 60px;
+
     position: relative;
     right: 8px;
+}
+
+#matchHistoryBlock
+.not-forfeit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 #matchHistoryBlock
