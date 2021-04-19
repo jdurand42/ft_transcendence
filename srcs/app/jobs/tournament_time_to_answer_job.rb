@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class TournamentTimeToAnswerJob < ApplicationJob
+  include(GameOverHelper)
   queue_as :default
 
   def perform(game)
