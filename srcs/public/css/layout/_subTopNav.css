@@ -2,7 +2,7 @@
 	position: relative;
 }*/
 
-.subNavBar {
+/* .subNavBar { */
 	/* list-style-type: none; */
 	/* padding-top: 25px; */
 	/* margin: 0px; */
@@ -10,8 +10,8 @@
 	/*height: 100%;*/
 	/* width = 100vw*/
 	/* text-align: center; */
-}
-
+/* } */
+/* 
 .subNavBar li {
 	font-family: Quantico-regular;
 	font-size: 30px;
@@ -24,7 +24,7 @@
 .subNavBar .subNavBarEl:hover {
     border-bottom: 2px solid black;
 	/* text-decoration: underline; */
-}
+/* }
 
 .subNavBar  {
     font-family: Quantico-Regular;
@@ -37,4 +37,33 @@
     cursor: pointer;
 
 	margin: auto;
+}  */
+
+
+.subNavBar {
+    font-family: Quantico-Regular;
+    font-size: clamp(24px, 3vw, 30px);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin-top: 64px;
+
+    cursor: pointer;
+}
+
+.subNavBar
+.open {
+    border-bottom: 2px solid black;
+}
+
+.subNavBar
+.square {
+    width: 19px;
+    height: 19px;
+
+    background-color: var(--primary-color);
+    transform: rotate(-8deg);
+
+    position: sticky;
 }
