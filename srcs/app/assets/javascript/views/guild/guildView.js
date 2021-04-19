@@ -116,8 +116,29 @@ export const GuildView = Backbone.View.extend({
     load()
   },
 
+  updateContextCurrentWar: function (context, war) {
+    const fromGuild = this.guilds.get(war.get('from_id'))
+    const onGuild = this.guilds.get(war.get('on_id'))
+    context.fromName = fromGuild.get('name')
+    context.onName = onGuild.get('name')
+    context.fromScore = war.get('from_score')
+    context.onScore = war.get('on_score')
+    context.prize = war.get('prize')
+    if (war.get('tournament_effort') === true) {
+      context.tournamentsIcon = './icons/check_circle-yellow.svg'
+    } else {
+      context.tournamentsIcon = './icons/highlight_off.svg'
+    }
+    if (war.get('ladder_effort') === true) {
+      context.ladderIcon = './icons/check_circle-yellow.svg'
+    } else {
+      context.ladderIcon = './icons/highlight_off.svg'
+    }
+    context.warTime = []
+  },
+
   currentWar: function () {
-    const context = JSON.parse(JSON.stringify(this.guild))
+    const context = {}
     let war
     for (let i = 0; i < this.wars.length; i++) {
       if (this.wars.at(i).get('opened') === true) {
@@ -125,11 +146,13 @@ export const GuildView = Backbone.View.extend({
         break
       }
     }
+    war = this.wars.at(0) // TEST
     if (war === undefined) {
       context.war = false
     } else {
       context.war = true
     }
+    this.updateContextCurrentWar(context, war)
     this.$el.find('#guildcontent').html(Handlebars.templates.currentWar(context))
     return this
   },
