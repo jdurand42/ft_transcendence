@@ -437,7 +437,6 @@ export const ProfileView = Backbone.View.extend({
       context.achievement[i].achieved = 'achieved'
     }
     for (let i = 0; i < this.achievements.length; i++) {
-      console.log(context)
       if (this.myAchievements.some(el => el.get('id') === this.achievements.at(i).get('id')) === false) {
         context.achievement.push(JSON.parse(JSON.stringify(this.achievements.at(i))))
         const length = context.achievement.length - 1

@@ -42,14 +42,19 @@ export const GameRecord = Backbone.Model.extend({
   },
 
   inviteTournamentGame: function (userId) {
-    fetch('/api/games', {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify({
-        opponent_id: userId,
-        mode: 'tournament'
-      })
+    return this.save({
+      opponent_id: userId,
+      mode: 'tournament'
     })
+
+    // fetch('/api/games', {
+    //   method: 'POST',
+    //   headers: this.headers,
+    //   body: JSON.stringify({
+    //     opponent_id: userId,
+    //     mode: 'tournament'
+    //   })
+    // })
   }
 
 })

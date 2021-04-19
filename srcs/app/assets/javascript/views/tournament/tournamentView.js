@@ -217,7 +217,11 @@ export const TournamentView = Backbone.View.extend({
     const userId = Number(e.currentTarget.getAttribute('for'))
     const newGame = new GameRecord()
 
-    newGame.inviteTournamentGame(userId)
+    const createGame = async () => {
+      await newGame.inviteTournamentGame(userId)
+      this.initializeTimerPendingMatch('timer' + userId, userId, newGame)
+    }
+    createGame()
   },
 
   fillContextRanked: function (user) {
@@ -279,13 +283,8 @@ export const TournamentView = Backbone.View.extend({
         } else {
           id = game.get('player_right_id')
         }
-        index = 0
-        this.context.ranked.some(el => {
-          index += 1
-          return el.id === game.get(id)
-        })
-        index--
-        this.context.ranked[index].defeats += 1
+        const found = this.context.ranked.find(el => el.id === id)
+        found.defeats += 1
       }
     }
   },
@@ -420,27 +419,46 @@ export const TournamentView = Backbone.View.extend({
           found.waiting = true
         }
 
-        const date = new Date(game.get('created_at'))
-        date.setSeconds(date.getSeconds() + 60)
-        // date.setSeconds(date.getSeconds() + this.tournament.get('time_to_answer'))
-        const countDownDate = new Date(date).getTime()
-        this.tta.push(setInterval(function () {
-          const now = new Date().getTime()
-          const distance = countDownDate - now
-          const days = Math.floor(distance / (1000 * 60 * 60 * 24))
-          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-          const secondes = Math.floor((distance % (1000 * 60)) / 1000)
-
-          if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
-            document.getElementById('timer' + found.opponentId).innerHTML = minutes + 'm ' + secondes + 's'
-          }
-          if (distance < 0) {
-            clearInterval(this)
-          }
-        }, 1000))
+        this.initializeTimerPendingMatch('timer' + found.opponentId, found.opponentId, game)
       }
     }
+  },
+
+  initializeTimerPendingMatch: function (div, opponentId, game) {
+    try {
+      const found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
+      found.play = 'Pending'
+      found.pending = true
+
+      this.updateHTML('button-timer' + opponentId, 'timer' + opponentId, Handlebars.templates.tournamentMyMatches)
+      const playButton = document.getElementById('play-my-matches' + opponentId)
+      playButton.innerHTML = 'Pending'
+      playButton.style.backgroundcolor = '#C4C4C4'
+      playButton.style.cursor = 'auto'
+      playButton.classList.remove('Challenge')
+      playButton.classList.add('Pending')
+    } catch (e) {}
+    const date = new Date(game.get('created_at'))
+    date.setSeconds(date.getSeconds() + 60)
+    // date.setSeconds(date.getSeconds() + this.tournament.get('time_to_answer'))
+    const countDownDate = new Date(date).getTime()
+    this.tta.push(setInterval(function () {
+      const now = new Date().getTime()
+      const distance = countDownDate - now
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+      const secondes = Math.floor((distance % (1000 * 60)) / 1000)
+
+      if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
+        try {
+          document.getElementById(div).innerHTML = minutes + 'm ' + secondes + 's'
+        } catch (e) {}
+      }
+      if (distance < 0) {
+        clearInterval(this)
+      }
+    }, 1000))
   },
 
   initializeAllMatchesToDo: function () {
@@ -578,6 +596,7 @@ export const TournamentView = Backbone.View.extend({
 
   updateHTML: function (parent, child, template) {
     const html = template(this.context)
+    console.log(html)
     // document.getElementById(child).remove()
     document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },
