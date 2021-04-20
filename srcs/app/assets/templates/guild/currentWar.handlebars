@@ -2,22 +2,22 @@
 {{#if war}}
 <div class="current-war">
 	<div class="scores">
-		<div class="from-name">{{fromName}}</div>
-		<div class="from-score">{{fromScore}}</div>
+		<div class="name from-name">{{fromName}}</div>
+		<div class="score from-score" id="from-score">{{fromScore}}</div>
 		<div class="vs">VS</div>
-		<div class="on-score">{{onScore}}</div>
-		<div class="on-name">{{onName}}</div>
+		<div class="score on-score" id="on-score">{{onScore}}</div>
+		<div class="name on-name">{{onName}}</div>
 	</div>
 	<div class="war-informations">
 		<div class="war-informations-container">
 			<div class="war-informations-title">War informations</div>
 			<div class="arrow-icon-container">
-				<img src="./icons/arrow_down-white.svg" class="arrow-icon">
+				<img src="./icons/arrow_down-white.svg" class="arrow-icon" id="arrow-icon">
 			</div>
 		</div>
-		<div class="war-infos" style="display: none;">
-			<div class="war-schedule-container">
-				<div class="war-schedule-title">War schedule</div>
+		<div class="war-infos" id="war-infos" style="display: none;">
+			<div class="war-info war-schedule-container">
+				<div class="title war-schedule-title">War schedule</div>
 				<div class="schedule-icon-container">
 					<img src="./icons/schedule-yellow.svg" class="schedule-icon">
 				</div>
@@ -28,11 +28,11 @@
 				</div>
 				<div class="timer" id="war-timer"></div>
 			</div>
-			<div class="war-rules-container">
-				<div class="war-rules-title">War rules</div>
+			<div class="war-info war-rules-container">
+				<div class="title war-rules-title">War rules</div>
 				<div class="war-rules-sub-container">
-					<div class="win-reward">
-						<div class="win-reward-title">Win reward</div>
+					<div class="war-rules-sub win-reward">
+						<div class="sub-title win-reward-title">Win reward</div>
 						<div class="win-reward-points-container">
 							<div class="icon-reward-container">
 								<img src="./icons/cup.svg">
@@ -40,36 +40,36 @@
 							<div class="points">{{prize}} points</div>
 						</div>
 					</div>
-					<div class="accontable-matches">
-						<div class="accontable-matches-title">Accountable matches</div>
-						<div class="ladder-container">
-							<div class="ladder-icon-container">
+					<div class="war-rules-sub accontable-matches">
+						<div class="sub-title accontable-matches-title">Accountable matches</div>
+						<div class="accountable-matches-sub-container ladder-container">
+							<div class="icon-container ladder-icon-container">
 								<img src="{{ladderIcon}}" class="check ladder-icon">
 							</div>
 							<div class="ladder-name">Ladder</div>
 						</div>
-						<div class="tournaments-container">
-							<div class="tournaments-icon-container">
+						<div class="accountable-matches-sub-container tournaments-container">
+							<div class="icon-container tournaments-icon-container">
 								<img src="{{tournamentsIcon}}" class="check tournaments-icon">
 							</div>
 							<div class="tournaments-name">Tournaments</div>
 						</div>
-						<div class="interguild-container">
-							<div class="interguild-icon-container">
+						<div class="accountable-matches-sub-container interguild-container">
+							<div class="icon-container interguild-icon-container">
 								<img src="./icons/check_circle-yellow.svg" class="check interguild-icon">
 							</div>
-							<div class="tournaments-name">Tournaments</div>
+							<div class="tournaments-name">Interguild duels</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="war-time-rules-container">
-				<div class="war-time-rules-title">War times rules</div>
+			<div class="war-info war-time-rules-container">
+				<div class="title war-time-rules-title">War times rules</div>
 				<table class="war-time-table">
 					<tr>
-						<th class="schedule-th">Schedule</th>
-						<th class="max-unanswered-th">Max unanswered<br>matches</th>
-						<th class="tta-th">Time to answer</th>
+						<th class="sub-title schedule-th">Schedule</th>
+						<th class="sub-title max-unanswered-th">Max unanswered<br>matches</th>
+						<th class="sub-title tta-th">Time to answer</th>
 					</tr>
 				{{#each warTime}}
 				<tr class="each-war-time">
@@ -92,70 +92,70 @@
 				</div>
 			</div>
 		</div>
-		<div class="fights-container">
-			<div class="timer-war-time-container">
-				<div class="next-war-time-in">Next war time in</div>
-				<div class="timer"></div>
-			</div>
-			<div class="nb-matches-missed-container">
-				<div class="nb-matches-missed-title">Number of matches calls missed during this war time:</div>
-				<div class="matches-missed">
-					<div class="from-matches-missed">
-						<div class="from-name">{{fromName}}</div>
-						<div class="hyphen">-</div>
-						<div class="from-nb-matches-missed">{{nbFromMissed}}</div>
-					</div>
-					<div class="on-matches-missed">
-						<div class="on-name">{{onName}}</div>
-						<div class="hyphen">-</div>
-						<div class="on-nb-matches-missed">{{nbOnMissed}}</div>
-					</div>
+	<div class="fights-container">
+		<div class="timer-war-time-container">
+			<div class="title next-war-time-in">Next war time in</div>
+			<div class="timer"></div>
+		</div>
+		<div class="nb-matches-missed-container">
+			<div class="nb-matches-missed-title">Number of matches calls missed during this war time:</div>
+			<div class="matches-missed">
+				<div class="each-matches-missed from-matches-missed">
+					<div class="name from-name">{{fromName}}</div>
+					<div class="hyphen">-</div>
+					<div class="nb-matches-missed from-nb-matches-missed">{{nbFromMissed}}</div>
 				</div>
-				<div class="random-fight">
-					<div class="title">{{randomFight}}</div>
-					<div class="button-timer">
-						<button class="accept-random-fight">{{accept}}</button>
-						<div class="timer" id="war-time-timer"></div>
-					</div>
+				<div class="each-matches-missed on-matches-missed">
+					<div class="name on-name">{{onName}}</div>
+					<div class="hyphen">-</div>
+					<div class="nb-matches-missed on-nb-matches-missed">{{nbOnMissed}}</div>
+				</div>
+			</div>
+			<div class="random-fight">
+				<div class="random-fight-title">No random fight pending</div>
+				{{!-- <div class="title">{{randomFight}}</div> --}}
+				<div class="button-timer">
+					<button class="accept-random-fight">{{accept}}</button>
+					<div class="timer" id="war-time-timer">00j 00h 00m 00s</div>
 				</div>
 			</div>
 		</div>
-		<div class="last-matches-container">
-			<div class="last-matches-title">Last matches of war times</div>
-			{{#each lastMatches}}
-			<div class="match-done-container">
-				<div class="match-done">
-					<div class="nb">{{nb}}</div>
-					<div class="center">
-						<div class="not-forfeit">
-							<div class="image-nickname" onclick="window.location='#profile/{{opponentId1}}/';">
-								<div class="opponent opponent1">{{opponent1}}</div>
-								<div class="image-container">
-									<img class="image-url" src="{{avatarOpponent1}}">
-								</div>
-							</div>
-							<div class="score score1">{{score1}}</div>
-							<div class="VS">VS</div>
-							<div class="score score2">{{score2}}</div>
-							<div class="image-nickname" onclick="window.location='#profile/{{opponentId2}}/';">
-								<div class="image-container">
-									<img class="image-url" src="{{avatarOpponent2}}">
-								</div>
-								<div class="opponent opponent2">{{opponent2}}</div>
+	</div>
+	<div class="last-matches-container">
+		<div class="title last-matches-title">Last matches of war times</div>
+		{{#each lastMatches}}
+		<div class="match-done-container">
+			<div class="match-done">
+				<div class="nb">{{nb}}</div>
+				<div class="center">
+					<div class="not-forfeit">
+						<div class="image-nickname" onclick="window.location='#profile/{{opponentId1}}/';">
+							<div class="opponent opponent1">{{opponent1}}</div>
+							<div class="image-container">
+								<img class="image-url" src="{{avatarOpponent1}}">
 							</div>
 						</div>
+						<div class="score score1">{{score1}}</div>
+						<div class="VS">VS</div>
+						<div class="score score2">{{score2}}</div>
+						<div class="image-nickname" onclick="window.location='#profile/{{opponentId2}}/';">
+							<div class="image-container">
+								<img class="image-url" src="{{avatarOpponent2}}">
+							</div>
+							<div class="opponent opponent2">{{opponent2}}</div>
+						</div>
+					</div>
 					{{#if forfeit}}
 					<div class="forfeit">Victory by forfeit</div>
 					{{/if}}
-					</div>
 				</div>
 			</div>
-			{{/each}}
 		</div>
+		{{/each}}
 	</div>
 </div>
 {{/if}}
 {{#unless war}}
-	<div class="no-current-war">NO WAR CURRENTLY GOING ON</div>
+<div class="no-current-war">NO WAR CURRENTLY GOING ON</div>
 {{/unless}}
 </div>

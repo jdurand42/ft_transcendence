@@ -62,10 +62,9 @@
 	margin: auto;
 }
 
-
 .contentWrapper {
-	/* height: 100%; */
-	/* position: relative; */
+	min-height: calc(100vh - var(--header-size));
+
 	padding-top: 64px;
 	display: flex;
 	flex-direction: column;

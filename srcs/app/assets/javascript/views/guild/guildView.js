@@ -1,5 +1,6 @@
 import { Users } from '../../collections/usersCollection'
 import { Wars } from '../../collections/warCollection'
+import { WarTimes } from '../../collections/warTimesCollection'
 import { User } from '../../models/userModel'
 
 export const GuildView = Backbone.View.extend({
@@ -7,7 +8,9 @@ export const GuildView = Backbone.View.extend({
     'click #currentWar': 'loadCurrentWar',
     'click #lastWars': 'loadLastWars',
     'click #members': 'loadMembers',
-    'click #calendar': 'loadCalendar'
+    'click #calendar': 'loadCalendar',
+    'click .war-informations-container': 'displayWarInformations',
+    'click .scores-last-wars': 'openLastWar'
   },
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
@@ -18,6 +21,10 @@ export const GuildView = Backbone.View.extend({
     this.members = new Users()
     this.wars = new Wars()
     this.userLogged = new User()
+    this.currentWar = undefined
+    this.currentWarTimes = undefined
+    this.lastWars = new Wars()
+    this.lastWarsTimes = []
 
     const fetch = async () => {
       const response1 = this.members.fetchByGuildId(this.id)
@@ -26,6 +33,37 @@ export const GuildView = Backbone.View.extend({
       const response5 = this.guilds.fetch()
       const response6 = this.userLogged.fetchUser(this.userId)
       await response2 && await response5 && await response6
+
+      console.log(this.wars)
+
+      for (let i = 0; i < this.wars.length; i++) {
+        if (this.wars.at(i).get('opened') === true) {
+          this.currentWar = this.wars.at(i)
+          this.currentWar = new WarTimes(this.wars.at(i).get('id'))
+          await this.currentWarTimes.fetch()
+        }
+        if (this.wars.at(i).get('closed') === false) { // TEST METTRE == TRUE
+          this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
+          this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
+          this.lastWars.add(this.wars.at(i))
+        }
+      }
+      this.currentWar = this.wars.at(0) // TEST
+      console.log(this.currentWar.get('id'))
+      console.log(this.currentWar.get('id'))
+      try {
+        if (this.currentWar !== undefined) {
+          this.currentWarTimes = new WarTimes(this.currentWar.get('id')) // TEST
+        }
+
+        await this.currentWarTimes.fetch() // TEST
+      } catch (e) {
+        console.log('404 war times to do back')
+      }
+
+      console.log(this.currentWarTimes)
+      console.log(this.lastWarsTimes)
+
       this.render()
       // this.loadCurrentWar()
     }
@@ -35,9 +73,7 @@ export const GuildView = Backbone.View.extend({
   render: function () {
     this.guild = this.guilds.get(this.id)
     if (this.id === null || this.id === undefined) {
-      console.log(this.userId)
       this.id = this.users.get(this.userId).get('guild_id')
-      console.log(this.id)
     }
     if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
       this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
@@ -53,6 +89,27 @@ export const GuildView = Backbone.View.extend({
     return this
   },
 
+  openLastWar: function (e) {
+    const id = Number(e.currentTarget.getAttribute('for'))
+    const div = document.getElementById('war-informations-' + id)
+    if (div.style.display === 'none') {
+      div.style.display = 'flex'
+    } else {
+      div.style.display = 'none'
+    }
+  },
+
+  displayWarInformations: function () {
+    const div = document.getElementById('war-infos')
+    if (div.style.display === 'none') {
+      div.style.display = 'flex'
+      document.getElementById('arrow-icon').style.transform = 'rotate(-180deg)'
+    } else {
+      div.style.display = 'none'
+      document.getElementById('arrow-icon').style.transform = 'rotate(0deg)'
+    }
+  },
+
   loadCurrentWar: function () {
     document.getElementById('lastWars').classList.remove('open')
     document.getElementById('members').classList.remove('open')
@@ -60,7 +117,7 @@ export const GuildView = Backbone.View.extend({
     const div = document.getElementById('currentWar')
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
-    this.currentWar()
+    this.displayCurrentWar()
   },
 
   positionSquare: function (offsets) {
@@ -75,18 +132,7 @@ export const GuildView = Backbone.View.extend({
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
 
-    const load = async () => {
-      try {
-        // await this.users.fetch() &&
-        // await this.ladders.fetch() &&
-        // await this.guilds.fetch()
-        // this.renderPannel()
-        this.lastWars()
-      } catch (e) {
-        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    this.displayLastWars()
   },
 
   loadMembers: function () {
@@ -101,29 +147,25 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadCalendar: function () {
-    const load = async () => {
-      try {
-        await this.users.fetch() &&
-        await this.ladders.fetch() &&
-        await this.guilds.fetch() &&
-        this.renderPannel()
-        this.calendar()
-      } catch (e) {
-        console.log(e)
-        this.$el.find('#guildContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    this.calendar()
   },
 
   updateContextCurrentWar: function (context, war) {
     const fromGuild = this.guilds.get(war.get('from_id'))
     const onGuild = this.guilds.get(war.get('on_id'))
+    context.id = war.get('id')
     context.fromName = fromGuild.get('name')
     context.onName = onGuild.get('name')
     context.fromScore = war.get('from_score')
     context.onScore = war.get('on_score')
     context.prize = war.get('prize')
+    const warStart = new Date(war.get('war_start'))
+    let index = warStart.toString().indexOf('GMT')
+    context.warStart = warStart.toString().substr(0, index)
+
+    const warEnd = new Date(war.get('war_end'))
+    index = warEnd.toString().indexOf('GMT')
+    context.warEnd = warEnd.toString().substr(0, index)
     if (war.get('tournament_effort') === true) {
       context.tournamentsIcon = './icons/check_circle-yellow.svg'
     } else {
@@ -137,29 +179,46 @@ export const GuildView = Backbone.View.extend({
     context.warTime = []
   },
 
-  currentWar: function () {
+  displayCurrentWar: function () {
     const context = {}
-    let war
-    for (let i = 0; i < this.wars.length; i++) {
-      if (this.wars.at(i).get('opened') === true) {
-        war = this.wars.at(i)
-        break
-      }
-    }
-    war = this.wars.at(0) // TEST
-    if (war === undefined) {
+    if (this.currentWar === undefined) {
       context.war = false
     } else {
       context.war = true
+      this.updateContextCurrentWar(context, this.currentWar)
     }
-    this.updateContextCurrentWar(context, war)
     this.$el.find('#guildcontent').html(Handlebars.templates.currentWar(context))
+    if (Number(context.fromScore) > Number(context.onScore)) {
+      document.getElementById('from-score').classList.add('winner')
+    } else if (Number(context.fromScore) < Number(context.onScore)) {
+      document.getElementById('on-score').classList.add('winner')
+    }
     return this
   },
 
-  lastWars: function () {
-    const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
+  displayLastWars: function () {
+    const context = {}
+    if (this.lastWars.length > 0) {
+      context.war = true
+    } else {
+      context.war = false
+    }
+
+    context.wars = []
+    for (let i = 0; i < this.lastWars.length; i++) {
+      context.wars.push({})
+      this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i))
+    }
+
     this.$el.find('#guildcontent').html(Handlebars.templates.lastWars(context))
+
+    for (let i = 0; i < context.wars.length; i++) {
+      if (Number(context.wars[i].fromScore) > Number(context.wars[i].onScore)) {
+        document.getElementById('from-score-' + context.wars[i].id).classList.add('winner')
+      } else if (Number(context.wars[i].fromScore) < Number(context.wars[i].onScore)) {
+        document.getElementById('on-score-' + context.wars[i].id).classList.add('winner')
+      }
+    }
 
     return this
   },

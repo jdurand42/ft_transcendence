@@ -8,7 +8,7 @@ templates['profilePannel'] = template({"compiler":[8,">= 4.3.0"],"main":function
         return undefined
     };
 
-  return "<div class=\"pannelContent\">\n\n	<div class=\"pannelLine\" id=\"pannelFirstLineProfile\">\n\n	<div class=\"pannelEl pannelUl\" id=\"pannelLeagueRank\">\n		<div class=\"pannelUlEl profilePanneEl pannelUlFirstEL\" id=\"leagueRank\">\n			"
+  return "<div class=\"pannelContent\">\n\n	<div class=\"paint line white-line\"></div>\n	<div class=\"paint red-ball\"></div>\n	<div class=\"paint line yellow-line\"></div>\n\n	<div class=\"pannelLine\" id=\"pannelFirstLineProfile\">\n\n	<div class=\"pannelEl pannelUl\" id=\"pannelLeagueRank\">\n		<div class=\"pannelUlEl profilePanneEl pannelUlFirstEL\" id=\"leagueRank\">\n			"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"score") : depth0), depth0))
     + "</div>\n		<!--<div class=\"pannelUlEl profilePanneEl pannelUlTotal\" id=\"totalLeagueRank\">\n		/"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"totalLeagueRank") : depth0), depth0))
