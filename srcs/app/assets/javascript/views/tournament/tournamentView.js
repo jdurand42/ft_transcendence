@@ -159,7 +159,7 @@ export const TournamentView = Backbone.View.extend({
           this.context.status = 'finish'
           this.context.createTournament = 'Create new tournament'
 
-          this.context.winner = 'jdurand' // TEST TO DO DYNAMICALLY
+          this.context.winner = this.registered.get(this.tournament.get('winner_id')).get('nickname')
           document.getElementById('winner').style.display = 'flex'
         }
       }
