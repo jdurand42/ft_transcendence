@@ -3,7 +3,15 @@
     color: var(--secondary-color);
 
     border-radius: 10px;
+}
 
+#current-war {
+    margin-top: 64px;
+}
+
+.guildBlock .no-current-war {
+    font-size: 30px;
+    padding-top: 15vh;
 }
 
 .guildBlock .title {
@@ -38,7 +46,7 @@
     justify-content: center;
 
     font-family: Quantico-Regular;
-    font-size: 37px;
+    font-size: 35px;
 
     height: 98px;
 }

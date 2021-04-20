@@ -14,6 +14,7 @@
 @import url(layout/guilds/_guilds.css);
 @import url(layout/guilds/_currentWar.css);
 @import url(layout/guilds/_lastWars.css);
+@import url(layout/guilds/_calendarWar.css);
 
 @import url(layout/listsPages/_lists.css);
 @import url(layout/listsPages/_filter.css);

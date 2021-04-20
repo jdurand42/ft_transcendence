@@ -1,3 +1,112 @@
-<p class="placeholder">
-	Welcome to the calendar
-<p>
+<div class="guildBlock" id="calendarWarPage">
+{{#if war}}
+<div class="line-fixed">
+	<div class="line" id="line"></div>
+</div>
+{{#each wars}}
+<div class="each-war">
+	<div class="explanation-{{index}}" style="display: none;"></div>
+	<div class="validation-container" id="validation-container-{{index}}">
+		<img src="{{icon}}" class="validation-icon">
+	</div>
+	<div class="current-war">
+	<div class="scores" id="scores-last-wars-{{id}}" for="{{id}}">
+		<div class="center">
+			<div class="name from-name">{{fromName}}</div>
+			<div class="vs">VS</div>
+			<div class="name on-name">{{onName}}</div>
+		</div>
+	</div>
+	<div class="war-informations" id="war-informations-{{id}}" for="{{id}}">
+		<div class="war-infos" id="war-infos">
+			<div class="war-info war-schedule-container">
+				<div class="title war-schedule-title">War schedule</div>
+				<div class="schedule-icon-container">
+					<img src="./icons/schedule-yellow.svg" class="schedule-icon">
+				</div>
+				<div class="war-time">
+					<div class="war-start">{{warStart}}</div>
+					<div class="hyphen">-</div>
+					<div class="war-end">{{warEnd}}</div>
+				</div>
+				<div class="timer" id="war-timer"></div>
+			</div>
+			<div class="war-info war-rules-container">
+				<div class="title war-rules-title">War rules</div>
+				<div class="war-rules-sub-container">
+					<div class="war-rules-sub win-reward">
+						<div class="sub-title win-reward-title">Win reward</div>
+						<div class="win-reward-points-container">
+							<div class="icon-reward-container">
+								<img src="./icons/cup.svg">
+							</div>
+							<div class="points">{{prize}} points</div>
+						</div>
+					</div>
+					<div class="war-rules-sub accontable-matches">
+						<div class="sub-title accontable-matches-title">Accountable matches</div>
+						<div class="accountable-matches-sub-container ladder-container">
+							<div class="icon-container ladder-icon-container">
+								<img src="{{ladderIcon}}" class="check ladder-icon">
+							</div>
+							<div class="ladder-name">Ladder</div>
+						</div>
+						<div class="accountable-matches-sub-container tournaments-container">
+							<div class="icon-container tournaments-icon-container">
+								<img src="{{tournamentsIcon}}" class="check tournaments-icon">
+							</div>
+							<div class="tournaments-name">Tournaments</div>
+						</div>
+						<div class="accountable-matches-sub-container interguild-container">
+							<div class="icon-container interguild-icon-container">
+								<img src="./icons/check_circle-yellow.svg" class="check interguild-icon">
+							</div>
+							<div class="tournaments-name">Interguild duels</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="war-info war-time-rules-container">
+				<div class="title war-time-rules-title">War times rules</div>
+				<table class="war-time-table">
+					<tr>
+						<th class="sub-title schedule-th">Schedule</th>
+						<th class="sub-title max-unanswered-th">Max unanswered<br>matches</th>
+						<th class="sub-title tta-th">Time to answer</th>
+					</tr>
+					{{#each warTime}}
+					<tr class="each-war-time">
+						<td class="schedule-td">
+							<div class="start">
+								<div class="day">{{startDay}}</div>
+								<div class="hour">{{startHour}}</div>
+							</div>
+							<div class="hyphen">-</div>
+							<div class="end">
+								<div class="day">{{endDay}}</div>
+								<div class="hour">{{endHour}}</div>
+							</div>
+						</td>
+						<td class="max-unanswered-td">{{maxUnanswered}}</td>
+						<td class="tta-td">{{tta}} min</td>
+					</tr>
+				{{/each}}
+				</table>
+			</div>
+			{{#if proposal}}
+			<div class="negociation-buttons">
+				<button class="negociation-button accept-button">Accept</button>
+				<button class="negociation-button negociate-button">Negociate</button>
+				<button class="negociation-button refuse-button">Refuse</button>
+			</div>
+			{{/if}}
+		</div>
+	</div>
+	</div>
+</div>
+{{/each}}
+{{/if}}
+{{#unless war}}
+<div class="no-current-war">NO WAR SCHEDULED</div>
+{{/unless}}
+</div>

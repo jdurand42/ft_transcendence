@@ -8,7 +8,7 @@ templates['currentWar'] = template({"1":function(container,depth0,helpers,partia
         return undefined
     };
 
-  return "<div class=\"current-war\">\n	<div class=\"scores\">\n		<div class=\"name from-name\">"
+  return "<div class=\"current-war\" id=\"current-war\">\n	<div class=\"scores\">\n		<div class=\"name from-name\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"fromName") || (depth0 != null ? lookupProperty(depth0,"fromName") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"fromName","hash":{},"data":data,"loc":{"start":{"line":5,"column":30},"end":{"line":5,"column":42}}}) : helper)))
     + "</div>\n		<div class=\"score from-score\" id=\"from-score\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"fromScore") || (depth0 != null ? lookupProperty(depth0,"fromScore") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"fromScore","hash":{},"data":data,"loc":{"start":{"line":6,"column":48},"end":{"line":6,"column":61}}}) : helper)))
