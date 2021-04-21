@@ -3,6 +3,7 @@
 module GameOverHelper
   include(UserStatusHelper)
   include(ScoreHelper)
+  include(CompetitionHelper)
   def notify_winner(game_id, user_id)
     ActionCable.server.broadcast("user_#{user_id}", { action: 'game_won', id: game_id })
   end
@@ -25,6 +26,8 @@ module GameOverHelper
     change_players_status(game, 'online')
     return if game.winner.nil?
 
+    assign_ladder(game.player_left)
+    assign_ladder(game.player_right)
     GamePointGiver.new.game_points(game)
     notify_players(game)
   end
