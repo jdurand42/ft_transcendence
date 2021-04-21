@@ -57,5 +57,15 @@ export const War = Backbone.Model.extend({
         max_unanswered: maxUnanswered
       })
     })
+  },
+
+  acceptRefuseWar: function (agree) {
+    const url = this.urlRoot + '/agreements'
+    return fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        agree_terms: agree
+      })
+    })
   }
 })

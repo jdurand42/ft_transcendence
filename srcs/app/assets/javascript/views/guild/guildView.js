@@ -11,7 +11,10 @@ export const GuildView = Backbone.View.extend({
     'click #calendarWar': 'loadCalendar',
     'click .war-informations-container': 'displayWarInformations',
     'click .scores-last-wars': 'openLastWar',
-    'mouseover .validation-container': 'displayExplanation'
+    'mouseover .validation-container': 'displayExplanation',
+    'click .accept-button': 'acceptWar',
+    'click .refuse-button': 'refuseWar',
+    'click .negociate-button': 'negociateWar'
   },
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
@@ -98,6 +101,16 @@ export const GuildView = Backbone.View.extend({
     this.renderPannel()
     this.loadCurrentWar()
     return this
+  },
+
+  acceptWar: function (e) {
+    const war = this.calendar.get(e.currentTarget.getAttribute('for'))
+    war.acceptRefuseWar(true)
+  },
+
+  refuseWar: function (e) {
+    const war = this.calendar.get(e.currentTarget.getAttribute('for'))
+    war.acceptRefuseWar(false)
   },
 
   openLastWar: function (e) {
@@ -348,11 +361,7 @@ export const GuildView = Backbone.View.extend({
       const center1Y = div1.clientTop + div1.clientHeight / 2
       e.currentTarget = document.getElementById('validation-container-' + (this.calendar.length - 1))
       const div2 = e.currentTarget
-      const center2X = div2.clientLeft + div2.clientWidth / 2
-      const center2Y = div2.clientTop + div2.clientHeight / 2
-
       const height = div2.offsetTop - div1.offsetTop
-
       const line = document.getElementById('line')
       line.style.top = center1Y
       line.style.left = center1X
@@ -365,11 +374,8 @@ export const GuildView = Backbone.View.extend({
   displayExplanation: function (e) {
     const index = e.currentTarget.getAttribute('for')
     const explanation = document.getElementById('explanation-' + index)
-    console.log(e)
     explanation.style.top = e.pageY
     explanation.style.left = e.pageX
-    console.log(explanation.style.top)
-    console.log(explanation.style.left)
   },
 
   updateContextForlist: function (user, i) {

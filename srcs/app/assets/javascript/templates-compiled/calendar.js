@@ -79,7 +79,20 @@ templates['calendar'] = template({"1":function(container,depth0,helpers,partials
     + alias4(((helper = (helper = lookupProperty(helpers,"tta") || (depth0 != null ? lookupProperty(depth0,"tta") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tta","hash":{},"data":data,"loc":{"start":{"line":91,"column":25},"end":{"line":91,"column":32}}}) : helper)))
     + " min</td>\n					</tr>\n";
 },"5":function(container,depth0,helpers,partials,data) {
-    return "			<div class=\"negociation-buttons\">\n				<button class=\"negociation-button accept-button\">Accept</button>\n				<button class=\"negociation-button negociate-button\">Negociate</button>\n				<button class=\"negociation-button refuse-button\">Refuse</button>\n			</div>\n";
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "			<div class=\"negociation-buttons\">\n				<button class=\"negociation-button accept-button\" for=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":98,"column":58},"end":{"line":98,"column":64}}}) : helper)))
+    + "\">Accept</button>\n				<button class=\"negociation-button negociate-button\" for=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":99,"column":61},"end":{"line":99,"column":67}}}) : helper)))
+    + "\">Negociate</button>\n				<button class=\"negociation-button refuse-button\" for=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":100,"column":58},"end":{"line":100,"column":64}}}) : helper)))
+    + "\">Refuse</button>\n			</div>\n";
 },"7":function(container,depth0,helpers,partials,data) {
     return "<div class=\"no-current-war\">NO WAR SCHEDULED</div>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
