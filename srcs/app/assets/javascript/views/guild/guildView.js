@@ -27,12 +27,23 @@ export const GuildView = Backbone.View.extend({
     this.lastWarsTimes = []
 
     const fetch = async () => {
+      // sécurité et séléction pour #guild/
+      await this.users.fetch() &&
+			await this.guilds.fetch()
+      if (this.id === null || this.id === undefined) {
+        this.id = this.users.get(this.userId).get('guild_id')
+      }
+      if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0 || this.id === null) {
+        this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
+        return
+      }
+      this.guild = this.guilds.get(this.id)
+
       const response1 = this.members.fetchByGuildId(this.id)
       const response2 = this.wars.fetchByGuildId(this.id)
       const response4 = this.ladders.fetch()
-      const response5 = this.guilds.fetch()
       const response6 = this.userLogged.fetchUser(this.userId)
-      await response2 && await response5 && await response6
+      await response2 && await response6
 
       console.log(this.wars)
 
@@ -40,7 +51,7 @@ export const GuildView = Backbone.View.extend({
         if (this.wars.at(i).get('opened') === true) {
           this.currentWar = this.wars.at(i)
           this.currentWar = new WarTimes(this.wars.at(i).get('id'))
-          await this.currentWarTimes.fetch()
+          // await this.currentWarTimes.fetch()
         }
         if (this.wars.at(i).get('closed') === false) { // TEST METTRE == TRUE
           this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
@@ -71,14 +82,6 @@ export const GuildView = Backbone.View.extend({
   },
   el: $('#app'),
   render: function () {
-    this.guild = this.guilds.get(this.id)
-    if (this.id === null || this.id === undefined) {
-      this.id = this.users.get(this.userId).get('guild_id')
-    }
-    if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
-      this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
-      return
-    }
     this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
     this.renderPannel()
     if (this.guild.get('id') === this.userLogged.get('guild_id')) {

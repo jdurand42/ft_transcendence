@@ -73,6 +73,10 @@ export const ProfileView = Backbone.View.extend({
           return options.inverse(this)
       }
     })
+    if (this.id > this.users.length || this.id <= 0) {
+      this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
+      return this
+    }
     this.renderPannel()
     this.loadMatchHistory()
     return this
@@ -148,10 +152,6 @@ export const ProfileView = Backbone.View.extend({
     // const load = async () => {
     // try {
     // await this.users.fetch()
-    // if (this.id > this.users.length || this.id <= 0) {
-    //   this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
-    //   return
-    // }
     // this.checkLadderId()
     this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
     document.getElementById('friends').classList.remove('open')
@@ -507,52 +507,36 @@ export const ProfileView = Backbone.View.extend({
     leave()
   },
 
-  /*
-	callAlfred: async function () {
-		return await $.ajax({
-			url: '/api/games/',
-			data: { mode: 'duel', opponent_id: '1' },
-			method: 'POST',
-			context: this,
-			success: function (response) {
-				console.log(response)
-				this.game = response
-				this.initializeGame()
-			}
-		})
-	},
+	 requestDuel: async function () {
+	 	return await $.ajax({
+	      url: '/api/games/',
+	      data: { mode: 'duel', opponent_id: this.id },
+	      method: 'POST',
+	      context: this,
+	      success: function (response) {
+	        // this.gameId = response.id
+	        window.location.href = `#game/${response.id}`
+	        // navigate to game/{{this.gameId}}
+	      }
+	    })
+	  },
 
-	challengeAlfred: function () {
-		// const load = async () => {
-		try {
-				this.callAlfred()
-		} catch (e) {
-		}
-		// }
-		// load()
-	} */
-  requestDuel: async function () {
-    return await $.ajax({
-      url: '/api/games/',
-      data: { mode: 'duel', opponent_id: this.id },
-      method: 'POST',
-      context: this,
-      success: function (response) {
-        // this.gameId = response.id
-        window.location.href = `#game/${response.id}`
-        // navigate to game/{{this.gameId}}
-      }
-    })
-  },
+	  playUser: function () {
+	    // not implemented yet
+	    try {
+	      this.requestDuel()
+	    } catch (e) {
+	      console.log(e)
+	      // gérer dans la notif l'erreur?
+	    }
+	  },
 
-  playUser: function () {
-    // not implemented yet
-    try {
-      this.requestDuel()
-    } catch (e) {
-      console.log(e)
-      // gérer dans la notif l'erreur?
-    }
+  spectateUser: function () {
+    // check if online
+    // check if same user
+    // get user game
+    // go spectate
+
   },
 
   followUser: function (e) {

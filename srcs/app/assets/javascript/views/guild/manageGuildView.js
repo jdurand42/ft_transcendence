@@ -103,8 +103,8 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   getPermissionsBool () {
-    this.ownerBool = (this.id == this.guilds.get('owner_id'))
-    this.officerBool = (this.guild.get('officer_ids').includes(this.id) || this.id === this.guilds.get('owner_id'))
+    this.ownerBool = (parseInt(this.userId) === this.guild.get('owner_id')[0])
+    this.officerBool = (this.guild.get('officer_ids').includes(parseInt(this.userId)) || this.ownerBool)
     console.log(this.ownerBool)
     console.log(this.officerBool)
   },

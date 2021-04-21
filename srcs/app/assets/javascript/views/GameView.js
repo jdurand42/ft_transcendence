@@ -21,7 +21,7 @@ export const GameView = Backbone.View.extend({
     this.socket = options.socket
     this.gameId = options.gameId
     this.games = this.model.get('gameRecords').get('obj')
-    console.log(this.opponentId)
+    // console.log(this.opponentId)
     this.loadModels()
   },
 
@@ -343,7 +343,7 @@ function gameLoop (data) {
   printTextBoxes(data[0])
   printPaddles(data[0])
   printBall(data[0])
-  console.log('frame')
+  // console.log('frame')
   // printPing(data[0])
   if (!data[0].end) {
     // if (data[0].frameLimiter) {
