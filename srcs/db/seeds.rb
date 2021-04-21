@@ -39,9 +39,18 @@ if Rails.env.development?
       FactoryBot.create(:chat_participant, user: @users[i], chat: chat)
     end
     guilds.without(guild).each do |on|
-      FactoryBot.create(:war, from: guild, on: on, war_start: DateTime.now + rand(-5..5), war_end: DateTime.now + rand(6..10))
+      case rand(3)
+      when 0
+        attr = { opened: true, closed: false }
+      when 1
+        attr = { opened: false, closed: true }
+      else
+        attr = { opened: false, closed: false }
+      end
+      FactoryBot.create(:war, from: guild, on: on, war_start: DateTime.now + rand(-5..5), war_end: DateTime.now + rand(6..10), opened: attr[:opened], closed: attr[:closed])
     end
   end
+
 
   10.times do |_i|
     players = @users.sample(2)
@@ -52,6 +61,12 @@ if Rails.env.development?
   FactoryBot.create_list(:user, 5)
 
   User.all.each do |t|
+    t.update!(score: rand(0..11_000))
     assign_ladder(t)
+  end
+
+  days = %w[monday tuesday wednesday thursday friday saturday sunday]
+  War.all.each do |t|
+    rand(0..4).times { WarTime.create(day: days.sample, start_hour: rand(1..12), end_hour: rand(13..23), time_to_answer: rand(10..120), max_unanswered: rand(1..10), war_id: t.id) }
   end
 end

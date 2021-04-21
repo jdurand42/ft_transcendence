@@ -12,21 +12,16 @@ module CompetitionHelper
 
   def assign_ladder(player)
     case player.score
-    when 0...1000
+    when 0..999
       player.update!(ladder: Ladder.find_by_name('Bronze'))
-    when 1000...2000
-      update_and_unlock(player, 'Silver', 'RoadToDiamond I')
-    when 2000...4000
-      update_and_unlock(player, 'Gold', 'RoadToDiamond II')
-    when 4000...8000
-      update_and_unlock(player, 'Platinum', 'RoadToDiamond III')
+    when 1000..1999
+      player.update!(ladder: Ladder.find_by_name('Silver'))
+    when 2000..3999
+      player.update!(ladder: Ladder.find_by_name('Gold'))
+    when 4000..9999
+      player.update!(ladder: Ladder.find_by_name('Platinum'))
     else
-      update_and_unlock(player, 'Diamond', 'To Infinity And Beyond !') if player.score > 12_000
+      player.update!(ladder: Ladder.find_by_name('Diamond')) if player.score > 10_000
     end
-  end
-
-  def update_and_unlock(player, ladder_name, ach_name)
-    player.update!(ladder: Ladder.find_by_name(ladder_name))
-    achievement_unlocked(player.id, ach_name)
   end
 end

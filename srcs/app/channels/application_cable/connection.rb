@@ -41,7 +41,7 @@ module ApplicationCable
       user = User.find_by_uid(uid)
       return reject_unauthorized_connection if user.nil?
       return reject_unauthorized_connection if actioncable_is_user_connected?(user.id)
-      return reject_unauthorized_connection if user&.valid_token?(token, client_id) == false
+      return reject_unauthorized_connection if user.valid_token?(token, client_id) == false
 
       actioncable_set_user_connected(user.id)
       user
