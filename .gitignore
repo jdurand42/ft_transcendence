@@ -75,6 +75,7 @@ srcs/.config
 srcs/coverage
 .idea
 
+2fa.sh
 node_modules
 database
 
