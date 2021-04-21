@@ -61,6 +61,7 @@ if Rails.env.development?
   FactoryBot.create_list(:user, 5)
 
   User.all.each do |t|
+    t.update!(score: rand(0..11_000))
     assign_ladder(t)
   end
 end
