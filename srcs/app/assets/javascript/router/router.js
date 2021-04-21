@@ -122,10 +122,11 @@ export const Router = Backbone.Router.extend({
     if (this.view !== undefined) {
       this.remove_view()
     }
+    console.log(performance.navigation.type)
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
-    } else if (performance.navigation.type >= 1 && performance.navigation.type <= 2) {
+    } else if (parseInt(performance.navigation.type) >= 1 && parseInt(performance.navigation.type) <= 2) {
       const fetchUser = async () => {
         this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
