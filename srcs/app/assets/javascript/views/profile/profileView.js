@@ -550,6 +550,7 @@ export const ProfileView = Backbone.View.extend({
     try {
       this.requestDuel()
     } catch (e) {
+      console.log(e)
       // gérer dans la notif l'erreur?
     }
   },
