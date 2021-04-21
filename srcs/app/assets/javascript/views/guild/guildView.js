@@ -70,7 +70,7 @@ export const GuildView = Backbone.View.extend({
     if (this.id === null || this.id === undefined) {
       this.id = this.users.get(this.userId).get('guild_id')
     }
-    context.manage = true // TEST TO REMOVE
+    // context.manage = true // TEST TO REMOVE
     if (this.guild.get('id') === this.userLogged.get('guild_id')) {
       context.manage = true
     } else if (this.userLogged.get('guild_id') !== undefined) {

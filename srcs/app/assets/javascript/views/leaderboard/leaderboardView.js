@@ -30,9 +30,7 @@ export const LeaderboardView = Backbone.View.extend({
       const response2 = this.users.fetch()
       await response1 && await response2
       console.log(this.users)
-      // for (let i = 0; i < this.users.length; i++) {
-      // this.socket.subscribeChannel(this.users.at(i).get('id'), 'ActivityChannel')
-      // }
+      this.users.sort()
       this.displayList()
     }
     fetchUsers()
@@ -82,6 +80,7 @@ export const LeaderboardView = Backbone.View.extend({
   },
 
   displayList: function () {
+    console.log(this.users)
     this.updateContextLeaderboard(this.users.slice().filter(el => el.get('ladder_id') === this.ladderId))
     this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
   },

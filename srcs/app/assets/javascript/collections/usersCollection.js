@@ -13,5 +13,8 @@ export const Users = Backbone.Collection.extend({
     return this.fetch({
       url: url
     })
+  },
+  comparator: function (model) {
+    return -model.get('score')
   }
 })
