@@ -41,38 +41,25 @@ export const GuildView = Backbone.View.extend({
       for (let i = 0; i < this.wars.length; i++) {
         if (this.wars.at(i).get('opened') === true) {
           this.currentWar = this.wars.at(i)
-          this.currentWar = new WarTimes(this.wars.at(i).get('id'))
-          await this.currentWarTimes.fetch()
+          this.currentWarTimes = new WarTimes(this.wars.at(i).get('id'))
+          try {
+            await this.currentWarTimes.fetch()
+          } catch (e) {
+            console.log(e)
+          }
         }
-        if (this.wars.at(i).get('closed') === false) { // TEST METTRE == TRUE
+        if (this.wars.at(i).get('closed') === true) {
           this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
           this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
           this.lastWars.add(this.wars.at(i))
         }
-        console.log(this.wars.at(i))
         if (this.wars.at(i).get('closed') === false &&
             this.wars.at(i).get('opened') === false) {
           this.calendar.add(this.wars.at(i))
         }
       }
-      if (this.wars.length > 0) { // TEST
-        this.currentWar = this.wars.at(0) // TEST
-      }
-      try {
-        if (this.currentWar !== undefined) {
-          this.currentWarTimes = new WarTimes(this.currentWar.get('id')) // TEST
-        }
-
-        await this.currentWarTimes.fetch() // TEST
-      } catch (e) {
-        console.log('404 war times to do back')
-      }
-
-      console.log(this.currentWarTimes)
-      console.log(this.lastWarsTimes)
 
       this.render()
-      // this.loadCurrentWar()
     }
     fetch()
   },
@@ -195,7 +182,9 @@ export const GuildView = Backbone.View.extend({
     const onGuild = this.guilds.get(war.get('on_id'))
     context.index = index
     context.id = war.get('id')
+    context.fromId = war.get('from_id')
     context.fromName = fromGuild.get('name')
+    context.onId = war.get('on_id')
     context.onName = onGuild.get('name')
     context.fromScore = war.get('from_score')
     context.onScore = war.get('on_score')
@@ -297,14 +286,13 @@ export const GuildView = Backbone.View.extend({
     const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
     context.totalWars = 0
     context.warsWon = 0
-    console.log(this.wars)
     for (let i = 0; i < this.wars.length; i++) {
       const war = this.wars.at(i)
       if (war.get('closed') === true) {
         context.totalWars += 1
-        if ((war.get('from_id') === this.id &&
+        if ((war.get('from_id') == this.id &&
             war.get('from_score') > war.get('on_score')) ||
-            (war.get('on_id') === this.id &&
+            (war.get('on_id') == this.id &&
             war.get('on_score') > war.get('from_score'))) {
           context.warsWon += 1
         }

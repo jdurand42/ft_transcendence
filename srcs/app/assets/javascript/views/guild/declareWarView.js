@@ -21,6 +21,8 @@ export const DeclareWar = Backbone.View.extend({
 
     this.fromId = options.fromId
     this.onId = options.onId
+    this.warId = options.warId
+    this.negoWar = undefined
     this.router = options.router
     this.fromGuild = new Guild({ id: this.fromId })
     this.onGuild = new Guild({ id: this.onId })
@@ -33,6 +35,9 @@ export const DeclareWar = Backbone.View.extend({
       const response3 = this.fromWars.fetch()
       const response4 = this.onWars.fetch()
       await response1 && await response2 && await response3 && await response4
+      if (this.warId !== undefined) {
+        this.negoWar = this.fromWars.get(this.warId)
+      }
       this.render()
     }
     fetchGuilds()
@@ -47,10 +52,20 @@ export const DeclareWar = Backbone.View.extend({
     this.context.fromName = this.fromGuild.get('name')
     this.context.onName = this.onGuild.get('name')
     this.context.onId = this.onId
-    this.context.winReward = '1000'
-    this.context.maxUnanswered = '2'
-    this.context.ladder = 'checked'
-    this.context.tournaments = 'checked'
+    if (this.warId === undefined) {
+      this.context.winReward = '1000'
+      this.context.maxUnanswered = '2'
+      this.context.ladder = 'checked'
+      this.context.tournaments = 'checked'
+    } else {
+      this.context.winReward = this.negoWar.get('prize')
+      if (this.negoWar.get('ladder_effort') === true) {
+        this.context.ladder = 'checked'
+      }
+      if (this.negoWar.get('tournament_effort') === true) {
+        this.context.tournaments = 'checked'
+      }
+    }
 
     this.context.warTime = []
     this.context.warTime.days = []
@@ -116,22 +131,27 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   defineStartEndDate: function () {
-    const now = new Date()
-    while (1) {
-      if (this.dates.some(el => {
-        return el === now.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' })
-      }) === true) {
-        now.setDate(now.getDate() + 1)
-      } else {
-        break
+    if (this.warId === undefined) {
+      const now = new Date()
+      while (1) {
+        if (this.dates.some(el => {
+          return el === now.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        }) === true) {
+          now.setDate(now.getDate() + 1)
+        } else {
+          break
+        }
       }
+
+      const endDate = new Date(now)
+      endDate.setHours(endDate.getHours() + 1)
+
+      this.startDate = now
+      this.endDate = endDate
+    } else {
+      this.startDate = new Date(this.negoWar.get('war_start'))
+      this.endDate = new Date(this.negoWar.get('war_end'))
     }
-
-    const endDate = new Date(now)
-    endDate.setHours(endDate.getHours() + 1)
-
-    this.startDate = now
-    this.endDate = endDate
   },
 
   initializeCalendar: function () {
@@ -160,6 +180,9 @@ export const DeclareWar = Backbone.View.extend({
 
   nextWarRules: function () {
     const winReward = document.getElementById('win-reward').value
+    console.log(document.getElementById('win-reward'))
+    console.log(document.getElementById('win-reward').value)
+    console.log(winReward)
     // const maxUnanswered = document.getElementById('max-unanswered').value
     this.startDate = $('#daterangepicker').data('daterangepicker').startDate
     this.endDate = $('#daterangepicker').data('daterangepicker').endDate

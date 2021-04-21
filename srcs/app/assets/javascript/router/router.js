@@ -71,6 +71,7 @@ export const Router = Backbone.Router.extend({
     tournament: 'tournaments_view',
     manage_guild: 'manage_guild_view',
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
+    'declare_war/(:from_id)/(:on_id)/(:war_id)': 'declare_war',
     'game/(:gameId)': 'playGame',
     connexion: 'connexion',
     exit: 'exit',
@@ -225,9 +226,9 @@ export const Router = Backbone.Router.extend({
     this.view = new ManageGuildView({ model: this.loadWrapper() })
   },
 
-  declare_war: function (fromId, onId) {
+  declare_war: function (fromId, onId, warId) {
     if (this.accessPage()) { return }
-    const declareWar = new DeclareWar({ fromId: fromId, onId: onId, router: this })
+    const declareWar = new DeclareWar({ fromId: fromId, onId: onId, warId: warId, router: this })
   },
 
   playGame: function (gameId) {

@@ -90,7 +90,13 @@ templates['calendar'] = template({"1":function(container,depth0,helpers,partials
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":98,"column":58},"end":{"line":98,"column":64}}}) : helper)))
     + "\">Accept</button>\n				<button class=\"negociation-button negociate-button\" for=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":99,"column":61},"end":{"line":99,"column":67}}}) : helper)))
-    + "\">Negociate</button>\n				<button class=\"negociation-button refuse-button\" for=\""
+    + "\" onclick=\"window.location='#declare_war/"
+    + alias4(((helper = (helper = lookupProperty(helpers,"fromId") || (depth0 != null ? lookupProperty(depth0,"fromId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"fromId","hash":{},"data":data,"loc":{"start":{"line":99,"column":108},"end":{"line":99,"column":118}}}) : helper)))
+    + "/"
+    + alias4(((helper = (helper = lookupProperty(helpers,"onId") || (depth0 != null ? lookupProperty(depth0,"onId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"onId","hash":{},"data":data,"loc":{"start":{"line":99,"column":119},"end":{"line":99,"column":127}}}) : helper)))
+    + "/"
+    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":99,"column":128},"end":{"line":99,"column":134}}}) : helper)))
+    + "';\">Negociate</button>\n				<button class=\"negociation-button refuse-button\" for=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":100,"column":58},"end":{"line":100,"column":64}}}) : helper)))
     + "\">Refuse</button>\n			</div>\n";
 },"7":function(container,depth0,helpers,partials,data) {
