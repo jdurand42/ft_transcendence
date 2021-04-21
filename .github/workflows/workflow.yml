@@ -18,7 +18,7 @@ jobs:
   heroku-deploy:
     name: Heroku
     runs-on: ubuntu-18.04
-    needs: [rspec-test]
+    needs: [rubocop-test]
     steps:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12
@@ -43,7 +43,7 @@ jobs:
   rspec-test:
     name: RSpec
     runs-on: ubuntu-18.04
-    needs: [rubocop-test]
+    needs: [heroku-deploy]
     services:
       postgres:
         image: postgres:12.1
