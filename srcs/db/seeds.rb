@@ -64,4 +64,9 @@ if Rails.env.development?
     t.update!(score: rand(0..11_000))
     assign_ladder(t)
   end
+
+  days = %w[monday tuesday wednesday thursday friday saturday sunday]
+  War.all.each do |t|
+    rand(0..4).times { WarTime.create(day: days.sample, start_hour: rand(1..12), end_hour: rand(13..23), time_to_answer: rand(10..120), max_unanswered: rand(1..10), war_id: t.id) }
+  end
 end

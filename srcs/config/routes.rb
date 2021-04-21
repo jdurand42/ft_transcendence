@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     end
     resources :wars do
       member do
+        get 'times', to: 'wars#index_times'
         post 'times', to: 'wars#create_times'
         delete 'times', to: 'wars#destroy_times'
         post 'agreements'
