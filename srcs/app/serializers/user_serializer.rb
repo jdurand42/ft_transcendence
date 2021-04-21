@@ -15,7 +15,8 @@ class UserSerializer < ActiveModel::Serializer
              :banned,
              :first_login,
              :ignores,
-             :friends
+             :friends,
+             :score
 
   def image_url
     return '/images/profile-pic.jpg' unless object.avatar.attached? && object.avatar.persisted?
