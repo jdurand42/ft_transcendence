@@ -52,7 +52,7 @@ export const GuildView = Backbone.View.extend({
         }
         if (this.wars.at(i).get('closed') === true) {
           this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
-          await this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
+          this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
           this.lastWars.add(this.wars.at(i))
         }
         if (this.wars.at(i).get('closed') === false &&
@@ -135,12 +135,9 @@ export const GuildView = Backbone.View.extend({
     }
   },
 
-  initializeTimer: function (date, div, timer) {
-    console.log(div)
-    console.log(timer)
-    console.log(date)
+  initializeTimer: function (date, div) {
     const countDownDate = date.getTime()
-    timer = setInterval(function () {
+    this.timer.push(setInterval(function () {
       const now = new Date().getTime()
       const distance = countDownDate - now
       const days = Math.floor(distance / (1000 * 60 * 60 * 24))
@@ -154,13 +151,14 @@ export const GuildView = Backbone.View.extend({
         } catch (e) {}
       }
       if (distance < 0) {
-        clearInterval(timer)
+        clearInterval(this)
         window.location.reload()
       }
-    }, 1000)
+    }, 1000))
   },
 
   loadCurrentWar: function () {
+    this.destroy()
     try {
       document.getElementById('lastWars').classList.remove('open')
       document.getElementById('members').classList.remove('open')
@@ -178,6 +176,7 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadLastWars: function () {
+    this.destroy()
     try {
       document.getElementById('currentWar').classList.remove('open')
       document.getElementById('members').classList.remove('open')
@@ -192,6 +191,7 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadMembers: function () {
+    this.destroy()
     try {
       document.getElementById('currentWar').classList.remove('open')
       document.getElementById('lastWars').classList.remove('open')
@@ -206,6 +206,7 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadCalendar: function (e) {
+    this.destroy()
     document.getElementById('currentWar').classList.remove('open')
     document.getElementById('lastWars').classList.remove('open')
     document.getElementById('members').classList.remove('open')
@@ -246,7 +247,6 @@ export const GuildView = Backbone.View.extend({
       context.ladderIcon = './icons/highlight_off.svg'
     }
     context.warTime = []
-    console.log(warTimes)
     if (warTimes !== undefined) {
       for (let i = 0; i < warTimes.length; i++) {
         context.warTime.push({
@@ -272,20 +272,70 @@ export const GuildView = Backbone.View.extend({
       } else {
         this.updateContextCurrentWar(context, this.currentWar, this.currentWarTimes, 0)
       }
-
-      this.updateContextCurrentWar(context, this.currentWar, this.currentWarTimes, 0)
     }
+
     this.$el.find('#guildcontent').html(Handlebars.templates.currentWar(context))
+
     if (Number(context.fromScore) > Number(context.onScore)) {
       document.getElementById('from-score').classList.add('winner')
     } else if (Number(context.fromScore) < Number(context.onScore)) {
       document.getElementById('on-score').classList.add('winner')
     }
-    console.log(this.currentWar)
-    this.timer.push()
-    console.log(this.timer)
-    this.initializeTimer(new Date(this.currentWar.get('war_end')), 'war-timer', this.timer[this.timer.length - 1])
+
+    try {
+      this.initializeTimer(new Date(this.currentWar.get('war_end')), 'war-timer')
+    } catch (e) {}
+
+    const dates = []
+    if (this.currentWarTimes && this.currentWarTimes.at(0).attributes.day !== undefined) {
+      for (let i = 0; i < this.currentWarTimes.length; i++) {
+        const date = new Date()
+        date.setDate(date.getDate() + (this.getDay(this.currentWarTimes.at(i).get('day')) + 7 - date.getDay()) % 7)
+        date.setHours(this.currentWarTimes.at(i).get('start_hour'))
+        const now = new Date()
+        now.setDate(now.getDate() + 7)
+        console.log(now)
+        if (date > now) {
+          document.getElementById('next-war-time-in-title').style.display = 'none'
+
+          this.countMatchesUnansewered()
+
+          return this
+        }
+
+        dates.push(date)
+      }
+      dates.sort()
+      this.initializeTimer(dates[0], 'next-war-time-in')
+
+      document.getElementById('accept-random-fight').innerHTML = 'Challenge'
+      document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
+      document.getElementById('accept-random-fight').style.cursor = 'auto'
+    }
     return this
+  },
+
+  countMatchesUnansewered: function () {
+    // TO DO
+  },
+
+  getDay: function (date) {
+    switch (date) {
+      case 'sunday':
+        return 0
+      case 'monday':
+        return 1
+      case 'tuesday':
+        return 2
+      case 'wednesday':
+        return 3
+      case 'thursday':
+        return 4
+      case 'friday':
+        return 5
+      case 'saturday':
+        return 6
+    }
   },
 
   displayLastWars: function () {
@@ -325,9 +375,7 @@ export const GuildView = Backbone.View.extend({
       name: this.guild.get('name'),
       id: this.id,
       anagram: this.guilds.get(this.id).get('anagram'),
-      owner: undefined,
       members: [],
-      officers: [],
       membersNumber: 0
     }
     for (let i = 0; i < this.members.length; i++) {
@@ -456,6 +504,7 @@ export const GuildView = Backbone.View.extend({
   },
 
   destroy: function () {
+    console.log(this.timer.length)
     for (let i = 0; i < this.timer.length; i++) {
       clearInterval(this.timer[i])
     }
