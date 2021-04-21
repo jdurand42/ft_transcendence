@@ -1,14 +1,14 @@
 <div class="guildBlock" id="calendarWarPage">
 {{#if war}}
-<div class="line-fixed">
+<div class="line-fixed" id="line-fixed">
 	<div class="line" id="line"></div>
 </div>
 {{#each wars}}
 <div class="each-war">
-	<div class="explanation-{{index}}" style="display: none;"></div>
-	<div class="validation-container" id="validation-container-{{index}}">
+	<div class="validation-container" id="validation-container-{{index}}" for="{{index}}">
 		<img src="{{icon}}" class="validation-icon">
 	</div>
+	<div class="explanation explanation-{{index}}" id="explanation-{{index}}">{{explanation}}</div>
 	<div class="current-war">
 	<div class="scores" id="scores-last-wars-{{id}}" for="{{id}}">
 		<div class="center">

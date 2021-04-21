@@ -1,7 +1,7 @@
 #calendarWarPage .each-war {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    /* justify-content: space-around; */
 
     margin-bottom: 32px;
 }
@@ -16,6 +16,8 @@
     border-radius: 0px;
 
     box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+
+    margin-left: 20%;
 }
 
 #calendarWarPage
@@ -83,6 +85,19 @@
     height: 63px;
     border-radius: 50%;
     z-index: 1;
+
+    position: relative;
+    left: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#calendarWarPage .validation-icon {
+    width: 60%;
+    height: 60%;
+    object-fit: cover;
 }
 
 #calendarWarPage .line {
@@ -91,8 +106,28 @@
     background-color: #C4C4C4;
     height: 100px;
     z-index: 0;
+
 }
 
 #calendarWarPage .line-fixed {
     position: relative;
+    left: 64px;
+}
+
+#calendarWarPAge .explanation {
+    width: 180px;
+    position: absolute;
+    font-size: 14px;
+    background-color: #C4C4C4;
+    text-align: left;
+    padding: 8px;
+}
+
+#calendarWarPage .explanation {
+    display: none;
+}
+
+#calendarWarPage .validation-container:hover + .explanation {
+    display: flex;
+    z-index: 1;
 }

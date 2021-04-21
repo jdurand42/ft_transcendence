@@ -10,7 +10,8 @@ export const GuildView = Backbone.View.extend({
     'click #members': 'loadMembers',
     'click #calendarWar': 'loadCalendar',
     'click .war-informations-container': 'displayWarInformations',
-    'click .scores-last-wars': 'openLastWar'
+    'click .scores-last-wars': 'openLastWar',
+    'mouseover .validation-container': 'displayExplanation'
   },
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
@@ -165,7 +166,7 @@ export const GuildView = Backbone.View.extend({
     this.updateMembers()
   },
 
-  loadCalendar: function () {
+  loadCalendar: function (e) {
     document.getElementById('currentWar').classList.remove('open')
     document.getElementById('lastWars').classList.remove('open')
     document.getElementById('members').classList.remove('open')
@@ -173,7 +174,7 @@ export const GuildView = Backbone.View.extend({
     const div = document.getElementById('calendarWar')
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
-    this.displayCalendar()
+    this.displayCalendar(e)
   },
 
   updateContextCurrentWar: function (context, war, index) {
@@ -300,18 +301,29 @@ export const GuildView = Backbone.View.extend({
     this.$el.find('#guildPannel').html(Handlebars.templates.guildPannel(context))
   },
 
-  isProposal: function (war) {
-    if (war.get('from_id') == this.id &&
-        war.get('from_agreement') === false) {
-      return true
-    }
-    if (war.get('on_id') == this.id &&
-        war.get('on_agreement') === false) {
-      return true
+  isProposal: function (context, war) {
+    if ((war.get('from_id') == this.id &&
+        war.get('from_agreement') === false) ||
+        (war.get('on_id') == this.id &&
+        war.get('on_agreement') === false)) {
+      context.proposal = true
+      context.icon = './icons/question.svg'
+      context.explanation = 'The other guild is waiting your approval'
+    } else if ((war.get('from_id') != this.id &&
+    war.get('from_agreement') === false) ||
+    (war.get('on_id') != this.id &&
+    war.get('on_agreement') === false)) {
+      context.proposal = false
+      context.icon = './icons/hourglass.svg'
+      context.explanation = 'Awaiting approval from the other guild'
+    } else {
+      context.proposal = false
+      context.icon = './icons/check_circle-yellow.svg'
+      context.explanation = 'The war will start soon'
     }
   },
 
-  displayCalendar: function () {
+  displayCalendar: function (e) {
     const context = {}
     if (this.calendar.length > 0) {
       context.war = true
@@ -320,7 +332,7 @@ export const GuildView = Backbone.View.extend({
       for (let i = 0; i < this.calendar.length; i++) {
         context.wars.push({})
         this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), i)
-        context.wars[i].proposal = this.isProposal(this.calendar.at(i))
+        this.isProposal(context.wars[i], this.calendar.at(i))
       }
     } else {
       context.war = false
@@ -328,27 +340,36 @@ export const GuildView = Backbone.View.extend({
 
     this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
 
+    // line
     if (this.calendar.length > 0) {
-      let div = document.getElementById('validation-container-0').getBoundingClientRect()
-      const center1X = div.left + div.width / 2
-      const center1Y = div.top + div.height / 2
-      div = document.getElementById('validation-container-' + (this.calendar.length - 1)).getBoundingClientRect()
-      const center2X = div.left + div.width / 2
-      const center2Y = div.top + div.height / 2
+      e.currentTarget = document.getElementById('validation-container-0')
+      const div1 = e.currentTarget
+      const center1X = div1.clientLeft + div1.clientWidth / 2
+      const center1Y = div1.clientTop + div1.clientHeight / 2
+      e.currentTarget = document.getElementById('validation-container-' + (this.calendar.length - 1))
+      const div2 = e.currentTarget
+      const center2X = div2.clientLeft + div2.clientWidth / 2
+      const center2Y = div2.clientTop + div2.clientHeight / 2
 
-      console.log(center1X)
-      console.log(center1Y)
-      console.log(center2X)
-      console.log(center2Y)
+      const height = div2.offsetTop - div1.offsetTop
 
       const line = document.getElementById('line')
-      console.log(line)
       line.style.top = center1Y
       line.style.left = center1X
-      line.style.height = center2Y - center1Y
+      line.style.height = height
     }
 
     return this
+  },
+
+  displayExplanation: function (e) {
+    const index = e.currentTarget.getAttribute('for')
+    const explanation = document.getElementById('explanation-' + index)
+    console.log(e)
+    explanation.style.top = e.pageY
+    explanation.style.left = e.pageX
+    console.log(explanation.style.top)
+    console.log(explanation.style.left)
   },
 
   updateContextForlist: function (user, i) {
