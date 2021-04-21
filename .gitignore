@@ -74,7 +74,7 @@ srcs/vendor/assets
 srcs/.config
 srcs/coverage
 .idea
-
+.DS_Store
 2fa.sh
 node_modules
 database
