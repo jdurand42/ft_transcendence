@@ -30,6 +30,8 @@ export const GuildView = Backbone.View.extend({
     this.lastWarsTimes = []
     this.calendar = new Wars()
     this.calendarWarTimes = []
+
+    // ce bloc est obligatoire pour la route /#guild/ et les checks pour #guild/id_ivalide et #guild/nimporte_quoi
     this.$el.html(Handlebars.templates.guild())
     const fetch = async () => {
       // sécurité et séléction pour #guild/
