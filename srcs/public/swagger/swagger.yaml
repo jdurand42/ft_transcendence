@@ -1226,6 +1226,8 @@ components:
           $ref: '#/components/schemas/arrayOfFriends'
         ignores:
           $ref: '#/components/schemas/arrayOfUserIgnored'
+        score:
+          type: integer
     guild_response:
       allOf:
         - $ref: "#/components/schemas/guild"
