@@ -18,8 +18,6 @@ class UserSerializer < ActiveModel::Serializer
              :friends,
              :score
 
-
-  def ladder
   def image_url
     return '/images/profile-pic.jpg' unless object.avatar.attached? && object.avatar.persisted?
 
