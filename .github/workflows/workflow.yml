@@ -28,6 +28,7 @@ jobs:
           heroku_email: ${{secrets.HEROKU_EMAIL }}
           appdir: "srcs"
           region: "eu"
+          branch: "master"
   rubocop-test:
     name: Rubocop
     runs-on: ubuntu-18.04
