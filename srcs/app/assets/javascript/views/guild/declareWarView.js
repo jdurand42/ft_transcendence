@@ -1,6 +1,7 @@
 import { Guild } from '../../models/guildModel'
 import { Wars } from '../../collections/warCollection'
 import { War } from '../../models/warModel'
+import { WarTimes } from '../../collections/warTimesCollection'
 
 export const DeclareWar = Backbone.View.extend({
   events: {
@@ -18,14 +19,18 @@ export const DeclareWar = Backbone.View.extend({
     this.startDate = undefined
     this.endDate = undefined
     this.dates = []
+    this.context = {}
 
     this.fromId = options.fromId
     this.onId = options.onId
+    this.warId = options.warId
+    this.negoWar = undefined
     this.router = options.router
     this.fromGuild = new Guild({ id: this.fromId })
     this.onGuild = new Guild({ id: this.onId })
     this.fromWars = new Wars({ id: this.fromId })
     this.onWars = new Wars({ id: this.onId })
+    this.warTimes = undefined
 
     const fetchGuilds = async () => {
       const response1 = this.fromGuild.fetch()
@@ -33,10 +38,16 @@ export const DeclareWar = Backbone.View.extend({
       const response3 = this.fromWars.fetch()
       const response4 = this.onWars.fetch()
       await response1 && await response2 && await response3 && await response4
+      console.log(this.warId)
+      if (this.warId != undefined) {
+        this.negoWar = this.fromWars.get(this.warId)
+        this.warTimes = new WarTimes(this.warId)
+        await this.warTimes.fetch()
+        console.log(this.warTimes)
+      }
       this.render()
     }
     fetchGuilds()
-    this.context = {}
   },
   el: $('#app'),
 
@@ -47,13 +58,23 @@ export const DeclareWar = Backbone.View.extend({
     this.context.fromName = this.fromGuild.get('name')
     this.context.onName = this.onGuild.get('name')
     this.context.onId = this.onId
-    this.context.winReward = '1000'
-    this.context.maxUnanswered = '2'
-    this.context.ladder = 'checked'
-    this.context.tournaments = 'checked'
+    if (this.warId == undefined) {
+      this.context.winReward = '1000'
+      this.context.maxUnanswered = '2'
+      this.context.ladder = 'checked'
+      this.context.tournaments = 'checked'
+    } else {
+      this.context.winReward = this.negoWar.get('prize')
+      if (this.negoWar.get('ladder_effort') === true) {
+        this.context.ladder = 'checked'
+      }
+      if (this.negoWar.get('tournament_effort') === true) {
+        this.context.tournaments = 'checked'
+      }
+    }
 
-    this.context.warTime = []
-    this.context.warTime.days = []
+    // this.context.warTime = []
+    // this.context.warTime.days = []
     this.days = [
       { day: 'Monday' },
       { day: 'Tuesday' },
@@ -64,22 +85,22 @@ export const DeclareWar = Backbone.View.extend({
       { day: 'Sunday' }
     ]
 
-    const newDays = JSON.parse(JSON.stringify(this.days))
-    for (const [key, value] of Object.entries(newDays)) {
-      value.index = this.context.warTime.length
-    }
-    this.context.warTime.push({
-      index: this.context.warTime.length,
-      maxUnanswered: 5,
-      timeToAnswer: 60,
-      fromHH: undefined,
-      fromMM: undefined,
-      toHH: undefined,
-      toMM: undefined,
-      fromDay: 'Monday',
-      toDay: 'Monday',
-      days: newDays
-    })
+    // const newDays = JSON.parse(JSON.stringify(this.days))
+    // for (const [key, value] of Object.entries(newDays)) {
+    //   value.index = this.context.warTime.length
+    // }
+    // this.context.warTime.push({
+    //   index: this.context.warTime.length,
+    //   maxUnanswered: 5,
+    //   timeToAnswer: 60,
+    //   fromHH: undefined,
+    //   fromMM: undefined,
+    //   toHH: undefined,
+    //   toMM: undefined,
+    //   fromDay: 'Monday',
+    //   toDay: 'Monday',
+    //   days: newDays
+    // })
 
     const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
@@ -116,22 +137,27 @@ export const DeclareWar = Backbone.View.extend({
   },
 
   defineStartEndDate: function () {
-    const now = new Date()
-    while (1) {
-      if (this.dates.some(el => {
-        return el === now.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' })
-      }) === true) {
-        now.setDate(now.getDate() + 1)
-      } else {
-        break
+    if (this.warId == undefined) {
+      const now = new Date()
+      while (1) {
+        if (this.dates.some(el => {
+          return el === now.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        }) === true) {
+          now.setDate(now.getDate() + 1)
+        } else {
+          break
+        }
       }
+
+      const endDate = new Date(now)
+      endDate.setHours(endDate.getHours() + 1)
+
+      this.startDate = now
+      this.endDate = endDate
+    } else {
+      this.startDate = new Date(this.negoWar.get('war_start'))
+      this.endDate = new Date(this.negoWar.get('war_end'))
     }
-
-    const endDate = new Date(now)
-    endDate.setHours(endDate.getHours() + 1)
-
-    this.startDate = now
-    this.endDate = endDate
   },
 
   initializeCalendar: function () {
@@ -158,17 +184,16 @@ export const DeclareWar = Backbone.View.extend({
     document.getElementById('error').style.display = display
   },
 
-  nextWarRules: function () {
-    const winReward = document.getElementById('win-reward').value
-    // const maxUnanswered = document.getElementById('max-unanswered').value
-    this.startDate = $('#daterangepicker').data('daterangepicker').startDate
-    this.endDate = $('#daterangepicker').data('daterangepicker').endDate
-    if (document.getElementById('ladder').checked) {
+  nextWarRules: async function () {
+    const winReward = await document.getElementById('win-reward').value
+    this.startDate = await $('#daterangepicker').data('daterangepicker').startDate
+    this.endDate = await $('#daterangepicker').data('daterangepicker').endDate
+    if (await document.getElementById('ladder').checked) {
       this.context.ladder = 'checked'
     } else {
       this.context.ladder = undefined
     }
-    if (document.getElementById('tournaments').checked) {
+    if (await document.getElementById('tournaments').checked) {
       this.context.tournaments = 'checked'
     } else {
       this.context.tournaments = undefined
@@ -176,47 +201,78 @@ export const DeclareWar = Backbone.View.extend({
 
     let div
     if (isNaN(winReward) === false && winReward >= 0) {
-      this.context.winReward = document.getElementById('win-reward').value
+      this.context.winReward = await document.getElementById('win-reward').value
     } else {
-      div = document.getElementById('win-reward')
+      div = await document.getElementById('win-reward')
       div.style.border = 'solid 2px var(--error-message-color)'
     }
-    // if (isNaN(maxUnanswered) === false && maxUnanswered >= 0) {
-    //   this.context.maxUnanswered = document.getElementById('max-unanswered').value
-    // } else {
-    //   div = document.getElementById('max-unanswered')
-    //   div.style.border = 'solid 2px var(--error-message-color)'
-    // }
+
     if (div) {
       this.error('Input should be a positive number', 'flex')
     } else {
+      if (this.warId != undefined && this.context.warTime === undefined) {
+        this.context.warTime = []
+        this.context.warTime.days = []
+        for (let i = 0; i < this.warTimes.length; i++) {
+          const newDays = JSON.parse(JSON.stringify(this.days))
+          for (const [key, value] of Object.entries(newDays)) {
+            value.index = this.context.warTime.length
+          }
+          this.context.warTime.push({
+            index: this.context.warTime.length,
+            maxUnanswered: this.warTimes.at(i).get('max_unanswered'),
+            timeToAnswer: this.warTimes.at(i).get('time_to_answer'),
+            fromHH: this.warTimes.at(i).get('start_hour'),
+            toHH: this.warTimes.at(i).get('end_hour'),
+            fromDay: this.warTimes.at(i).get('day').charAt(0).toUpperCase() + this.warTimes.at(i).get('day').slice(1),
+            days: newDays
+          })
+        }
+      } else if (this.context.warTime === undefined) {
+        this.context.warTime = []
+        this.context.warTime.days = []
+        const newDays = JSON.parse(JSON.stringify(this.days))
+        for (const [key, value] of Object.entries(newDays)) {
+          value.index = this.context.warTime.length
+        }
+        this.context.warTime.push({
+          index: this.context.warTime.length,
+          maxUnanswered: 5,
+          timeToAnswer: 60,
+          fromHH: undefined,
+          toHH: undefined,
+          fromDay: 'Monday',
+          days: newDays
+        })
+      }
+
       const templateData = this.templateWarTimes(this.context)
       this.$el.html(templateData)
     }
   },
 
-  prevWarTimes: function () {
-    const maxUnanswered = document.getElementsByClassName('max-unanswered')
-    const timeToAnswer = document.getElementsByClassName('time-to-answer')
-    const fromHH = document.getElementsByClassName('fromHH')
-    const fromMM = document.getElementsByClassName('fromMM')
-    const toHH = document.getElementsByClassName('toHH')
-    const toMM = document.getElementsByClassName('toMM')
+  prevWarTimes: async function () {
+    const maxUnanswered = await document.getElementsByClassName('max-unanswered')
+    const timeToAnswer = await document.getElementsByClassName('time-to-answer')
+    const fromHH = await document.getElementsByClassName('fromHH')
+    const fromMM = await document.getElementsByClassName('fromMM')
+    const toHH = await document.getElementsByClassName('toHH')
+    const toMM = await document.getElementsByClassName('toMM')
 
     for (let i = 0; i < fromHH.length; i++) {
-      this.context.warTime[i].fromHH = document.getElementById('fromHH' + i).value
+      this.context.warTime[i].fromHH = await document.getElementById('fromHH' + i).value
     }
 
     for (let i = 0; i < fromMM.length; i++) {
-      this.context.warTime[i].fromMM = document.getElementById('fromMM' + i).value
+      this.context.warTime[i].fromMM = await document.getElementById('fromMM' + i).value
     }
 
     for (let i = 0; i < toHH.length; i++) {
-      this.context.warTime[i].toHH = document.getElementById('toHH' + i).value
+      this.context.warTime[i].toHH = await document.getElementById('toHH' + i).value
     }
 
     for (let i = 0; i < toMM.length; i++) {
-      this.context.warTime[i].toMM = document.getElementById('toMM' + i).value
+      this.context.warTime[i].toMM = await document.getElementById('toMM' + i).value
     }
 
     for (let i = 0; i < maxUnanswered.length; i++) {
@@ -365,7 +421,7 @@ export const DeclareWar = Backbone.View.extend({
     }
   },
 
-  declareWar: function () {
+  declareWar: async function () {
     const fromHH = document.getElementsByClassName('fromHH')
     const toHH = document.getElementsByClassName('toHH')
     const maxUnanswered = document.getElementsByClassName('max-unanswered')
@@ -381,33 +437,35 @@ export const DeclareWar = Backbone.View.extend({
       ladderEffort = true
     }
 
-    const war = new War()
-    const declareWar = async () => {
-      try {
-        const response = await war.createWar(
-          Number(this.context.onId),
-          this.startDate.toISOString(),
-          this.endDate.toISOString(),
-          Number(this.context.winReward),
-          tournamentEffort,
-          ladderEffort)
-        console.log(day)
-        for (let i = 0; i < fromHH.length; i++) {
-          const response2 = await war.createWarTime(
-            day[i].innerText,
-            Number(fromHH[i].value),
-            Number(toHH[i].value),
-            Number(maxUnanswered[i].value),
-            Number(timeToAnswer[i].value)
-          )
-        }
-        this.router.navigate('#guild/' + this.onId, true)
-      } catch (error) {
-        document.getElementById('error').style.display = 'flex'
-        document.getElementById('error').textContent = error.responseJSON.message
-      }
+    let war
+    if (this.warId === undefined) {
+      war = new War()
+    } else {
+      war = this.negoWar
     }
-    declareWar()
+    try {
+      const response = await war.createWar(
+        Number(this.context.onId),
+        this.startDate.toISOString(),
+        this.endDate.toISOString(),
+        Number(this.context.winReward),
+        tournamentEffort,
+        ladderEffort)
+      for (let i = 0; i < fromHH.length; i++) {
+        const response2 = await war.createWarTime(
+          day[i].innerText,
+          Number(fromHH[i].value),
+          Number(toHH[i].value),
+          Number(maxUnanswered[i].value),
+          Number(timeToAnswer[i].value)
+        )
+      }
+      this.router.navigate('#guild/' + this.onId, true)
+    } catch (error) {
+      const div = document.getElementById('error')
+      div.style.display = 'flex'
+      div.textContent = error.responseJSON.message
+    }
   },
 
   filterDay: function (e) {

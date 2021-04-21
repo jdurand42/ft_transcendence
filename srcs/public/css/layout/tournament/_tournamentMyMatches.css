@@ -15,6 +15,10 @@
     align-items: center;
 }
 
+.my-matches .Pending {
+    background-color: #C4C4C4;
+}
+
 .my-matches .thumbnail-my-matches .right-side {
     display: flex;
     flex-direction: row;

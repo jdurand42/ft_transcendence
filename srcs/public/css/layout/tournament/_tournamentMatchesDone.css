@@ -1,7 +1,7 @@
 .matches-page .done-container 
 .match-done-container {
     width: 525px;
-    height: 60px;
+    height: 68px;
 
     display: flex;
     flex-direction: column;
@@ -15,6 +15,13 @@
     font-size: 16px;
 
     border-radius: 10px;
+
+    margin-bottom: 8px;
+}
+
+.matches-page .done-container 
+.opponent {
+    width: 120px;
 }
 
 .matches-page .done-container .match-done {
@@ -33,7 +40,7 @@
 .image-url {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 50%;
 }
 
@@ -42,17 +49,20 @@
     font-size: 36px;
     margin-left: 8px;
     margin-right: 8px;
+    width: 52px;
 }
 
 .matches-page .done-container .match-done
 .score1 {
     color: var(--primary-color);
     font-family: Roboto-Black;
+    text-align: right;
 }
 
 .matches-page .done-container .match-done
 .opponent1 {
     margin-right: 8px;
+    text-align: right;
 }
 
 .matches-page .done-container .match-done

@@ -13,12 +13,17 @@ export const GameRecords = Backbone.Collection.extend({
   },
   fetchByTournament: function (tournamentId) {
     return this.fetch({
-      url: '/api/games?tournament_id=' + tournamentId
+      url: this.urlRoot + '?tournament_id=' + tournamentId
     })
   },
   fetchTournamentMyGames: function (userId, status, tournamentId) {
     return this.fetch({
-      url: '/api/games?user_id=' + userId + '&status=' + status + '&tournament_id=' + tournamentId
+      url: this.urlRoot + '?user_id=' + userId + '&status=' + status + '&tournament_id=' + tournamentId
+    })
+  },
+  fetchMyGames: function (userId, mode, status = 'played') {
+    return this.fetch({
+      url: this.urlRoot + '?user_id=' + userId + '&mode=' + mode + '&status=' + status
     })
   }
 })

@@ -1,0 +1,366 @@
+.guildBlock .current-war {
+    background-color: var(--table-color);
+    color: var(--secondary-color);
+
+    border-radius: 10px;
+}
+
+#current-war {
+    margin-top: 64px;
+}
+
+.guildBlock .no-current-war {
+    font-size: 30px;
+    padding-top: 15vh;
+}
+
+.guildBlock .title {
+    font-family: Roboto-Bold;
+    font-size: 20px;
+    padding-top: 16px;
+}
+
+.guildBlock .sub-title {
+    font-family: Roboto-Medium;
+    font-size: 18px;
+    padding-top: 16px;
+}
+
+.guildBlock .war-informations {
+    background-color: #3B4A62;
+}
+
+.guildBlock .war-time-rules-container {
+    height: fit-content;
+    padding-bottom: 16px;
+}
+
+.guildBlock .war-time-rules-title {
+    margin-bottom: 16px;
+}
+
+.guildBlock .scores {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    font-family: Quantico-Regular;
+    font-size: 35px;
+
+    height: 98px;
+}
+
+.guildBlock .scores .name {
+    width: 33%;
+}
+
+.guildBlock .scores .from-name {
+    text-align: right;
+    margin-right: 32px;
+}
+
+.guildBlock .scores .on-name {
+    text-align: left;
+    margin-left: 32px;
+}
+
+.guildBlock .scores .from-score {
+    margin-right: 16px;
+}
+
+.guildBlock .scores .on-score {
+    margin-left: 16px;
+}
+
+.guildBlock .scores .vs {
+    font-size: 24px;
+}
+
+.guildBlock .scores .score {
+    font-family: Roboto-Regular;
+    width: 45px;
+}
+
+.guildBlock .scores .winner {
+    font-family: Roboto-Black;
+    color: var(--primary-color);
+}
+
+.guildBlock .war-time {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.guildBlock .war-informations
+.war-informations-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Roboto-Bold;
+    font-size: 24px;
+
+    padding: 16px;
+
+    cursor: pointer;
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.guildBlock .war-informations
+.war-informations-container
+.war-informations-title {
+    margin-right: 16px;
+}
+
+.guildBlock .war-infos {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.guildBlock .war-infos .war-schedule-container {
+    height: 210px;
+
+    border-bottom: 2px solid #1B2534;
+}
+
+.guildBlock .war-infos .war-schedule-container
+.war-schedule-title {
+    padding-bottom: 16px;
+}
+
+.guildBlock .war-infos .war-schedule-container
+.war-time {
+    padding-top: 16px;
+
+    font-size: 18px;
+}
+
+.guildBlock .war-infos .war-schedule-container
+.war-time .hyphen {
+    color: var(--primary-color);
+    font-size: 36px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.guildBlock .war-infos .war-rules-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding-bottom: 16px;
+
+    border-bottom: 2px solid #1B2534;
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+
+    width: 100%;
+    height: 153px;
+    margin-top: 16px;
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container .war-rules-sub {
+    width: 50%;
+    height: 100%;
+    /* padding-bottom: 8px; */
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container .war-rules-sub
+.sub-title {
+    margin-bottom: 16px;
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container .win-reward {
+    border-right: 1px solid var(--primary-color);
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container .accountable-matches-sub-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    padding-left: 38%;
+    margin-top: 8px;
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container .accountable-matches-sub-container
+.icon-container {
+    margin-right: 8px;
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container .win-reward-points-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+
+    font-family: Quantico-Regular;
+    font-size: 18px;
+}
+
+.guildBlock .war-infos .war-rules-container
+.war-rules-sub-container .win-reward-points-container
+.icon-reward-container {
+    margin-right: 16px;
+}
+
+.guildBlock .war-infos .war-info {
+    width: 70%;
+}
+
+.guildBlock .war-infos .war-time-rules-container th {
+    font-family: Roboto-Medium;
+    font-size: 16px;
+    color: var(--secondary-color);
+}
+
+.guildBlock .war-infos .war-time-rules-container td {
+    font-family: Roboto-Regular;
+    font-size: 16px;
+    color: var(--secondary-color);
+}
+
+.guildBlock .war-infos .war-time-rules-container .hyphen {
+    font-family: Roboto-Medium;
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+.guildBlock .war-infos .war-time-rules-container
+.war-time-table {
+    text-align: left;
+    width: 100%;
+}
+
+.guildBlock .fights-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding-bottom: 32px;
+    margin: auto;
+
+    width: 80%;
+
+    border-bottom: 2px solid #3B4A62;
+
+}
+
+.guildBlock .fights-container .nb-matches-missed-container {
+    margin-top: 16px;
+}
+
+.guildBlock .fights-container .nb-matches-missed-title {
+    font-family: Quantico-Regular;
+    font-size: 18px;
+}
+
+.guildBlock .fights-container .matches-missed {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    
+    font-family: Quantico-Regular;
+    font-size: 18px;
+    
+    margin-top: 8px;
+}
+
+.guildBlock .fights-container .matches-missed
+.each-matches-missed {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    width: 230px;
+}
+
+.guildBlock .fights-container .matches-missed
+.each-matches-missed .hyphen {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.guildBlock .fights-container .matches-missed
+.each-matches-missed .nb-matches-missed {
+    color: var(--primary-color);
+}
+
+.guildBlock .fights-container .random-fight {
+    margin-top: 32px;
+}
+
+.guildBlock .fights-container .random-fight-title {
+    font-family: Quantico-Regular;
+    font-size: 18px;
+}
+
+.guildBlock .fights-container
+.button-timer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 16px;
+}
+
+.guildBlock .fights-container
+.accept-random-fight {
+    border-radius: 10px;
+
+    width: 150px;
+    height: 35px;
+
+    margin-right: 8px;
+}
+
+.guildBlock .fights-container
+.timer {
+    font-family: Quantico-Regular;
+    font-size: 18px;
+}
+
+#warBock .last-matches-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.guildBlock .last-matches-container .last-matches-title {
+    padding-bottom: 16px;
+}
+
+.guildBlock .row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.guildBlock .day {
+    margin-right: 4px;
+}

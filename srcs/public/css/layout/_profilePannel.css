@@ -4,6 +4,35 @@
 	height: 131px;
 */
 
+.pannel .paint {
+	position: absolute;
+} 
+
+.pannel .line {
+	width: 11px;
+	height: 96px;
+}
+
+.pannel .white-line {
+	background-color: var(--secondary-color);
+	left: 5%;
+	top: 30px;
+}
+
+.pannel .yellow-line {
+	background-color: var(--primary-color);
+	right: 5%;
+	top: 211px;
+}
+
+.pannel .red-ball {
+	background-color: #FA0808;
+	width: 19px;
+	height: 19px;
+	left: 9%;
+	top: 126px;
+}
+
 .pannelEl {
 	font-style: normal;
 	font-weight: normal;

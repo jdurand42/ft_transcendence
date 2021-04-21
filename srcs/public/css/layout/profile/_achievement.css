@@ -1,0 +1,95 @@
+#achievementsBlock {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#achievementsBlock
+.achievement {
+    width: 456px;
+    height: 128px;
+
+    background-color: var(--table-color);
+    color: var(--secondary-color);
+
+    font-family: Roboto-Regular;
+    font-size: 18px;
+
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+}
+
+#achievementsBlock
+.right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#achievementsBlock
+.name {
+    font-size: 24px;
+    font-family: Roboto-Bold;
+}
+
+#achievementsBlock
+.description {
+    margin-bottom: 16px;
+}
+
+#achievementsBlock
+.achieved-text {
+    color: var(--primary-color);
+    margin-left: 8px;
+}
+
+#achievementsBlock
+.achieved {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+}
+
+#achievementsBlock
+.image-container {
+    width: 82px;
+    height: 80px;
+    margin-left: 32px;
+    margin-right: 32px;
+}
+
+#achievementsBlock
+.not-achieved {
+    filter: grayscale(80%);
+}
+
+#achievementsBlock
+#achievement-4 {
+    width: 80px;
+    height: 26px;
+} 
+
+#achievementsBlock
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#achievementsBlock
+.check-container {
+    width: 25px;
+    height: 25px;
+}
+
+#achievementsBlock
+.check {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

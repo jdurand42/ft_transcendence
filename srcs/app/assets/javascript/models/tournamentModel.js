@@ -31,7 +31,7 @@ export const Tournament = Backbone.Model.extend({
     })
   },
   unregister: function (userId) {
-    const url = this.url() + '/participants'
+    const url = this.url() + '/participants/' + userId
     return fetch(url, {
       method: 'DELETE',
       headers: this.headers

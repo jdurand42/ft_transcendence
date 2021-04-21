@@ -1,6 +1,5 @@
 // views
 import { HomeView } from '../views/home_view'
-import { PongView } from '../views/pong/pong_view'
 import { HeaderView } from '../views/headerView'
 import { LeaderboardView } from '../views/leaderboard/leaderboardView'
 import { TournamentView } from '../views/tournament/tournamentView'
@@ -59,7 +58,6 @@ export const Router = Backbone.Router.extend({
   {
     administration: 'admin_view',
     home: 'home_view',
-    pong: 'pong_view',
     'profile/(:id)': 'profile_view',
     'profile/(:id)/': 'profile_view',
     guilds: 'guilds_view',
@@ -71,6 +69,7 @@ export const Router = Backbone.Router.extend({
     tournament: 'tournaments_view',
     manage_guild: 'manage_guild_view',
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
+    'declare_war/(:from_id)/(:on_id)/(:war_id)': 'declare_war',
     'game/(:gameId)': 'playGame',
     connexion: 'connexion',
     exit: 'exit',
@@ -122,16 +121,20 @@ export const Router = Backbone.Router.extend({
     if (this.view !== undefined) {
       this.remove_view()
     }
+    console.log(performance.getEntriesByType('navigation')[0].type)
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
-    } else if (performance.navigation.type >= 1 && performance.navigation.type <= 2) {
+    } else if ((parseInt(performance.navigation.type) >= 1 && parseInt(performance.navigation.type) <= 2) ||
+			(performance.getEntriesByType('navigation')[0].type === 'reload')) {
       const fetchUser = async () => {
         this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
         if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
       }
-      fetchUser()
+      if (this.socket === undefined) {
+      	fetchUser()
+      }
     }
   },
 
@@ -168,12 +171,6 @@ export const Router = Backbone.Router.extend({
     if (this.accessPage()) { return }
     this.headerView.render()
     this.view = new HomeView({ socket: this.socket, notifView: this.notifView })
-  },
-
-  pong_view: function (url) {
-    if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new PongView()
   },
 
   profile_view: function (id, page) {
@@ -224,9 +221,9 @@ export const Router = Backbone.Router.extend({
     this.view = new ManageGuildView({ model: this.loadWrapper() })
   },
 
-  declare_war: function (fromId, onId) {
+  declare_war: function (fromId, onId, warId) {
     if (this.accessPage()) { return }
-    const declareWar = new DeclareWar({ fromId: fromId, onId: onId, router: this })
+    const declareWar = new DeclareWar({ fromId: fromId, onId: onId, warId: warId, router: this })
   },
 
   playGame: function (gameId) {
@@ -244,6 +241,7 @@ export const Router = Backbone.Router.extend({
       gameRecords: new Wrapper({ obj: new GameRecords() }),
       achievements: new Wrapper({ obj: new Achievements() }),
       userLoggedId: window.localStorage.getItem('user_id'),
+      notifView: new Wrapper({ obj: this.notifView }),
       router: this
     })
   },

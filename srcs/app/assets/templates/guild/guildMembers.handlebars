@@ -8,46 +8,13 @@
 	            <th></th>
 	            <th></th>
 	            <th>Nickname</th>
-	            <th>Guild</th>
-	            <th>General Rank</th>
+	            <th>Score</th>
 	            <th>Victories</th>
 	            <th>Total games</th>
 	            <th>Status</th>
 	            <th></th>
 	        </tr>
-	        <tr class="tableBoard gamerTable" for="{{this.owner.id}}">
-	            <td class="first-th">
-	                <div class="trophy-container">
-	                    <img class="trophy" src="{{this.owner.trophy}}">
-	                </div>
-	            </td>
-	            <td>{{this.owner.rank}}</td>
-	            <td>
-	                <div class="image-container" onclick="window.location='#profile/{{id}}/';">
-	                    <img class="list-image" src="{{this.owner.image_url}}">
-	                </div>
-	            </td>
-	            <td class="tableBoard-nickname" onclick="window.location='#profile/{{this.owner.id}}/';">{{this.owner.nickname}}</td>
-	            {{#if this.owner.guild_id}}
-	            <td class="tableBoard-guild" onclick="window.location='#guild/{{this.owner.guild_id}}/';">{{this.owner.guildName}}</td>
-	            {{/if}}
-	            {{#unless this.owner.guild_id}}
-	            <td>N/A</td>
-	            {{/unless}}
-	            <td>{{this.owner.generalRank}}</td>
-	            <td>{{this.owner.victories}}</td>
-	            <td>{{this.owner.totalGames}}</td>
-	            <td>
-	                <div class="status-container">
-	                    <div class="pastille {{this.owner.status}}" id="pastille"></div>
-	                    <p class="status">{{this.owner.status}}</p>
-	                    <div class="slide-show-container"></div>
-	                    <img src="{{this.owner.slide_show}}" class="slide-show"></img>
-	                </div>
-	            </td>
-	            <td>Owner</td>
-	        </tr>
-	        {{#each officers}}
+			{{#each members}}
 	        <tr class="tableBoard gamerTable" for="{{id}}">
 	            <td class="first-th">
 	                <div class="trophy-container">
@@ -61,13 +28,7 @@
 	                </div>
 	            </td>
 	            <td class="tableBoard-nickname" onclick="window.location='#profile/{{id}}/';">{{nickname}}</td>
-	            {{#if guild_id}}
-	            <td class="tableBoard-guild" onclick="window.location='#guild/{{guild_id}}/';">{{guildName}}</td>
-	            {{/if}}
-	            {{#unless guild_id}}
-	            <td>N/A</td>
-	            {{/unless}}
-	            <td>{{generalRank}}</td>
+	            <td>{{score}}</td>
 	            <td>{{victories}}</td>
 	            <td>{{totalGames}}</td>
 	            <td>
@@ -78,41 +39,7 @@
 	                    <img src="{{slide_show}}" class="slide-show"></img>
 	                </div>
 	            </td>
-	            <td>Officer</td>
-	        </tr>
-	        {{/each}}
-					{{#each members}}
-	        <tr class="tableBoard gamerTable" for="{{id}}">
-	            <td class="first-th">
-	                <div class="trophy-container">
-	                    <img class="trophy" src="{{trophy}}">
-	                </div>
-	            </td>
-	            <td>{{rank}}</td>
-	            <td>
-	                <div class="image-container" onclick="window.location='#profile/{{id}}/';">
-	                    <img class="list-image" src="{{image_url}}">
-	                </div>
-	            </td>
-	            <td class="tableBoard-nickname" onclick="window.location='#profile/{{id}}/';">{{nickname}}</td>
-	            {{#if guild_id}}
-	            <td class="tableBoard-guild" onclick="window.location='#guild/{{guild_id}}/';">{{guildName}}</td>
-	            {{/if}}
-	            {{#unless guild_id}}
-	            <td>N/A</td>
-	            {{/unless}}
-	            <td>{{generalRank}}</td>
-	            <td>{{victories}}</td>
-	            <td>{{totalGames}}</td>
-	            <td>
-	                <div class="status-container">
-	                    <div class="pastille {{status}}" id="pastille"></div>
-	                    <p class="status">{{status}}</p>
-	                    <div class="slide-show-container"></div>
-	                    <img src="{{slide_show}}" class="slide-show"></img>
-	                </div>
-	            </td>
-	            <td>Member</td>
+	            <td>{{member}}</td>
 	        </tr>
 	        {{/each}}
 	    </table>

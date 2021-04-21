@@ -1,4 +1,22 @@
 
-<section class="profileBlock" id="achievementsBlock">
-<p class="placeholder"> I'm {{name}} and i'm in {{ladder_name}} and this is just a test </p>
-</section>
+<div class="profileBlock" id="achievementsBlock">
+    {{#each achievement}}
+    <div class="achievement {{achieved}}">
+        <div class="image-container" id="achievement-{{id}}">
+            <img src="{{icon}}" class="image">
+        </div>
+        <div class="right">
+            <div class="name">{{name}}</div>
+            <div class="description">{{description}}</div>
+            {{#ifCond achieved '==' 'achieved'}}
+            <div class="achieved">
+                <div class="check-container">
+                    <img src="./icons/check.svg" class="check">
+                </div>
+                <div class="achieved-text">Achieved</div>
+            </div>
+            {{/ifCond}}
+        </div>
+    </div>
+    {{/each}}
+</div>

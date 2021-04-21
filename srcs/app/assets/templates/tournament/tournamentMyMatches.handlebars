@@ -15,9 +15,9 @@
                         </div>
                         <div class="nickname">{{opponent}}</div>
                     </div>
-                    <div class="button-timer">
+                    <div class="button-timer" id="button-timer{{opponentId}}">
                         {{#unless waiting}}
-                        <button class="play play-my-matches" id="play-my-matches{{opponentId}}" for="{{opponentId}}">{{play}}</button>
+                        <button class="play play-my-matches {{play}}" id="play-my-matches{{opponentId}}" for="{{opponentId}}">{{play}}</button>
                         {{/unless}}
                         {{#if waiting}}
                         <div class="buttons">
@@ -46,7 +46,7 @@
         <div class="match-done-container">
             <div class="match-done">
                 <div class="image-nickname" onclick="window.location='#profile/{{opponentId1}}/';">
-                    <div class="opponent1">{{opponent1}}</div>
+                    <div class="opponent opponent1">{{opponent1}}</div>
                     <div class="image-container">
                         <img class="image-url" src="{{avatarOpponent1}}">
                     </div>
@@ -58,14 +58,14 @@
                     <div class="image-container">
                         <img class="image-url" src="{{avatarOpponent2}}">
                     </div>
-                    <div class="opponent2">{{opponent2}}</div>
+                    <div class="opponent opponent2">{{opponent2}}</div>
                 </div>
             </div>
             {{#if forfeit}}
             <div class="forfeit">Victory by forfeit</div>
             {{/if}}
         </div>
-        </div>
         {{/each}}
+        </div>
     </div>
 </div>
