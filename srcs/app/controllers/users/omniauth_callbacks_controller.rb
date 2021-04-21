@@ -11,9 +11,10 @@ module Users
       attach_avatar(user, auth_hash)
       user.assign_attributes({
                                email: auth_hash['info']['email'],
-                               nickname: auth_hash['info']['nickname']
+                               nickname: auth_hash['info']['nickname'],
                              })
       user.assign_attributes({ admin: true }) if ENV['P42NG_OWNER_UID'] == auth_hash['uid'].to_s
+      user.assign_attributes({ ladder: Ladder.find_by(name: "Bronze") }) if Ladder.find_by(name: "Bronze").nil? == false
     end
 
     def attach_avatar(user, auth_hash)
