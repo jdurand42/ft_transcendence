@@ -1,6 +1,8 @@
-Rake::Task["assets:precompile"].clear
-   namespace :assets do
-     task 'precompile' do
-     puts "Not pre-compiling assets..."
-   end
+# frozen_string_literal: true
+
+Rake::Task['assets:precompile'].clear
+namespace :assets do
+  task 'precompile' do
+    puts 'Not pre-compiling assets...'
+  end
 end
