@@ -39,9 +39,18 @@ if Rails.env.development?
       FactoryBot.create(:chat_participant, user: @users[i], chat: chat)
     end
     guilds.without(guild).each do |on|
-      FactoryBot.create(:war, from: guild, on: on, war_start: DateTime.now + rand(-5..5), war_end: DateTime.now + rand(6..10))
+      case rand(3)
+      when 0
+        attr = { opened: true, closed: false }
+      when 1
+        attr = { opened: false, closed: true }
+      else
+        attr = { opened: false, closed: false }
+      end
+      FactoryBot.create(:war, from: guild, on: on, war_start: DateTime.now + rand(-5..5), war_end: DateTime.now + rand(6..10), opened: attr[:opened], closed: attr[:closed])
     end
   end
+
 
   10.times do |_i|
     players = @users.sample(2)
