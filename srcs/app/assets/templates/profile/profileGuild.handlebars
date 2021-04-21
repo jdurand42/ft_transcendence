@@ -9,6 +9,59 @@
         <span id="leaveGuildButton"></span>
     </div>
 </div>
+
+<div class="listsBoard leaderboardList" id="leaderboardList">
+	<div class="listsBoard leaderboardList" id="memberGuildList">
+	    <div class="nb-list nbMemberGuildProfile">{{membersNumber}} members</div>
+		<div class="table-container" id="memberGuildListTable">
+	    <table class="tablesBoard gamersTable">
+	        <tr>
+	            <th class="first-th"></th>
+	            <th></th>
+	            <th></th>
+	            <th>Nickname</th>
+	            <th>Score</th>
+	            <th>Victories</th>
+	            <th>Total games</th>
+	            <th>Status</th>
+	            <th></th>
+	        </tr>
+			{{#each members}}
+	        <tr class="tableBoard gamerTable" for="{{id}}">
+	            <td class="first-th">
+	                <div class="trophy-container">
+	                    <img class="trophy" src="{{trophy}}">
+	                </div>
+	            </td>
+	            <td>{{rank}}</td>
+	            <td>
+	                <div class="image-container" onclick="window.location='#profile/{{id}}/';">
+	                    <img class="list-image" src="{{image_url}}">
+	                </div>
+	            </td>
+	            <td class="tableBoard-nickname" onclick="window.location='#profile/{{id}}/';">{{nickname}}</td>
+	            <td>{{score}}</td>
+	            <td>{{victories}}</td>
+	            <td>{{totalGames}}</td>
+	            <td>
+	                <div class="status-container">
+	                    <div class="pastille {{status}}" id="pastille"></div>
+	                    <p class="status">{{status}}</p>
+	                    <div class="slide-show-container"></div>
+	                    <img src="{{slide_show}}" class="slide-show"></img>
+	                </div>
+	            </td>
+	            <td>{{member}}</td>
+	        </tr>
+	        {{/each}}
+	    </table>
+		</div>
+	</div>
+</div>
+
+
+
+{{!-- 
 <div class="listsBoard leaderboardList" id="leaderboardList">
     <div class="nb-list nbMemberGuildProfile">{{membersNumber}} members</div>
     <div class="table-container">
@@ -19,7 +72,7 @@
                 <th></th>
                 <th>Nickname</th>
                 <th>Guild</th>
-                <th>General Rank</th>
+                <th>Score</th>
                 <th>Victories</th>
                 <th>Total games</th>
                 <th>Status</th>
@@ -44,7 +97,7 @@
                 {{#unless this.owner.guild_id}}
                 <td>N/A</td>
                 {{/unless}}
-                <td>{{this.owner.generalRank}}</td>
+                <td>{{this.owner.score}}</td>
                 <td>{{this.owner.victories}}</td>
                 <td>{{this.owner.totalGames}}</td>
                 <td>
@@ -77,7 +130,7 @@
                 {{#unless guild_id}}
                 <td>N/A</td>
                 {{/unless}}
-                <td>{{generalRank}}</td>
+                <td>{{score}}</td>
                 <td>{{victories}}</td>
                 <td>{{totalGames}}</td>
                 <td>
@@ -111,7 +164,7 @@
                 {{#unless guild_id}}
                 <td>N/A</td>
                 {{/unless}}
-                <td>{{generalRank}}</td>
+                <td>{{score}}</td>
                 <td>{{victories}}</td>
                 <td>{{totalGames}}</td>
                 <td>
@@ -126,8 +179,8 @@
             </tr>
             {{/each}}
         </table>
-    </div>
-</div>
+    </div> --}}
+{{!-- </div> --}}
 <!--<section>
 <table class="usersList">
 <tr class="usersListIndex">
