@@ -9,8 +9,8 @@ FactoryBot.define do
     password { 'secure' }
     two_factor_code { '0123456' }
     email { Faker::Internet.email }
-    ladder_games_won { Faker::Number.number(digits: 3) }
-    ladder_games_lost { Faker::Number.number(digits: 3) }
+    ladder_games_won { rand(0..1400) }
+    ladder_games_lost { rand(0..600) }
     status { 'offline' }
     uid { Faker::Internet.uuid }
     provider { 'marvin' }
