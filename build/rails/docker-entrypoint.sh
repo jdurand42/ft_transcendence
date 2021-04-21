@@ -1,7 +1,8 @@
 #!/bin/sh
 set -x
 rm -f /tmp/rails.pid
-bower install --allow-root
+#bower install --allow-root
+npm install --unsafe-perm
 rails db:reset
 rails db:migrate:reset
 rails db:seed
