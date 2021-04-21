@@ -1,6 +1,5 @@
 // views
 import { HomeView } from '../views/home_view'
-import { PongView } from '../views/pong/pong_view'
 import { HeaderView } from '../views/headerView'
 import { LeaderboardView } from '../views/leaderboard/leaderboardView'
 import { TournamentView } from '../views/tournament/tournamentView'
@@ -59,7 +58,6 @@ export const Router = Backbone.Router.extend({
   {
     administration: 'admin_view',
     home: 'home_view',
-    pong: 'pong_view',
     'profile/(:id)': 'profile_view',
     'profile/(:id)/': 'profile_view',
     guilds: 'guilds_view',
@@ -71,6 +69,7 @@ export const Router = Backbone.Router.extend({
     tournament: 'tournaments_view',
     manage_guild: 'manage_guild_view',
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
+    'declare_war/(:from_id)/(:on_id)/(:war_id)': 'declare_war',
     'game/(:gameId)': 'playGame',
     connexion: 'connexion',
     exit: 'exit',
@@ -174,12 +173,6 @@ export const Router = Backbone.Router.extend({
     this.view = new HomeView({ socket: this.socket, notifView: this.notifView })
   },
 
-  pong_view: function (url) {
-    if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new PongView()
-  },
-
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
@@ -228,9 +221,9 @@ export const Router = Backbone.Router.extend({
     this.view = new ManageGuildView({ model: this.loadWrapper() })
   },
 
-  declare_war: function (fromId, onId) {
+  declare_war: function (fromId, onId, warId) {
     if (this.accessPage()) { return }
-    const declareWar = new DeclareWar({ fromId: fromId, onId: onId, router: this })
+    const declareWar = new DeclareWar({ fromId: fromId, onId: onId, warId: warId, router: this })
   },
 
   playGame: function (gameId) {

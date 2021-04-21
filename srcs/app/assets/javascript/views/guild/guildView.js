@@ -8,16 +8,19 @@ export const GuildView = Backbone.View.extend({
     'click #currentWar': 'loadCurrentWar',
     'click #lastWars': 'loadLastWars',
     'click #members': 'loadMembers',
-    'click #calendar': 'loadCalendar',
+    'click #calendarWar': 'loadCalendar',
     'click .war-informations-container': 'displayWarInformations',
-    'click .scores-last-wars': 'openLastWar'
+    'click .scores-last-wars': 'openLastWar',
+    'mouseover .validation-container': 'displayExplanation',
+    'click .accept-button': 'acceptWar',
+    'click .refuse-button': 'refuseWar',
+    'click .negociate-button': 'negociateWar'
   },
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
     this.ladders = this.model.get('ladders').get('obj')
     this.userId = this.model.get('userLoggedId')
-    this.$el.html(Handlebars.templates.guild({}))
     this.members = new Users()
     this.wars = new Wars()
     this.userLogged = new User()
@@ -25,7 +28,9 @@ export const GuildView = Backbone.View.extend({
     this.currentWarTimes = undefined
     this.lastWars = new Wars()
     this.lastWarsTimes = []
-
+    this.calendar = new Wars()
+    this.calendarWarTimes = []
+    this.$el.html(Handlebars.templates.guild())
     const fetch = async () => {
       // sécurité et séléction pour #guild/
       await this.users.fetch() &&
@@ -33,7 +38,7 @@ export const GuildView = Backbone.View.extend({
       if (this.id === null || this.id === undefined) {
         this.id = this.users.get(this.userId).get('guild_id')
       }
-      if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0 || this.id === null) {
+      if (isNaN(this.id) || parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0 || this.id === null) {
         this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
         return
       }
@@ -45,51 +50,68 @@ export const GuildView = Backbone.View.extend({
       const response6 = this.userLogged.fetchUser(this.userId)
       await response2 && await response6
 
-      console.log(this.wars)
-
       for (let i = 0; i < this.wars.length; i++) {
         if (this.wars.at(i).get('opened') === true) {
           this.currentWar = this.wars.at(i)
-          this.currentWar = new WarTimes(this.wars.at(i).get('id'))
-          // await this.currentWarTimes.fetch()
+          this.currentWarTimes = new WarTimes(this.wars.at(i).get('id'))
+          try {
+            await this.currentWarTimes.fetch()
+          } catch (e) {
+            console.log(e)
+          }
         }
-        if (this.wars.at(i).get('closed') === false) { // TEST METTRE == TRUE
+        if (this.wars.at(i).get('closed') === true) {
           this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
           this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
           this.lastWars.add(this.wars.at(i))
         }
-      }
-      this.currentWar = this.wars.at(0) // TEST
-      console.log(this.currentWar.get('id'))
-      console.log(this.currentWar.get('id'))
-      try {
-        if (this.currentWar !== undefined) {
-          this.currentWarTimes = new WarTimes(this.currentWar.get('id')) // TEST
+        if (this.wars.at(i).get('closed') === false &&
+            this.wars.at(i).get('opened') === false) {
+          this.calendarWarTimes.push(new WarTimes(this.wars.at(i).get('id')))
+          this.calendarWarTimes[this.calendarWarTimes.length - 1].fetch()
+          this.calendar.add(this.wars.at(i))
         }
-
-        await this.currentWarTimes.fetch() // TEST
-      } catch (e) {
-        console.log('404 war times to do back')
       }
-
-      console.log(this.currentWarTimes)
-      console.log(this.lastWarsTimes)
 
       this.render()
-      // this.loadCurrentWar()
     }
     fetch()
   },
   el: $('#app'),
   render: function () {
-    this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar({}))
-    this.renderPannel()
-    if (this.guild.get('id') === this.userLogged.get('guild_id')) {
-      this.$el.find('#guildButton').html('<button id="manageGuildButton"><a href="#manage_guild">Manage guild</a></button>')
-      this.$el.find('#calendar').html('<div class=\"subNavBarEl\">Calendar</div>')
+    const context = {}
+    if (this.id === null || this.id === undefined) {
+      this.id = this.users.get(this.userId).get('guild_id')
     }
+    this.guild = this.guilds.get(this.id)
+    // context.manage = true // TEST TO REMOVE
+    if (this.guild.get('id') === this.userLogged.get('guild_id')) {
+      context.manage = true
+    } else if (this.userLogged.get('guild_id') !== undefined) {
+      context.fromId = this.userLogged.get('guild_id')
+      context.onId = this.id
+      context.declareWar = true
+    }
+    this.$el.html(Handlebars.templates.guild(context))
+
+    if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
+      this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
+      return
+    }
+    this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar(context))
+    this.renderPannel()
     this.loadCurrentWar()
     return this
+  },
+
+  acceptWar: function (e) {
+    const war = this.calendar.get(e.currentTarget.getAttribute('for'))
+    war.acceptRefuseWar(true)
+  },
+
+  refuseWar: function (e) {
+    const war = this.calendar.get(e.currentTarget.getAttribute('for'))
+    war.acceptRefuseWar(false)
   },
 
   openLastWar: function (e) {
@@ -114,8 +136,11 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadCurrentWar: function () {
-    document.getElementById('lastWars').classList.remove('open')
-    document.getElementById('members').classList.remove('open')
+    try {
+      document.getElementById('lastWars').classList.remove('open')
+      document.getElementById('members').classList.remove('open')
+      document.getElementById('calendarWar').classList.remove('open')
+    } catch (e) {}
 
     const div = document.getElementById('currentWar')
     div.classList.add('open')
@@ -128,8 +153,11 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadLastWars: function () {
-    document.getElementById('currentWar').classList.remove('open')
-    document.getElementById('members').classList.remove('open')
+    try {
+      document.getElementById('currentWar').classList.remove('open')
+      document.getElementById('members').classList.remove('open')
+      document.getElementById('calendarWar').classList.remove('open')
+    } catch (e) {}
 
     const div = document.getElementById('lastWars')
     div.classList.add('open')
@@ -139,8 +167,11 @@ export const GuildView = Backbone.View.extend({
   },
 
   loadMembers: function () {
-    document.getElementById('currentWar').classList.remove('open')
-    document.getElementById('lastWars').classList.remove('open')
+    try {
+      document.getElementById('currentWar').classList.remove('open')
+      document.getElementById('lastWars').classList.remove('open')
+      document.getElementById('calendarWar').classList.remove('open')
+    } catch (e) {}
 
     const div = document.getElementById('members')
     div.classList.add('open')
@@ -149,21 +180,31 @@ export const GuildView = Backbone.View.extend({
     this.updateMembers()
   },
 
-  loadCalendar: function () {
-    this.calendar()
+  loadCalendar: function (e) {
+    document.getElementById('currentWar').classList.remove('open')
+    document.getElementById('lastWars').classList.remove('open')
+    document.getElementById('members').classList.remove('open')
+
+    const div = document.getElementById('calendarWar')
+    div.classList.add('open')
+    this.positionSquare(div.getBoundingClientRect())
+    this.displayCalendar(e)
   },
 
-  updateContextCurrentWar: function (context, war) {
+  updateContextCurrentWar: function (context, war, warTimes, index) {
     const fromGuild = this.guilds.get(war.get('from_id'))
     const onGuild = this.guilds.get(war.get('on_id'))
+    context.index = index
     context.id = war.get('id')
+    context.fromId = war.get('from_id')
     context.fromName = fromGuild.get('name')
+    context.onId = war.get('on_id')
     context.onName = onGuild.get('name')
     context.fromScore = war.get('from_score')
     context.onScore = war.get('on_score')
     context.prize = war.get('prize')
     const warStart = new Date(war.get('war_start'))
-    let index = warStart.toString().indexOf('GMT')
+    index = warStart.toString().indexOf('GMT')
     context.warStart = warStart.toString().substr(0, index)
 
     const warEnd = new Date(war.get('war_end'))
@@ -180,6 +221,15 @@ export const GuildView = Backbone.View.extend({
       context.ladderIcon = './icons/highlight_off.svg'
     }
     context.warTime = []
+    for (let i = 0; i < warTimes.length; i++) {
+      context.warTime.push({
+        startDay: warTimes.at(i).get('day').charAt(0).toUpperCase() + warTimes.at(i).get('day').slice(1, 3),
+        startHour: warTimes.at(i).get('start_hour'),
+        endHour: warTimes.at(i).get('end_hour'),
+        maxUnanswered: warTimes.at(i).get('max_unanswered'),
+        tta: warTimes.at(i).get('time_to_answer')
+      })
+    }
   },
 
   displayCurrentWar: function () {
@@ -188,7 +238,7 @@ export const GuildView = Backbone.View.extend({
       context.war = false
     } else {
       context.war = true
-      this.updateContextCurrentWar(context, this.currentWar)
+      this.updateContextCurrentWar(context, this.currentWar, this.currentWarTimes, 0)
     }
     this.$el.find('#guildcontent').html(Handlebars.templates.currentWar(context))
     if (Number(context.fromScore) > Number(context.onScore)) {
@@ -208,9 +258,14 @@ export const GuildView = Backbone.View.extend({
     }
 
     context.wars = []
+    console.log(this.lastWarsTimes.length)
+    console.log(this.lastWars.length)
     for (let i = 0; i < this.lastWars.length; i++) {
       context.wars.push({})
-      this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i))
+      console.log(this.lastWars.at(i))
+      console.log(this.lastWarsTimes[i])
+
+      this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i), this.lastWarsTimes[i], i)
     }
 
     this.$el.find('#guildcontent').html(Handlebars.templates.lastWars(context))
@@ -259,14 +314,13 @@ export const GuildView = Backbone.View.extend({
     const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
     context.totalWars = 0
     context.warsWon = 0
-    console.log(this.wars)
     for (let i = 0; i < this.wars.length; i++) {
       const war = this.wars.at(i)
       if (war.get('closed') === true) {
         context.totalWars += 1
-        if ((war.get('from_id') === this.id &&
+        if ((war.get('from_id') == this.id &&
             war.get('from_score') > war.get('on_score')) ||
-            (war.get('on_id') === this.id &&
+            (war.get('on_id') == this.id &&
             war.get('on_score') > war.get('from_score'))) {
           context.warsWon += 1
         }
@@ -276,10 +330,68 @@ export const GuildView = Backbone.View.extend({
     this.$el.find('#guildPannel').html(Handlebars.templates.guildPannel(context))
   },
 
-  calendar: function () {
-    const context = JSON.parse(JSON.stringify(this.guilds.get(this.id)))
+  isProposal: function (context, war) {
+    if ((war.get('from_id') == this.id &&
+        war.get('from_agreement') === false) ||
+        (war.get('on_id') == this.id &&
+        war.get('on_agreement') === false)) {
+      context.proposal = true
+      context.icon = './icons/question.svg'
+      context.explanation = 'The other guild is waiting your approval'
+    } else if ((war.get('from_id') != this.id &&
+    war.get('from_agreement') === false) ||
+    (war.get('on_id') != this.id &&
+    war.get('on_agreement') === false)) {
+      context.proposal = false
+      context.icon = './icons/hourglass.svg'
+      context.explanation = 'Awaiting approval from the other guild'
+    } else {
+      context.proposal = false
+      context.icon = './icons/check_circle-yellow.svg'
+      context.explanation = 'The war will start soon'
+    }
+  },
+
+  displayCalendar: function (e) {
+    const context = {}
+    if (this.calendar.length > 0) {
+      context.war = true
+
+      context.wars = []
+      for (let i = 0; i < this.calendar.length; i++) {
+        context.wars.push({})
+        this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), this.calendarWarTimes.at(i), i)
+        this.isProposal(context.wars[i], this.calendar.at(i))
+      }
+    } else {
+      context.war = false
+    }
+
     this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
+
+    // line
+    if (this.calendar.length > 0) {
+      e.currentTarget = document.getElementById('validation-container-0')
+      const div1 = e.currentTarget
+      const center1X = div1.clientLeft + div1.clientWidth / 2
+      const center1Y = div1.clientTop + div1.clientHeight / 2
+      e.currentTarget = document.getElementById('validation-container-' + (this.calendar.length - 1))
+      const div2 = e.currentTarget
+      const height = div2.offsetTop - div1.offsetTop
+      const line = document.getElementById('line')
+      line.style.top = center1Y
+      line.style.left = center1X
+      line.style.height = height
+    }
+
     return this
+  },
+
+  displayExplanation: function (e) {
+    const index = e.currentTarget.getAttribute('for')
+    const explanation = document.getElementById('explanation-' + index)
+    explanation.style.top = e.pageY
+    explanation.style.left = e.pageX
   },
 
   updateContextForlist: function (user, i) {

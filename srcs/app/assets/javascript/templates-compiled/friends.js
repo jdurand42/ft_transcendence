@@ -80,7 +80,7 @@ templates['friends'] = template({"1":function(container,depth0,helpers,partials,
     + ((stack1 = lookupProperty(helpers,"if").call(alias1,(depth0 != null ? lookupProperty(depth0,"guild_id") : depth0),{"name":"if","hash":{},"fn":container.program(9, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":75,"column":12},"end":{"line":77,"column":19}}})) != null ? stack1 : "")
     + ((stack1 = lookupProperty(helpers,"unless").call(alias1,(depth0 != null ? lookupProperty(depth0,"guild_id") : depth0),{"name":"unless","hash":{},"fn":container.program(11, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":78,"column":12},"end":{"line":80,"column":23}}})) != null ? stack1 : "")
     + "            <td>"
-    + alias4(((helper = (helper = lookupProperty(helpers,"generalRank") || (depth0 != null ? lookupProperty(depth0,"generalRank") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"generalRank","hash":{},"data":data,"loc":{"start":{"line":81,"column":16},"end":{"line":81,"column":31}}}) : helper)))
+    + alias4(((helper = (helper = lookupProperty(helpers,"score") || (depth0 != null ? lookupProperty(depth0,"score") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"score","hash":{},"data":data,"loc":{"start":{"line":81,"column":16},"end":{"line":81,"column":25}}}) : helper)))
     + "</td>\n            <td>"
     + alias4(((helper = (helper = lookupProperty(helpers,"victories") || (depth0 != null ? lookupProperty(depth0,"victories") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"victories","hash":{},"data":data,"loc":{"start":{"line":82,"column":16},"end":{"line":82,"column":29}}}) : helper)))
     + "</td>\n            <td>"
@@ -140,13 +140,13 @@ templates['friends'] = template({"1":function(container,depth0,helpers,partials,
         return undefined
     };
 
-  return "<section class=\"profileBlock listBoard leaderboardList\" id=\"friendsBlock\">\n<!--\n	<table class=\"usersList\">\n	<tr id=\"profileList\" class=\"usersListIndex\">\n		<th>"
+  return "<section class=\"profileBlock\" id=\"friendsBlock\">\n<!--\n	<table class=\"usersList\">\n	<tr id=\"profileList\" class=\"usersListIndex\">\n		<th>"
     + alias1(container.lambda((depth0 != null ? lookupProperty(depth0,"friendsNumber") : depth0), depth0))
     + " friends</th>\n		<th></th>\n		<th></th>\n		<th>Pseudo</th>\n		<th>Guild</th>\n		<th>league Rank</th>\n		<th>General Rank</th>\n		<th>Victories</th>\n		<th>Total Games</th>\n		<th>Status</th>\n		<th></th>\n		<th></th>\n	</tr>\n\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias2,(depth0 != null ? lookupProperty(depth0,"friends") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":19,"column":1},"end":{"line":42,"column":10}}})) != null ? stack1 : "")
     + "</table>\n</section>\n-->\n<div class=\"listsBoard leaderboardList\" id=\"leaderboardList\">\n    <div class=\"nb-list nbGamers\">"
     + alias1(((helper = (helper = lookupProperty(helpers,"friendsNumber") || (depth0 != null ? lookupProperty(depth0,"friendsNumber") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias2,{"name":"friendsNumber","hash":{},"data":data,"loc":{"start":{"line":47,"column":34},"end":{"line":47,"column":51}}}) : helper)))
-    + " friends</div>\n    <table class=\"tablesBoard gamersTable\">\n        <tr>\n            <th class=\"first-th\"></th>\n            <th></th>\n            <th></th>\n            <th>Nickname</th>\n            <th>Guild</th>\n            <th>General Rank</th>\n            <th>Victories</th>\n            <th>Total games</th>\n            <th>Status</th>\n            <th></th>\n        </tr>\n"
+    + " friends</div>\n    <table class=\"tablesBoard gamersTable\">\n        <tr>\n            <th class=\"first-th\"></th>\n            <th></th>\n            <th></th>\n            <th>Nickname</th>\n            <th>Guild</th>\n            <th>Score</th>\n            <th>Victories</th>\n            <th>Total games</th>\n            <th>Status</th>\n            <th></th>\n        </tr>\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias2,(depth0 != null ? lookupProperty(depth0,"friends") : depth0),{"name":"each","hash":{},"fn":container.program(8, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":61,"column":8},"end":{"line":99,"column":17}}})) != null ? stack1 : "")
     + "    </table>\n</div>\n</section>\n";
 },"useData":true});

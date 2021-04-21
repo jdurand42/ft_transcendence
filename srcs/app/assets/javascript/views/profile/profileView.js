@@ -56,6 +56,7 @@ export const ProfileView = Backbone.View.extend({
       const response6 = this.myAchievements.fetchByUserId(this.id)
       const response7 = this.achievements.fetch()
       await response1 && await response2 && await response3 && await response4 && await response5
+      this.users.sort()
       this.render()
     }
     fetchUsers()
@@ -73,7 +74,7 @@ export const ProfileView = Backbone.View.extend({
           return options.inverse(this)
       }
     })
-    if (this.id > this.users.length || this.id <= 0) {
+    if (isNaN(this.id) || this.id > this.users.length || this.id <= 0) {
       this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
       return this
     }
@@ -187,10 +188,11 @@ export const ProfileView = Backbone.View.extend({
 
     const load = async () => {
       try {
-        await this.users.fetch()
-        this.checkLadderId()
+        // await this.users.fetch()
+        // this.users.sort()
+        // this.checkLadderId()
         // this.renderPannel()
-        await this.guilds.fetch() &&
+        await this.guilds.fetch() && // TO DO INITIZIALISATION
         await this.ladders.fetch()
         this.friends()
       } catch (e) {
@@ -240,6 +242,7 @@ export const ProfileView = Backbone.View.extend({
     const load = async () => {
       try {
         await this.users.fetch()
+        this.users.sort()
         this.checkLadderId()
         await this.guilds.fetch() &&
         await this.ladders.fetch()
@@ -366,7 +369,7 @@ export const ProfileView = Backbone.View.extend({
   friends: function () {
     const friends = this.users.get(this.id).get('friends')
     const userFriends = this.users.get(this.userId).get('friends')
-    const context = { friends: Array(), friendsNumber: friends.length }
+    const context = { friends: [], friendsNumber: friends.length }
     for (let i = 0; i < friends.length; i++) {
       // context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
       context.friends.push(
@@ -383,6 +386,17 @@ export const ProfileView = Backbone.View.extend({
         context.friends[i].guild = false
       }
     }
+
+    // sort
+    context.friends = context.friends.sort(function (a, b) {
+      if (a.score < b.score) { return 1 }
+      if (a.score > b.score) { return -1 }
+      return 0
+    })
+    for (let i = 0; i < context.friends.length; i++) {
+      context.friends[i].rank = i + 1
+    }
+
     this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
     return this
   },

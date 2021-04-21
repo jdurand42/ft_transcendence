@@ -1,0 +1,133 @@
+#calendarWarPage .each-war {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-around; */
+
+    margin-bottom: 32px;
+}
+
+#calendarWarPage
+.current-war {
+    width: 70%;
+    height: fit-content;
+
+    float: right;
+
+    border-radius: 0px;
+
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+
+    margin-left: 20%;
+}
+
+#calendarWarPage
+.scores .center {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#calendarWarPage
+.vs {
+    color: var(--primary-color);
+}
+
+#calendarWarPage
+.scores {
+    font-size: 26px;
+    height: 67px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+#calendarWarPage .war-infos {
+    display: flex;
+}
+
+#calendarWarPage .war-infos .war-info {
+    width: 100%;
+}
+
+#calendarWarPage .negociation-buttons {
+    width: 100%;
+    height: 106px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-top: 2px solid #1B2534;
+}
+
+#calendarWarPage .negociate-button {
+    margin-left: 8px;
+    margin-right: 8px;
+
+    background-color: #C4C4C4;
+}
+
+#calendarWarPage .refuse-button {
+    background-color: #C4C4C4;
+}
+
+#calendarWarPage .negociation-button {
+    width: 107px;
+    height: 49px;
+    border-radius: 25px;
+
+    font-size: 16px;
+}
+
+#calendarWarPage .validation-container {
+    background-color: var(--table-color);
+    width: 63px;
+    height: 63px;
+    border-radius: 50%;
+    z-index: 1;
+
+    position: relative;
+    left: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#calendarWarPage .validation-icon {
+    width: 60%;
+    height: 60%;
+    object-fit: cover;
+}
+
+#calendarWarPage .line {
+    width: 1px;
+    position: absolute;
+    background-color: #C4C4C4;
+    height: 100px;
+    z-index: 0;
+
+}
+
+#calendarWarPage .line-fixed {
+    position: relative;
+    left: 64px;
+}
+
+#calendarWarPAge .explanation {
+    width: 180px;
+    position: absolute;
+    font-size: 14px;
+    background-color: #C4C4C4;
+    text-align: left;
+    padding: 8px;
+}
+
+#calendarWarPage .explanation {
+    display: none;
+}
+
+#calendarWarPage .validation-container:hover + .explanation {
+    display: flex;
+    z-index: 1;
+}

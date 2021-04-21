@@ -62,6 +62,26 @@
 	margin: auto;
 }
 
+.manageGuildButton {
+	width: 183px;
+	height: 40px;
+
+	font-family: Roboto-Regular;
+	font-size: 18px;
+	border-radius: 10px;
+
+	text-decoration: none;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+
+	position: relative;
+	top: -35px;
+	left: 10%;
+}
+
 .contentWrapper {
 	min-height: calc(100vh - var(--header-size));
 

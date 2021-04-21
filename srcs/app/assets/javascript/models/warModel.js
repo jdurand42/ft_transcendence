@@ -28,7 +28,7 @@ export const War = Backbone.Model.extend({
   urlRoot: 'api/wars',
 
   url: function () {
-    if (this.id !== undefined) { return this.urlRoot }
+    if (this.id !== undefined) { return this.urlRoot + '/' + this.id }
     return this.urlRoot
   },
 
@@ -39,13 +39,22 @@ export const War = Backbone.Model.extend({
       war_end: warEnd,
       prize: prize,
       tournament_effort: tournamentEffort,
-      ladder_effort: tournamentEffort
+      ladder_effort: ladderEffort
     })
   },
 
   createWarTime: function (day, startHour, endHour, timeToAnswer, maxUnanswered) {
     const header = this.superHeaders.getHeaders()
     const url = this.urlRoot + '/' + this.id + '/times'
+
+    // return this.save({
+    //   url: url,
+    //   day: day,
+    //   start_hour: startHour,
+    //   end_hour: endHour,
+    //   time_to_answer: timeToAnswer,
+    //   max_unanswered: maxUnanswered
+    // })
     return fetch(url, {
       method: 'POST',
       headers: header,
@@ -55,6 +64,16 @@ export const War = Backbone.Model.extend({
         end_hour: endHour,
         time_to_answer: timeToAnswer,
         max_unanswered: maxUnanswered
+      })
+    })
+  },
+
+  acceptRefuseWar: function (agree) {
+    const url = this.urlRoot + '/agreements'
+    return fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        agree_terms: agree
       })
     })
   }
