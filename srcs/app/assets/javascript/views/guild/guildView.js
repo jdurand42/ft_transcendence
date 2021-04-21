@@ -29,6 +29,7 @@ export const GuildView = Backbone.View.extend({
     this.lastWars = new Wars()
     this.lastWarsTimes = []
     this.calendar = new Wars()
+    this.calendarWarTimes = []
 
     const fetch = async () => {
       const response1 = this.members.fetchByGuildId(this.id)
@@ -55,6 +56,8 @@ export const GuildView = Backbone.View.extend({
         }
         if (this.wars.at(i).get('closed') === false &&
             this.wars.at(i).get('opened') === false) {
+          this.calendarWarTimes.push(new WarTimes(this.wars.at(i).get('id')))
+          this.calendarWarTimes[this.calendarWarTimes.length - 1].fetch()
           this.calendar.add(this.wars.at(i))
         }
       }
@@ -177,7 +180,7 @@ export const GuildView = Backbone.View.extend({
     this.displayCalendar(e)
   },
 
-  updateContextCurrentWar: function (context, war, index) {
+  updateContextCurrentWar: function (context, war, warTimes, index) {
     const fromGuild = this.guilds.get(war.get('from_id'))
     const onGuild = this.guilds.get(war.get('on_id'))
     context.index = index
@@ -207,6 +210,15 @@ export const GuildView = Backbone.View.extend({
       context.ladderIcon = './icons/highlight_off.svg'
     }
     context.warTime = []
+    for (let i = 0; i < warTimes.length; i++) {
+      context.warTime.push({
+        startDay: warTimes.at(i).get('day').charAt(0).toUpperCase() + warTimes.at(i).get('day').slice(1, 3),
+        startHour: warTimes.at(i).get('start_hour'),
+        endHour: warTimes.at(i).get('end_hour'),
+        maxUnanswered: warTimes.at(i).get('max_unanswered'),
+        tta: warTimes.at(i).get('time_to_answer')
+      })
+    }
   },
 
   displayCurrentWar: function () {
@@ -215,7 +227,7 @@ export const GuildView = Backbone.View.extend({
       context.war = false
     } else {
       context.war = true
-      this.updateContextCurrentWar(context, this.currentWar, 0)
+      this.updateContextCurrentWar(context, this.currentWar, this.currentWarTimes, 0)
     }
     this.$el.find('#guildcontent').html(Handlebars.templates.currentWar(context))
     if (Number(context.fromScore) > Number(context.onScore)) {
@@ -235,9 +247,14 @@ export const GuildView = Backbone.View.extend({
     }
 
     context.wars = []
+    console.log(this.lastWarsTimes.length)
+    console.log(this.lastWars.length)
     for (let i = 0; i < this.lastWars.length; i++) {
       context.wars.push({})
-      this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i), i)
+      console.log(this.lastWars.at(i))
+      console.log(this.lastWarsTimes[i])
+
+      this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i), this.lastWarsTimes[i], i)
     }
 
     this.$el.find('#guildcontent').html(Handlebars.templates.lastWars(context))
@@ -332,7 +349,7 @@ export const GuildView = Backbone.View.extend({
       context.wars = []
       for (let i = 0; i < this.calendar.length; i++) {
         context.wars.push({})
-        this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), i)
+        this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), this.calendarWarTimes.at(i), i)
         this.isProposal(context.wars[i], this.calendar.at(i))
       }
     } else {

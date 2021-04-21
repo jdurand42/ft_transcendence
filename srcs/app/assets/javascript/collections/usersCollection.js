@@ -16,5 +16,11 @@ export const Users = Backbone.Collection.extend({
   },
   comparator: function (model) {
     return -model.get('score')
+  },
+  fetchByLadderId: function (ladderId) {
+    const url = this.urlRoot + '?ladder_id=' + ladderId
+    return this.fetch({
+      url: url
+    })
   }
 })

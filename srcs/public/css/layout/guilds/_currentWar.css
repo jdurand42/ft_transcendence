@@ -234,8 +234,21 @@
     color: var(--secondary-color);
 }
 
+.guildBlock .war-infos .war-time-rules-container td {
+    font-family: Roboto-Regular;
+    font-size: 16px;
+    color: var(--secondary-color);
+}
+
+.guildBlock .war-infos .war-time-rules-container .hyphen {
+    font-family: Roboto-Medium;
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
 .guildBlock .war-infos .war-time-rules-container
 .war-time-table {
+    text-align: left;
     width: 100%;
 }
 
@@ -340,4 +353,14 @@
 
 .guildBlock .last-matches-container .last-matches-title {
     padding-bottom: 16px;
+}
+
+.guildBlock .row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.guildBlock .day {
+    margin-right: 4px;
 }

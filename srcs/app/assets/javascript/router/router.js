@@ -123,7 +123,6 @@ export const Router = Backbone.Router.extend({
     if (this.view !== undefined) {
       this.remove_view()
     }
-    console.log(performance.navigation.type)
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1

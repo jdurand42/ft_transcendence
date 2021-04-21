@@ -12,37 +12,46 @@ export const LeaderboardView = Backbone.View.extend({
   },
 
   initialize: function (options) {
-    this.users = new Users()
     this.guilds = new Guilds()
     this.ladders = new Ladders()
     this.userLogged = new User()
+    this.usersLadder1 = new Users()
+    this.usersLadder2 = new Users()
+    this.usersLadder3 = new Users()
+    this.usersLadder4 = new Users()
+    this.usersLadder5 = new Users()
+    this.users = new Users()
     this.context = {}
 
     this.socket = options.socket
     this.socket.updateContext(this, options.notifView)
 
-    // this.users.on('fetch', function () {
-    //   this.updateContextLeaderboard(this.users)
-    // }, this)
+    this.users.fetch()
 
     const fetchUsers = async () => {
       const response1 = this.guilds.fetch()
-      const response2 = this.users.fetch()
-      await response1 && await response2
-      console.log(this.users)
-      this.users.sort()
-      this.displayList()
-    }
-    fetchUsers()
-
-    const fetchLadders = async () => {
-      const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
-      const response2 = this.ladders.fetch()
-      await response1 && await response2
+      const response2 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
+      const response8 = this.ladders.fetch()
+      await response1 && await response2 && await response8
       this.ladderId = this.userLogged.get('ladder_id')
+      if (this.ladderId === 1) {
+        await this.usersLadder1.fetchByLadderId(1)
+      }
+      if (this.ladderId === 2) {
+        await this.usersLadder2.fetchByLadderId(2)
+      }
+      if (this.ladderId === 3) {
+        await this.usersLadder3.fetchByLadderId(3)
+      }
+      if (this.ladderId === 4) {
+        await this.usersLadder4.fetchByLadderId(4)
+      }
+      if (this.ladderId === 5) {
+        await this.usersLadder5.fetchByLadderId(5)
+      }
       this.render()
     }
-    fetchLadders()
+    fetchUsers()
   },
 
   el: $('#app'),
@@ -59,6 +68,7 @@ export const LeaderboardView = Backbone.View.extend({
 
     this.$el.html(templateData)
     this.$el.find('#leaderboardHeader-container').html(Handlebars.templates.leaderboardHeader(this.context))
+    this.displayList()
     return this
   },
 
@@ -79,9 +89,35 @@ export const LeaderboardView = Backbone.View.extend({
     this.userLogged.set({ friends: newFriends })
   },
 
-  displayList: function () {
-    console.log(this.users)
-    this.updateContextLeaderboard(this.users.slice().filter(el => el.get('ladder_id') === this.ladderId))
+  displayList: async function () {
+    if (this.ladderId === 1) {
+      if (this.usersLadder1.length === 0) {
+        await this.usersLadder1.fetchByLadderId(1)
+      }
+      this.updateContextLeaderboard(this.usersLadder1)
+    } else if (this.ladderId === 2) {
+      console.log(this.usersLadder2)
+      if (this.usersLadder2.length === 0) {
+        await this.usersLadder2.fetchByLadderId(2)
+      }
+      this.updateContextLeaderboard(this.usersLadder2)
+    } else if (this.ladderId === 3) {
+      if (this.usersLadder3.length === 0) {
+        await this.usersLadder3.fetchByLadderId(3)
+      }
+      this.updateContextLeaderboard(this.usersLadder3)
+    } else if (this.ladderId === 4) {
+      if (this.usersLadder4.length === 0) {
+        await this.usersLadder4.fetchByLadderId(4)
+      }
+      this.updateContextLeaderboard(this.usersLadder4)
+    } else if (this.ladderId === 5) {
+      if (this.usersLadder5.length === 0) {
+        await this.usersLadder5.fetchByLadderId(5)
+      }
+      this.updateContextLeaderboard(this.usersLadder5)
+    }
+
     this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
   },
 

@@ -1,16 +1,18 @@
 <div class="supraDiv" id="supraDiv">
 	<div class="pannel" id="guildPannel"></div>
 	<div class="contentWrapper">
-	{{#if manage}}
-	<button onclick="window.location='#manage_guild'" class="manageGuildButton" id="manageGuildButton">Manage guild</button>
-	{{/if}}
-	{{#if declareWar}}
-	<button onclick="window.location='#declare_war/{{fromId}}/{{onId}}';" class="manageGuildButton" id="declareWarButton">
-		{{!-- <a href="#declare_war/{{fromId}}/{{onId}}"> --}}
-			<img src="./icons/war_black.svg">
-			Declare war
-		{{!-- </a> --}}
-	</button>
+	<div class="buttons">
+		{{#if manage}}
+		<button onclick="window.location='#manage_guild'" class="manageGuildButton" id="manageGuildButton">Manage guild</button>
+		{{/if}}
+		{{#if declareWar}}
+		<button onclick="window.location='#declare_war/{{fromId}}/{{onId}}';" class="manageGuildButton" id="declareWarButton">
+			{{!-- <a href="#declare_war/{{fromId}}/{{onId}}"> --}}
+				<img src="./icons/war_black.svg">
+				Declare war
+			{{!-- </a> --}}
+		</button>
+	</div>
 	{{/if}}
 		<div id="guildSubNavBar"></div>
 		<div id="guildContent"></div>
