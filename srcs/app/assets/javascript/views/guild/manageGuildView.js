@@ -102,10 +102,17 @@ export const ManageGuildView = Backbone.View.extend({
     }
   },
 
-  manageGuildView: function () {
+  getPermissionsBool () {
     this.ownerBool = (this.id == this.guilds.get('owner_id'))
     this.officerBool = (this.guild.get('officer_ids').includes(this.id) || this.id === this.guilds.get('owner_id'))
+    console.log(this.ownerBool)
+    console.log(this.officerBool)
+  },
 
+  manageGuildView: function () {
+    /* this.ownerBool = (this.id == this.guilds.get('owner_id'))
+    this.officerBool = (this.guild.get('officer_ids').includes(this.id) || this.id === this.guilds.get('owner_id')) */
+    this.getPermissionsBool()
     this.$el.html(Handlebars.templates.manageGuild({ owner: this.ownerBool, officer: this.officerBool }))
     this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
     if (this.ownerBool) {
@@ -135,6 +142,8 @@ export const ManageGuildView = Backbone.View.extend({
         const response = await this.createRequest('/members/' + this.userId, 'DELETE')
         this.users.get(this.userId).set({ guild_id: null })
         this.$el.html('<p>You successfully leaved the guild</p>')
+        this.ownerBool = false
+        this.officerBool = false
         console.log('ici')
       } catch (e) {
         console.log(e)
