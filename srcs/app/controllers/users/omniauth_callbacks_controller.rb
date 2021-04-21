@@ -14,7 +14,6 @@ module Users
                                nickname: auth_hash['info']['nickname']
                              })
       user.assign_attributes({ admin: true }) if ENV['P42NG_OWNER_UID'] == auth_hash['uid'].to_s
-      user.assign_attributes({ score: rand(0..11_000) })
     end
 
     def attach_avatar(user, auth_hash)

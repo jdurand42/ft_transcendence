@@ -42,12 +42,15 @@ if Rails.env.development?
       case rand(3)
       when 0
         attr = { opened: true, closed: false }
+        dates = { start: DateTime.now + rand(-5..0), end: DateTime.now + rand(1..10) } #war_ongoing
       when 1
-        attr = { opened: false, closed: true }
-      else
         attr = { opened: false, closed: false }
+        dates = { start: DateTime.now + rand(1..4), end: DateTime.now + rand(5..10) } # war_incoming
+      else
+        attr = { opened: false, closed: true }
+        dates = { start: DateTime.now + rand(-10..-6), end: DateTime.now + rand(-5..0) } # war_ended
       end
-      FactoryBot.create(:war, from: guild, on: on, war_start: DateTime.now + rand(-5..5), war_end: DateTime.now + rand(6..10), opened: attr[:opened], closed: attr[:closed])
+      FactoryBot.create(:war, from: guild, on: on, war_start: dates[:start], war_end: dates[:end], opened: attr[:opened], closed: attr[:closed])
     end
   end
 
@@ -61,7 +64,9 @@ if Rails.env.development?
   FactoryBot.create_list(:user, 5)
 
   User.all.each do |t|
-    t.update!(score: rand(0..11_000))
+    score = (t.ladder_games_won - t.ladder_games_lost)* 10
+    score = 0 if score < 0
+    t.update!(score: score)
     assign_ladder(t)
   end
 
