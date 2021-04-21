@@ -5,7 +5,7 @@ module Api
     include(WarHelper)
     before_action :set_war, except: %i[index create]
     before_action :war_editable?, only: %i[update create_times destroy_times]
-    after_action :verify_authorized, except: %i[index show]
+    after_action :verify_authorized, except: %i[index show index_times]
 
     UserReducer = Rack::Reducer.new(War.all.order(war_end: :desc),
                                     ->(guild_id:) { where(from_id: guild_id).or(where(on_id: guild_id)) })
@@ -40,6 +40,11 @@ module Api
       guild_agrees
       start_war(@war) if @war.from_agreement? && @war.on_agreement?
       json_response(@war, 201)
+    end
+
+    def index_times
+      times = WarTime.find_by(war_id: params.fetch(:id))
+      json_response(times, 200)
     end
 
     def create_times
