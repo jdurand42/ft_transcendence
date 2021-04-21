@@ -106,8 +106,6 @@ export const TournamentView = Backbone.View.extend({
 
         await this.registerAllParticipants()
 
-        console.log(this.registered)
-
         // If tournament has not started yet
         if (this.tournament.get('start_date') > new Date().toISOString()) {
           if (this.participantIds && this.participantIds.find(el => el === this.userLogged.get('id')) !== undefined) {

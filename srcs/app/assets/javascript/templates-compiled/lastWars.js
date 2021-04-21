@@ -72,9 +72,9 @@ templates['lastWars'] = template({"1":function(container,depth0,helpers,partials
     + alias4(((helper = (helper = lookupProperty(helpers,"startDay") || (depth0 != null ? lookupProperty(depth0,"startDay") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"startDay","hash":{},"data":data,"loc":{"start":{"line":84,"column":24},"end":{"line":84,"column":36}}}) : helper)))
     + "</div>\n							<div class=\"hour\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"startHour") || (depth0 != null ? lookupProperty(depth0,"startHour") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"startHour","hash":{},"data":data,"loc":{"start":{"line":85,"column":25},"end":{"line":85,"column":38}}}) : helper)))
-    + "</div>\n						</div>\n						<div class=\"hyphen\">-</div>\n						<div class=\"row end\">\n							<div class=\"hour\">"
+    + "h:00m</div>\n						</div>\n						<div class=\"hyphen\">-</div>\n						<div class=\"row end\">\n							<div class=\"hour\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"endHour") || (depth0 != null ? lookupProperty(depth0,"endHour") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"endHour","hash":{},"data":data,"loc":{"start":{"line":89,"column":25},"end":{"line":89,"column":36}}}) : helper)))
-    + "</div>\n						</div>\n					</td>\n					<td class=\"max-unanswered-td\">"
+    + "h:00m</div>\n						</div>\n					</td>\n					<td class=\"max-unanswered-td\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"maxUnanswered") || (depth0 != null ? lookupProperty(depth0,"maxUnanswered") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"maxUnanswered","hash":{},"data":data,"loc":{"start":{"line":92,"column":35},"end":{"line":92,"column":52}}}) : helper)))
     + "</td>\n					<td class=\"tta-td\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"tta") || (depth0 != null ? lookupProperty(depth0,"tta") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"tta","hash":{},"data":data,"loc":{"start":{"line":93,"column":24},"end":{"line":93,"column":31}}}) : helper)))
