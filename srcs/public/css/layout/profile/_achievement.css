@@ -21,6 +21,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: left;
+
+    margin-bottom: 8px;
 }
 
 #achievementsBlock

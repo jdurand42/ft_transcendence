@@ -233,12 +233,18 @@ export const ProfileView = Backbone.View.extend({
       slideShow = './icons/slideshow.svg'
     }
 
+    let index = 0
+    this.users.some(el => {
+      index++
+      return el.get('id') === this.id
+    })
+
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
-      rank: this.id,
-      generalRank: this.id,
+      // rank: index,
+      generalRank: index,
       totalRank: this.users.length,
-      totalLeagueRank: this.users.length,
+      // totalLeagueRank: this.users.length,
       // ratio: Math.round(user.get('ladder_games_won') / (user.get('ladder_games_won') + user.get('ladder_games_lost')) * 100 * 100) / 100,
       score: user.get('score'),
       victories: user.get('ladder_games_won'),
@@ -328,8 +334,10 @@ export const ProfileView = Backbone.View.extend({
     const opponent2 = this.users.get(opponentId2)
     context[length].opponent1 = opponent1.get('nickname')
     context[length].avatarOpponent1 = opponent1.get('image_url')
+    context[length].opponentId1 = opponentId1
     context[length].opponent2 = opponent2.get('nickname')
     context[length].avatarOpponent2 = opponent2.get('image_url')
+    context[length].opponentId2 = opponentId2
     context[length].score1 = getScore1()
     context[length].score2 = getScore2()
     if (context[length].score1 === 0 && context[length].score2 === 0) {
