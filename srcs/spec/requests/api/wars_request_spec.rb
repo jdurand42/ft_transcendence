@@ -254,7 +254,6 @@ RSpec.describe "Wars", type: :request do
       it 'should get 3 war_times' do
         FactoryBot.create(:war_with_times)
         get "/api/wars/#{War.last.id}/times", headers: access_token
-        puts response.body
         expect(response.status).to eq (200)
         expect(json.size).to eq(3)
       end
@@ -297,14 +296,14 @@ RSpec.describe "Wars", type: :request do
     context 'destroy' do
       before { post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes }
       it 'should destroy a war time' do
-        delete times_api_war_url(War.first.id), headers: access_token, params: { tid: WarTime.first.id }
+        delete "/api/wars/#{War.first.id}/times/#{WarTime.first.id}", headers: access_token
         expect(response.status).to eq 204
         expect(WarTime.count).to eq 0
       end
       it 'should not destroy a war time if terms accepted' do
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        delete times_api_war_url(War.first.id), headers: access_token, params: { tid: WarTime.first.id }
+        delete "/api/wars/#{War.first.id}/times/#{WarTime.first.id}", headers: access_token
         expect(response.status).to eq 403
         expect(WarTime.count).to eq 1
       end
