@@ -303,7 +303,7 @@ RSpec.describe "Wars", type: :request do
       it 'should not destroy a war time if terms accepted' do
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        delete times_api_war_url(War.first.id), headers: access_token, params: { tid: WarTime.first.id }
+        delete "/api/wars/#{War.first.id}/times/#{WarTime.first.id}", headers: access_token
         expect(response.status).to eq 403
         expect(WarTime.count).to eq 1
       end
