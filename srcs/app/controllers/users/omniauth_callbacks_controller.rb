@@ -30,8 +30,6 @@ module Users
     end
 
     def create_auth_params
-      actioncable_set_user_disconnected(@resource.id)
-
       @auth_params = {
         auth_token: @token.token,
         client_id: @token.client,
@@ -66,10 +64,11 @@ module Users
       @resource.skip_confirmation! if confirmable_enabled?
 
       sign_in(:user, @resource, store: false, bypass: false)
+
       @resource.save!
-      @resource.reload
       return if banned?
 
+      actioncable_set_user_disconnected(@resource.id)
       return handle_two_factor if @resource.two_factor?
 
       create_auth_params
