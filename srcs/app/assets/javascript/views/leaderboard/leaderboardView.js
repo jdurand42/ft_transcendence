@@ -63,7 +63,7 @@ export const LeaderboardView = Backbone.View.extend({
     this.context.name = this.ladders.get(this.ladderId).get('name')
     this.context.league = []
     for (let i = 0; i < this.ladders.length; i++) {
-      this.context.league.push(JSON.parse(JSON.stringify(this.ladders.at(i))))
+      this.context.league.unshift(JSON.parse(JSON.stringify(this.ladders.at(i))))
     }
 
     this.$el.html(templateData)
