@@ -254,7 +254,6 @@ RSpec.describe "Wars", type: :request do
       it 'should get 3 war_times' do
         FactoryBot.create(:war_with_times)
         get "/api/wars/#{War.last.id}/times", headers: access_token
-        puts response.body
         expect(response.status).to eq (200)
         expect(json.size).to eq(3)
       end
