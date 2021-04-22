@@ -5,7 +5,7 @@ class GameEngine
   attr_reader :left, :right, :game
 
   SCORE_LIMIT = 2
-  REFRESH_RATE = 10
+  REFRESH_RATE = 1
 
   def initialize(game, turns_limit)
     @game = game

@@ -352,7 +352,7 @@ function gameLoop (data) {
   // printPing(data[0])
   if (!data[0].end) {
     // if (data[0].frameLimiter) {
-    	simulateBall(data[0])
+    	// simulateBall(data[0])
     // }
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
   } else {
