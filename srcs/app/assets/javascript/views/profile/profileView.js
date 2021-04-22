@@ -58,10 +58,14 @@ export const ProfileView = Backbone.View.extend({
       this.id = this.userId
     }
 
-    this.userLogged.fetchUser(this.userId)
-
     this.$el.html(Handlebars.templates.profile({}))
     const fetchUsers = async () => {
+      try {
+        await this.userLogged.fetchUser(this.id)
+      } catch (e) {
+        this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
+        return
+      }
       const response1 = this.users.fetch()
       const response2 = this.ladders.fetch()
       const response3 = this.myTournamentGames.fetchMyGames(this.id, 'tournament')
@@ -92,10 +96,10 @@ export const ProfileView = Backbone.View.extend({
           return options.inverse(this)
       }
     })
-    if (isNaN(this.id) || this.id > this.users.length || this.id <= 0) {
-      this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
-      return this
-    }
+    // if (isNaN(this.id) || this.id > this.users.length || this.id <= 0) {
+    //   this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
+    //   return this
+    // }
     this.renderPannel()
     this.loadMatchHistory()
     return this
