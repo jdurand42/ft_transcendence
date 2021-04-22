@@ -37,7 +37,7 @@ export const GuildView = Backbone.View.extend({
     this.timer = []
     this.guild = undefined
 
-    this.games = new GameRecords()
+    this.currentGames = []
     // TO DO: AMELIORER LE TEMPS DE CHARGEMENT, DES CHOSES PEUVENT ENCORE ETRE FAITES
 
     // ce bloc est obligatoire pour la route /#guild/ et les checks pour #guild/id_ivalide et #guild/nimporte_quoi
@@ -78,9 +78,11 @@ export const GuildView = Backbone.View.extend({
         if (this.wars.at(i).get('closed') === true) {
           this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
           await this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
+          console.log(this.lastWarsTimes[this.lastWarsTimes.length - 1])
           for (let i = 0; i < this.lastWarsTimes.length; i++) {
-            await this.games.fetchByWarTimeId(this.lastWarsTimes.at(i).get('id'))
-            console.log(this.games)
+            this.currentGames.push(new GameRecords())
+            this.currentGames[this.currentGames.length - 1].fetchByWarTimeId(this.lastWarsTimes[this.lastWarsTimes.length - 1].get('id'))
+            console.log(this.currentGames)
           }
           this.lastWars.add(this.wars.at(i))
         }
@@ -109,7 +111,6 @@ export const GuildView = Backbone.View.extend({
 
     if (this.userLogged.get('guild_id') !== undefined) {
       this.userLoggedGuild = this.guilds.get(this.userLogged.get('guild_id'))
-      console.log(this.userLoggedGuild)
     }
 
     if (this.id === null || this.id === undefined) {
@@ -329,6 +330,10 @@ export const GuildView = Backbone.View.extend({
 
         this.countMatchesUnansewered()
 
+        document.getElementById('accept-random-fight').innerHTML = 'Challenge'
+        document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color);'
+        document.getElementById('accept-random-fight').style.cursor = 'pointer'
+
         return this
       }
 
@@ -534,7 +539,6 @@ export const GuildView = Backbone.View.extend({
   },
 
   destroy: function () {
-    console.log(this.timer.length)
     for (let i = 0; i < this.timer.length; i++) {
       clearInterval(this.timer[i])
     }

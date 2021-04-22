@@ -516,10 +516,8 @@ export const ProfileView = Backbone.View.extend({
 
       if (this.guild.get('owner_id')[0] === member.get('id')) {
         context.members[i].member = 'Owner'
-        context.members[i].owner = true
       } else if (this.guild.get('officer_ids').some(el => el === member.get('id')) === true) {
         context.members[i].member = 'Officer'
-        context.members[i].officer = true
       } else {
         context.members[i].member = 'Member'
       }
@@ -529,7 +527,9 @@ export const ProfileView = Backbone.View.extend({
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
     if (this.userId === this.id) {
-      this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
+      if (guild.get('owner_id')[0] == this.userId || guild.get('officer_ids').some(el => el == this.userId) === true) {
+        this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
+      }
       this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
     }
   },
