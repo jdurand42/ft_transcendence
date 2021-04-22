@@ -23,7 +23,7 @@ templates['profilePannel'] = template({"1":function(container,depth0,helpers,par
     + container.escapeExpression(container.lambda((depth0 != null ? lookupProperty(depth0,"image_url") : depth0), depth0))
     + "\" width=\"200\" style=\"cursor: auto;\" />\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, alias1=container.lambda, alias2=container.escapeExpression, alias3=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
+    var stack1, helper, alias1=container.lambda, alias2=container.escapeExpression, alias3=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
         }
@@ -49,6 +49,18 @@ templates['profilePannel'] = template({"1":function(container,depth0,helpers,par
     + "</div>\n\n		<label class=\"image-container\">\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"myPage") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":53,"column":2},"end":{"line":56,"column":9}}})) != null ? stack1 : "")
     + ((stack1 = lookupProperty(helpers,"unless").call(alias3,(depth0 != null ? lookupProperty(depth0,"myPage") : depth0),{"name":"unless","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":57,"column":2},"end":{"line":59,"column":13}}})) != null ? stack1 : "")
-    + "		</label>\n\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n</div>\n";
+    + "		</label>\n\n\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n	<div class=\"status-container\">\n		<div class=\"pastille "
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"status_class") : depth0), depth0))
+    + "\" id=\"pastille"
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"id") : depth0), depth0))
+    + "\"></div>\n		<p class=\"status\" id=\"status"
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"id") : depth0), depth0))
+    + "\">"
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"status") : depth0), depth0))
+    + "</p>\n		<div class=\"slide-show-container\"></div>\n		<img src=\""
+    + alias2(((helper = (helper = lookupProperty(helpers,"slide_show") || (depth0 != null ? lookupProperty(depth0,"slide_show") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias3,{"name":"slide_show","hash":{},"data":data,"loc":{"start":{"line":69,"column":12},"end":{"line":69,"column":26}}}) : helper)))
+    + "\" id=\"slide-show"
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"id") : depth0), depth0))
+    + "\" class=\"slide-show\"></img>\n	</div>\n</div>\n";
 },"useData":true});
 })();

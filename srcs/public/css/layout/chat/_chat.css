@@ -292,28 +292,8 @@
 
 .chat .center .header .left-header .info 
 .pastille {
-    width: 8px;
-    height: 8px;
-    border-radius: 20px;
-    background: var(--green-color);
-
     margin-right: 6px;
     margin-left: 32px;
-}
-
-.chat .center .header .left-header .info 
-.online {
-    background: var(--green-color);
-}
-
-.chat .center .header .left-header .info 
-.offline {
-    background: #EB5757;
-}
-
-.chat .center .header .left-header .info 
-.ingame {
-    background: var(--primary-color);
 }
 
 .chat .center .header .right-header

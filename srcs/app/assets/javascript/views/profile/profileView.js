@@ -9,6 +9,7 @@ import { Achievements } from '../../collections/achievements'
 import { GameRecords } from '../../collections/gameRecords'
 import { Users } from '../../collections/usersCollection'
 import { Guild } from '../../models/guildModel'
+import { User } from '../../models/userModel'
 
 export const ProfileView = Backbone.View.extend({
   events: {
@@ -28,7 +29,8 @@ export const ProfileView = Backbone.View.extend({
     'click #All': 'allMatches',
     'click #Tournament': 'tournamentMatches',
     'click #Duel': 'duelMatches',
-    'click #Ladder': 'ladderMatches'
+    'click #Ladder': 'ladderMatches',
+    'click #follow': 'follow'
   },
 
   initialize: function () {
@@ -38,6 +40,8 @@ export const ProfileView = Backbone.View.extend({
     this.ladders = this.model.get('ladders').get('obj')
     this.gameRecords = this.model.get('gameRecords').get('obj')
     this.achievements = this.model.get('achievements').get('obj')
+    this.socket = this.model.get('socket').get('obj')
+    this.notifView = this.model.get('notifView').get('obj')
     this.myAchievements = new Achievements()
     this.userId = this.model.get('userLoggedId')
     this.myTournamentGames = new GameRecords()
@@ -45,11 +49,16 @@ export const ProfileView = Backbone.View.extend({
     this.myDuelGames = new GameRecords()
     this.membersGuild = new Users()
     this.guild = undefined
+    this.userLogged = new User()
+
+    this.socket.updateContext(this, this.notifView)
 
     // this.myWarGames = new GameRecords()
     if (this.id === null) {
       this.id = this.userId
     }
+
+    this.userLogged.fetchUser(this.userId)
 
     this.$el.html(Handlebars.templates.profile({}))
     const fetchUsers = async () => {
@@ -212,6 +221,14 @@ export const ProfileView = Backbone.View.extend({
   renderPannel: function () {
     const user = this.users.get(this.id)
     console.log(user)
+
+    let slideShow
+    if (user.status === 'ingame') {
+      slideShow = './icons/slideshow-ingame.svg'
+    } else {
+      slideShow = './icons/slideshow.svg'
+    }
+
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
       rank: this.id,
@@ -223,7 +240,12 @@ export const ProfileView = Backbone.View.extend({
       victories: user.get('ladder_games_won'),
       totalGames: user.get('ladder_games_won') + user.get('ladder_games_lost'),
       nickname: user.get('nickname'),
-      image_url: user.get('image_url')
+      image_url: user.get('image_url'),
+      status: user.get('status').toUpperCase(),
+      status_class: user.get('status'),
+      id: user.get('id'),
+      slide_show: slideShow
+
     }
     // if (isNaN(context.ratio)) {
     //   context.ratio = 0
@@ -244,12 +266,33 @@ export const ProfileView = Backbone.View.extend({
     const friends = this.users.get(this.userId).get('friends')
     for (let i = 0; i < friends.length; i++) {
       if (friends[i].friend_id == this.id) {
-        document.getElementById('followUser').innerHTML = '<div>Unfollow</div>'
+        const div = document.getElementById('followUser')
+        div.innerHTML = '<div>Unfollow</div>'
+        div.style.backgroundColor = '#C4C4C4'
+        div.style.border = '2px solid #606060'
+
         // document.getElementById('followUser').style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
         return
       }
     }
     // document.getElementById('followUser').style = ''
+  },
+
+  follow: function (e) {
+    const userId = Number(e.currentTarget.getAttribute('for'))
+    let newFriends = this.userLogged.get('friends')
+    if (e.currentTarget.className === 'follow') {
+      e.currentTarget.classList.remove('follow')
+      e.currentTarget.classList.add('unfollow')
+      this.userLogged.follow(userId)
+      newFriends.push({ friend_id: Number(userId) })
+    } else {
+      e.currentTarget.classList.remove('unfollow')
+      e.currentTarget.classList.add('follow')
+      this.userLogged.unfollow(userId)
+      newFriends = newFriends.slice().filter(el => el.friend_id != userId)
+    }
+    this.userLogged.set({ friends: newFriends })
   },
 
   pushDone: function (context, game) {
@@ -324,14 +367,24 @@ export const ProfileView = Backbone.View.extend({
   },
 
   friends: function () {
-    const friends = this.users.get(this.id).get('friends')
-    const userFriends = this.users.get(this.userId).get('friends')
+    let friends
+    if (this.id === this.userId) {
+      friends = this.userLogged.get('friends')
+    } else {
+      friends = this.users.get(this.id).get('friends')
+    }
+    const userFriends = this.userLogged.get('friends')
     const context = { friends: [], friendsNumber: friends.length }
     for (let i = 0; i < friends.length; i++) {
       // context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
       context.friends.push(
         this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))), i))
       // context.friends[i] = this.updateContextForlist(context.friends[i])
+      if (this.id === this.userId) {
+        context.friends[i].myPage = true
+      } else {
+        context.friends[i].myPage = false
+      }
       if (userFriends.some(e => e.friend_id === friends[i].friend_id)) {
         context.friends[i].isFriend = true
       } else {
@@ -566,5 +619,37 @@ export const ProfileView = Backbone.View.extend({
     if (this.users.get(this.id).get('ladder_id') === null) {
       this.users.get(this.id).set({ ladder_id: 1 })
     }
+  },
+
+  receiveMessage: function (msg) {
+    const channelId = Number(JSON.parse(msg.identifier).id)
+    this.users.get(msg.message.id).set({ status: msg.message.status })
+    if (msg.message.id === this.userId) {
+      this.userLogged.set({ status: msg.message.status })
+    }
+
+    try {
+      let div = document.getElementById('pastille' + msg.message.id)
+      div.classList.remove('offline')
+      div.classList.remove('ingame')
+      div.classList.remove('online')
+      div.classList.add(msg.message.status)
+
+      div = document.getElementById('status' + msg.message.id)
+      if (msg.message.status === 'online') {
+        div.innerHTML = 'ONLINE'
+      } else if (msg.message.status === 'offline') {
+        div.innerHTML = 'OFFLINE'
+      } else {
+        div.innerHTML = 'IN GAME'
+      }
+
+      div = document.getElementById('slide-show' + msg.message.id)
+      if (msg.message.status === 'ingame') {
+        div.setAttribute('src', './icons/slideshow-ingame.svg')
+      } else {
+        div.setAttribute('src', './icons/slideshow.svg')
+      }
+    } catch (e) {}
   }
 })

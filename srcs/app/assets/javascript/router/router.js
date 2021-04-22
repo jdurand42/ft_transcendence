@@ -126,14 +126,14 @@ export const Router = Backbone.Router.extend({
       this.oauth_view()
       return 1
     } else if ((parseInt(performance.navigation.type) >= 1 && parseInt(performance.navigation.type) <= 2) ||
-			(performance.getEntriesByType('navigation')[0].type === 'reload')) {
+      (performance.getEntriesByType('navigation')[0].type === 'reload')) {
       const fetchUser = async () => {
         this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
         if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
       }
       if (this.socket === undefined) {
-      	fetchUser()
+        fetchUser()
       }
     }
   },
@@ -242,6 +242,7 @@ export const Router = Backbone.Router.extend({
       achievements: new Wrapper({ obj: new Achievements() }),
       userLoggedId: window.localStorage.getItem('user_id'),
       notifView: new Wrapper({ obj: this.notifView }),
+      socket: new Wrapper({ obj: this.socket }),
       router: this
     })
   },

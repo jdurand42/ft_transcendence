@@ -132,6 +132,9 @@ export const LeaderboardView = Backbone.View.extend({
         user = users.at(i)
       }
       this.context.users.push(JSON.parse(JSON.stringify(user)))
+      if (user.get('id') !== this.userLogged.get('id')) {
+        this.context.users[i].itsNotMe = true
+      }
       this.context.users[i].trophy = 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg'
       this.context.users[i].rank = i + 1
       if (user.get('guild_id') === null) {
@@ -191,7 +194,7 @@ export const LeaderboardView = Backbone.View.extend({
   receiveMessage: function (msg) {
     const channelId = Number(JSON.parse(msg.identifier).id)
     // if (channelId === msg.message.id) {
-    this.users.get(msg.message.id).set({ status: msg.status })
+    this.users.get(msg.message.id).set({ status: msg.message.status })
 
     let div = document.getElementById('pastille' + msg.message.id)
     div.classList.remove('offline')

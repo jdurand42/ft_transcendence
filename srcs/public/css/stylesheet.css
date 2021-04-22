@@ -44,6 +44,7 @@
 @import url(module/_modal.css);
 @import url(module/_textInput.css);
 @import url(module/_notifications.css);
+@import url(module/_status.css);
 @import url(module/_checkboxes.css);
 
 @import url(state/_topnav.css);

@@ -83,17 +83,19 @@
             <td>{{totalGames}}</td>
             <td>
                 <div class="status-container">
-                    <div class="pastille {{status}}" id="pastille"></div>
-                    <p class="status">{{status}}</p>
+                    <div class="pastille {{status}}" id="pastille{{id}}"></div>
+                    <p class="status" id="status{{id}}">{{status}}</p>
                     <div class="slide-show-container"></div>
-                    <img src="{{slide_show}}" class="slide-show"></img>
+                    <img src="{{slide_show}}" id="slide-show{{id}}" class="slide-show"></img>
                 </div>
             </td>
-            {{#unless follow}}
-            <td><button class="follow" id="follow" for={{id}}></button></td>
-            {{/unless}}
-            {{#if follow}}
-            <td><button class="unfollow" id="follow" for={{id}}></button></td>
+            {{#if myPage}}
+                {{#unless follow}}
+                <td><button class="follow" id="follow" for={{id}}></button></td>
+                {{/unless}}
+                {{#if follow}}
+                <td><button class="unfollow" id="follow" for={{id}}></button></td>
+                {{/if}}
             {{/if}}
         </tr>
         {{/each}}

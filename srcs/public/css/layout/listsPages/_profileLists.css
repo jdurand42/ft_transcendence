@@ -406,7 +406,7 @@
 
 #memberGuildListTable {
     height: fit-content;
-    margin-top: 64px;
+    /* margin-top: 64px; */
 }
 
 .guildBlock .nbMembers {
