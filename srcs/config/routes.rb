@@ -28,7 +28,7 @@ Rails.application.routes.draw do
       member do
         get 'times', to: 'wars#index_times'
         post 'times', to: 'wars#create_times'
-        delete 'times', to: 'wars#destroy_times'
+        delete 'times/:tid', to: 'wars#destroy_times'
         post 'agreements'
       end
     end
