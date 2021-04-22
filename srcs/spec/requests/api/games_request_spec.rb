@@ -55,6 +55,17 @@ RSpec.describe 'Games', type: :request do
       end
     end
 
+
+    context 'search with war_time_id' do
+      it "returns all war_time_id games" do
+        FactoryBot.create(:war_with_times)
+        create(:game)
+        create_list(:game, 2, mode: 'war', war_time_id: WarTime.first.id)
+        get '/api/games', headers: auth.create_new_auth_token, params: { war_time_id: WarTime.first.id }
+        expect(json.count).to eq 2
+      end
+    end
+
     context 'everything' do
       before do
         create_list(:game, 2)
