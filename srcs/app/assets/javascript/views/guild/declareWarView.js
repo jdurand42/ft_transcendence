@@ -438,11 +438,12 @@ export const DeclareWar = Backbone.View.extend({
     }
 
     let war
-    if (this.warId === undefined) {
+    if (this.warId == undefined) {
       war = new War()
     } else {
       war = this.negoWar
     }
+    console.log(war)
     try {
       const response = await war.createWar(
         Number(this.context.onId),
@@ -462,9 +463,8 @@ export const DeclareWar = Backbone.View.extend({
       }
       this.router.navigate('#guild/' + this.onId, true)
     } catch (error) {
-      const div = document.getElementById('error')
+      const div = await document.getElementById('error')
       div.style.display = 'flex'
-      div.textContent = error.responseJSON.message
     }
   },
 

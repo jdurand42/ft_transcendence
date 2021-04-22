@@ -43,6 +43,7 @@ export const Guild = Backbone.Model.extend({
       data: { user_id: id }
     })
   }
+
 })
 
 // const guildsCollection = new Guilds()

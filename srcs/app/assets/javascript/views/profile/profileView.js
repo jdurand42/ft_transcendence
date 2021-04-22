@@ -7,6 +7,8 @@ import { NoGuildView } from './noGuildView.js' */
 
 import { Achievements } from '../../collections/achievements'
 import { GameRecords } from '../../collections/gameRecords'
+import { Users } from '../../collections/usersCollection'
+import { Guild } from '../../models/guildModel'
 
 export const ProfileView = Backbone.View.extend({
   events: {
@@ -41,6 +43,9 @@ export const ProfileView = Backbone.View.extend({
     this.myTournamentGames = new GameRecords()
     this.myLadderGames = new GameRecords()
     this.myDuelGames = new GameRecords()
+    this.membersGuild = new Users()
+    this.guild = undefined
+
     // this.myWarGames = new GameRecords()
     if (this.id === null) {
       this.id = this.userId
@@ -55,7 +60,11 @@ export const ProfileView = Backbone.View.extend({
       const response5 = this.myDuelGames.fetchMyGames(this.id, 'duel')
       const response6 = this.myAchievements.fetchByUserId(this.id)
       const response7 = this.achievements.fetch()
+      this.guilds.fetch()
       await response1 && await response2 && await response3 && await response4 && await response5
+      const response8 = this.membersGuild.fetchByGuildId(this.users.get(this.id).get('guild_id'))
+      this.guild = new Guild({ id: this.users.get(this.id).get('guild_id') })
+      this.guild.fetch()
       this.users.sort()
       this.render()
     }
@@ -150,10 +159,6 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadMatchHistory: function () {
-    // const load = async () => {
-    // try {
-    // await this.users.fetch()
-    // this.checkLadderId()
     this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
     document.getElementById('friends').classList.remove('open')
     document.getElementById('achievements').classList.remove('open')
@@ -162,19 +167,7 @@ export const ProfileView = Backbone.View.extend({
     const div = document.getElementById('matchHistory')
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
-
-    // await this.ladders.fetch() &&
-    // await this.gameRecords.fetch()
-    // this.renderPannel()
-    // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
-    // await this.guilds.fetch()
     this.matchHistory('All')
-    // } catch (e) {
-    // console.log(e)
-    // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-    // }
-    // }
-    // load()
   },
 
   loadFriends: function () {
@@ -186,21 +179,7 @@ export const ProfileView = Backbone.View.extend({
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
 
-    const load = async () => {
-      try {
-        // await this.users.fetch()
-        // this.users.sort()
-        // this.checkLadderId()
-        // this.renderPannel()
-        await this.guilds.fetch() && // TO DO INITIZIALISATION
-        await this.ladders.fetch()
-        this.friends()
-      } catch (e) {
-        console.log(e)
-        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    this.friends()
   },
 
   positionSquare: function (offsets) {
@@ -208,13 +187,6 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadAchievements: function () {
-    // const load = async () => {
-    // try {
-    // await this.users.fetch()
-    // this.checkLadderId()
-    // await this.achievements.fetch()
-    // this.renderPannel()
-
     document.getElementById('matchHistory').classList.remove('open')
     document.getElementById('profileGuild').classList.remove('open')
     document.getElementById('friends').classList.remove('open')
@@ -224,11 +196,6 @@ export const ProfileView = Backbone.View.extend({
     this.positionSquare(div.getBoundingClientRect())
 
     this.achievementsView()
-    // } catch (e) {
-    // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-    // }
-    // }
-    // load()
   },
 
   loadGuild: function () {
@@ -239,21 +206,7 @@ export const ProfileView = Backbone.View.extend({
     const div = document.getElementById('profileGuild')
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
-    const load = async () => {
-      try {
-        await this.users.fetch()
-        this.users.sort()
-        this.checkLadderId()
-        await this.guilds.fetch() &&
-        await this.ladders.fetch()
-        // await this.achivements.fetch()
-        // this.renderPannel()
-        this.profileGuild()
-      } catch (e) {
-        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    this.profileGuild()
   },
 
   renderPannel: function () {
@@ -414,7 +367,7 @@ export const ProfileView = Backbone.View.extend({
     }
     user.follow = this.users.get(this.userId).get('friends').some(el => el.friend_id === user.id)
     if (user.guild_id) {
-      user.guildName = this.guilds.get(user.guild_id).get('name')
+      user.guildName = this.guild.get('name')
     }
     return user
   },
@@ -464,7 +417,7 @@ export const ProfileView = Backbone.View.extend({
   profileGuild: function () {
     let guild
     if (this.users.get(this.id).get('guild_id')) {
-      guild = this.guilds.get(this.users.get(this.id).get('guild_id'))
+      guild = this.guild
     } else if (this.userId === this.id) {
       this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       return
@@ -477,26 +430,29 @@ export const ProfileView = Backbone.View.extend({
       }
       return
     }
+
     const context = {
-      guild: JSON.parse(JSON.stringify(guild)),
-      owner: undefined,
-      officers: Array(),
-      members: Array(),
+      guild: JSON.parse(JSON.stringify(this.guild)),
+      members: [],
       membersNumber: 0
     }
-    for (let i = 1; i <= this.users.length; i++) {
-      if (!this.users.get(i).get('guild_id') || this.users.get(i).get('guild_id') != guild.get('id')) {
-        continue
-      }
-      if (i === parseInt(guild.get('owner_id')[0])) {
-        context.owner = this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i)
-      } else if (guild.get('officer_ids').includes(i)) {
-        context.officers.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+
+    console.log(this.membersGuild)
+    for (let i = 0; i < this.membersGuild.length; i++) {
+      const member = this.membersGuild.at(i)
+
+      context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(member)), i))
+
+      if (this.guild.get('owner_id')[0] === member.get('id')) {
+        context.members[i].member = 'Owner'
+      } else if (this.guild.get('officer_ids').some(el => el === member.get('id')) === true) {
+        context.members[i].member = 'Officer'
       } else {
-        context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+        context.members[i].member = 'Member'
       }
     }
-    context.membersNumber = context.officers.length + context.members.length + 1
+
+    context.membersNumber = this.membersGuild.length
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
     if (this.userId === this.id) {
@@ -512,7 +468,7 @@ export const ProfileView = Backbone.View.extend({
     const guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
     const leave = async () => {
       try {
-      	const response = await guild.leave(this.userId)
+        const response = await guild.leave(this.userId)
         this.users.get(this.userId).set({ guild_id: null })
         this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
@@ -521,29 +477,29 @@ export const ProfileView = Backbone.View.extend({
     leave()
   },
 
-	 requestDuel: async function () {
-	 	return await $.ajax({
-	      url: '/api/games/',
-	      data: { mode: 'duel', opponent_id: this.id },
-	      method: 'POST',
-	      context: this,
-	      success: function (response) {
-	        // this.gameId = response.id
-	        window.location.href = `#game/${response.id}`
-	        // navigate to game/{{this.gameId}}
-	      }
-	    })
-	  },
+  requestDuel: async function () {
+    return await $.ajax({
+      url: '/api/games/',
+      data: { mode: 'duel', opponent_id: this.id },
+      method: 'POST',
+      context: this,
+      success: function (response) {
+        // this.gameId = response.id
+        window.location.href = `#game/${response.id}`
+        // navigate to game/{{this.gameId}}
+      }
+    })
+  },
 
-	  playUser: function () {
-	    // not implemented yet
-	    try {
-	      this.requestDuel()
-	    } catch (e) {
-	      console.log(e)
-	      // gérer dans la notif l'erreur?
-	    }
-	  },
+  playUser: function () {
+    // not implemented yet
+    try {
+      this.requestDuel()
+    } catch (e) {
+      console.log(e)
+      // gérer dans la notif l'erreur?
+    }
+  },
 
   spectateUser: function () {
     // check if online
