@@ -33,14 +33,19 @@ export const GameView = Backbone.View.extend({
 				await this.games.fetch() // par sur d'avoir besoin de games
         // this.loadFullDocument()
         this.user = this.users.get(this.id)
-        if (this.gameId === undefined || this.gameId === '' || this.gameId === null ||
-				isNaN(this.gameId) || this.gameId <= 0 || this.gameId > this.games.length) {
+        if (this.gameId === undefined || this.gameId === null ||
+				isNaN(this.gameId)) {
           // $(document).ready(this.playLadder())
           this.$el.find('#gameTitle').html('Playing Ladder or Alfred, for now')
           $(document).ready(this.challengeAlfred())
         } else {
-          this.game = JSON.parse(JSON.stringify(this.games.get(this.gameId)))
-          // console.log(this.game)
+          try {
+            this.game = JSON.parse(JSON.stringify(this.games.get(this.gameId)))
+          } catch {
+            console.log('game doesnt exist')
+            return
+          }
+          console.log(this.game)
           // gérer game not found
           this.mode = this.game.mode
           if (this.mode === 'duel') {

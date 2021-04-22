@@ -325,9 +325,10 @@ export const ManageGuildView = Backbone.View.extend({
     this.nonMembersList = Array()
     this.membersList = Array()
     this.officersList = Array()
-    for (let i = 1; i <= this.users.length; i++) {
-      if (this.officerBool && this.users.get(i).get('guild_id') == undefined) {
-        this.nonMembersList.push(JSON.parse(JSON.stringify(this.users.get(i))))
+    for (let i = 0; i < this.users.length; i++) {
+      if (this.officerBool && (this.users.at(i).get('guild_id') === undefined ||
+			this.users.at(i).get('guild_id') === null)) {
+        this.nonMembersList.push(JSON.parse(JSON.stringify(this.users.at(i))))
       }
     }
     for (let i = 0; i < this.guild.get('member_ids').length; i++) {
