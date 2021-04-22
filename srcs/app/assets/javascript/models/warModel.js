@@ -69,12 +69,15 @@ export const War = Backbone.Model.extend({
   },
 
   acceptRefuseWar: function (agree) {
+    const header = this.superHeaders.getHeaders()
     const url = this.urlRoot + '/agreements'
     return fetch(url, {
       method: 'POST',
+      headers: header,
       body: JSON.stringify({
         agree_terms: agree
       })
     })
   }
+
 })

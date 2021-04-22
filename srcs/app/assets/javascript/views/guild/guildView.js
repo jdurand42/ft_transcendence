@@ -1,6 +1,8 @@
+/* eslint-disable eqeqeq */
 import { Users } from '../../collections/usersCollection'
 import { Wars } from '../../collections/warCollection'
 import { WarTimes } from '../../collections/warTimesCollection'
+import { Guild } from '../../models/guildModel'
 import { User } from '../../models/userModel'
 
 export const GuildView = Backbone.View.extend({
@@ -19,6 +21,7 @@ export const GuildView = Backbone.View.extend({
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
+    this.userLogged = new User()
     this.ladders = this.model.get('ladders').get('obj')
     this.userId = this.model.get('userLoggedId')
     this.members = new Users()
@@ -31,27 +34,34 @@ export const GuildView = Backbone.View.extend({
     this.calendar = new Wars()
     this.calendarWarTimes = []
     this.timer = []
+    this.guild = undefined
+
+    // TO DO: AMELIORER LE TEMPS DE CHARGEMENT, DES CHOSES PEUVENT ENCORE ETRE FAITES
 
     // ce bloc est obligatoire pour la route /#guild/ et les checks pour #guild/id_ivalide et #guild/nimporte_quoi
     this.$el.html(Handlebars.templates.guild())
     const fetch = async () => {
       // sécurité et séléction pour #guild/
-      await this.users.fetch() &&
-			await this.guilds.fetch()
-      if (this.id === null || this.id === undefined) {
-        this.id = this.users.get(this.userId).get('guild_id')
-      }
-      if (isNaN(this.id) || parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0 || this.id === null) {
+      this.users.fetch()
+      const response3 = this.guilds.fetch()
+      try {
+        await this.userLogged.fetchUser(this.userId) // Pour améliorer le temps de chargement de la page fetch plutôt un user que attendre toute la collection
+        if (this.id === null || this.id === undefined) {
+          this.id = this.userLogged.get('guild_id')
+        }
+        this.guild = new Guild({ id: this.id })
+        await this.guild.fetch() // Améliore la rapidité du chargement par un fetch d'une seule guilde
+      } catch (e) {
         this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
         return
       }
-      this.guild = this.guilds.get(this.id)
+      // this.guild = this.guilds.get(this.id)
 
       const response1 = this.members.fetchByGuildId(this.id)
       const response2 = this.wars.fetchByGuildId(this.id)
       const response4 = this.ladders.fetch()
-      const response6 = this.userLogged.fetchUser(this.userId)
-      await response2 && await response6
+      // const response6 = this.userLogged.fetchUser(this.userId)
+      await response2
 
       for (let i = 0; i < this.wars.length; i++) {
         if (this.wars.at(i).get('opened') === true) {
@@ -76,6 +86,8 @@ export const GuildView = Backbone.View.extend({
         }
       }
 
+      await response3
+
       this.render()
     }
     fetch()
@@ -83,10 +95,10 @@ export const GuildView = Backbone.View.extend({
   el: $('#app'),
   render: function () {
     const context = {}
-    if (this.id === null || this.id === undefined) {
-      this.id = this.users.get(this.userId).get('guild_id')
-    }
-    this.guild = this.guilds.get(this.id)
+    // if (this.id === null || this.id === undefined) {
+    //   this.id = this.users.get(this.userId).get('guild_id')
+    // }
+    // this.guild = this.guilds.get(this.id)
     this.userLoggedGuild = undefined
 
     if (this.userLogged.get('guild_id') !== undefined) {
@@ -110,10 +122,10 @@ export const GuildView = Backbone.View.extend({
     }
     this.$el.html(Handlebars.templates.guild(context))
 
-    if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
-      this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
-      return
-    }
+    // if (parseInt(this.id) > this.guilds.length || parseInt(this.id) <= 0) {
+    //   this.$el.find('#guildContent').html(Handlebars.templates.contentNotFound({}))
+    //   return
+    // }
     this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar(context))
     this.renderPannel()
     this.loadCurrentWar()
@@ -434,11 +446,17 @@ export const GuildView = Backbone.View.extend({
   },
 
   isProposal: function (context, war) {
+    console.log(war)
     if ((war.get('from_id') == this.id &&
         war.get('from_agreement') === false) ||
         (war.get('on_id') == this.id &&
         war.get('on_agreement') === false)) {
-      context.proposal = true
+      if (this.guild.get('owner_id')[0] == this.userId ||
+              this.guild.get('officer_ids').some(el => el == this.userId) === true) {
+        context.proposal = true
+      } else {
+        context.proposal = false
+      }
       context.icon = './icons/question.svg'
       context.explanation = 'The other guild is waiting your approval'
     } else if ((war.get('from_id') != this.id &&
