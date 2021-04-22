@@ -33,6 +33,19 @@
 	top: 126px;
 }
 
+.pannel .status-container {
+	position: relative;
+	left: 227px;
+	top: 13px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.pannel .slide-show-container {
+	margin-left: 8px;
+}
+
 .pannelEl {
 	font-style: normal;
 	font-weight: normal;

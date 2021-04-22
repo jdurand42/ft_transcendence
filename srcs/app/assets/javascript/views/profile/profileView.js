@@ -7,6 +7,9 @@ import { NoGuildView } from './noGuildView.js' */
 
 import { Achievements } from '../../collections/achievements'
 import { GameRecords } from '../../collections/gameRecords'
+import { Users } from '../../collections/usersCollection'
+import { Guild } from '../../models/guildModel'
+import { User } from '../../models/userModel'
 
 export const ProfileView = Backbone.View.extend({
   events: {
@@ -26,7 +29,8 @@ export const ProfileView = Backbone.View.extend({
     'click #All': 'allMatches',
     'click #Tournament': 'tournamentMatches',
     'click #Duel': 'duelMatches',
-    'click #Ladder': 'ladderMatches'
+    'click #Ladder': 'ladderMatches',
+    'click #follow': 'follow'
   },
 
   initialize: function () {
@@ -36,11 +40,19 @@ export const ProfileView = Backbone.View.extend({
     this.ladders = this.model.get('ladders').get('obj')
     this.gameRecords = this.model.get('gameRecords').get('obj')
     this.achievements = this.model.get('achievements').get('obj')
+    this.socket = this.model.get('socket').get('obj')
+    this.notifView = this.model.get('notifView').get('obj')
     this.myAchievements = new Achievements()
     this.userId = this.model.get('userLoggedId')
     this.myTournamentGames = new GameRecords()
     this.myLadderGames = new GameRecords()
     this.myDuelGames = new GameRecords()
+    this.membersGuild = new Users()
+    this.guild = undefined
+    this.userLogged = new User()
+
+    this.socket.updateContext(this, this.notifView)
+
     // this.myWarGames = new GameRecords()
     if (this.id === null) {
       this.id = this.userId
@@ -48,6 +60,12 @@ export const ProfileView = Backbone.View.extend({
 
     this.$el.html(Handlebars.templates.profile({}))
     const fetchUsers = async () => {
+      try {
+        await this.userLogged.fetchUser(this.id)
+      } catch (e) {
+        this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
+        return
+      }
       const response1 = this.users.fetch()
       const response2 = this.ladders.fetch()
       const response3 = this.myTournamentGames.fetchMyGames(this.id, 'tournament')
@@ -55,7 +73,11 @@ export const ProfileView = Backbone.View.extend({
       const response5 = this.myDuelGames.fetchMyGames(this.id, 'duel')
       const response6 = this.myAchievements.fetchByUserId(this.id)
       const response7 = this.achievements.fetch()
+      this.guilds.fetch()
       await response1 && await response2 && await response3 && await response4 && await response5
+      const response8 = this.membersGuild.fetchByGuildId(this.users.get(this.id).get('guild_id'))
+      this.guild = new Guild({ id: this.users.get(this.id).get('guild_id') })
+      this.guild.fetch()
       this.users.sort()
       this.render()
     }
@@ -74,10 +96,10 @@ export const ProfileView = Backbone.View.extend({
           return options.inverse(this)
       }
     })
-    if (isNaN(this.id) || this.id > this.users.length || this.id <= 0) {
-      this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
-      return this
-    }
+    // if (isNaN(this.id) || this.id > this.users.length || this.id <= 0) {
+    //   this.$el.find('#profileContent').html(Handlebars.templates.contentNotFound({}))
+    //   return this
+    // }
     this.renderPannel()
     this.loadMatchHistory()
     return this
@@ -150,10 +172,6 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadMatchHistory: function () {
-    // const load = async () => {
-    // try {
-    // await this.users.fetch()
-    // this.checkLadderId()
     this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
     document.getElementById('friends').classList.remove('open')
     document.getElementById('achievements').classList.remove('open')
@@ -162,19 +180,7 @@ export const ProfileView = Backbone.View.extend({
     const div = document.getElementById('matchHistory')
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
-
-    // await this.ladders.fetch() &&
-    // await this.gameRecords.fetch()
-    // this.renderPannel()
-    // console.log('<img src=' + this.users.get(this.id).get('image_url') + '\'></img>')
-    // await this.guilds.fetch()
     this.matchHistory('All')
-    // } catch (e) {
-    // console.log(e)
-    // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-    // }
-    // }
-    // load()
   },
 
   loadFriends: function () {
@@ -186,21 +192,7 @@ export const ProfileView = Backbone.View.extend({
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
 
-    const load = async () => {
-      try {
-        // await this.users.fetch()
-        // this.users.sort()
-        // this.checkLadderId()
-        // this.renderPannel()
-        await this.guilds.fetch() && // TO DO INITIZIALISATION
-        await this.ladders.fetch()
-        this.friends()
-      } catch (e) {
-        console.log(e)
-        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    this.friends()
   },
 
   positionSquare: function (offsets) {
@@ -208,13 +200,6 @@ export const ProfileView = Backbone.View.extend({
   },
 
   loadAchievements: function () {
-    // const load = async () => {
-    // try {
-    // await this.users.fetch()
-    // this.checkLadderId()
-    // await this.achievements.fetch()
-    // this.renderPannel()
-
     document.getElementById('matchHistory').classList.remove('open')
     document.getElementById('profileGuild').classList.remove('open')
     document.getElementById('friends').classList.remove('open')
@@ -224,11 +209,6 @@ export const ProfileView = Backbone.View.extend({
     this.positionSquare(div.getBoundingClientRect())
 
     this.achievementsView()
-    // } catch (e) {
-    // this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-    // }
-    // }
-    // load()
   },
 
   loadGuild: function () {
@@ -239,26 +219,20 @@ export const ProfileView = Backbone.View.extend({
     const div = document.getElementById('profileGuild')
     div.classList.add('open')
     this.positionSquare(div.getBoundingClientRect())
-    const load = async () => {
-      try {
-        await this.users.fetch()
-        this.users.sort()
-        this.checkLadderId()
-        await this.guilds.fetch() &&
-        await this.ladders.fetch()
-        // await this.achivements.fetch()
-        // this.renderPannel()
-        this.profileGuild()
-      } catch (e) {
-        this.$el.find('#profileContent').html('<p>There was a problem while loading the page</p>')
-      }
-    }
-    load()
+    this.profileGuild()
   },
 
   renderPannel: function () {
     const user = this.users.get(this.id)
     console.log(user)
+
+    let slideShow
+    if (user.status === 'ingame') {
+      slideShow = './icons/slideshow-ingame.svg'
+    } else {
+      slideShow = './icons/slideshow.svg'
+    }
+
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
       rank: this.id,
@@ -270,11 +244,20 @@ export const ProfileView = Backbone.View.extend({
       victories: user.get('ladder_games_won'),
       totalGames: user.get('ladder_games_won') + user.get('ladder_games_lost'),
       nickname: user.get('nickname'),
-      image_url: user.get('image_url')
+      image_url: user.get('image_url'),
+      status: user.get('status').toUpperCase(),
+      status_class: user.get('status'),
+      id: user.get('id'),
+      slide_show: slideShow
+
     }
     // if (isNaN(context.ratio)) {
     //   context.ratio = 0
     // }
+
+    if (this.id === this.userId) {
+      context.myPage = true
+    }
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
     if (this.id != this.userId) {
       this.renderProfileSubPannel()
@@ -287,12 +270,33 @@ export const ProfileView = Backbone.View.extend({
     const friends = this.users.get(this.userId).get('friends')
     for (let i = 0; i < friends.length; i++) {
       if (friends[i].friend_id == this.id) {
-        document.getElementById('followUser').innerHTML = '<div>Unfollow</div>'
+        const div = document.getElementById('followUser')
+        div.innerHTML = '<div>Unfollow</div>'
+        div.style.backgroundColor = '#C4C4C4'
+        div.style.border = '2px solid #606060'
+
         // document.getElementById('followUser').style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
         return
       }
     }
     // document.getElementById('followUser').style = ''
+  },
+
+  follow: function (e) {
+    const userId = Number(e.currentTarget.getAttribute('for'))
+    let newFriends = this.userLogged.get('friends')
+    if (e.currentTarget.className === 'follow') {
+      e.currentTarget.classList.remove('follow')
+      e.currentTarget.classList.add('unfollow')
+      this.userLogged.follow(userId)
+      newFriends.push({ friend_id: Number(userId) })
+    } else {
+      e.currentTarget.classList.remove('unfollow')
+      e.currentTarget.classList.add('follow')
+      this.userLogged.unfollow(userId)
+      newFriends = newFriends.slice().filter(el => el.friend_id != userId)
+    }
+    this.userLogged.set({ friends: newFriends })
   },
 
   pushDone: function (context, game) {
@@ -367,14 +371,24 @@ export const ProfileView = Backbone.View.extend({
   },
 
   friends: function () {
-    const friends = this.users.get(this.id).get('friends')
-    const userFriends = this.users.get(this.userId).get('friends')
+    let friends
+    if (this.id === this.userId) {
+      friends = this.userLogged.get('friends')
+    } else {
+      friends = this.users.get(this.id).get('friends')
+    }
+    const userFriends = this.userLogged.get('friends')
     const context = { friends: [], friendsNumber: friends.length }
     for (let i = 0; i < friends.length; i++) {
       // context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
       context.friends.push(
         this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))), i))
       // context.friends[i] = this.updateContextForlist(context.friends[i])
+      if (this.id === this.userId) {
+        context.friends[i].myPage = true
+      } else {
+        context.friends[i].myPage = false
+      }
       if (userFriends.some(e => e.friend_id === friends[i].friend_id)) {
         context.friends[i].isFriend = true
       } else {
@@ -414,7 +428,7 @@ export const ProfileView = Backbone.View.extend({
     }
     user.follow = this.users.get(this.userId).get('friends').some(el => el.friend_id === user.id)
     if (user.guild_id) {
-      user.guildName = this.guilds.get(user.guild_id).get('name')
+      user.guildName = this.guild.get('name')
     }
     return user
   },
@@ -464,7 +478,7 @@ export const ProfileView = Backbone.View.extend({
   profileGuild: function () {
     let guild
     if (this.users.get(this.id).get('guild_id')) {
-      guild = this.guilds.get(this.users.get(this.id).get('guild_id'))
+      guild = this.guild
     } else if (this.userId === this.id) {
       this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       return
@@ -477,26 +491,29 @@ export const ProfileView = Backbone.View.extend({
       }
       return
     }
+
     const context = {
-      guild: JSON.parse(JSON.stringify(guild)),
-      owner: undefined,
-      officers: Array(),
-      members: Array(),
+      guild: JSON.parse(JSON.stringify(this.guild)),
+      members: [],
       membersNumber: 0
     }
-    for (let i = 1; i <= this.users.length; i++) {
-      if (!this.users.get(i).get('guild_id') || this.users.get(i).get('guild_id') != guild.get('id')) {
-        continue
-      }
-      if (i === parseInt(guild.get('owner_id')[0])) {
-        context.owner = this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i)
-      } else if (guild.get('officer_ids').includes(i)) {
-        context.officers.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+
+    console.log(this.membersGuild)
+    for (let i = 0; i < this.membersGuild.length; i++) {
+      const member = this.membersGuild.at(i)
+
+      context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(member)), i))
+
+      if (this.guild.get('owner_id')[0] === member.get('id')) {
+        context.members[i].member = 'Owner'
+      } else if (this.guild.get('officer_ids').some(el => el === member.get('id')) === true) {
+        context.members[i].member = 'Officer'
       } else {
-        context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(i))), i))
+        context.members[i].member = 'Member'
       }
     }
-    context.membersNumber = context.officers.length + context.members.length + 1
+
+    context.membersNumber = this.membersGuild.length
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
     if (this.userId === this.id) {
@@ -512,7 +529,7 @@ export const ProfileView = Backbone.View.extend({
     const guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
     const leave = async () => {
       try {
-      	const response = await guild.leave(this.userId)
+        const response = await guild.leave(this.userId)
         this.users.get(this.userId).set({ guild_id: null })
         this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
@@ -521,29 +538,29 @@ export const ProfileView = Backbone.View.extend({
     leave()
   },
 
-	 requestDuel: async function () {
-	 	return await $.ajax({
-	      url: '/api/games/',
-	      data: { mode: 'duel', opponent_id: this.id },
-	      method: 'POST',
-	      context: this,
-	      success: function (response) {
-	        // this.gameId = response.id
-	        window.location.href = `#game/${response.id}`
-	        // navigate to game/{{this.gameId}}
-	      }
-	    })
-	  },
+  requestDuel: async function () {
+    return await $.ajax({
+      url: '/api/games/',
+      data: { mode: 'duel', opponent_id: this.id },
+      method: 'POST',
+      context: this,
+      success: function (response) {
+        // this.gameId = response.id
+        window.location.href = `#game/${response.id}`
+        // navigate to game/{{this.gameId}}
+      }
+    })
+  },
 
-	  playUser: function () {
-	    // not implemented yet
-	    try {
-	      this.requestDuel()
-	    } catch (e) {
-	      console.log(e)
-	      // gérer dans la notif l'erreur?
-	    }
-	  },
+  playUser: function () {
+    // not implemented yet
+    try {
+      this.requestDuel()
+    } catch (e) {
+      console.log(e)
+      // gérer dans la notif l'erreur?
+    }
+  },
 
   spectateUser: function () {
     // check if online
@@ -606,5 +623,37 @@ export const ProfileView = Backbone.View.extend({
     if (this.users.get(this.id).get('ladder_id') === null) {
       this.users.get(this.id).set({ ladder_id: 1 })
     }
+  },
+
+  receiveMessage: function (msg) {
+    const channelId = Number(JSON.parse(msg.identifier).id)
+    this.users.get(msg.message.id).set({ status: msg.message.status })
+    if (msg.message.id === this.userId) {
+      this.userLogged.set({ status: msg.message.status })
+    }
+
+    try {
+      let div = document.getElementById('pastille' + msg.message.id)
+      div.classList.remove('offline')
+      div.classList.remove('ingame')
+      div.classList.remove('online')
+      div.classList.add(msg.message.status)
+
+      div = document.getElementById('status' + msg.message.id)
+      if (msg.message.status === 'online') {
+        div.innerHTML = 'ONLINE'
+      } else if (msg.message.status === 'offline') {
+        div.innerHTML = 'OFFLINE'
+      } else {
+        div.innerHTML = 'IN GAME'
+      }
+
+      div = document.getElementById('slide-show' + msg.message.id)
+      if (msg.message.status === 'ingame') {
+        div.setAttribute('src', './icons/slideshow-ingame.svg')
+      } else {
+        div.setAttribute('src', './icons/slideshow.svg')
+      }
+    } catch (e) {}
   }
 })

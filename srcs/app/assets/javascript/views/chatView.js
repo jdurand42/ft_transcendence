@@ -353,28 +353,9 @@ export const ChatView = Backbone.View.extend({
     blockDiv.setAttribute('channel-id', e.currentTarget.getAttribute('id'))
     viewProfile.setAttribute('href', '/#profile/' + userId)
 
-    const getOffsetTop = element => {
-      let offsetTop = 0
-      while (element) {
-        offsetTop += element.offsetTop
-        element = element.offsetParent
-      }
-      return offsetTop
-    }
-    const X = getOffsetTop(e.target)
+    dropList.style.top = e.pageY
+    dropList.style.left = e.pageX
 
-    const getOffsetLeft = element => {
-      let offsetLet = 0
-      while (element) {
-        offsetLet += element.offsetLeft
-        element = element.offsetParent
-      }
-      return offsetLet
-    }
-    const Y = getOffsetLeft(e.target)
-
-    dropList.style.top = X + e.target.offsetHeight + 4
-    dropList.style.left = Y
     const block = dropList.childNodes[3]
 
     if (this.userLogged.get('ignores').find(el => {
