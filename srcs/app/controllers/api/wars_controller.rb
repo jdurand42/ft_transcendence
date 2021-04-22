@@ -43,7 +43,7 @@ module Api
     end
 
     def index_times
-      times = WarTime.find_by(war_id: params.fetch(:id))
+      times = WarTime.where(war_id: params.fetch(:id))
       json_response(times, 200)
     end
 

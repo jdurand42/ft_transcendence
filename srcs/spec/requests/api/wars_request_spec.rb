@@ -250,6 +250,15 @@ RSpec.describe "Wars", type: :request do
   describe "Times" do
     let(:war_time_attributes) { { day: Date.today.strftime("%A"), start_hour: 8, end_hour: 20, time_to_answer: 10, max_unanswered: 2 } }
     before { post api_wars_url, headers: access_token, params: attributes }
+    context 'get' do
+      it 'should get 3 war_times' do
+        FactoryBot.create(:war_with_times)
+        get "/api/wars/#{War.last.id}/times", headers: access_token
+        puts response.body
+        expect(response.status).to eq (200)
+        expect(json.size).to eq(3)
+      end
+    end
     context 'create' do
       it 'should create a war time' do
         post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
