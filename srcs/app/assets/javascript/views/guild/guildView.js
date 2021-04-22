@@ -2,6 +2,7 @@
 import { Users } from '../../collections/usersCollection'
 import { Wars } from '../../collections/warCollection'
 import { WarTimes } from '../../collections/warTimesCollection'
+import { GameRecords } from '../../collections/gameRecords'
 import { Guild } from '../../models/guildModel'
 import { User } from '../../models/userModel'
 
@@ -36,6 +37,7 @@ export const GuildView = Backbone.View.extend({
     this.timer = []
     this.guild = undefined
 
+    this.games = new GameRecords()
     // TO DO: AMELIORER LE TEMPS DE CHARGEMENT, DES CHOSES PEUVENT ENCORE ETRE FAITES
 
     // ce bloc est obligatoire pour la route /#guild/ et les checks pour #guild/id_ivalide et #guild/nimporte_quoi
@@ -75,7 +77,11 @@ export const GuildView = Backbone.View.extend({
         }
         if (this.wars.at(i).get('closed') === true) {
           this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
-          this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
+          await this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
+          for (let i = 0; i < this.lastWarsTimes.length; i++) {
+            await this.games.fetchByWarTimeId(this.lastWarsTimes.at(i).get('id'))
+            console.log(this.games)
+          }
           this.lastWars.add(this.wars.at(i))
         }
         if (this.wars.at(i).get('closed') === false &&
@@ -295,11 +301,7 @@ export const GuildView = Backbone.View.extend({
     } else {
       context.war = true
 
-      if (this.currentWarTimes.at(0).attributes.day === undefined) {
-        this.updateContextCurrentWar(context, this.currentWar, undefined, 0)
-      } else {
-        this.updateContextCurrentWar(context, this.currentWar, this.currentWarTimes, 0)
-      }
+      this.updateContextCurrentWar(context, this.currentWar, this.currentWarTimes, 0)
     }
 
     this.$el.find('#guildcontent').html(Handlebars.templates.currentWar(context))
@@ -315,24 +317,22 @@ export const GuildView = Backbone.View.extend({
     } catch (e) {}
 
     const dates = []
-    if (this.currentWarTimes && this.currentWarTimes.at(0).attributes.day !== undefined) {
-      for (let i = 0; i < this.currentWarTimes.length; i++) {
-        const date = new Date()
-        date.setDate(date.getDate() + (this.getDay(this.currentWarTimes.at(i).get('day')) + 7 - date.getDay()) % 7)
-        date.setHours(this.currentWarTimes.at(i).get('start_hour'))
-        const now = new Date()
-        now.setDate(now.getDate() + 7)
-        console.log(now)
-        if (date > now) {
-          document.getElementById('next-war-time-in-title').style.display = 'none'
+    for (let i = 0; i < this.currentWarTimes.length; i++) {
+      const date = new Date()
+      date.setDate(date.getDate() + (this.getDay(this.currentWarTimes.at(i).get('day')) + 7 - date.getDay()) % 7)
+      date.setHours(this.currentWarTimes.at(i).get('start_hour'))
+      const now = new Date()
+      now.setDate(now.getDate() + 7)
+      console.log(now)
+      if (date > now) {
+        document.getElementById('next-war-time-in-title').style.display = 'none'
 
-          this.countMatchesUnansewered()
+        this.countMatchesUnansewered()
 
-          return this
-        }
-
-        dates.push(date)
+        return this
       }
+
+      dates.push(date)
       dates.sort()
       this.initializeTimer(dates[0], 'next-war-time-in')
 
@@ -378,11 +378,7 @@ export const GuildView = Backbone.View.extend({
     for (let i = 0; i < this.lastWars.length; i++) {
       context.wars.push({})
 
-      if (this.lastWarsTimes[i].at(0).attributes.day === undefined) {
-        this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i), undefined, i)
-      } else {
-        this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i), this.lastWarsTimes[i], i)
-      }
+      this.updateContextCurrentWar(context.wars[i], this.lastWars.at(i), this.lastWarsTimes[i], i)
     }
 
     this.$el.find('#guildcontent').html(Handlebars.templates.lastWars(context))

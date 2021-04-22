@@ -76,8 +76,10 @@ export const ProfileView = Backbone.View.extend({
       this.guilds.fetch()
       await response1 && await response2 && await response3 && await response4 && await response5
       const response8 = this.membersGuild.fetchByGuildId(this.users.get(this.id).get('guild_id'))
-      this.guild = new Guild({ id: this.users.get(this.id).get('guild_id') })
-      this.guild.fetch()
+      if (this.users.get(this.id).get('guild_id') != undefined) {
+        this.guild = new Guild({ id: this.users.get(this.id).get('guild_id') })
+        this.guild.fetch()
+      }
       this.users.sort()
       this.render()
     }
@@ -514,8 +516,10 @@ export const ProfileView = Backbone.View.extend({
 
       if (this.guild.get('owner_id')[0] === member.get('id')) {
         context.members[i].member = 'Owner'
+        context.members[i].owner = true
       } else if (this.guild.get('officer_ids').some(el => el === member.get('id')) === true) {
         context.members[i].member = 'Officer'
+        context.members[i].officer = true
       } else {
         context.members[i].member = 'Member'
       }

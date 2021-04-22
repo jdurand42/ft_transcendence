@@ -244,6 +244,8 @@
     font-family: Roboto-Medium;
     font-size: 16px;
     color: var(--primary-color);
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 .guildBlock .war-infos .war-time-rules-container
@@ -355,7 +357,7 @@
 }
 
 .guildBlock .day {
-    margin-right: 4px;
+    width: 60px;
 }
 
 .guildBlock .war-time-rules-container {
