@@ -233,12 +233,20 @@ export const ProfileView = Backbone.View.extend({
       slideShow = './icons/slideshow.svg'
     }
 
+    let index = 0
+    this.users.some(el => {
+      index++
+      return el.get('id') === this.id
+    })
+
+    console.log(index)
+
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
-      rank: this.id,
-      generalRank: this.id,
+      // rank: index,
+      generalRank: index,
       totalRank: this.users.length,
-      totalLeagueRank: this.users.length,
+      // totalLeagueRank: this.users.length,
       // ratio: Math.round(user.get('ladder_games_won') / (user.get('ladder_games_won') + user.get('ladder_games_lost')) * 100 * 100) / 100,
       score: user.get('score'),
       victories: user.get('ladder_games_won'),
