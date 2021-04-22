@@ -41,7 +41,7 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
-      console.log(msg)
+      // console.log(msg)
       if (msg.message) {
         try {
           objet.receiveMessage(msg)
