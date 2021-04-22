@@ -10,7 +10,8 @@ module Api
       ->(user_id:) { Game.where(player_left: user_id).or(Game.where(player_right: user_id)) },
       ->(status:) { where(status: status) },
       ->(mode:) { where(mode: mode) },
-      ->(tournament_id:) { where(tournament_id: tournament_id) }
+      ->(tournament_id:) { where(tournament_id: tournament_id) },
+      ->(war_time_id:) { where(war_time_id: war_time_id) }
     )
 
     def index

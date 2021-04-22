@@ -3,7 +3,7 @@
 module Users
   class OmniauthCallbacksController < DeviseTokenAuth::OmniauthCallbacksController
     include LetterAvatar::AvatarHelper
-    include CompetitionHelper
+    include CacheHelper
 
     def assign_provider_attrs(user, auth_hash)
       return unless @resource.new_record?
@@ -14,6 +14,7 @@ module Users
                                nickname: auth_hash['info']['nickname']
                              })
       user.assign_attributes({ admin: true }) if ENV['P42NG_OWNER_UID'] == auth_hash['uid'].to_s
+      user.assign_attributes({ ladder: Ladder.find_by(name: 'Bronze') }) if Ladder.find_by(name: 'Bronze').nil? == false
     end
 
     def attach_avatar(user, auth_hash)
@@ -29,7 +30,8 @@ module Users
     end
 
     def create_auth_params
-      assign_ladder(@resource)
+      actioncable_set_user_disconnected(@resource.id)
+
       @auth_params = {
         auth_token: @token.token,
         client_id: @token.client,
@@ -67,6 +69,7 @@ module Users
       @resource.save!
       @resource.reload
       return if banned?
+
       return handle_two_factor if @resource.two_factor?
 
       create_auth_params

@@ -147,6 +147,18 @@ RSpec.describe "Users", type: :request do
       end
     end
 
+
+    context "when owner is trying demote himself" do
+      ENV['P42NG_OWNER_UID'] = '42'
+      before do
+        owner = FactoryBot.create(:user, nickname: "owner", admin: true, uid: ENV['P42NG_OWNER_UID'])
+        patch "/api/users/#{owner.id}", params: { user: {admin: false}}, headers: owner.create_new_auth_token
+      end
+      it "returns status code 403" do
+        expect(response).to have_http_status(403)
+      end
+    end
+
     context "when admin promotes another user" do
       before do
         auth.update(admin: true)
