@@ -228,6 +228,10 @@ export const ProfileView = Backbone.View.extend({
     // if (isNaN(context.ratio)) {
     //   context.ratio = 0
     // }
+
+    if (this.id === this.userId) {
+      context.myPage = true
+    }
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
     if (this.id != this.userId) {
       this.renderProfileSubPannel()

@@ -1,7 +1,29 @@
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['profilePannel'] = template({"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
-    var alias1=container.lambda, alias2=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+templates['profilePannel'] = template({"1":function(container,depth0,helpers,partials,data) {
+    var lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "		<input type=\"file\"  accept=\"image/*\" name=\"image\" id=\"file\"  style=\"display: none;\">\n		<img id=\"profilePicture\" alt=\"avatar\" src=\""
+    + container.escapeExpression(container.lambda((depth0 != null ? lookupProperty(depth0,"image_url") : depth0), depth0))
+    + "\" width=\"200\" style=\"cursor: pointer;\" />\n";
+},"3":function(container,depth0,helpers,partials,data) {
+    var lookupProperty = container.lookupProperty || function(parent, propertyName) {
+        if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
+          return parent[propertyName];
+        }
+        return undefined
+    };
+
+  return "		<img id=\"profilePicture\" alt=\"avatar\" src=\""
+    + container.escapeExpression(container.lambda((depth0 != null ? lookupProperty(depth0,"image_url") : depth0), depth0))
+    + "\" width=\"200\" style=\"cursor: auto;\" />\n";
+},"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=container.lambda, alias2=container.escapeExpression, alias3=depth0 != null ? depth0 : (container.nullContext || {}), lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
         }
@@ -24,8 +46,9 @@ templates['profilePannel'] = template({"compiler":[8,">= 4.3.0"],"main":function
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"trophy") : depth0), depth0))
     + "\">\n		</div>\n		<div class=\"\" id =\"Pannelnickname\">"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"nickname") : depth0), depth0))
-    + "</div>\n\n		<label class=\"image-container\">\n		<input type=\"file\"  accept=\"image/*\" name=\"image\" id=\"file\"  style=\"display: none;\">\n		<img id=\"profilePicture\" alt=\"avatar\" src=\""
-    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"image_url") : depth0), depth0))
-    + "\" width=\"200\" style=\"cursor: pointer;\" />\n		</label>\n\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n</div>\n";
+    + "</div>\n\n		<label class=\"image-container\">\n"
+    + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"myPage") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":53,"column":2},"end":{"line":56,"column":9}}})) != null ? stack1 : "")
+    + ((stack1 = lookupProperty(helpers,"unless").call(alias3,(depth0 != null ? lookupProperty(depth0,"myPage") : depth0),{"name":"unless","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":57,"column":2},"end":{"line":59,"column":13}}})) != null ? stack1 : "")
+    + "		</label>\n\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n</div>\n";
 },"useData":true});
 })();
