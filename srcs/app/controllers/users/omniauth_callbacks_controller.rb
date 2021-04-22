@@ -66,6 +66,7 @@ module Users
       sign_in(:user, @resource, store: false, bypass: false)
 
       @resource.save!
+      @resource.reload
       return if banned?
 
       actioncable_set_user_disconnected(@resource.id)
