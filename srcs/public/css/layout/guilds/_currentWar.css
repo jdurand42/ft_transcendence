@@ -377,6 +377,10 @@
     margin-top: 16px;
 }
 
+.guildBlock .hour {
+    width: 63px;
+}
+
 .guildBlock .timer {
     margin-left: 8px;
 }

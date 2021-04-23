@@ -5,6 +5,7 @@ import { WarTimes } from '../../collections/warTimesCollection'
 import { GameRecords } from '../../collections/gameRecords'
 import { Guild } from '../../models/guildModel'
 import { User } from '../../models/userModel'
+import { WarTime } from '../../models/warTimesModel'
 
 export const GuildView = Backbone.View.extend({
   events: {
@@ -38,6 +39,7 @@ export const GuildView = Backbone.View.extend({
     this.guild = undefined
 
     this.currentGames = []
+    this.lastWarsGames = []
     // TO DO: AMELIORER LE TEMPS DE CHARGEMENT, DES CHOSES PEUVENT ENCORE ETRE FAITES
 
     // ce bloc est obligatoire pour la route /#guild/ et les checks pour #guild/id_ivalide et #guild/nimporte_quoi
@@ -78,13 +80,8 @@ export const GuildView = Backbone.View.extend({
         if (this.wars.at(i).get('closed') === true) {
           this.lastWarsTimes.push(new WarTimes(this.wars.at(i).get('id')))
           await this.lastWarsTimes[this.lastWarsTimes.length - 1].fetch()
-          console.log(this.lastWarsTimes[this.lastWarsTimes.length - 1])
-          for (let i = 0; i < this.lastWarsTimes.length; i++) {
-            this.currentGames.push(new GameRecords())
-            this.currentGames[this.currentGames.length - 1].fetchByWarTimeId(this.lastWarsTimes[this.lastWarsTimes.length - 1].get('id'))
-            console.log(this.currentGames)
-          }
           this.lastWars.add(this.wars.at(i))
+          this.initializeLastWarsGames(this.wars.at(i), this.lastWarsTimes[this.lastWarsTimes.length - 1])
         }
         if (this.wars.at(i).get('closed') === false &&
             this.wars.at(i).get('opened') === false) {
@@ -139,6 +136,23 @@ export const GuildView = Backbone.View.extend({
     return this
   },
 
+  initializeLastWarsGames: function (war, warTimes) {
+    this.lastWarsGames.push(new GameRecords())
+    console.log(war)
+    console.log(warTimes)
+    console.log(warTimes.get('id'))
+    this.warTimesGames = []
+    for (let i = 0; i < warTimes.length; i++) {
+      const warTime = warTimes.at(i)
+      const warTimeId = WarTime.get('id')
+      const games =
+      this.warTimesGames.push({
+        key: warTimeId,
+        value: games
+      })
+    }
+  },
+
   acceptWar: function (e) {
     const war = this.calendar.get(e.currentTarget.getAttribute('for'))
     war.acceptRefuseWar(true)
@@ -187,7 +201,8 @@ export const GuildView = Backbone.View.extend({
       }
       if (distance < 0) {
         clearInterval(this)
-        window.location.reload()
+
+        // window.location.reload()
       }
     }, 1000))
   },
@@ -324,8 +339,8 @@ export const GuildView = Backbone.View.extend({
       date.setHours(this.currentWarTimes.at(i).get('start_hour'))
       const now = new Date()
       now.setDate(now.getDate() + 7)
-      console.log(now)
-      if (date > now) {
+      // We are in war time
+      if (date < now) {
         document.getElementById('next-war-time-in-title').style.display = 'none'
 
         this.countMatchesUnansewered()
@@ -333,6 +348,8 @@ export const GuildView = Backbone.View.extend({
         document.getElementById('accept-random-fight').innerHTML = 'Challenge'
         document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color);'
         document.getElementById('accept-random-fight').style.cursor = 'pointer'
+
+        this.initializeWarTimesGames()
 
         return this
       }
@@ -350,6 +367,10 @@ export const GuildView = Backbone.View.extend({
 
   countMatchesUnansewered: function () {
     // TO DO
+  },
+
+  initializeWarTimesGames: function () {
+
   },
 
   getDay: function (date) {
