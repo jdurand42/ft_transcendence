@@ -381,6 +381,14 @@
     width: 63px;
 }
 
+.guildBlock .last-matches-container {
+    padding-bottom: 8px;
+}
+
+#warBlock .match-done-container {
+    background-color: #3B4A62;
+}
+
 .guildBlock .timer {
     margin-left: 8px;
 }

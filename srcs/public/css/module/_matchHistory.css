@@ -1,0 +1,116 @@
+.match-history
+.match-done-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    margin-bottom: 8px;
+
+    width: 90%;
+    height: 60px;
+
+    background-color: var(--table-color);
+    color: var(--secondary-color);
+
+    font-size: 18px;
+
+    border-radius: 10px;
+}
+
+.match-history
+.match-done {
+    float: left;
+    width: 100%;
+}
+
+.match-history
+.forfeit {
+    font-size: 14px;
+}
+
+.match-history
+.nb {
+    float: left;
+    padding-left: 16px;
+    line-height: 60px;
+}
+
+.match-history
+.image-container {
+    width: 42px;
+    height: 42px;
+}
+
+.match-history
+.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 60px;
+
+    position: relative;
+    right: 8px;
+}
+
+.match-history
+.not-forfeit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.match-history
+.image-url {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.match-history
+.image-nickname {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+.match-history
+.opponent {
+    width: 200px;
+}
+
+.match-history
+.opponent1 {
+    margin-right: 8px;
+    text-align: right;
+}
+
+.match-history
+.opponent2 {
+    margin-left: 8px;
+    text-align: left;
+}
+
+.match-history
+.score1 {
+    color: var(--primary-color);
+    font-family: Roboto-Black;
+}
+
+.match-history
+.score {
+    font-size: 36px;
+    margin-left: 8px;
+    margin-right: 8px;
+    width: 52px;
+}
+
+.match-history
+.VS {
+    font-family: Quantico-Regular;
+    font-size: 24px;
+}
