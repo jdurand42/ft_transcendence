@@ -434,7 +434,7 @@ export const GuildView = Backbone.View.extend({
         const endDate = new Date()
         endDate.setDate(endDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - endDate.getDay()) % 7)
         endDate.setHours(this.currentWarTimes[0].at(i).get('end_hour'))
-        dates.push({ startDate: startDate, endDate: endDate, warTimeId: this.currentWarTimes[0].at(i).get('id') })
+        dates.push({ day: this.currentWarTimes[0].at(i).get('day'), startDate: startDate, endDate: endDate, warTimeId: this.currentWarTimes[0].at(i).get('id') })
       }
       dates.sort(function (a, b) {
         if (a.startDate < b.startDate) { return -1 }
@@ -457,6 +457,18 @@ export const GuildView = Backbone.View.extend({
           this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
 
           return this
+        } else if (dates[0].startDate <= now) {
+          console.log(dates)
+          console.log(dates[0].day.toLowerCase())
+          console.log(dates[0].startDate)
+          dates[0].startDate.setDate(dates[0].startDate.getDate() + (this.getDay(dates[0].day.toLowerCase()) + 8 - dates[0].startDate.getDay()) % 8)
+          console.log(dates[0].startDate)
+          dates.sort(function (a, b) {
+            if (a.startDate < b.startDate) { return -1 }
+            if (a.startDate > b.startDate) { return 1 }
+            return 0
+          })
+          console.log(dates)
         }
 
         this.initializeTimer(dates[0].startDate, 'next-war-time-in')
