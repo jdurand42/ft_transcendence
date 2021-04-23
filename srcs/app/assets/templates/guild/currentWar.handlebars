@@ -106,12 +106,12 @@
 				<div class="each-matches-missed from-matches-missed">
 					<div class="name from-name">{{fromName}}</div>
 					<div class="hyphen">-</div>
-					<div class="nb-matches-missed from-nb-matches-missed">{{nbFromMissed}}</div>
+					<div class="nb-matches-missed from-nb-matches-missed" id="nb-matches-missed{{fromId}}">{{nbFromMissed}}</div>
 				</div>
 				<div class="each-matches-missed on-matches-missed">
 					<div class="name on-name">{{onName}}</div>
 					<div class="hyphen">-</div>
-					<div class="nb-matches-missed on-nb-matches-missed">{{nbOnMissed}}</div>
+					<div class="nb-matches-missed on-nb-matches-missed" id="nb-matches-missed{{onId}}">{{nbOnMissed}}</div>
 				</div>
 			</div>
 			<div class="random-fight">
@@ -124,7 +124,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="last-matches-container">
+	<div class="match-history last-matches-container">
 		<div class="title last-matches-title">Last matches of war times</div>
 		{{#each lastMatches}}
 		<div class="match-done-container">

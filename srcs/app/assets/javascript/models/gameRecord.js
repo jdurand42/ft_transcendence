@@ -34,6 +34,12 @@ export const GameRecord = Backbone.Model.extend({
     })
   },
 
+  randomFight: function (gameType = 'war') {
+    this.save({
+      mode: gameType
+    })
+  },
+
   refuseInvitationGame: function (gameId) {
     fetch(this.urlRoot + '/' + gameId, {
       method: 'DELETE',
