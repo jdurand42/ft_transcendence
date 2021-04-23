@@ -6,6 +6,7 @@ import { GameRecords } from '../../collections/gameRecords'
 import { Guild } from '../../models/guildModel'
 import { User } from '../../models/userModel'
 import { WarTime } from '../../models/warTimesModel'
+import { GameRecord } from '../../models/gameRecord'
 
 export const GuildView = Backbone.View.extend({
   events: {
@@ -18,7 +19,8 @@ export const GuildView = Backbone.View.extend({
     'mouseover .validation-container': 'displayExplanation',
     'click .accept-button': 'acceptWar',
     'click .refuse-button': 'refuseWar',
-    'click .negociate-button': 'negociateWar'
+    'click .negociate-button': 'negociateWar',
+    'click .accept-random-fight': 'acceptRandomFight'
   },
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
@@ -40,7 +42,6 @@ export const GuildView = Backbone.View.extend({
 
     this.currentGames = []
     this.lastWarsGames = []
-    // TO DO: AMELIORER LE TEMPS DE CHARGEMENT, DES CHOSES PEUVENT ENCORE ETRE FAITES
 
     // ce bloc est obligatoire pour la route /#guild/ et les checks pour #guild/id_ivalide et #guild/nimporte_quoi
     this.$el.html(Handlebars.templates.guild())
@@ -141,6 +142,14 @@ export const GuildView = Backbone.View.extend({
     })
   },
 
+  acceptRandomFight: function (e) {
+    const challenge = e.currentTarget.innerHTML
+    if (challenge === 'Challenge') {
+      const game = new GameRecord()
+      game.randomFight()
+    }
+  },
+
   acceptWar: function (e) {
     const war = this.calendar.get(e.currentTarget.getAttribute('for'))
     war.acceptRefuseWar(true)
@@ -170,6 +179,34 @@ export const GuildView = Backbone.View.extend({
       div.style.display = 'none'
       document.getElementById('arrow-icon').style.transform = 'rotate(0deg)'
     }
+  },
+
+  initializeTimerTTA: function (createdAt, tta) {
+    console.log(tta)
+    console.log(createdAt)
+    const date = new Date(createdAt)
+    console.log(date)
+    date.setMinutes(date.getMinutes() + tta)
+    console.log(date)
+    const countDownDate = date.getTime()
+    this.timer.push(setInterval(function () {
+      const now = new Date().getTime()
+      const distance = countDownDate - now
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+      const secondes = Math.floor((distance % (1000 * 60)) / 1000)
+
+      if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
+        try {
+          document.getElementById('war-time-timer').innerHTML = days + 'd ' + hours + 'h ' + minutes + 'm ' + secondes + 's'
+        } catch (e) {
+        }
+      }
+      if (distance < 0) {
+        clearInterval(this)
+      }
+    }, 1000))
   },
 
   initializeTimer: function (date, div) {
@@ -392,10 +429,10 @@ export const GuildView = Backbone.View.extend({
       const dates = []
       for (let i = 0; i < this.currentWarTimes[0].length; i++) {
         const startDate = new Date()
-        startDate.setDate(startDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day')) + 7 - startDate.getDay()) % 7)
+        startDate.setDate(startDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - startDate.getDay()) % 7)
         startDate.setHours(this.currentWarTimes[0].at(i).get('start_hour'))
         const endDate = new Date()
-        endDate.setDate(endDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day')) + 7 - endDate.getDay()) % 7)
+        endDate.setDate(endDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - endDate.getDay()) % 7)
         endDate.setHours(this.currentWarTimes[0].at(i).get('end_hour'))
         dates.push({ startDate: startDate, endDate: endDate, warTimeId: this.currentWarTimes[0].at(i).get('id') })
       }
@@ -410,14 +447,14 @@ export const GuildView = Backbone.View.extend({
       document.getElementById('accept-random-fight').style.cursor = 'auto'
       if (dates.length > 0) {
         const now = new Date()
-        if (dates[0].startDate < now && dates[0].endDate > now) { // We are in war time
+        if (dates[0].startDate <= now && dates[0].endDate > now) { // We are in war time
           document.getElementById('next-war-time-in-title').style.display = 'none'
-
-          this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
 
           document.getElementById('accept-random-fight').innerHTML = 'Challenge'
           document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
           document.getElementById('accept-random-fight').style.cursor = 'pointer'
+
+          this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
 
           return this
         }
@@ -428,32 +465,54 @@ export const GuildView = Backbone.View.extend({
     return this
   },
 
+  playerInWichGuild: function (winner) {
+    let id
+    const onId = this.currentWar.at(0).get('on_id')
+    const fromId = this.currentWar.at(0).get('from_id')
+    if (winner) {
+      if (winner.get('guild_id') === fromId) {
+        id = fromId
+      } else {
+        id = onId
+      }
+    } else {
+      if (this.guild.get('id') === onId) {
+        id = fromId
+      } else {
+        id = onId
+      }
+    }
+    return id
+  },
+
   countMatchesUnansewered: function (warTimeId, currentGames) {
     for (let i = 0; i < currentGames.games.length; i++) {
       if (currentGames.games[i].warTimeId === warTimeId) {
         if ((currentGames.games[i].games.get('player_left_points') === 0 &&
         currentGames.games[i].games.get('player_right_points') === 0) &&
           currentGames.games[i].games.get('status') === 'played') {
-          let id
-          const onId = this.currentWar.at(0).get('on_id')
-          const fromId = this.currentWar.at(0).get('from_id')
           const winner = this.members.find(el => el.get('id') === currentGames.games[i].games.get('winner_id'))
-          if (winner) {
-            if (winner.get('guild_id') === fromId) {
-              id = fromId
-            } else {
-              id = onId
-            }
-          } else {
-            if (this.guild.get('id') === onId) {
-              id = fromId
-            } else {
-              id = onId
-            }
-          }
+          const id = this.playerInWichGuild(winner)
 
           const value = document.getElementById('nb-matches-missed' + id).innerHTML
           document.getElementById('nb-matches-missed' + id).innerHTML = (Number(value) + 1)
+        }
+        if (currentGames.games[i].games.get('status') === 'pending') {
+          const game = currentGames.games[i].games
+          const player = this.members.find(el => el.get('id') === game.get('player_left_id'))
+          const id = this.playerInWichGuild(player)
+
+          if (id === this.guild.get('id')) {
+            document.getElementById('accept-random-fight').innerHTML = 'Pending'
+            document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
+            document.getElementById('accept-random-fight').style.cursor = 'auto'
+          } else {
+            document.getElementById('accept-random-fight').innerHTML = 'Accept'
+            document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
+            document.getElementById('accept-random-fight').style.cursor = 'pointer'
+          }
+          const warTime = this.currentWarTimes[0].find(el => el.get('id') === warTimeId)
+          this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
         }
       }
     }
