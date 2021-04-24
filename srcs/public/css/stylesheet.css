@@ -46,6 +46,7 @@
 @import url(module/_notifications.css);
 @import url(module/_status.css);
 @import url(module/_checkboxes.css);
+@import url(module/_matchHistory.css);
 
 @import url(state/_topnav.css);
 @import url(state/chat/_chat.css);

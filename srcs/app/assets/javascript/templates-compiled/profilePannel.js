@@ -40,9 +40,9 @@ templates['profilePannel'] = template({"1":function(container,depth0,helpers,par
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"totalRank") : depth0), depth0))
     + "</div>\n		<div class=\"pannelUlEl profilePanneEl pannelUlLegend\" id=\"totalGeneralRankLegend\">\n			GENERAL RANK</div>\n	</div>\n	</div>\n\n	<div class=\"pannelLine\" id=\"pannelSecondLineProfile\">\n		<div class=\"pannelEl pannelUl\" id=\"pannelVictories\">\n			<div class=\"pannelUlEl profilePanneEl pannelUlFirstEl\" id=\"victories\">\n				"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"victories") : depth0), depth0))
-    + "</div>\n			<div class=\"pannelUlEl profilePanneEl pannelUlLegend\" id=\"victoriesLegend\">\n				VICTORIES</div>\n		</div>\n\n		<div class=\"pannelEl pannelUl\" id=\"pannelTotalGames\">\n			<div class=\"pannelUlEl profilePanneEl pannelUlFirstEL\" id=\"totalGames\">\n				"
+    + "</div>\n			<div class=\"pannelUlEl profilePanneEl pannelUlLegend\" id=\"victoriesLegend\">\n				LADDER VICTORIES</div>\n		</div>\n\n		<div class=\"pannelEl pannelUl\" id=\"pannelTotalGames\">\n			<div class=\"pannelUlEl profilePanneEl pannelUlFirstEL\" id=\"totalGames\">\n				"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"totalGames") : depth0), depth0))
-    + "</div>\n			<div class=\"pannelUlEl profilePanneEl pannelUlLegend\" id=\"totalGamesLegend\">\n				TOTAL GAMES</div>\n		</div>\n	</div>\n	<div class=\"image-nickname\">\n		<div class=\"\" id=\"pannelTrophyContainer\">\n			<img id=\"pannelTrophy\" src=\""
+    + "</div>\n			<div class=\"pannelUlEl profilePanneEl pannelUlLegend\" id=\"totalGamesLegend\">\n				TOTAL LADDER<br>GAMES</div>\n		</div>\n	</div>\n	<div class=\"image-nickname\">\n		<div class=\"\" id=\"pannelTrophyContainer\">\n			<img id=\"pannelTrophy\" src=\""
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"trophy") : depth0), depth0))
     + "\">\n		</div>\n		<div class=\"\" id =\"Pannelnickname\">"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"nickname") : depth0), depth0))

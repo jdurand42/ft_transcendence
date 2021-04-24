@@ -244,6 +244,8 @@
     font-family: Roboto-Medium;
     font-size: 16px;
     color: var(--primary-color);
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 .guildBlock .war-infos .war-time-rules-container
@@ -355,7 +357,7 @@
 }
 
 .guildBlock .day {
-    margin-right: 4px;
+    width: 60px;
 }
 
 .guildBlock .war-time-rules-container {
@@ -373,6 +375,18 @@
     font-size: 20px;
     font-family: Roboto-Medium;
     margin-top: 16px;
+}
+
+.guildBlock .hour {
+    width: 63px;
+}
+
+.guildBlock .last-matches-container {
+    padding-bottom: 8px;
+}
+
+#warBlock .match-done-container {
+    background-color: #3B4A62;
 }
 
 .guildBlock .timer {

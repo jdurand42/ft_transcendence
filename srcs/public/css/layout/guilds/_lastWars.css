@@ -73,9 +73,6 @@
     justify-content: center;
 
     border-radius: 10px;
-
-
-
 }
 
 #lastWarsBlock .current-war
@@ -88,4 +85,8 @@
     background-color: var(--table-color);
 
     width: 100%;
+}
+
+#lastWarsBlock .match-done-container {
+    background-color: #3B4A62;
 }
