@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* import { AchivementsView } from './achivementsView.js'
 import { EditProfileView } from './editProfileView.js'
 import { MatchHistoryView } from './matchHistoryView.js'
@@ -235,15 +236,13 @@ export const ProfileView = Backbone.View.extend({
       slideShow = './icons/slideshow.svg'
     }
 
-    let index = 0
-    this.users.some(el => {
-      index++
-      return el.get('id') === this.id
-    })
+    // const rank = (el) => el.get('id') == this.id
+    let index = this.users.findIndex(el => el.get('id') == this.id)
+    index += 1
 
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
-      // rank: index,
+      rank: index,
       generalRank: index,
       totalRank: this.users.length,
       // totalLeagueRank: this.users.length,

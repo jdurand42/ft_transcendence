@@ -165,12 +165,12 @@ export const GuildView = Backbone.View.extend({
 
   acceptWar: function (e) {
     const war = this.calendar.get(e.currentTarget.getAttribute('for'))
-    war.acceptRefuseWar(true)
+    war.acceptRefuseWar('true')
   },
 
   refuseWar: function (e) {
     const war = this.calendar.get(e.currentTarget.getAttribute('for'))
-    war.acceptRefuseWar(false)
+    war.acceptRefuseWar('false')
   },
 
   openLastWar: function (e) {

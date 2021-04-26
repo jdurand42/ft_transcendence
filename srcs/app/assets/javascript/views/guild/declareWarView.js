@@ -445,7 +445,7 @@ export const DeclareWar = Backbone.View.extend({
           Number(timeToAnswer[i].value)
         )
       }
-      await war.acceptRefuseWar(true)
+      await war.acceptRefuseWar('true')
       this.router.navigate('#guild/' + this.onId, true)
     } catch (error) {
       const div = document.getElementById('error')
