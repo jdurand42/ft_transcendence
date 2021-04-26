@@ -777,7 +777,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/war"
-  "/api/wars/agreements":
+  "/api/wars/{id}/agreements":
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: War ID
     post:
       summary: Accepts or declines war terms
       description: Allows current_user to accept or declines war terms
