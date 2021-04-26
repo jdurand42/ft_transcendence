@@ -1,3 +1,5 @@
+import { SuperHeaders } from '../services/headers'
+
 export const Guild = Backbone.Model.extend({
   defaults: {
     id: undefined,
@@ -10,6 +12,8 @@ export const Guild = Backbone.Model.extend({
   },
 
   initialize: function (id) {
+    this.superHeaders = new SuperHeaders()
+    this.headers = this.superHeaders.getHeaders()
   },
 
   urlRoot: 'api/guilds/',
@@ -30,10 +34,16 @@ export const Guild = Backbone.Model.extend({
   },
 
   leave: function (id) {
-    return $.ajax({
-      url: '/api/guilds/' + this.id + '/members/' + id,
-      method: 'DELETE'
+    const url = '/api/guilds/' + this.id + '/members/' + id
+    return fetch(url, {
+      method: 'DELETE',
+      headers: this.headers
     })
+
+    // return $.ajax({
+    //   url: '/api/guilds/' + this.id + '/members/' + id,
+    //   method: 'DELETE'
+    // })
   },
 
   sendInvitation: function (id) {

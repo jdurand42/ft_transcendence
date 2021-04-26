@@ -110,8 +110,9 @@ export const DeclareWar = Backbone.View.extend({
     const fromWars = this.fromWars.slice().filter(el => el.get('terms_agreed') === true)
     const onWars = this.onWars.slice().filter(el => el.get('terms_agreed') === true)
     for (let i = 0; i < fromWars.length; i++) {
-      const startDate = new Date(fromWars.at(i).get('war_start'))
-      const endDate = new Date(fromWars.at(i).get('war_end'))
+      console.log(fromWars)
+      const startDate = new Date(fromWars[i].get('war_start'))
+      const endDate = new Date(fromWars[i].get('war_end'))
       // eslint-disable-next-line no-unmodified-loop-condition
       while (startDate <= endDate) {
         this.dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
@@ -119,8 +120,8 @@ export const DeclareWar = Backbone.View.extend({
       }
     }
     for (let i = 0; i < onWars.length; i++) {
-      const startDate = new Date(onWars.at(i).get('war_start'))
-      const endDate = new Date(onWars.at(i).get('war_end'))
+      const startDate = new Date(onWars[i].get('war_start'))
+      const endDate = new Date(onWars[i].get('war_end'))
       // eslint-disable-next-line no-unmodified-loop-condition
       while (startDate <= endDate) {
         this.dates.push(startDate.toLocaleDateString('fr', { year: 'numeric', month: '2-digit', day: '2-digit' }))
@@ -429,10 +430,13 @@ export const DeclareWar = Backbone.View.extend({
       }
     }
     try {
+      console.log(this.startDate)
+      console.log(this.startDate.toISOString())
+      console.log(this.startDate.toString())
       const response = await war.createWar(
         Number(this.context.onId),
-        this.startDate.toISOString(),
-        this.endDate.toISOString(),
+        this.startDate.toString(),
+        this.endDate.toString(),
         Number(this.context.winReward),
         tournamentEffort,
         ladderEffort)
@@ -448,8 +452,9 @@ export const DeclareWar = Backbone.View.extend({
       await war.acceptRefuseWar('true')
       this.router.navigate('#guild/' + this.onId, true)
     } catch (error) {
-      const div = document.getElementById('error')
-      div.style.display = 'flex'
+      console.log(error)
+      document.getElementById('error').style.display = 'flex'
+      document.getElementById('error').textContent = error.responseJSON.message
     }
   },
 

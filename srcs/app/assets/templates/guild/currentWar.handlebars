@@ -114,6 +114,7 @@
 					<div class="nb-matches-missed on-nb-matches-missed" id="nb-matches-missed{{onId}}">{{nbOnMissed}}</div>
 				</div>
 			</div>
+			{{#if myPage}}
 			<div class="random-fight">
 				<div class="random-fight-title" id="random-fight-title">No random fight pending</div>
 				{{!-- <div class="title">{{randomFight}}</div> --}}
@@ -123,6 +124,7 @@
 				</div>
 				<div class="error-message" id="error-message" style="display: none;"></div>
 			</div>
+			{{/if}}
 		</div>
 	</div>
 	<div class="match-history last-matches-container">

@@ -9,7 +9,6 @@ export const War = Backbone.Model.extend({
     id: undefined,
     ladder_effort: undefined,
     last_negotiation: undefined,
-    max_unanswared: undefined,
     on_agreement: undefined,
     on_id: undefined,
     opened: undefined,

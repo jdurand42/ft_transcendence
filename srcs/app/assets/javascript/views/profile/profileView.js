@@ -437,7 +437,7 @@ export const ProfileView = Backbone.View.extend({
     }
     user.follow = this.users.get(this.userId).get('friends').some(el => el.friend_id === user.id)
     if (user.guild_id) {
-      user.guildName = this.guild.get('name')
+      user.guildName = this.guilds.get(user.guild_id).get('name')
     }
     return user
   },
@@ -507,7 +507,6 @@ export const ProfileView = Backbone.View.extend({
       membersNumber: 0
     }
 
-    console.log(this.membersGuild)
     for (let i = 0; i < this.membersGuild.length; i++) {
       const member = this.membersGuild.at(i)
 
@@ -544,6 +543,7 @@ export const ProfileView = Backbone.View.extend({
         this.users.get(this.userId).set({ guild_id: null })
         this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
+        console.log(e)
       }
     }
     leave()

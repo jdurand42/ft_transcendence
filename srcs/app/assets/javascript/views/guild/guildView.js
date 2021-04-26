@@ -359,6 +359,9 @@ export const GuildView = Backbone.View.extend({
     const fromGuild = this.guilds.get(war.get('from_id'))
     const onGuild = this.guilds.get(war.get('on_id'))
     context.index = index
+    if (this.id == this.userLogged.get('guild_id')) {
+      context.myPage = true
+    }
     context.id = war.get('id')
     context.fromId = war.get('from_id')
     context.fromName = fromGuild.get('name')
@@ -440,6 +443,11 @@ export const GuildView = Backbone.View.extend({
       const dates = []
       for (let i = 0; i < this.currentWarTimes[0].length; i++) {
         const startDate = new Date()
+        console.log(startDate.getDate())
+        console.log(this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()))
+        console.log(this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7)
+        console.log(this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - startDate.getDay())
+        console.log(startDate.getDate(startDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - startDate.getDay()) % 7))
         startDate.setDate(startDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - startDate.getDay()) % 7)
         startDate.setHours(this.currentWarTimes[0].at(i).get('start_hour'))
         const endDate = new Date()
@@ -453,37 +461,37 @@ export const GuildView = Backbone.View.extend({
         return 0
       })
 
-      document.getElementById('accept-random-fight').innerHTML = 'Challenge'
-      document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
-      document.getElementById('accept-random-fight').style.cursor = 'auto'
-      if (dates.length > 0) {
-        const now = new Date()
-        if (dates[0].startDate <= now && dates[0].endDate > now) { // We are in war time
-          document.getElementById('next-war-time-in-title').style.display = 'none'
+      console.log(dates)
 
-          document.getElementById('accept-random-fight').innerHTML = 'Challenge'
-          document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
-          document.getElementById('accept-random-fight').style.cursor = 'pointer'
+      try {
+        document.getElementById('accept-random-fight').innerHTML = 'Challenge'
+        document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
+        document.getElementById('accept-random-fight').style.cursor = 'auto'
+        if (dates.length > 0) {
+          const now = new Date()
+          if (dates[0].startDate <= now && dates[0].endDate > now) { // We are in war time
+            document.getElementById('next-war-time-in-title').style.display = 'none'
 
-          this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
+            document.getElementById('accept-random-fight').innerHTML = 'Challenge'
+            document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
+            document.getElementById('accept-random-fight').style.cursor = 'pointer'
 
-          return this
-        } else if (dates[0].startDate <= now) {
-          console.log(dates)
-          console.log(dates[0].day.toLowerCase())
-          console.log(dates[0].startDate)
-          dates[0].startDate.setDate(dates[0].startDate.getDate() + (this.getDay(dates[0].day.toLowerCase()) + 8 - dates[0].startDate.getDay()) % 8)
-          console.log(dates[0].startDate)
-          dates.sort(function (a, b) {
-            if (a.startDate < b.startDate) { return -1 }
-            if (a.startDate > b.startDate) { return 1 }
-            return 0
-          })
-          console.log(dates)
+            this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
+
+            return this
+          } else if (dates[0].startDate <= now) {
+            console.log('dates < now')
+            dates[0].startDate.setDate(dates[0].startDate.getDate() + (this.getDay(dates[0].day.toLowerCase()) + 14 - dates[0].startDate.getDay()) % 14)
+            dates.sort(function (a, b) {
+              if (a.startDate < b.startDate) { return -1 }
+              if (a.startDate > b.startDate) { return 1 }
+              return 0
+            })
+          }
+
+          this.initializeTimer(dates[0].startDate, 'next-war-time-in')
         }
-
-        this.initializeTimer(dates[0].startDate, 'next-war-time-in')
-      }
+      } catch (e) {}
     }
     return this
   },
