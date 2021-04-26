@@ -39,7 +39,7 @@ module Api
       return render_error('guildOwnerDeletion', 403) if mutiny?
 
       owner_leaving_the_ship = true if current_user.id == params.fetch(:tid).to_i
-      GuildMember.where(user_id: params[:tid], guild_id: @guild.id).destroy_all
+      GuildMember.destroy_by(user_id: params[:tid], guild: @guild)
       manage_ownership(@guild) if owner_leaving_the_ship
       head :no_content
     end

@@ -33,6 +33,7 @@ module Api
 
     def join
       raise WrongPasswordError if @chat.privacy == 'protected' && !@chat.authenticate(params.fetch(:password))
+      raise JoinPrivateChatError if @chat.privacy == 'private'
 
       json_response(ChatParticipant.create!(user: current_user, chat: @chat), 201)
     end

@@ -107,7 +107,7 @@ describe 'Guild', type: :request do
       expect(GuildMember.where(user_id: user_1.id, guild_id: Guild.last.id)[0]).to eq nil
     end
   end
-  describe '#destroy_members' do
+  describe '#destroy_members',test:true do
     before { post api_guilds_url, headers: access_token, params: attributes }
     it 'owner should kick a member' do
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
@@ -116,7 +116,7 @@ describe 'Guild', type: :request do
       expect(Guild.first.members.count).to eq 1
       expect(response.status).to eq 204
     end
-    it "member should leave",test:true do
+    it "member should leave" do
       GuildMember.create!(user_id: user_1.id, guild_id: Guild.first.id)
       expect(Guild.first.members.count).to eq 2
       delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: user_1_access

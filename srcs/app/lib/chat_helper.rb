@@ -2,7 +2,7 @@
 
 module ChatHelper
   def add_participants(chat, participants)
-    return unless participants
+    return unless participants.is_a?(Array)
 
     participants = participants[0, 1] if chat.privacy == 'direct_message'
     participants.each do |t|
