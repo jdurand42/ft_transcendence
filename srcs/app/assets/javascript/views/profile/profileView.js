@@ -148,8 +148,7 @@ export const ProfileView = Backbone.View.extend({
         return { top: _y, left: _x }
       }
       const off = getOffset(e.currentTarget)
-      // dropList.style.top = off.top + 45 - e.screenY
-      dropList.style.top = e.pageY + 30
+      dropList.style.top = e.pageY - 61
       dropList.style.position = 'absolute'
       dropList.style.left = off.left
       dropList.style.display = 'block'

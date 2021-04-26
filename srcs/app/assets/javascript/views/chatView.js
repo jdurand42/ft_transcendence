@@ -324,7 +324,7 @@ export const ChatView = Backbone.View.extend({
       this.userLogged.set({ ignores: newIgnores })
       e.currentTarget.innerHTML = 'Block'
     }
-    const currentChannel = this.myChannels.get(e.currentTarget.getAttribute('channel-id'))
+    const currentChannel = this.channels.get(e.currentTarget.getAttribute('channel-id'))
     this.updateContextLeftSide()
     if (currentChannel.get('privacy') === 'direct_message') {
       document.getElementById('right-side').style.display = 'none'
@@ -864,6 +864,7 @@ export const ChatView = Backbone.View.extend({
       if (this.userLogged.get('ignores').some(el => el.ignored_id == usersOnline[i].get('id')) === true) {
         this.context.usersOnline[i].image_url = './icons/blocked.svg'
       }
+
       this.context.usersOnline[i].userId = usersOnline[i].get('id')
       this.context.usersOnline[i].channelId = channelId
       let length

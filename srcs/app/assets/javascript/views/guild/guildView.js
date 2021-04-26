@@ -726,7 +726,7 @@ export const GuildView = Backbone.View.extend({
   displayExplanation: function (e) {
     const index = e.currentTarget.getAttribute('for')
     const explanation = document.getElementById('explanation-' + index)
-    explanation.style.top = e.pageY
+    explanation.style.top = e.pageY - 65
     explanation.style.left = e.pageX
   },
 
