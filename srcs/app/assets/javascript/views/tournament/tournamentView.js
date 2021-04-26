@@ -500,8 +500,7 @@ export const TournamentView = Backbone.View.extend({
       document.getElementById('all-matches-nav').classList.remove('open')
       document.getElementById('ranking-nav').classList.remove('open')
       document.getElementById('my-matches-nav').classList.remove('open')
-    } catch (e) {
-    }
+    } catch (e) {}
     const nav = document.getElementById(div)
     nav.classList.add('open')
     this.positionSquare(nav.getBoundingClientRect())

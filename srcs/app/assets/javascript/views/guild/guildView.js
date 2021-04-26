@@ -144,10 +144,23 @@ export const GuildView = Backbone.View.extend({
 
   acceptRandomFight: function (e) {
     const challenge = e.currentTarget.innerHTML
-    if (challenge === 'Challenge') {
-      const game = new GameRecord()
-      game.randomFight()
+
+    const randomFight = async () => {
+      try {
+        if (challenge === 'Challenge') {
+          const game = new GameRecord()
+          await game.randomFight()
+          try {
+            document.getElementById('error-message').style.display = 'none'
+          } catch (e) {}
+        }
+      } catch (error) {
+        document.getElementById('error-message').innerHTML = error.responseJSON.error
+        document.getElementById('error-message').style.display = 'block'
+        document.getElementById('error-message').style.color = 'var(--error-message-color)'
+      }
     }
+    randomFight()
   },
 
   acceptWar: function (e) {
@@ -200,8 +213,7 @@ export const GuildView = Backbone.View.extend({
       if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
         try {
           document.getElementById('war-time-timer').innerHTML = days + 'd ' + hours + 'h ' + minutes + 'm ' + secondes + 's'
-        } catch (e) {
-        }
+        } catch (e) {}
       }
       if (distance < 0) {
         clearInterval(this)
@@ -222,8 +234,7 @@ export const GuildView = Backbone.View.extend({
       if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
         try {
           document.getElementById(div).innerHTML = days + 'd ' + hours + 'h ' + minutes + 'm ' + secondes + 's'
-        } catch (e) {
-        }
+        } catch (e) {}
       }
       if (distance < 0) {
         clearInterval(this)
@@ -514,14 +525,20 @@ export const GuildView = Backbone.View.extend({
           const player = this.members.find(el => el.get('id') === game.get('player_left_id'))
           const id = this.playerInWichGuild(player)
 
-          if (id === this.guild.get('id')) {
-            document.getElementById('accept-random-fight').innerHTML = 'Pending'
-            document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
-            document.getElementById('accept-random-fight').style.cursor = 'auto'
-          } else {
+          if (this.userId === game.get('player_right_id')) {
             document.getElementById('accept-random-fight').innerHTML = 'Accept'
             document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
             document.getElementById('accept-random-fight').style.cursor = 'pointer'
+          } else {
+            document.getElementById('accept-random-fight').innerHTML = 'Pending'
+            document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
+            document.getElementById('accept-random-fight').style.cursor = 'auto'
+          }
+
+          if (id === this.guild.get('id') && this.userId !== id) {
+            document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild challenged a member'
+          } else {
+            document.getElementById('random-fight-title').innerHTML = 'You have challenged someone of the other guild'
           }
           const warTime = this.currentWarTimes[0].find(el => el.get('id') === warTimeId)
           this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')

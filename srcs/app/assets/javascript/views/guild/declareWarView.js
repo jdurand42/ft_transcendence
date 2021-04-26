@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { Guild } from '../../models/guildModel'
 import { Wars } from '../../collections/warCollection'
 import { War } from '../../models/warModel'
@@ -38,12 +39,10 @@ export const DeclareWar = Backbone.View.extend({
       const response3 = this.fromWars.fetch()
       const response4 = this.onWars.fetch()
       await response1 && await response2 && await response3 && await response4
-      console.log(this.warId)
       if (this.warId != undefined) {
         this.negoWar = this.fromWars.get(this.warId)
         this.warTimes = new WarTimes(this.warId)
         await this.warTimes.fetch()
-        console.log(this.warTimes)
       }
       this.render()
     }
@@ -73,8 +72,6 @@ export const DeclareWar = Backbone.View.extend({
       }
     }
 
-    // this.context.warTime = []
-    // this.context.warTime.days = []
     this.days = [
       { day: 'Monday' },
       { day: 'Tuesday' },
@@ -97,23 +94,6 @@ export const DeclareWar = Backbone.View.extend({
           return options.inverse(this)
       }
     })
-
-    // const newDays = JSON.parse(JSON.stringify(this.days))
-    // for (const [key, value] of Object.entries(newDays)) {
-    //   value.index = this.context.warTime.length
-    // }
-    // this.context.warTime.push({
-    //   index: this.context.warTime.length,
-    //   maxUnanswered: 5,
-    //   timeToAnswer: 60,
-    //   fromHH: undefined,
-    //   fromMM: undefined,
-    //   toHH: undefined,
-    //   toMM: undefined,
-    //   fromDay: 'Monday',
-    //   toDay: 'Monday',
-    //   days: newDays
-    // })
 
     const templateData = this.templateWarRules(this.context)
     this.$el.html(templateData)
@@ -216,7 +196,7 @@ export const DeclareWar = Backbone.View.extend({
     if (isNaN(winReward) === false && winReward >= 0) {
       this.context.winReward = await document.getElementById('win-reward').value
     } else {
-      div = await document.getElementById('win-reward')
+      div = document.getElementById('win-reward')
       div.style.border = 'solid 2px var(--error-message-color)'
     }
 
@@ -362,9 +342,7 @@ export const DeclareWar = Backbone.View.extend({
     let message
 
     const fromHH = document.getElementsByClassName('fromHH')
-    // const fromMM = document.getElementsByClassName('fromMM')
     const toHH = document.getElementsByClassName('toHH')
-    // const toMM = document.getElementsByClassName('toMM')
     const maxUnanswered = document.getElementsByClassName('max-unanswered')
     const timeToAnswer = document.getElementsByClassName('time-to-answer')
     const day = document.getElementsByClassName('day-name')
@@ -379,12 +357,6 @@ export const DeclareWar = Backbone.View.extend({
       message = 'Hours have to be a number between 0 and 23'
       res = false
     }
-    // if (this.validateHours(fromMM, 0, 59) === false) {
-    //   res = false
-    // }
-    // if (this.validateHours(toMM, 0, 59) === false) {
-    //   res = false
-    // }
     if (this.validateNumbers(maxUnanswered) === false) {
       message = 'Max unsanswered and Time to Answer have to be a positive number'
       res = false
@@ -395,16 +367,10 @@ export const DeclareWar = Backbone.View.extend({
     }
 
     for (let i = 0; i < fromHH.length; i++) {
-      // const fromHours = new Date()
-      // fromHours.setHours(fromHH[i].value, fromMM[i].value, 0)
-      // const toHours = new Date()
-      // toHours.setHours(toHH[i].value, toMM[i].value, 0)
       if (Number(fromHH[i].value) >= Number(toHH[i].value)) {
         message = 'A start hour war time is greater or equal to an end hour war time'
         fromHH[i].style.border = 'solid 2px var(--error-message-color)'
-        // fromMM[i].style.border = 'solid 2px var(--error-message-color)'
         toHH[i].style.border = 'solid 2px var(--error-message-color)'
-        // toMM[i].style.border = 'solid 2px var(--error-message-color)'
         res = false
       }
     }
@@ -462,7 +428,6 @@ export const DeclareWar = Backbone.View.extend({
         await this.warTimes.at(i).delete(this.negoWar.get('id'))
       }
     }
-    console.log(war)
     try {
       const response = await war.createWar(
         Number(this.context.onId),
@@ -523,13 +488,7 @@ export const DeclareWar = Backbone.View.extend({
     e.stopPropagation()
     const value = e.currentTarget.textContent
     const index = e.currentTarget.getAttribute('for')
-    // const id = e.currentTarget.id
-    // if (id.startsWith('from-')) {
     this.context.warTime[index].fromDay = value
-    // } else {
-    // this.context.warTime[index].toDay = value
-    // }
-    console.log('day-name-from-' + index)
     this.updateHTML('day-name-from-' + index)
     const dropList = document.getElementById('filter-days-from-' + index + '-open')
     dropList.style.display = 'none'
@@ -548,8 +507,6 @@ export const DeclareWar = Backbone.View.extend({
 
   addWarTime: function (e) {
     e.stopPropagation()
-    console.log(e)
-    console.log(this.context.warTime.length)
 
     const newDays = JSON.parse(JSON.stringify(this.days))
     for (const [key, value] of Object.entries(newDays)) {
@@ -573,13 +530,9 @@ export const DeclareWar = Backbone.View.extend({
     await this.saveContextWarTimes()
 
     const index = e.currentTarget.getAttribute('for')
-    console.log(this.context.warTime)
     this.context.warTime.splice(index, 1)
-    console.log(this.context.warTime)
     const tmp = this.context.warTime
-    console.log(tmp)
     this.context.warTime = []
-    console.log(this.context.warTime)
 
     for (let i = 0; i < tmp.length; i++) {
       const newDays = JSON.parse(JSON.stringify(this.days))
@@ -596,20 +549,6 @@ export const DeclareWar = Backbone.View.extend({
         days: newDays
       })
     }
-    console.log(this.context.warTime)
-
-    // let j = 0
-    // for (let i = 0; i < this.context.warTime.length; i++) {
-    //   if (this.context.warTime[i] !== undefined) {
-    //     const newDays = JSON.parse(JSON.stringify(this.days))
-    //     for (const [key, value] of Object.entries(newDays)) {
-    //       value.index = j
-    //     }
-    //     this.context.warTime[i].index = j
-    //     this.context.warTime[i].days = newDays
-    //     j++
-    //   }
-    // }
     this.updateHTML('war-times-table')
   },
 
