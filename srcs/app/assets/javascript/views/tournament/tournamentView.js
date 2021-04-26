@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { Tournament } from '../../models/tournamentModel'
 import { User } from '../../models/userModel'
 import { GameRecords } from '../../collections/gameRecords'
@@ -153,19 +154,20 @@ export const TournamentView = Backbone.View.extend({
         }
 
         const nbParticipants = this.tournament.get('participant_ids').length
-        if (nbPlayed === ((nbParticipants / 2) * (nbParticipants - 1)) && nbPlayed !== 0) {
+        if (this.tournament.get('winner_id') != undefined) {
           this.context.status = 'finish'
           this.context.createTournament = 'Create new tournament'
-
-          this.context.winner = this.registered.get(this.tournament.get('winner_id')).get('nickname')
-          document.getElementById('winner').style.display = 'flex'
+          const winner = new User()
+          await winner.fetchUser(this.tournament.get('winner_id'))
+          this.context.winner = winner.get('nickname')
         }
       }
 
       this.$el.find('#tournament-header-container').html(Handlebars.templates.tournamentHeader(this.context))
 
-      if (this.tournament.status === 'inprogress' &&
-              this.participantIds.some(el => el === this.userId) === false) {
+      if ((this.tournament.status === 'inprogress' &&
+              this.participantIds.some(el => el === this.userId) === false) ||
+            this.tournament.get('winner_id') != undefined) {
         document.getElementById('register-button-container').remove()
       }
 
@@ -233,6 +235,11 @@ export const TournamentView = Backbone.View.extend({
     this.context.ranked[length].victories = 0
     this.context.ranked[length].defeats = 0
     this.context.ranked[length].follow = this.userLogged.get('friends').some(el => el.friend_id === user.get('id'))
+    if (user.get('id') === this.userLogged.get('id')) {
+      this.context.ranked[length].itsNotMe = false
+    } else {
+      this.context.ranked[length].itsNotMe = true
+    }
   },
 
   listAllUsers: function () {
@@ -262,12 +269,7 @@ export const TournamentView = Backbone.View.extend({
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
       if (game.get('status') === 'played') {
-        let index = 0
-        this.context.ranked.some(el => {
-          index += 1
-          return el.id === game.get('winner_id')
-        })
-        index--
+        const index = this.context.ranked.findIndex(el => el.id === game.get('winner_id'))
         this.context.ranked[index].victories += 1
         let id
         if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -296,6 +298,16 @@ export const TournamentView = Backbone.View.extend({
   fillGapPoints: function () {
     for (let i = 0; i < this.context.ranked.length; i++) {
       this.context.ranked[i].gapPoints = 0 // TO DO
+    }
+
+    for (let i = 0; i < this.games.length; i++) {
+      const game = this.games.at(i)
+      if (game.get('status') === 'played') {
+        let index = this.context.ranked.findIndex(el => el.id === game.get('player_left_id'))
+        this.context.ranked[index].gapPoints += game.get('player_left_points') - game.get('player_right_points')
+        index = this.context.ranked.findIndex(el => el.id === game.get('player_right_id'))
+        this.context.ranked[index].gapPoints += game.get('player_right_points') - game.get('player_left_points')
+      }
     }
   },
 
@@ -573,6 +585,7 @@ export const TournamentView = Backbone.View.extend({
   },
 
   createNewTournament: function () {
+    this.$el.find('#tournament-nav-container').remove()
     this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentCreation(this.context))
     this.initializeCalendar()
   },
@@ -587,15 +600,16 @@ export const TournamentView = Backbone.View.extend({
 
   updateHTML: function (parent, child, template) {
     const html = template(this.context)
-    console.log(html)
     // document.getElementById(child).remove()
     document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },
 
   valideCreationTournament: function () {
-    this.tournament = new Tournament()
-
     const createTournament = async () => {
+      if (this.tournament != undefined) {
+        await this.tournament.cancelTournament()
+      }
+      this.tournament = new Tournament()
       await this.tournament.createTournament($('#datepicker').data('daterangepicker').startDate.toISOString())
       this.context.tournament = true
       this.render()
