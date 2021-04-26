@@ -169,7 +169,7 @@ RSpec.describe 'Games', type: :request do
         auth.update!(status: 'online')
         auth_2.update!(status: 'online')
       }
-      it "should forfeit opponent at time_to_answer",test:true do
+      it "should forfeit opponent at time_to_answer" do
         post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
@@ -190,7 +190,7 @@ RSpec.describe 'Games', type: :request do
         expect(Game.first.winner_id).to eq nil
         expect(WarTime.first.max_unanswered).to eq 0
       end
-      it "returns 'noWarTimeOnGoing' if no guild or warTime" do
+      it "returns 'noWarTimeOnGoing' if no guild or warTime",test:true do
         post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
@@ -265,7 +265,7 @@ RSpec.describe 'Games', type: :request do
         expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
         expect(status).to eq 403
       end
-      it "forfeit opponent at TTA",test:true do
+      it "forfeit opponent at TTA" do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
         post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id ,tournament_id: Tournament.first.id }
         perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
