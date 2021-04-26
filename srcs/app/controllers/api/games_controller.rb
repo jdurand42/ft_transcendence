@@ -4,6 +4,7 @@ module Api
   class GamesController < ApiController
     before_action :set_game, only: %i[destroy]
     include(WarHelper)
+    include(WartimeMatchmaking)
 
     GameReducer = Rack::Reducer.new(
       Game.all,
@@ -40,6 +41,7 @@ module Api
 
     def player_sides
       @games_params[:player_left_id] = current_user.id
+      params[:opponent_id] = wartime_matchmaker(current_user) if params[:mode] == 'war' && current_user.guild
       @games_params[:player_right_id] = params.fetch(:opponent_id).to_i
     end
 
