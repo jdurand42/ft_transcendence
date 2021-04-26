@@ -52,7 +52,7 @@ RSpec.describe "Wars", type: :request do
       expect(response.status).to eq 201
       expect(War.count).to eq(1)
     end
-    it 'member should not declare a war',test:true do
+    it 'member should not declare a war' do
       GuildMember.find_by_user_id(auth.id).update!(rank: 'member')
       post api_wars_url, headers: access_token, params: attributes
       expect(status).to eq 403
@@ -132,7 +132,7 @@ RSpec.describe "Wars", type: :request do
   end
   describe '#agreement' do
     before { post api_wars_url, headers: access_token, params: attributes }
-    it 'should agree war terms' do
+    it 'should agree war terms',test:true do
       post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime("%A"), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
       post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
       expect(War.first.from_agreement).to be_truthy

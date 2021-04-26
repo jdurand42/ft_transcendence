@@ -797,7 +797,8 @@ paths:
               type: object
               properties:
                 agree_terms:
-                  type: boolean
+                  type: string
+                  example: 'true'
       responses:
         '201':
           description: war terms agreed

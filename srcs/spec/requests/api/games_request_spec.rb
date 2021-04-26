@@ -169,7 +169,7 @@ RSpec.describe 'Games', type: :request do
         auth.update!(status: 'online')
         auth_2.update!(status: 'online')
       }
-      it "should forfeit opponent at time_to_answer" do
+      it "should forfeit opponent at time_to_answer",test:true do
         post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
