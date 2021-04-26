@@ -68,9 +68,11 @@
                         <input type="text" class="input inputWarTimes time-to-answer" id="time-to-answer{{index}}" for={{index}} value="{{timeToAnswer}}"></input>
                     </td>
                     <td class="td-minus">
+                        {{#ifCond index '!=' 0}}
                         <div class="minus-circular-container" id="minus-circular-container" for="{{index}}">
                             <img src="./icons/minus-circular.svg" class="minus-circular"></img>
                         </div>
+                        {{/ifCond}}
                     </td>
                 </tr>
                 {{/each}}

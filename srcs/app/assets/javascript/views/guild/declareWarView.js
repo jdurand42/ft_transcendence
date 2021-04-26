@@ -85,6 +85,19 @@ export const DeclareWar = Backbone.View.extend({
       { day: 'Sunday' }
     ]
 
+    Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+      switch (operator) {
+        case '||':
+          return (v1 || v2) ? options.fn(this) : options.inverse(this)
+        case '==':
+          return (v1 === v2) ? options.fn(this) : options.inverse(this)
+        case '!=':
+          return (v1 != v2) ? options.fn(this) : options.inverse(this)
+        default:
+          return options.inverse(this)
+      }
+    })
+
     // const newDays = JSON.parse(JSON.stringify(this.days))
     // for (const [key, value] of Object.entries(newDays)) {
     //   value.index = this.context.warTime.length
@@ -467,9 +480,10 @@ export const DeclareWar = Backbone.View.extend({
           Number(timeToAnswer[i].value)
         )
       }
+      await war.acceptRefuseWar(true)
       this.router.navigate('#guild/' + this.onId, true)
     } catch (error) {
-      const div = await document.getElementById('error')
+      const div = document.getElementById('error')
       div.style.display = 'flex'
     }
   },
