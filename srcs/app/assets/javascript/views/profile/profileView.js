@@ -44,7 +44,7 @@ export const ProfileView = Backbone.View.extend({
     this.socket = this.model.get('socket').get('obj')
     this.notifView = this.model.get('notifView').get('obj')
     this.myAchievements = new Achievements()
-    this.userId = this.model.get('userLoggedId')
+    this.userId = Number(this.model.get('userLoggedId'))
     this.myTournamentGames = new GameRecords()
     this.myLadderGames = new GameRecords()
     this.myDuelGames = new GameRecords()
@@ -55,6 +55,8 @@ export const ProfileView = Backbone.View.extend({
     this.socket.updateContext(this, this.notifView)
 
     // this.myWarGames = new GameRecords()
+    console.log(this.id)
+    console.log(this.userId)
     if (this.id === null) {
       this.id = this.userId
     }
@@ -487,7 +489,7 @@ export const ProfileView = Backbone.View.extend({
     let guild
     if (this.users.get(this.id).get('guild_id')) {
       guild = this.guild
-    } else if (this.userId === this.id) {
+    } else if (this.userId == this.id) {
       this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       return
     } else {
@@ -523,7 +525,7 @@ export const ProfileView = Backbone.View.extend({
     context.membersNumber = this.membersGuild.length
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
-    if (this.userId === this.id) {
+    if (this.userId == this.id) {
       if (guild.get('owner_id')[0] == this.userId || guild.get('officer_ids').some(el => el == this.userId) === true) {
         this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
       }

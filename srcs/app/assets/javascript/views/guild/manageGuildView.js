@@ -11,6 +11,7 @@ export const ManageGuildView = Backbone.View.extend({
     'click .updateGuildName': 'updateGuildName',
     'click .updateGuildAnagram': 'updateGuildAnagram',
     'click #leaveGuild': 'leaveGuild',
+    'click #leaveGuildSideBar': 'leaveGuildSideBar',
     /* 'keyup #nonMemberToInvite': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToInvite', '#inviteMemberResult') },
     'keyup #memberToKick': function () { this.nicknameSearch(this.membersList, 'memberToKick', '#KickMemberResult') },
     'keyup #memberToPromote': function () { this.nicknameSearch(this.membersList, 'memberToPromote', '#promoteMemberResult') },
@@ -22,9 +23,9 @@ export const ManageGuildView = Backbone.View.extend({
     'click .nicknameSearchElement': function (e) { this.clickNickname(e) },
     'click .manageGuildSideBarContentEl': function (e) { this.sideBar(e) },
     'click #inviteMemberModalButton': function (e) { this.modal(e) },
-    'click .close': function (e) { this.closeModal(e) }
+    'click .close': function (e) { this.closeModal(e) },
+    'click .eachFriend': 'selectCheckbox'
   },
-  el: $('#app'),
   initialize: function () {
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
@@ -35,6 +36,7 @@ export const ManageGuildView = Backbone.View.extend({
     this.router = this.model.get('router')
     this.load()
   },
+  el: $('#app'),
 
   load: function () {
     const load = async () => {
@@ -50,13 +52,19 @@ export const ManageGuildView = Backbone.View.extend({
     load()
   },
 
+  leaveGuildSideBar: function () {
+    this.$el.find('#manageGuildContent').html(Handlebars.templates.leaveGuild(this.loadContext()))
+  },
+
   sideBar: function (e) {
     if (e.target.textContent === 'Owner') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+      document.getElementById('owner').classList.add('open')
+      document.getElementById('officer').classList.remove('open')
     } else if (e.target.textContent === 'Officer') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
-    } else if (e.target.textContent === 'Leave Guild') {
-      this.$el.find('#manageGuildContent').html(Handlebars.templates.leaveGuild(this.loadContext()))
+      document.getElementById('officer').classList.add('open')
+      document.getElementById('owner').classList.remove('open')
     }
   },
 
@@ -117,8 +125,10 @@ export const ManageGuildView = Backbone.View.extend({
     this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
     if (this.ownerBool) {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+      document.getElementById('owner').classList.add('open')
     } else if (this.officerBool) {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
+      document.getElementById('officer').classList.add('open')
     } else {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.leaveGuild(this.loadContext()))
     }
@@ -154,21 +164,22 @@ export const ManageGuildView = Backbone.View.extend({
     leaveGuild()
   },
 
-  inviteMember: function () {
-    const nickname = document.getElementById('nonMemberToInvite').value
-    let id
-    if (this.users.findWhere({ nickname: nickname })) {
-    	id = this.users.findWhere({ nickname: nickname }).id
-    } else {
-      console.log('error') // a gerer
-      return
-    }
+  getSelectedBoxes: function () {
+    const checkboxes = document.getElementsByClassName('checkbox')
+    const selectedCboxes = Array.prototype.slice.call(checkboxes).filter(ch => ch.checked === true)
+    return Array.from(selectedCboxes, x => x.value)
+  },
+
+  inviteMember: function (e) {
     const inviteMember = async () => {
       try {
-        const response = await this.createRequest('/members' + '/' + id, 'POST')
+        const ids = this.getSelectedBoxes()
+        for (let i = 0; i < ids.length; i++) {
+          const response = await this.createRequest('/members' + '/' + ids[i], 'POST')
+          this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+        }
         this.closeModal(null)
         await this.users.fetch() && await this.guilds.fetch()
-        this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
         this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
@@ -181,7 +192,7 @@ export const ManageGuildView = Backbone.View.extend({
     const nickname = document.getElementById('nonMemberToSendInvitation').value
     let id
     if (this.users.findWhere({ nickname: nickname })) {
-    	id = this.users.findWhere({ nickname: nickname }).id
+      id = this.users.findWhere({ nickname: nickname }).id
     } else {
       console.log('error') // a gerer
       return
@@ -229,8 +240,8 @@ export const ManageGuildView = Backbone.View.extend({
         this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
         this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
-        console.log(error)
-        this.renderError(error, '#guildGlobalError', Handlebars.templates.guildError)
+        console.log(e)
+        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
       }
     }
     promoteMember()
@@ -284,11 +295,6 @@ export const ManageGuildView = Backbone.View.extend({
 
   nicknameSearch: function (list, input, target) {
     const value = document.getElementById(input).value
-    console.log(value)
-    /* if (!value.length) {
-      this.$el.find(target).html(Handlebars.templates.nicknameSearchResult({}))
-      return
-    } */
     this.search = list.slice().filter(el => el.nickname.toLowerCase().includes(value.toLowerCase()) === true)
     const context = { search: JSON.parse(JSON.stringify(this.search)), input: input }
     this.$el.find(target).html(Handlebars.templates.nicknameSearchResult(context))
@@ -322,18 +328,18 @@ export const ManageGuildView = Backbone.View.extend({
 
   list: function () {
     if (!this.ownerBool && !this.officerBool) { return }
-    this.nonMembersList = Array()
-    this.membersList = Array()
-    this.officersList = Array()
+    this.nonMembersList = []
+    this.membersList = []
+    this.officersList = []
     for (let i = 0; i < this.users.length; i++) {
       if (this.officerBool && (this.users.at(i).get('guild_id') === undefined ||
-			this.users.at(i).get('guild_id') === null)) {
+          this.users.at(i).get('guild_id') === null)) {
         this.nonMembersList.push(JSON.parse(JSON.stringify(this.users.at(i))))
       }
     }
     for (let i = 0; i < this.guild.get('member_ids').length; i++) {
       if (this.users.get(this.guild.get('member_ids')[i]).get('id') != this.guild.get('owner_id') &&
-			!this.guild.get('officer_ids').includes(this.guild.get('member_ids')[i])) {
+          !this.guild.get('officer_ids').includes(this.guild.get('member_ids')[i])) {
         this.membersList.push(JSON.parse(JSON.stringify(this.users.get(this.users.get(this.guild.get('member_ids')[i])))))
       }
     }
@@ -344,15 +350,13 @@ export const ManageGuildView = Backbone.View.extend({
 
   updateLists: function (l, nickname, id) {
     if (l[0].length > 0) {
-      console.log(1)
       l[0].push({
         nickname: nickname,
         id: id
-	 })
+      })
     }
-	 if (l[1].length > 0) {
-		 console.log(2)
-	 for (let i = 0; i < l[1].length; i++) {
+    if (l[1].length > 0) {
+      for (let i = 0; i < l[1].length; i++) {
         if (l[1][i].id === id) {
           l[1].splice(i, 1)
           break
@@ -362,18 +366,37 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   modal: function (e) {
+    const value = document.getElementById('nonMemberToInvite').value
+    this.search = this.nonMembersList.slice().filter(el => el.nickname.toLowerCase().includes(value.toLowerCase()) === true)
+    const context = {}
+    context.member = []
+    context.member = JSON.parse(JSON.stringify(this.search))
     const modal = document.getElementById('inviteMemberModal')
-    modal.style.display = 'block'
-    this.inviteModalSearch(e)
-    // this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#inviteMemberResult')
+    this.updateHTML('inviteMemberModal', Handlebars.templates.officerPannel(context))
+    modal.style.display = 'flex'
+  },
+
+  selectCheckbox: function (e) {
+    const id = e.currentTarget.getAttribute('for')
+    const checkbox = document.getElementById(id)
+    if (checkbox.checked === true) { checkbox.checked = false } else { checkbox.checked = true }
+  },
+
+  updateHTML: function (div, template) {
+    const html = template
+    const found = $(html).find('#' + div)[0].innerHTML
+    const currentDiv = document.getElementById(div)
+    currentDiv.innerHTML = found
   },
 
   inviteModalSearch: function (e) {
     const value = document.getElementById('nonMemberToInvite').value
-    console.log(value)
     this.search = this.nonMembersList.slice().filter(el => el.nickname.toLowerCase().includes(value.toLowerCase()) === true)
-    const context = { search: JSON.parse(JSON.stringify(this.search)), input: 'nonMemberToInvite' }
-    this.$el.find('#inviteMemberResult').html(Handlebars.templates.nicknameSearchResult(context))
+    const context = {}
+    context.member = []
+    context.member = JSON.parse(JSON.stringify(this.search))
+    const modal = document.getElementById('inviteMemberModal')
+    this.updateHTML('inviteMemberResult', Handlebars.templates.officerPannel(context))
   },
 
   closeModal: function (e) {

@@ -9,17 +9,19 @@
 	<div class="manageGuildSideBar"></div>
 	<div class="manageGuildContentContainer">
 		<div class="manageGuildContent" id="createGuildContent">
+		<div class="closeParams exitButton" id="ManageGuildExitButton" onclick="window.location='#profile';">
+			<img src="./icons/esc.svg" class="">
+		</div>
 		<div class="manageGuildTitle"><span> CREATE GUILD </span>
-		<span><a id="ManageGuildExitButton" class="exitButton" href="#guilds">ESC</a><span></div>
 			<div class="manageGuildForm">
-			<div>Guild name</div>
+			<div class="subtitle">GUILD NAME</div>
 			<label for="guildName">
-			<div>	<input id="guildName" class="manageGuildTextInput" type="text"></input> </div>
+			<input id="guildName" class="manageGuildTextInput" type="text"></input>
 			</label>
 			<div id="nameError" class="errorMessage"></div>
-			<div>Anagram</div>
+			<div class="subtitle">ANAGRAM</div>
 			<label for="guildAnagram">
-				<div><input id="guildAnagram" class="manageGuildTextInput" type="text"></input></div>
+			<input id="guildAnagram" class="manageGuildTextInput" type="text"></input>
 			</label>
 			<div id="anagramError" class="errorMessage"></div>
 			<div id="errorField" class="errorMessage"></div>

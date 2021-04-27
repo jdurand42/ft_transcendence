@@ -1,30 +1,30 @@
-.chat .modalCreateChannel {
+.modalCreateChannel {
     display: none;
 }
 
-.chat .modalCreateDirectMessages {
+.modalCreateDirectMessages {
     display: none;
 }
 
-.chat .modalSearchChannel {
+.modalSearchChannel {
     display: none;
 }
 
-.chat .validationModal {
+.validationModal {
     display: none;
 }
 
-.chat .modalAddFriendsToChannel {
+.modalAddFriendsToChannel {
     display: none;
 }
 
-.chat .modal
+.modal
 .modalOpen {
     padding: 16px;
     width: 523px;
 }
 
-.chat .modalPassword  .modalOpen
+.modalPassword  .modalOpen
 .inputModalPassword {
     height: 46px;
     border-radius: 9px;
@@ -33,12 +33,12 @@
     width: 100%;
 }
 
-.chat .modalPassword .modalOpen
+.modalPassword .modalOpen
 .labelModalPassword {
     align-self: baseline;
 }
 
-.chat .validationModal
+.validationModal
 .modalOpen {
     padding: 32px;
     width: auto;
@@ -51,7 +51,7 @@
     justify-content: center;
 }
 
-.chat .modalOpen
+.modalOpen
 .buttons {
     display: flex;
     align-items: center;
@@ -59,7 +59,7 @@
     justify-content: center;
 }
 
-.chat .modalOpen
+.modalOpen
 .buttons .validation-buttons {
     width: 98px;
     height: 42px;
@@ -67,14 +67,14 @@
     margin: 8px;
 }
 
-.chat .validationModal .modalOpen 
+.validationModal .modalOpen 
 .sure {
     margin: 0px;
     font-size: 18px;
 }
 
 
-.chat .validationModal .modalOpen 
+.validationModal .modalOpen 
 .adminRights {
     margin: 16px;
     font-size: 14px;
@@ -82,7 +82,7 @@
     margin-bottom: 16px;
 }
 
-.chat  .modalOpen
+ .modalOpen
 .buttons .button {
     width: 98px;
     height: 42px;
@@ -91,25 +91,25 @@
     font-family: Roboto-Regular;
 }
 
-.chat .modalOpen
+.modalOpen
 .buttons .validation-buttons .no {
     background-color: #E0E0E0;
 }
 
-.chat .modal .eachFriend
+.modal .eachFriend
 .image-container {
     width: 42px;
     height: 33px;
 }
 
-.chat .modal .eachFriend .image-container
+.modal .eachFriend .image-container
 .image_url {
     object-fit: cover;
     width: 100%;
     height: 100%;
 }
 
-.chat .modal
+.modal
 .button-container {
     align-self: center;
     width: 323px;
@@ -118,7 +118,7 @@
     margin-top: 8px;
 }
 
-.chat .modal .modalOpen .button-container
+.modal .modalOpen .button-container
 .createChannel {
     width: 100%;
     height: 100%;
@@ -126,77 +126,77 @@
     font-size: 18px;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .textInput {
     height: 64px;
     border-radius: 9px;
 }
 
-.chat .modalCreateChannel .modalOpen
+.modalCreateChannel .modalOpen
 .error-message {
     font-size: 14px;
     margin: 0;
     margin-bottom: 16px;
 }
 
-.chat .modalCreateChannel .modalOpen
+.modalCreateChannel .modalOpen
 .channelName {
     margin-bottom: 8px;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .search {
     margin-bottom: 8px;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .label {
     margin-bottom: 8px;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .labelSelectFriends {
     margin-top: 8px;
 }
 
-.chat .modalOpen
+.modalOpen
 .friends {
     height: 100%;
     overflow-y: scroll;
 }
 
-.chat .modalSearchChannel .modalOpen
+.modalSearchChannel .modalOpen
 .friends {
     height: 100%;
     overflow-y: scroll;
 }
 
-.chat .modalCreateDirectMessages .modalOpen
+.modalCreateDirectMessages .modalOpen
 .friends {
     height: 50vh;
     width: 50vw;
     overflow-y: scroll;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .friends::-webkit-scrollbar-track {
     width: 0px;
     background-color: transparent;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .friends::-webkit-scrollbar {
     width: 0px;
     background-color: transparent;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .friends::-webkit-scrollbar-thumb {
     width: 0px;
     background-color: transparent;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .eachFriend {
     display: flex;
     align-items: center;
@@ -215,25 +215,25 @@
     padding-right: 8px;
 }
 
-.chat .modal .modalOpen .eachFriend
+.modal .modalOpen .eachFriend
 .left {
     display: flex;
     align-items: center;
     flex-direction: row;
 }
 
-.chat .modal .modalOpen .eachFriend
+.modal .modalOpen .eachFriend
 .image-container {
     margin-right: 8px;
 }
 
-.chat .modal .modalOpen
+.modal .modalOpen
 .close {
     align-self: flex-end;
     cursor: pointer;
 }
 
-.chat .modal .modalValidationBan .modalOpen
+.modal .modalValidationBan .modalOpen
 .radio-buttons {
     display: flex;
     flex-direction: column;

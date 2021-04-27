@@ -1,17 +1,24 @@
 
-<div class="manageGuildTitle"><span id="guildNameIntro"> MANAGE <a href="#guild/{{this.guild.id}}/">{{this.guild.name}}</a></span> <span id="guildAnagramIntro">[{{this.guild.anagram}}]</span>
-<span><a id="ManageGuildExitButton" class="exitButton" href="#guild/{{this.guild.id}}">ESC</a><span></div>
-	<div class="manageGuildForm">
+<div class="closeParams exitButton" id="ManageGuildExitButton" onclick="window.location='#guild';">
+	<img src="./icons/esc.svg" class="">
+</div>
+<div class="manageGuildTitle">
+	<div class="title">
+		<span id="guildNameIntro"> MANAGE 
+		<a href="#guild/{{this.guild.id}}/">{{this.guild.name}}</a></span>
+		<span id="guildAnagramIntro">[{{this.guild.anagram}}]</span>
+	</div>
+<div class="manageGuildForm">
 
 <div class="manageGuildForm">
-<div>Guild name</div>
+<div class="subtitle">GUILD NAME</div>
 <label for="guildName">
 <div>	<input id="guildName" class="manageGuildTextInput" type="text"></input> </div>
 </label>
 <div id="nameError" class="errorMessage"></div>
 <div><button class="updateGuildName save">Save</button></div>
 <div></div>
-<div>Anagram</div>
+<div class="subtitle">ANAGRAM</div>
 <label for="guildAnagram">
 	<div><input id="guildAnagram" class="manageGuildTextInput" type="text"></input></div>
 </label>
@@ -24,7 +31,10 @@
 <ul class="manageGuildMembersList" id="officersList">
 	{{#each this.officers}}
 	<li>
-		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><button id="relegateMember" value="{{this.id}}">Relegate</button>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.image_url}}></img>
+		</div>
+		<span>{{this.nickname}}</span><button class="button" id="relegateMember" value="{{this.id}}">Relegate</button>
 	</li>
 	{{/each}}
 </ul>
@@ -33,7 +43,11 @@
 <ul class="manageGuildMembersList" id="membersList">
 	{{#each this.members}}
 	<li>
-		<img class="memberProfilePicture" src={{this.image_url}}></img><span>{{this.nickname}}</span><button id="promoteMember" value="{{this.id}}">Promote</button>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.image_url}}></img>
+		</div>
+
+		<span>{{this.nickname}}</span><button class="button" id="promoteMember" value="{{this.id}}">Promote</button>
 	</li>
 	{{/each}}
 </ul>
