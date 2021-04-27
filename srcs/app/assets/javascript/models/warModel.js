@@ -9,7 +9,6 @@ export const War = Backbone.Model.extend({
     id: undefined,
     ladder_effort: undefined,
     last_negotiation: undefined,
-    max_unanswared: undefined,
     on_agreement: undefined,
     on_id: undefined,
     opened: undefined,
@@ -70,7 +69,7 @@ export const War = Backbone.Model.extend({
 
   acceptRefuseWar: function (agree) {
     const header = this.superHeaders.getHeaders()
-    const url = this.urlRoot + '/agreements'
+    const url = this.urlRoot + '/' + this.id + '/agreements'
     return fetch(url, {
       method: 'POST',
       headers: header,

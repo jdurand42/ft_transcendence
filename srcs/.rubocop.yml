@@ -9,6 +9,7 @@ AllCops:
     - bin/**
     - spec/**/*
     - vendor/**/*
+    - app/controllers/users/*
 Metrics/MethodLength:
   Max: 15
 Metrics/ClassLength:

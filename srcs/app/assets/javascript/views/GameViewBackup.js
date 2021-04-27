@@ -23,8 +23,8 @@ export const GameView = Backbone.View.extend({
     const load = async () => {
       try {
         await this.users.fetch() &&
-				await this.guilds.fetch() &&
-				await this.games.fetch()
+        await this.guilds.fetch() &&
+        await this.games.fetch()
         this.loadDocument()
         this.user = this.users.get(this.id)
         if (this.gameId === undefined || this.gameId === '' || this.gameId === null) {
@@ -73,10 +73,8 @@ export const GameView = Backbone.View.extend({
     const loadMatchMaking = async () => {
       // afficher Waiting
       try {
-      	await this.callmatchmaking(this.setLadderGame)
+        await this.callmatchmaking(this.setLadderGame)
       } catch (e) {
-        console.log('error while requesting ladder match')
-        console.log(e)
         this.initializeGame()
       }
     }

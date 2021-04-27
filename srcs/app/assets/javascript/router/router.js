@@ -1,5 +1,5 @@
 // views
-import { HomeView } from '../views/home_view'
+import { HomeView } from '../views/homeView'
 import { HeaderView } from '../views/headerView'
 import { LeaderboardView } from '../views/leaderboard/leaderboardView'
 import { TournamentView } from '../views/tournament/tournamentView'
@@ -121,7 +121,6 @@ export const Router = Backbone.Router.extend({
     if (this.view !== undefined) {
       this.remove_view()
     }
-    console.log(performance.getEntriesByType('navigation')[0].type)
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
@@ -228,7 +227,6 @@ export const Router = Backbone.Router.extend({
 
   playGame: function (gameId) {
     if (this.accessPage()) { return }
-    console.log(gameId)
     this.view = new GameView({ model: this.loadWrapper(), socket: this.socket, notifView: this.notifView, gameId: gameId })
   },
 

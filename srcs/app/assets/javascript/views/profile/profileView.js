@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 /* import { AchivementsView } from './achivementsView.js'
 import { EditProfileView } from './editProfileView.js'
 import { MatchHistoryView } from './matchHistoryView.js'
@@ -76,8 +77,10 @@ export const ProfileView = Backbone.View.extend({
       this.guilds.fetch()
       await response1 && await response2 && await response3 && await response4 && await response5
       const response8 = this.membersGuild.fetchByGuildId(this.users.get(this.id).get('guild_id'))
-      this.guild = new Guild({ id: this.users.get(this.id).get('guild_id') })
-      this.guild.fetch()
+      if (this.users.get(this.id).get('guild_id') != undefined) {
+        this.guild = new Guild({ id: this.users.get(this.id).get('guild_id') })
+        this.guild.fetch()
+      }
       this.users.sort()
       this.render()
     }
@@ -233,12 +236,16 @@ export const ProfileView = Backbone.View.extend({
       slideShow = './icons/slideshow.svg'
     }
 
+    // const rank = (el) => el.get('id') == this.id
+    let index = this.users.findIndex(el => el.get('id') == this.id)
+    index += 1
+
     const context = {
       trophy: 'icons/' + this.ladders.get(user.get('ladder_id')).get('name').toLowerCase() + '.svg',
-      rank: this.id,
-      generalRank: this.id,
+      rank: index,
+      generalRank: index,
       totalRank: this.users.length,
-      totalLeagueRank: this.users.length,
+      // totalLeagueRank: this.users.length,
       // ratio: Math.round(user.get('ladder_games_won') / (user.get('ladder_games_won') + user.get('ladder_games_lost')) * 100 * 100) / 100,
       score: user.get('score'),
       victories: user.get('ladder_games_won'),
@@ -328,8 +335,10 @@ export const ProfileView = Backbone.View.extend({
     const opponent2 = this.users.get(opponentId2)
     context[length].opponent1 = opponent1.get('nickname')
     context[length].avatarOpponent1 = opponent1.get('image_url')
+    context[length].opponentId1 = opponentId1
     context[length].opponent2 = opponent2.get('nickname')
     context[length].avatarOpponent2 = opponent2.get('image_url')
+    context[length].opponentId2 = opponentId2
     context[length].score1 = getScore1()
     context[length].score2 = getScore2()
     if (context[length].score1 === 0 && context[length].score2 === 0) {
@@ -428,7 +437,7 @@ export const ProfileView = Backbone.View.extend({
     }
     user.follow = this.users.get(this.userId).get('friends').some(el => el.friend_id === user.id)
     if (user.guild_id) {
-      user.guildName = this.guild.get('name')
+      user.guildName = this.guilds.get(user.guild_id).get('name')
     }
     return user
   },
@@ -498,7 +507,6 @@ export const ProfileView = Backbone.View.extend({
       membersNumber: 0
     }
 
-    console.log(this.membersGuild)
     for (let i = 0; i < this.membersGuild.length; i++) {
       const member = this.membersGuild.at(i)
 
@@ -517,7 +525,9 @@ export const ProfileView = Backbone.View.extend({
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
     if (this.userId === this.id) {
-      this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
+      if (guild.get('owner_id')[0] == this.userId || guild.get('officer_ids').some(el => el == this.userId) === true) {
+        this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
+      }
       this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
     }
   },
@@ -533,6 +543,7 @@ export const ProfileView = Backbone.View.extend({
         this.users.get(this.userId).set({ guild_id: null })
         this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
+        console.log(e)
       }
     }
     leave()

@@ -106,25 +106,28 @@
 				<div class="each-matches-missed from-matches-missed">
 					<div class="name from-name">{{fromName}}</div>
 					<div class="hyphen">-</div>
-					<div class="nb-matches-missed from-nb-matches-missed">{{nbFromMissed}}</div>
+					<div class="nb-matches-missed from-nb-matches-missed" id="nb-matches-missed{{fromId}}">{{nbFromMissed}}</div>
 				</div>
 				<div class="each-matches-missed on-matches-missed">
 					<div class="name on-name">{{onName}}</div>
 					<div class="hyphen">-</div>
-					<div class="nb-matches-missed on-nb-matches-missed">{{nbOnMissed}}</div>
+					<div class="nb-matches-missed on-nb-matches-missed" id="nb-matches-missed{{onId}}">{{nbOnMissed}}</div>
 				</div>
 			</div>
+			{{#if myPage}}
 			<div class="random-fight">
-				<div class="random-fight-title">No random fight pending</div>
+				<div class="random-fight-title" id="random-fight-title">No random fight pending</div>
 				{{!-- <div class="title">{{randomFight}}</div> --}}
 				<div class="button-timer">
 					<button class="accept-random-fight" id="accept-random-fight">{{accept}}</button>
 					<div class="timer" id="war-time-timer">00j 00h 00m 00s</div>
 				</div>
+				<div class="error-message" id="error-message" style="display: none;"></div>
 			</div>
+			{{/if}}
 		</div>
 	</div>
-	<div class="last-matches-container">
+	<div class="match-history last-matches-container">
 		<div class="title last-matches-title">Last matches of war times</div>
 		{{#each lastMatches}}
 		<div class="match-done-container">

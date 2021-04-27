@@ -1,8 +1,10 @@
 <div class="tournament-header" id="tournament-header">
-    <div class="winner" id="winner" style="display:none;">
+    {{#ifCond status '==' 'finish'}}
+    <div class="winner" id="winner">
         <div class="first-sentence">Congratulations to {{winner}}!</div>
         <div class="second-sentence">The tournament is over, see you to the next one.</div>
     </div>
+    {{/ifCond}}
     <div class="second-floor" id="second-floor">
         <div class="left">
         <div class="round-robin-tournament">

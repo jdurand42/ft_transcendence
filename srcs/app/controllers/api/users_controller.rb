@@ -23,7 +23,7 @@ module Api
     def update
       authorize @user
 
-      return render_not_allowed if banning? && (@user.id == current_user.id || @user.uid.to_s == ENV['P42NG_OWNER_UID'])
+      return render_not_allowed if forbidden_updated_attributes?
 
       ban_hammer if banning?
 
@@ -76,8 +76,18 @@ module Api
 
     private
 
+    def forbidden_updated_attributes?
+      return true if banning? && (@user.id == current_user.id || @user.uid.to_s == ENV['P42NG_OWNER_UID'])
+
+      promoting? && @user.uid.to_s == ENV['P42NG_OWNER_UID']
+    end
+
     def banning?
       user_params.key?(:banned) && user_params[:banned]
+    end
+
+    def promoting?
+      user_params.key?(:admin) && user_params[:admin]
     end
 
     def ban_hammer
