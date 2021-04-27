@@ -1,7 +1,7 @@
 .manageGuildContainer {
 	display: flex;
 	color: white;
-	font-family: roboto;
+	font-family: Roboto-Regular;
 	height: 100%;
 	width:100vw;
 	background: url('../../../images/background.jpg');
@@ -19,7 +19,6 @@
 	width: 329px;
 	height: 100vh;
 	left: 0px;
-	top: 82px;
 	background-color: transparent;
 	border-right: 1px solid #364050;
 	border-top: 1px solid #364050;
@@ -31,16 +30,23 @@
 .manageGuildContainer .manageGuildContentContainer {
 	position: absolute;
 	display: flex;
-	width: 100vw - 329px;
+	width: 100%;
 	height: 100vh;
 	left: 329px;
-	top: 82px;
 	min-width: 100vw - var(--header-size);
 	background-color: transparent;
 	border-top: 1px solid #364050;
 
 	overflow: hidden;
 	overflow-x: hidden;
+}
+
+.manageGuildContainer .save {
+	width: 95px;
+    height: 29px;
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 14px;
 }
 
 .manageGuildContainer .manageGuildContentContainer #createGuildContent {
@@ -55,7 +61,7 @@
 
 .manageGuildSideBar .manageGuildSideBarContent {
 	color: white;
-	font-family: roboto;
+	font-family: Roboto-Regular;
 	padding-top: 71px;
 	margin-left: auto;
 	margin-right: 10px;
@@ -67,8 +73,15 @@
 }
 
 .manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl {
-	padding-bottom: 10px;
-	padding-top: 10px;
+	width: 170px;
+	height: 40px;
+
+	margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl:hover {
+    background: #364050;
 }
 
 .manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl:hover {
@@ -114,7 +127,7 @@
 	box-sizing: border-box;
 	border-radius: 3px;
 
-	font-family: Roboto;
+	font-family: Roboto-Regular;
 	font-style: normal;
 	font-weight: normal;
 	font-size: 14px;
@@ -135,7 +148,7 @@
 }
 
 .manageGuildTitle #guildNameIntro {
-	font-family: Roboto;
+	font-family: Roboto-Regular;
 	font-style: normal;
 	font-weight: normal;
 	font-size: 18px;
@@ -151,7 +164,7 @@
 }
 
 .manageGuildTitle #guildAnagramIntro {
-	font-family: Roboto;
+	font-family: Roboto-Regular;
 	font-style: normal;
 	font-weight: normal;
 	font-size: 12px;
