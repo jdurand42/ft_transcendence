@@ -3,7 +3,7 @@ import { Guild } from '../../models/guildModel.js'
 export const ManageGuildView = Backbone.View.extend({
   events: {
     'click .createGuild': 'createGuild',
-    'click .inviteMember': 'inviteMember',
+    'click .inviteMember': 'sendInvitation',
     'click #kickMember': function (e) { this.kickMember(e) },
     'click .sendInvitation': 'sendInvitation',
     'click #promoteMember': function (e) { this.promoteMember(e) },
@@ -178,7 +178,7 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   sendInvitation: function () {
-    const nickname = document.getElementById('nonMemberToSendInvitation').value
+    const nickname = document.getElementById('nonMemberToInvite').value
     let id
     if (this.users.findWhere({ nickname: nickname })) {
     	id = this.users.findWhere({ nickname: nickname }).id
@@ -188,15 +188,14 @@ export const ManageGuildView = Backbone.View.extend({
     }
     const inviteMember = async () => {
       try {
-        const response = await this.createRequest('/invitations/', 'POST', { user_id: id })
-        this.$el.find('#guildGlobalError').html('<p>Invitation successfully sent</p>')
+        const response = await this.guild.sendInvitation(id)
+        console.log('invitation successfully sent')
+        this.closeModal(null)
+        await this.users.fetch() && await this.guilds.fetch()
+        this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+        this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
-        if (e.status == 200) {
-          /* this.updateLists([this.membersList, this.nonMembersList], nickname, id)
-          this.users.get(id).set({ guild_id: this.guild.id }) */
-        }
-      } finally {
       }
     }
     inviteMember()

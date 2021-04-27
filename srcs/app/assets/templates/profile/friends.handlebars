@@ -1,48 +1,5 @@
 <section class="profileBlock" id="friendsBlock">
-<!--
-	<table class="usersList">
-	<tr id="profileList" class="usersListIndex">
-		<th>{{this.friendsNumber}} friends</th>
-		<th></th>
-		<th></th>
-		<th>Pseudo</th>
-		<th>Guild</th>
-		<th>league Rank</th>
-		<th>General Rank</th>
-		<th>Victories</th>
-		<th>Total Games</th>
-		<th>Status</th>
-		<th></th>
-		<th></th>
-	</tr>
 
-	{{#each this.friends}}
-	<tr class="usersListEl">
-		<td>Gold</td>
-		<td>1</td>
-		<td>profilePic</td>
-		<td><a href="#profile/{{id}}/">{{nickname}}</a></td>
-		<td>
-			{{#if guild_id}}
-				<a href="#/guild/{{guild_id}}/">{{guild.name}}</a>
-			{{/if}}
-		<td>
-		<td>1</td>
-		<td>1000</td>
-		<td>42</td>
-		<td>1001</td>
-		<td>online</td>
-		<td><a href="#spectate/{{id}}">spectate</a></td>
-		{{#if isFriend}}
-			<td><button id="followUser" value="{{id}}">Followed</button></td>
-		{{else}}
-			<td><button id="followUser" vakue="{{id}}">Follow</button></td>
-		{{/if}}
-	</tr>
-	{{/each}}
-</table>
-</section>
--->
 <div class="listsBoard leaderboardList" id="leaderboardList">
     <div class="nb-list nbGamers">{{friendsNumber}} friends</div>
     <table class="tablesBoard gamersTable">

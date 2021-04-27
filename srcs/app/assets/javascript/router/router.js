@@ -12,7 +12,7 @@ import { ChatView } from '../views/chatView'
 import { ManageGuildView } from '../views/guild/manageGuildView'
 import { AdminView } from '../views/admin/adminView'
 import { NotifView } from '../views/notifView'
-import { GameView } from '../views/GameView'
+import { GameView } from '../views/gameView'
 
 // models
 import { User } from '../models/userModel'
