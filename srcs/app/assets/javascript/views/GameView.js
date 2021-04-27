@@ -55,6 +55,9 @@ export const GameView = Backbone.View.extend({
           } else if (this.mode === 'war') {
             this.$el.find('#gameTitle').html('Playing War match')
             $(document).ready(this.playWar())
+          } else if (this.mode === 'tournament') {
+            this.$el.find('#gameTitle').html('Playing tournament match')
+            $(document).ready(this.playTournament())
           }
         }
       } catch (e) {
@@ -137,6 +140,10 @@ export const GameView = Backbone.View.extend({
   },
 
   playWar: function () {
+    this.initializeGame()
+  },
+
+  playTournament: function () {
     this.initializeGame()
   },
 
