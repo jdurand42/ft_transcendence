@@ -9,7 +9,7 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   def received(data)
-    return if user_timeout_from_chat?(@chat_id, current_user.id)
+    return if user_timeout_from_chat?(@chat_id, current_user.id) || user_banned_from_chat?(@chat_id, current_user.id)
 
     ActionCable.server.broadcast("chat_#{@chat_id}",
                                  { action: 'message', sender_id: current_user.id, content: data.fetch('message'),

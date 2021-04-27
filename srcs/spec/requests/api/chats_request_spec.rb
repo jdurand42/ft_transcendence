@@ -62,8 +62,14 @@ RSpec.describe 'Chats', type: :request do
         expect(response).to have_http_status(201)
         expect(Chat.first.name).to eq('DISCUSSION')
       end
-      it 'bad participant ID param' do
-        post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: [0] }
+      it 'unique bad participant ID' do
+        post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: 0 }
+        expect(response).to have_http_status(201)
+      end
+      it 'array including bad participant ID'do
+        users = create_list(:user, 3)
+        post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: [users[0].id, [0], users[1].id, users[2].id] }
+        expect(ChatParticipant.count).to eq 4
         expect(response).to have_http_status(201)
       end
       it "current_user as chat's owner" do
@@ -112,7 +118,7 @@ RSpec.describe 'Chats', type: :request do
       expect(json['error']).to eq 'param is missing or the value is empty: password'
       expect(ChatParticipant.count).to eq(1)
     end
-    it 'should return error : passwordIncorrect',test:true do
+    it 'should return error : passwordIncorrect' do
       post participants_api_chat_url(Chat.first.id), headers: user_access, params: { password: 'cbd' }
       expect(response.status).to eq 422
       expect(response.body).to match(I18n.t('passwordIncorrect'))
@@ -124,6 +130,11 @@ RSpec.describe 'Chats', type: :request do
       post participants_api_chat_url(Chat.first.id), headers: user_access, params: { password: 'abc' }
       expect(json['message']).to eq 'Validation failed: User has already been taken'
       expect(response.status).to eq 422
+    end
+    it 'should not let user join private chat' do
+      Chat.first.update!(privacy: 'private')
+      post participants_api_chat_url(Chat.first.id), headers: user_access
+      expect(json['error']).to eq ["You must be invited to join this chat"]
     end
   end
   describe '#mutes' do
@@ -156,9 +167,12 @@ RSpec.describe 'Chats', type: :request do
     it 'should ban a participant' do
       timer = 2
       post participants_api_chat_url(chat.id), headers: access_token, params: { user: user, chat: chat }
-      post bans_api_chat_url(chat.id), headers: access_token, params: { user_id: user.id, duration: timer }
+      expect do
+        post bans_api_chat_url(chat.id), headers: access_token, params: { user_id: user.id, duration: timer }
+      end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_banned', id: chat.id)
       expect(response).to have_http_status(201)
       expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{user.id}")).to eq(true)
+
     end
     it 'should return an error, due to bad parameters' do
       post bans_api_chat_url(chat.id), headers: access_token, params: { userP: user, duration: 2 }
@@ -240,12 +254,11 @@ RSpec.describe 'Chats', type: :request do
     let(:user) { create(:user) }
     let(:user_2) { create(:user) }
     let(:access) { user.create_new_auth_token }
-    before do
-      post api_chats_url, headers: access_token,
-           params: { name: 'Hop', privacy: 'private', participant_ids: [user.id, user_2.id] }
-    end
-    it 'should kick a participant' do
-      delete "/api/chats/#{Chat.first.id}/participants/#{user.id}", headers: access_token
+    before { post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'private', participant_ids: [user.id, user_2.id] } }
+    it 'should kick a participant',test:true do
+      expect do
+        delete "/api/chats/#{Chat.first.id}/participants/#{user.id}", headers: access_token
+      end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_kicked', id: Chat.first.id)
       expect(response.status).to eq 204
       expect(ChatParticipant.where(user: user, chat: Chat.first).first).to eq nil
     end

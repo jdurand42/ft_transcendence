@@ -62,3 +62,4 @@ en:
   alreadyPlayed: "You already challenged this player"
   opponentNotParticipant: "This player doesn't participate to the tournament"
   notAnImage: "Image type should be png or jpeg"
+  joinPrivateChat: "You must be invited to join this chat"

@@ -20,6 +20,13 @@ class ApiController < ApplicationController
   end
   rescue_from MessageTooLongError, with: :response_error
 
+  class JoinPrivateChatError < StandardError
+    def message
+      [I18n.t('joinPrivateChat')]
+    end
+  end
+  rescue_from JoinPrivateChatError, with: :response_error
+
   private
 
   def response_error(error)

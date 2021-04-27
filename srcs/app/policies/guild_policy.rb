@@ -49,6 +49,6 @@ class GuildPolicy < ApplicationPolicy
   end
 
   def owner_admin?
-    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, record.id, 'owner') || user.admin == true
+    GuildMember.find_by(user: user, guild: record, rank: 'owner') || user.admin == true
   end
 end
