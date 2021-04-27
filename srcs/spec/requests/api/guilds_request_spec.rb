@@ -126,6 +126,7 @@ describe 'Guild', type: :request do
       post api_guilds_url, headers: access_token_2, params: attributes_2
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       delete "/api/guilds/#{Guild.last.id}/members/#{user_1.id}", headers: access_token_2
+      expect(status).to eq 404
       expect(GuildMember.where(user_id: user_1.id, guild_id: Guild.first.id)).to exist
     end
     it 'should not let officer destroy owner' do
@@ -153,6 +154,12 @@ describe 'Guild', type: :request do
         delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
         expect(response.status).to eq 204
         expect(Guild.first.owner).to eq user_1.guild_member
+      end
+      it 'should not let owner leave if guild at war' do
+        post api_guilds_url, headers: access_token_2, params: attributes_2
+        create(:war, from: Guild.first, on: Guild.last)
+        delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
+        expect(json['errors']).to eq ["War ongoing"]
       end
     end
   end
