@@ -250,10 +250,7 @@ export const Router = Backbone.Router.extend({
     // this._removeElement();
     this.view.$el.empty()
     if (this.view.canvas) {
-      // console.log('here')
-      // c'est fou que je doive faire ca
       this.view.data[0].end = true
-      // this.view.socket.close()
     }
     try {
       this.view.destroy()
