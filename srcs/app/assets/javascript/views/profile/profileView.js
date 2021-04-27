@@ -558,8 +558,8 @@ export const ProfileView = Backbone.View.extend({
       context: this,
       success: function (response) {
         // this.gameId = response.id
-        window.location.href = `#game/${response.id}`
         // navigate to game/{{this.gameId}}
+        console.log('game successfully created')
       }
     })
   },
@@ -570,7 +570,7 @@ export const ProfileView = Backbone.View.extend({
       this.requestDuel()
     } catch (e) {
       console.log(e)
-      // gérer dans la notif l'erreur?
+      // gérer dans la notif l'erreur? genre un print error dedans?
     }
   },
 
@@ -579,7 +579,20 @@ export const ProfileView = Backbone.View.extend({
     // check if same user
     // get user game
     // go spectate
-
+    const getGame = async () => {
+    		try {
+        // pending ou en cours?
+        const game = this.games.fetchInProgressGame(this.id)
+        await game
+        console.log(game)
+        if (game) {
+          window.location.href = '#game/' + game.get('id')
+        }
+    	} catch (e) {
+      	console.log(e)
+    	}
+    }
+    getGame()
   },
 
   followUser: function (e) {

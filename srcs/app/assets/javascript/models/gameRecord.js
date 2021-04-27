@@ -34,6 +34,17 @@ export const GameRecord = Backbone.Model.extend({
     })
   },
 
+  deleteGame: function (gameId) {
+    try {
+      $.ajax({
+        method: 'delete',
+        url: this.urlRoot + gameId
+      })
+    } catch (e) {
+      // en principe on s'en fout
+    }
+  },
+
   randomFight: function (gameType = 'war') {
     this.save({
       mode: gameType

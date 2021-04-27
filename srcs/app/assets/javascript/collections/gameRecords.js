@@ -30,5 +30,31 @@ export const GameRecords = Backbone.Collection.extend({
     return this.fetch({
       url: this.urlRoot + '?user_id=' + userId + '&mode=' + mode + '&status=' + status
     })
+  },
+  fetchPendingGame: function (userId, status = 'pending') {
+    return this.fetch({
+      url: this.urlRoot + '?user_id=' + userId + '&status=' + status
+    })
+  },
+  fetchInProgressGame: function (userId, status = 'inprogress') {
+    return this.fetch({
+      url: this.urlRoot + '?user_id=' + userId + '&status=' + status
+    })
+  },
+
+  deleteGame: function (gameId) {
+    const deleteGame = async () => {
+      $.ajax({
+        method: 'delete',
+        url: '/api/games/' + gameId
+      })
+    }
+    try {
+      deleteGame()
+      console.log('game successfully deleted')
+    } catch (e) {
+      // pas grave si la game n'existe pas en principe
+      console.log(e)
+    }
   }
 })

@@ -1,3 +1,6 @@
+import { GameRecord } from '../models/gameRecord'
+// peut etre fetch juste la game plutot que toute la collec
+
 const MULT = 1
 const WIDTH = 512
 const HEIGHT = 256
@@ -29,24 +32,22 @@ export const GameView = Backbone.View.extend({
     const load = async () => {
       try {
         await this.users.fetch() &&
-				// await this.guilds.fetch() &&
-				await this.games.fetch() // par sur d'avoir besoin de games
-        // this.loadFullDocument()
+				await this.games.fetch()
         this.user = this.users.get(this.id)
         if (this.gameId === undefined || this.gameId === null ||
 				isNaN(this.gameId)) {
           // $(document).ready(this.playLadder())
+          // fetch Pending games?
           this.$el.find('#gameTitle').html('Playing Ladder or Alfred, for now')
           $(document).ready(this.challengeAlfred())
         } else {
           try {
             this.game = JSON.parse(JSON.stringify(this.games.get(this.gameId)))
           } catch {
-            console.log('game doesnt exist')
-            return
+            console.log('game doesnt exist, redirecting to ladder games')
+            $(document).ready(this.playLadder())
           }
           console.log(this.game)
-          // gérer game not found
           this.mode = this.game.mode
           if (this.mode === 'duel') {
             this.$el.find('#gameTitle').html('Playing Duel')
@@ -56,7 +57,6 @@ export const GameView = Backbone.View.extend({
             $(document).ready(this.playWar())
           }
         }
-      //   this.opponent = this.users.get(this.opponentId)
       } catch (e) {
         console.log('Error while fetching models')
         console.log(e)
@@ -88,6 +88,22 @@ export const GameView = Backbone.View.extend({
     })
   },
 
+	  playLadder: function () { // a refaire comme pour alfred
+	    // lancer matchMaking
+	    const loadMatchMaking = async () => {
+	      // afficher Waiting
+	      try {
+	      	this.requestMatchmaking()
+	        this.initializeGame()
+	      } catch (e) {
+	        console.log('error while requesting ladder match')
+	        console.log(e)
+	        // this.initializeGame()
+	      }
+	    }
+	    loadMatchMaking()
+	  },
+
 	  callAlfred: async function () {
 	    return await $.ajax({
 	      url: '/api/games/',
@@ -115,23 +131,6 @@ export const GameView = Backbone.View.extend({
 	    // }
 	    // load()
 	  },
-
-  playLadder: function () { // a refaire comme pour alfred
-    console.log('bonjour ladder')
-    // lancer matchMaking
-    const loadMatchMaking = async () => {
-      // afficher Waiting
-      try {
-      	this.requestMatchmaking()
-        this.initializeGame()
-      } catch (e) {
-        console.log('error while requesting ladder match')
-        console.log(e)
-        // this.initializeGame()
-      }
-    }
-    loadMatchMaking()
-  },
 
   playDuel: function () {
     this.initializeGame()

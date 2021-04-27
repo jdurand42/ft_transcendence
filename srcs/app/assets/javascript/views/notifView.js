@@ -5,6 +5,7 @@ import { Guild } from '../models/guildModel'
 export const NotifView = Backbone.View.extend({
   events: {
     'click .refuseGame': 'closeNotif',
+    'click .acceptGame': 'acceptGame',
     'click .closeNotif': 'closeNotif',
     'click #acceptGuild': 'acceptGuild'
   },
@@ -50,6 +51,18 @@ export const NotifView = Backbone.View.extend({
     const templateDataGameNotif = this.templateGameNotif(this.context)
     this.$el.append(templateDataGameNotif)
   },
+
+  acceptGame: function (e) {
+    this.gameRecord = new GameRecord()
+    const gameId = e.currentTarget.getAttribute('for')
+    if (document.getElementById('gameNotif' + gameId) !== null) {
+      document.getElementById('gameNotif' + gameId).remove()
+    } else if (document.getElementById('senderGameNotif' + gameId) !== null) {
+      document.getElementById('senderGameNotif' + gameId).remove()
+    }
+    window.location.href = '#game/' + gameId
+  },
+
   closeNotif: function (e) {
     const fetchNotif = async () => {
       const id = e.currentTarget.getAttribute('for')
