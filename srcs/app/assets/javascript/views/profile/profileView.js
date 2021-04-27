@@ -624,8 +624,10 @@ export const ProfileView = Backbone.View.extend({
     const sendInvitation = async () => {
       try {
         const response = await guild.sendInvitation(this.id)
-        this.$el.find('#sendInvitationButton').html('<span>Invited</span>')
+        this.$el.find('#sendInvitationButton').html('<div class="invitation">You have sent an invitation</div>')
       } catch (e) {
+        document.getElementById('error-message').style.display = 'block'
+        document.getElementById('error-message').innerHTML = e.responseJSON.errors
       }
     }
     sendInvitation()

@@ -155,7 +155,7 @@ export const GuildView = Backbone.View.extend({
           } catch (e) {}
         }
       } catch (error) {
-        document.getElementById('error-message').innerHTML = error.responseJSON.error
+        document.getElementById('error-message').innerHTML = error.responseJSON.errors
         document.getElementById('error-message').style.display = 'block'
         document.getElementById('error-message').style.color = 'var(--error-message-color)'
       }

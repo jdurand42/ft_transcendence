@@ -121,6 +121,12 @@
 	margin-top: 15vh;
 }
 
+.profileBlock .invitation {
+	font-family: Roboto-Regular;
+	font-size: 18px;
+	margin-top: 32px;
+}
+
 .profileBlock #sendInvitation {
 	width: 278px;
 	height: 46px;

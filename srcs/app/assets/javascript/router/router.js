@@ -36,7 +36,6 @@ import { OauthService } from '../services/oauthService'
 import { MyWebSocket } from '../services/websocket'
 
 // Views for test only
-import { TestView } from '../views/testView'
 import { FetchAPI } from '../services/fetchAPI'
 
 export const Router = Backbone.Router.extend({
@@ -213,11 +212,6 @@ export const Router = Backbone.Router.extend({
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = new TournamentView({ socket: this.socket, notifView: this.notifView })
-  },
-
-  test_view: function () {
-    if (this.accessPage()) { return }
-    const testView = new TestView({ model: this.loadWrapper() })
   },
 
   manage_guild_view: function () {
