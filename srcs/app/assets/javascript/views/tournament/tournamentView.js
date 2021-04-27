@@ -519,7 +519,7 @@ export const TournamentView = Backbone.View.extend({
   },
 
   positionSquare: function (offsets) {
-    document.getElementById('square').style.top = offsets.top - 8
+    document.getElementById('square').style.top = offsets.top - 86
     document.getElementById('square').style.left = offsets.left - 32
   },
 
