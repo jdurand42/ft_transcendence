@@ -3,7 +3,7 @@ import { Guild } from '../../models/guildModel.js'
 export const ManageGuildView = Backbone.View.extend({
   events: {
     'click .createGuild': 'createGuild',
-    'click .inviteMember': 'sendInvitation',
+    'click .inviteMember': 'inviteMember',
     'click #kickMember': function (e) { this.kickMember(e) },
     'click .sendInvitation': 'sendInvitation',
     'click #promoteMember': function (e) { this.promoteMember(e) },
@@ -175,7 +175,8 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const ids = this.getSelectedBoxes()
         for (let i = 0; i < ids.length; i++) {
-          const response = await this.createRequest('/members' + '/' + ids[i], 'POST')
+          // const response = await this.createRequest('/members' + '/' + ids[i], 'POST')
+          const response = await this.guild.sendInvitation(ids[i])
           this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
         }
         this.closeModal(null)
