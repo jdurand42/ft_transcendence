@@ -155,7 +155,7 @@ export const GuildView = Backbone.View.extend({
           } catch (e) {}
         }
       } catch (error) {
-        document.getElementById('error-message').innerHTML = error.responseJSON.error
+        document.getElementById('error-message').innerHTML = error.responseJSON.errors
         document.getElementById('error-message').style.display = 'block'
         document.getElementById('error-message').style.color = 'var(--error-message-color)'
       }
@@ -443,11 +443,6 @@ export const GuildView = Backbone.View.extend({
       const dates = []
       for (let i = 0; i < this.currentWarTimes[0].length; i++) {
         const startDate = new Date()
-        console.log(startDate.getDate())
-        console.log(this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()))
-        console.log(this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7)
-        console.log(this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - startDate.getDay())
-        console.log(startDate.getDate(startDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - startDate.getDay()) % 7))
         startDate.setDate(startDate.getDate() + (this.getDay(this.currentWarTimes[0].at(i).get('day').toLowerCase()) + 7 - startDate.getDay()) % 7)
         startDate.setHours(this.currentWarTimes[0].at(i).get('start_hour'))
         const endDate = new Date()
@@ -461,37 +456,37 @@ export const GuildView = Backbone.View.extend({
         return 0
       })
 
-      console.log(dates)
-
       try {
         document.getElementById('accept-random-fight').innerHTML = 'Challenge'
         document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
         document.getElementById('accept-random-fight').style.cursor = 'auto'
-        if (dates.length > 0) {
-          const now = new Date()
-          if (dates[0].startDate <= now && dates[0].endDate > now) { // We are in war time
-            document.getElementById('next-war-time-in-title').style.display = 'none'
+      } catch (e) {}
+      if (dates.length > 0) {
+        const now = new Date()
+        if (dates[0].startDate <= now && dates[0].endDate > now) { // We are in war time
+          document.getElementById('next-war-time-in-title').style.display = 'none'
 
+          try {
             document.getElementById('accept-random-fight').innerHTML = 'Challenge'
             document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
             document.getElementById('accept-random-fight').style.cursor = 'pointer'
+          } catch (e) {}
+          this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
 
-            this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
-
-            return this
-          } else if (dates[0].startDate <= now) {
-            console.log('dates < now')
-            dates[0].startDate.setDate(dates[0].startDate.getDate() + (this.getDay(dates[0].day.toLowerCase()) + 14 - dates[0].startDate.getDay()) % 14)
+          return this
+        } else if (dates[0].startDate <= now) {
+          while (dates[0].startDate <= now) {
+            dates[0].startDate.setDate(dates[0].startDate.getDate() + 7)
             dates.sort(function (a, b) {
               if (a.startDate < b.startDate) { return -1 }
               if (a.startDate > b.startDate) { return 1 }
               return 0
             })
           }
-
-          this.initializeTimer(dates[0].startDate, 'next-war-time-in')
         }
-      } catch (e) {}
+      }
+
+      this.initializeTimer(dates[0].startDate, 'next-war-time-in')
     }
     return this
   },
@@ -528,29 +523,31 @@ export const GuildView = Backbone.View.extend({
           const value = document.getElementById('nb-matches-missed' + id).innerHTML
           document.getElementById('nb-matches-missed' + id).innerHTML = (Number(value) + 1)
         }
-        if (currentGames.games[i].games.get('status') === 'pending') {
-          const game = currentGames.games[i].games
-          const player = this.members.find(el => el.get('id') === game.get('player_left_id'))
-          const id = this.playerInWichGuild(player)
+        try {
+          if (currentGames.games[i].games.get('status') === 'pending') {
+            const game = currentGames.games[i].games
+            const player = this.members.find(el => el.get('id') === game.get('player_left_id'))
+            const id = this.playerInWichGuild(player)
 
-          if (this.userId === game.get('player_right_id')) {
-            document.getElementById('accept-random-fight').innerHTML = 'Accept'
-            document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
-            document.getElementById('accept-random-fight').style.cursor = 'pointer'
-          } else {
-            document.getElementById('accept-random-fight').innerHTML = 'Pending'
-            document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
-            document.getElementById('accept-random-fight').style.cursor = 'auto'
-          }
+            if (this.userId === game.get('player_right_id')) {
+              document.getElementById('accept-random-fight').innerHTML = 'Accept'
+              document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
+              document.getElementById('accept-random-fight').style.cursor = 'pointer'
+            } else {
+              document.getElementById('accept-random-fight').innerHTML = 'Pending'
+              document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
+              document.getElementById('accept-random-fight').style.cursor = 'auto'
+            }
 
-          if (id === this.guild.get('id') && this.userId !== id) {
-            document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild challenged a member'
-          } else {
-            document.getElementById('random-fight-title').innerHTML = 'You have challenged someone of the other guild'
+            if (id === this.guild.get('id') && this.userId !== id) {
+              document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild challenged a member'
+            } else {
+              document.getElementById('random-fight-title').innerHTML = 'You have challenged someone of the other guild'
+            }
+            const warTime = this.currentWarTimes[0].find(el => el.get('id') === warTimeId)
+            this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
           }
-          const warTime = this.currentWarTimes[0].find(el => el.get('id') === warTimeId)
-          this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
-        }
+        } catch (e) {}
       }
     }
   },
@@ -726,7 +723,7 @@ export const GuildView = Backbone.View.extend({
   displayExplanation: function (e) {
     const index = e.currentTarget.getAttribute('for')
     const explanation = document.getElementById('explanation-' + index)
-    explanation.style.top = e.pageY
+    explanation.style.top = e.pageY - 65
     explanation.style.left = e.pageX
   },
 

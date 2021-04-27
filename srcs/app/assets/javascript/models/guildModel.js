@@ -39,11 +39,6 @@ export const Guild = Backbone.Model.extend({
       method: 'DELETE',
       headers: this.headers
     })
-
-    // return $.ajax({
-    //   url: '/api/guilds/' + this.id + '/members/' + id,
-    //   method: 'DELETE'
-    // })
   },
 
   sendInvitation: function (id) {
@@ -51,6 +46,23 @@ export const Guild = Backbone.Model.extend({
       url: '/api/guilds/' + this.id + '/invitations',
       method: 'POST',
       data: { user_id: id }
+    })
+  },
+
+  refuseInvitation: function () {
+    return $.ajax({
+      url: this.urlRoot + this.id + '/invitations',
+      method: 'DELETE'
+    })
+  },
+
+  acceptInvitation: function (userId) {
+    return $.ajax({
+      url: this.urlRoot + this.id + '/members',
+      method: 'POST',
+      data: {
+        user_id: userId
+      }
     })
   }
 

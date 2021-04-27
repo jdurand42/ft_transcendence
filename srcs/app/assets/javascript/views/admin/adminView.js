@@ -21,7 +21,6 @@ export const AdminView = Backbone.View.extend({
 
   render: function (message = '') {
     const users = JSON.parse(JSON.stringify(this.users))
-    console.log(users)
     this.context.users = users
     this.context.nbUsers = users.length
     this.templateAdmin = Handlebars.templates.adminMain

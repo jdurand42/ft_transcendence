@@ -44,3 +44,10 @@
 .error-message {
     display: none;
 }
+
+.modal .modalOpen
+.eachFriend:hover {
+    background: #090C11;
+    border-radius: 5px;
+    width: 507px;
+}

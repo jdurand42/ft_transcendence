@@ -38,13 +38,6 @@
     height: 100%;
 }
 
-.chat .modal .modalOpen
-.eachFriend:hover {
-    background: #090C11;
-    border-radius: 5px;
-    width: 507px;
-}
-
 .chat .discussions .discussions-container
 .clickable-discussions.open {
     background: rgba(39, 48, 62, 0.7);

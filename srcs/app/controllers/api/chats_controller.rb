@@ -33,6 +33,7 @@ module Api
 
     def join
       raise WrongPasswordError if @chat.privacy == 'protected' && !@chat.authenticate(params.fetch(:password))
+      raise JoinPrivateChatError if @chat.privacy == 'private'
 
       json_response(ChatParticipant.create!(user: current_user, chat: @chat), 201)
     end
@@ -49,7 +50,7 @@ module Api
       return render_not_allowed if @chat.owner.id == target_id.to_i
 
       ChatParticipant.find_by_chat_id_and_user_id(@chat.id, target_id).destroy!
-      ActionCable.server.broadcast("user#{target_id}", { action: 'chat_kicked', id: @chat.id })
+      ActionCable.server.broadcast("user_#{target_id}", { action: 'chat_kicked', id: @chat.id })
       head :no_content
     end
 
@@ -61,9 +62,11 @@ module Api
 
     def bans
       authorize @chat
-      ban_user_from_chat(@chat.id, params.fetch(:user_id), params.fetch(:duration))
-      disconnect_banned_user(params[:user])
-      json_response({ user: params[:user_id].to_i, duration: params[:duration].to_i }, 201)
+      attributes = { user_id: params.fetch(:user_id), duration: params.fetch(:duration) }
+      ban_user_from_chat(@chat.id, attributes[:user_id], attributes[:duration])
+      disconnect_banned_user(attributes[:user_id])
+      ActionCable.server.broadcast("user_#{attributes[:user_id]}", { action: 'chat_banned', id: @chat.id })
+      json_response(attributes, 201)
     end
 
     def invites

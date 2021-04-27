@@ -36,7 +36,6 @@ import { OauthService } from '../services/oauthService'
 import { MyWebSocket } from '../services/websocket'
 
 // Views for test only
-import { TestView } from '../views/testView'
 import { FetchAPI } from '../services/fetchAPI'
 
 export const Router = Backbone.Router.extend({
@@ -58,9 +57,11 @@ export const Router = Backbone.Router.extend({
   {
     administration: 'admin_view',
     home: 'home_view',
+    profile: 'profile_view',
     'profile/(:id)': 'profile_view',
     'profile/(:id)/': 'profile_view',
     guilds: 'guilds_view',
+    guild: 'guild_view',
     'guild/(:id)': 'guild_view',
     'guild/(:id)/': 'guild_view',
     'chat/:id(/:page)': 'chat_view',
@@ -174,7 +175,9 @@ export const Router = Backbone.Router.extend({
 
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
+    if (id == null) {
+      id = this.userLogged.get('id')
+    }
     this.view = this.profileController.loadView(id, this.loadWrapper())
   },
 
@@ -186,6 +189,9 @@ export const Router = Backbone.Router.extend({
 
   guild_view: function (id, page) {
     if (this.accessPage()) { return }
+    if (id == null) {
+      id = this.userLogged.get('guild_id')
+    }
     // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = this.guildController.loadView(id, this.loadWrapper())
   },
@@ -206,11 +212,6 @@ export const Router = Backbone.Router.extend({
     if (this.accessPage()) { return }
     // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = new TournamentView({ socket: this.socket, notifView: this.notifView })
-  },
-
-  test_view: function () {
-    if (this.accessPage()) { return }
-    const testView = new TestView({ model: this.loadWrapper() })
   },
 
   manage_guild_view: function () {

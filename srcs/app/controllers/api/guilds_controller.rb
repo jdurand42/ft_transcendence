@@ -36,11 +36,10 @@ module Api
 
     def destroy_members
       authorize @guild
-      return render_error('guildOwnerDeletion', 403) if mutiny?
+      target = GuildMember.find_by(user_id: params.fetch(:tid), guild: @guild)
+      return if destroy_error?(target)
 
-      owner_leaving_the_ship = true if current_user.id == params.fetch(:tid).to_i
-      GuildMember.where(user_id: params[:tid], guild_id: @guild.id).destroy_all
-      manage_ownership(@guild) if owner_leaving_the_ship
+      target.destroy! unless ownership_changed?(@guild, target)
       head :no_content
     end
 
@@ -86,14 +85,25 @@ module Api
       current_user.guild_member.officer? && @guild.owner.user_id == params[:tid].to_i
     end
 
+    def destroy_error?(target)
+      return render_error('guildOwnerDeletion', 403) if mutiny?
+      return render_error('warOngoing', 403) if current_user.guild.wars.where(opened: true).present?
+      raise ActiveRecord::RecordNotFound if target.nil?
+
+      nil
+    end
+
     def user_available?(user)
       User.find(user).status == 'online'
     end
 
-    def manage_ownership(guild)
-      guild.officers&.first&.owner!
-      guild.members&.first&.owner!
-      guild.destroy! if guild.members.empty?
+    def ownership_changed?(guild, target)
+      return unless target&.owner?
+
+      target.destroy!
+      guild.members.first&.owner! unless guild.officers.first&.owner!
+      guild.destroy! unless guild.members.count.positive?
+      true
     end
 
     def guild_params

@@ -450,7 +450,7 @@ export const DeclareWar = Backbone.View.extend({
         )
       }
       await war.acceptRefuseWar('true')
-      this.router.navigate('#guild/' + this.onId, true)
+      this.router.navigate('#guild/' + this.fromId, true)
     } catch (error) {
       console.log(error)
       document.getElementById('error').style.display = 'flex'

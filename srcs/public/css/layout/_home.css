@@ -16,11 +16,7 @@
     height: 100%;
     width: 100%;
 
-    position: absolute;
-    top: 0%;
-    left: 0%;
     cursor: pointer;
-
 }
 
 .choose-page {
@@ -28,7 +24,7 @@
     flex-direction: column;
 
     font-family: PressStart2P-Regular;
-    font-size: min(4vw, 100px);
+    font-size: clamp(16px, 4vw, 50px);
     color: var(--secondary-color);
 
     width: 100vw;

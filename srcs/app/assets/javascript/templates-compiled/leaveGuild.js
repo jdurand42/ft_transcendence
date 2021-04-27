@@ -10,6 +10,6 @@ templates['leaveGuild'] = template({"compiler":[8,">= 4.3.0"],"main":function(co
 
   return "<div id=\"leaveGuildPage\">\n<div id=\"leaveGuildConfirmation\">Are you sure you want to leave "
     + container.escapeExpression(container.lambda(((stack1 = (depth0 != null ? lookupProperty(depth0,"guild") : depth0)) != null ? lookupProperty(stack1,"name") : stack1), depth0))
-    + "?</div>\n<div><button id=\"leaveGuild\">YES</button></div>\n</div>\n";
+    + "?</div>\n<div><button class=\"button\" id=\"leaveGuild\">Yes</button></div>\n</div>\n";
 },"useData":true});
 })();

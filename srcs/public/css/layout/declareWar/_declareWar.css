@@ -17,8 +17,8 @@
 .declareWar
 .close {
     position: absolute;
-    right: 64px;
-    top: 115px;
+    right: 10%;
+    top: 7%;
 }
 
 .declareWar
@@ -28,7 +28,7 @@
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: 90px;
+    bottom: 153px;
     left: 50%;
     transform: translate(-50%, 50%);
 }
@@ -51,7 +51,7 @@
     color: var(--error-message-color);
 
     position: absolute;
-    bottom: 128px;
+    bottom: 182px;
     left:50%;
     transform: translate(-50%, 50%);
     text-align: center;
@@ -62,7 +62,7 @@
     display: flex;
     flex-direction: row;
     position: absolute;
-    top: 128px;
+    top: 7%;
     align-items: center;
     font-family: Quantico-Regular;
     left: 50%;
@@ -107,8 +107,8 @@
 
 .declareWar .declareMiddle {
     position: relative;
-    height: calc(100vh - var(--header-size) - 180px);
-    top: 180px;
+    height: 67%;
+    top: 18%;
 }
 
 .declareWar .sub-title {
