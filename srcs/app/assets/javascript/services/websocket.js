@@ -72,8 +72,7 @@ export class MyWebSocket {
         return
       }
       console.log(msg)
-      if (msg.message && msg.message.action !== undefined && (msg.message.action === 'game_invitation' ||
-			msg.action === 'guild_invitation')) {
+      if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
         try {
           notif.receiveMessage(msg.message)
         } catch (e) {
