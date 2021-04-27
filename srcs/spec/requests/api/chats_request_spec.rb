@@ -62,7 +62,7 @@ RSpec.describe 'Chats', type: :request do
         expect(response).to have_http_status(201)
         expect(Chat.first.name).to eq('DISCUSSION')
       end
-      it 'unique bad participant ID',test:true do
+      it 'unique bad participant ID' do
         post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: 0 }
         expect(response).to have_http_status(201)
       end
@@ -167,9 +167,12 @@ RSpec.describe 'Chats', type: :request do
     it 'should ban a participant' do
       timer = 2
       post participants_api_chat_url(chat.id), headers: access_token, params: { user: user, chat: chat }
-      post bans_api_chat_url(chat.id), headers: access_token, params: { user_id: user.id, duration: timer }
+      expect do
+        post bans_api_chat_url(chat.id), headers: access_token, params: { user_id: user.id, duration: timer }
+      end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_banned', id: chat.id)
       expect(response).to have_http_status(201)
       expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{user.id}")).to eq(true)
+
     end
     it 'should return an error, due to bad parameters' do
       post bans_api_chat_url(chat.id), headers: access_token, params: { userP: user, duration: 2 }
@@ -251,12 +254,11 @@ RSpec.describe 'Chats', type: :request do
     let(:user) { create(:user) }
     let(:user_2) { create(:user) }
     let(:access) { user.create_new_auth_token }
-    before do
-      post api_chats_url, headers: access_token,
-           params: { name: 'Hop', privacy: 'private', participant_ids: [user.id, user_2.id] }
-    end
-    it 'should kick a participant' do
-      delete "/api/chats/#{Chat.first.id}/participants/#{user.id}", headers: access_token
+    before { post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'private', participant_ids: [user.id, user_2.id] } }
+    it 'should kick a participant',test:true do
+      expect do
+        delete "/api/chats/#{Chat.first.id}/participants/#{user.id}", headers: access_token
+      end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_kicked', id: Chat.first.id)
       expect(response.status).to eq 204
       expect(ChatParticipant.where(user: user, chat: Chat.first).first).to eq nil
     end
