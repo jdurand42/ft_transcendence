@@ -33,6 +33,8 @@ export const DeclareWar = Backbone.View.extend({
     this.onWars = new Wars({ id: this.onId })
     this.warTimes = undefined
 
+    this.socket.updateContext(this, options.notifView)
+
     const fetchGuilds = async () => {
       const response1 = this.fromGuild.fetch()
       const response2 = this.onGuild.fetch()

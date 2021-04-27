@@ -32,8 +32,10 @@ export const ManageGuildView = Backbone.View.extend({
     this.userId = this.model.get('userLoggedId')
     this.ownerBool = false
     this.officerBool = false
-    console.log(this.model.get('userLoggedId'))
     this.router = this.model.get('router')
+    this.socket = this.model.get('socket').get('obj')
+    this.notifView = this.model.get('notifView').get('obj')
+    this.socket.updateContext(this, this.notifView)
     this.load()
   },
   el: $('#app'),

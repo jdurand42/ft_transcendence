@@ -6,10 +6,13 @@ export const AdminView = Backbone.View.extend({
     'click .banned': 'authorize',
     'click .administrator': 'administrator'
   },
-  initialize: function () {
+  initialize: function (options) {
     this.users = new Users()
     this.context = {}
     this.context.users = []
+
+    this.socket = options.socket
+    this.socket.updateContext(this, options.notifView)
 
     const fetch = async () => {
       await this.users.fetch()

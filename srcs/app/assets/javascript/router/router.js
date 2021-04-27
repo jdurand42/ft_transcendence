@@ -158,7 +158,7 @@ export const Router = Backbone.Router.extend({
 
   admin_view: function () {
     if (this.accessPage()) { return }
-    const adminView = new AdminView({ model: this.loadWrapper() })
+    const adminView = new AdminView({ model: this.loadWrapper(), socket: this.socket, notifView: this.notifView })
   },
 
   oauth_view: function (url) {
@@ -223,7 +223,7 @@ export const Router = Backbone.Router.extend({
 
   declare_war: function (fromId, onId, warId) {
     if (this.accessPage()) { return }
-    this.view = new DeclareWar({ fromId: fromId, onId: onId, warId: warId, router: this })
+    this.view = new DeclareWar({ fromId: fromId, onId: onId, warId: warId, router: this, socket: this.socket, notifView: this.notifView })
   },
 
   playGame: function (gameId) {
