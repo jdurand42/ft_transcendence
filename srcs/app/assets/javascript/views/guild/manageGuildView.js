@@ -114,15 +114,12 @@ export const ManageGuildView = Backbone.View.extend({
       const guild = new Guild()
       const createAGuild = async () => {
         try {
-<<<<<<< HEAD
 	        const response = await guild.create(name, anagram)
-          await this.guilds.fetch() && await this.users.fetch()
-=======
-          await guild.create(name, anagram)
+          // await this.guilds.fetch() && await this.users.fetch()
+          // await guild.create(name, anagram)
           const response1 = this.guilds.fetch()
           const response2 = this.users.fetch()
           await response1 && await response2
->>>>>>> 4304a55e0ceb8386f7e52563f9800d3fed49ac1a
           this.chooseView()
         } catch (error) {
           this.$el.html(Handlebars.templates.createGuild({}))
@@ -136,12 +133,9 @@ export const ManageGuildView = Backbone.View.extend({
   getPermissionsBool: function () {
     this.ownerBool = (parseInt(this.userId) === this.guild.get('owner_id')[0])
     this.officerBool = (this.guild.get('officer_ids').includes(parseInt(this.userId)) || this.ownerBool)
-<<<<<<< HEAD
     this.memberBool = false
     console.log(this.ownerBool)
     console.log(this.officerBool)
-=======
->>>>>>> 4304a55e0ceb8386f7e52563f9800d3fed49ac1a
   },
 
   manageGuildView: function () {
@@ -210,41 +204,15 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const ids = this.getSelectedBoxes()
         for (let i = 0; i < ids.length; i++) {
-          const response = await this.createRequest('/members' + '/' + ids[i], 'POST')
-          // const response = await this.guild.sendInvitation(ids[i])
+          // const response = await this.createRequest('/members' + '/' + ids[i], 'POST')
+          const response = await this.guild.sendInvitation(ids[i])
         }
         this.closeModal(null)
         await this.users.fetch() && await this.guilds.fetch()
-<<<<<<< HEAD
         this.getGuild()
         this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
         // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
-=======
         this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
-      } catch (e) {
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
-      }
-    }
-    inviteMember()
-  },
-
-  sendInvitation: function () {
-    const nickname = document.getElementById('nonMemberToInvite').value
-    let id
-    if (this.users.findWhere({ nickname: nickname })) {
-      id = this.users.findWhere({ nickname: nickname }).id
-    } else {
-      return
-    }
-    const inviteMember = async () => {
-      try {
-        const response = await this.guild.sendInvitation(id)
-        console.log('invitation successfully sent')
-        this.closeModal(null)
-        await this.users.fetch() && await this.guilds.fetch()
-        this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
->>>>>>> 4304a55e0ceb8386f7e52563f9800d3fed49ac1a
       } catch (e) {
         this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
       }
