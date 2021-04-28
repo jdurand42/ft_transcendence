@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { Guild } from '../../models/guildModel.js'
 
 export const ManageGuildView = Backbone.View.extend({
@@ -11,6 +12,7 @@ export const ManageGuildView = Backbone.View.extend({
     'click .updateGuildName': 'updateGuildName',
     'click .updateGuildAnagram': 'updateGuildAnagram',
     'click #leaveGuild': 'leaveGuild',
+    'click #leaveGuildSideBar': 'leaveGuildSideBar',
     /* 'keyup #nonMemberToInvite': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToInvite', '#inviteMemberResult') },
     'keyup #memberToKick': function () { this.nicknameSearch(this.membersList, 'memberToKick', '#KickMemberResult') },
     'keyup #memberToPromote': function () { this.nicknameSearch(this.membersList, 'memberToPromote', '#promoteMemberResult') },
@@ -22,46 +24,74 @@ export const ManageGuildView = Backbone.View.extend({
     'click .nicknameSearchElement': function (e) { this.clickNickname(e) },
     'click .manageGuildSideBarContentEl': function (e) { this.sideBar(e) },
     'click #inviteMemberModalButton': function (e) { this.modal(e) },
-    'click .close': function (e) { this.closeModal(e) }
+    'click .close': function (e) { this.closeModal(e) },
+    'click .eachFriend': 'selectCheckbox'
   },
-  el: $('#app'),
-  initialize: function () {
+  initialize: function (options) {
     this.guilds = this.model.get('guilds').get('obj')
     this.users = this.model.get('users').get('obj')
     this.userId = this.model.get('userLoggedId')
     this.ownerBool = false
     this.officerBool = false
-    console.log(this.model.get('userLoggedId'))
     this.router = this.model.get('router')
+    this.id = options.id
+    this.guild = undefined
+    this.adminBool = false
+    this.socket = this.model.get('socket').get('obj')
+    this.notifView = this.model.get('notifView').get('obj')
+    this.socket.updateContext(this, this.notifView)
     this.load()
   },
+  el: $('#app'),
 
   load: function () {
     const load = async () => {
       try {
-        await this.users.fetch() &&
-        await this.guilds.fetch()
+        const response1 = this.users.fetch()
+        const response2 = this.guilds.fetch()
+        await response1 && await response2
         this.chooseView()
       } catch (e) {
-        console.log(e)
         this.$el.html('<p>There was a problem while loading the page</p>')
       }
     }
     load()
   },
 
+  leaveGuildSideBar: function () {
+    this.$el.find('#manageGuildContent').html(Handlebars.templates.leaveGuild(this.loadContext()))
+  },
+
   sideBar: function (e) {
     if (e.target.textContent === 'Owner') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+      document.getElementById('owner').classList.add('open')
+      document.getElementById('officer').classList.remove('open')
     } else if (e.target.textContent === 'Officer') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
-    } else if (e.target.textContent === 'Leave Guild') {
-      this.$el.find('#manageGuildContent').html(Handlebars.templates.leaveGuild(this.loadContext()))
+      document.getElementById('officer').classList.add('open')
+      document.getElementById('owner').classList.remove('open')
     }
   },
 
   chooseView: function () {
-    if (this.users.get(this.userId).get('guild_id') === undefined ||
+    if (this.id !== undefined && this.id !== null &&
+		!isNaN(this.id) && this.users.get(this.userId).get('admin')) {
+      try {
+        this.adminBool = true
+        this.guild = this.guilds.get(this.id)
+        if (this.guild === undefined) {
+          throw 'This guild doesnt exists'
+        }
+      } catch (e) {
+        this.guild = undefined
+        this.adminBool = false
+      }
+    }
+    if (this.adminBool) {
+      // this.guild = this.guilds.get(this.id)
+      this.manageAdminView()
+    } else if (this.users.get(this.userId).get('guild_id') === undefined ||
     this.users.get(this.userId).get('guild_id') === null) {
       this.createGuildView()
     } else {
@@ -71,7 +101,6 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   createGuildView: function () {
-    console.log('create your guild')
     this.$el.html(Handlebars.templates.createGuild({}))
   },
 
@@ -85,14 +114,12 @@ export const ManageGuildView = Backbone.View.extend({
       const createAGuild = async () => {
         try {
 	        const response = await guild.create(name, anagram)
-          // this.users.fetch() // mettre a jour juste coté front
-          // this.guilds.fetch()
-          /* this.users.get(this.userId).set({ guild_id: response.id })
-          this.guilds.add(response)
-          console.log(response) */
-          await this.guilds.fetch() && await this.users.fetch()
+          // await this.guilds.fetch() && await this.users.fetch()
+          // await guild.create(name, anagram)
+          const response1 = this.guilds.fetch()
+          const response2 = this.users.fetch()
+          await response1 && await response2
           this.chooseView()
-          // this.preload()
         } catch (error) {
           this.$el.html(Handlebars.templates.createGuild({}))
           this.renderError(error, '#errorField', Handlebars.templates.guildError)
@@ -102,36 +129,48 @@ export const ManageGuildView = Backbone.View.extend({
     }
   },
 
-  getPermissionsBool () {
+  getPermissionsBool: function () {
     this.ownerBool = (parseInt(this.userId) === this.guild.get('owner_id')[0])
     this.officerBool = (this.guild.get('officer_ids').includes(parseInt(this.userId)) || this.ownerBool)
-    console.log(this.ownerBool)
-    console.log(this.officerBool)
+    this.memberBool = false
   },
 
   manageGuildView: function () {
     /* this.ownerBool = (this.id == this.guilds.get('owner_id'))
     this.officerBool = (this.guild.get('officer_ids').includes(this.id) || this.id === this.guilds.get('owner_id')) */
     this.getPermissionsBool()
-    this.$el.html(Handlebars.templates.manageGuild({ owner: this.ownerBool, officer: this.officerBool }))
+    this.$el.html(Handlebars.templates.manageGuild({ owner: this.ownerBool, officer: this.officerBool, member: true }))
     this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
     if (this.ownerBool) {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+      document.getElementById('owner').classList.add('open')
     } else if (this.officerBool) {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
+      document.getElementById('officer').classList.add('open')
     } else {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.leaveGuild(this.loadContext()))
     }
   },
 
+  manageAdminView: function () {
+    this.ownerBool = true
+    this.officerBool = true
+    this.$el.html(Handlebars.templates.manageGuild({ owner: false, officer: false, admin: this.adminBool }))
+    this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
+    this.$el.find('#manageGuildContent').html(Handlebars.templates.adminPannel(this.loadContext()))
+  },
+
   loadContext: function () {
-    const context = { guild: JSON.parse(JSON.stringify(this.guild)), officers: Array(), members: Array(), ownerBool: this.ownerBool, officerBool: this.officerBool }
+    const context = { guild: JSON.parse(JSON.stringify(this.guild)), officers: Array(), members: Array(), ownerBool: this.ownerBool, officerBool: this.officerBool, adminBool: this.adminBool }
     this.list()
     if (this.ownerBool) {
       context.officers = this.officersList
       context.members = this.membersList
     } else if (this.officerBool) {
       context.members = this.membersList
+    }
+    if (this.adminBool) {
+      context.owner = JSON.parse(JSON.stringify(this.users.get(this.guild.get('owner_id')[0])))
     }
     return context
   },
@@ -141,12 +180,9 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.createRequest('/members/' + this.userId, 'DELETE')
         this.users.get(this.userId).set({ guild_id: null })
-        this.$el.html('<p>You successfully leaved the guild</p>')
         this.ownerBool = false
         this.officerBool = false
-        console.log('ici')
       } catch (e) {
-        console.log(e)
         this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
       } finally {
       }
@@ -154,49 +190,28 @@ export const ManageGuildView = Backbone.View.extend({
     leaveGuild()
   },
 
-  inviteMember: function () {
-    const nickname = document.getElementById('nonMemberToInvite').value
-    let id
-    if (this.users.findWhere({ nickname: nickname })) {
-    	id = this.users.findWhere({ nickname: nickname }).id
-    } else {
-      console.log('error') // a gerer
-      return
-    }
+  getSelectedBoxes: function () {
+    const checkboxes = document.getElementsByClassName('checkbox')
+    const selectedCboxes = Array.prototype.slice.call(checkboxes).filter(ch => ch.checked === true)
+    return Array.from(selectedCboxes, x => x.value)
+  },
+
+  inviteMember: function (e) {
     const inviteMember = async () => {
       try {
-        const response = await this.createRequest('/members' + '/' + id, 'POST')
+        const ids = this.getSelectedBoxes()
+        for (let i = 0; i < ids.length; i++) {
+          // const response = await this.createRequest('/members' + '/' + ids[i], 'POST')
+          const response = await this.guild.sendInvitation(ids[i])
+        }
         this.closeModal(null)
         await this.users.fetch() && await this.guilds.fetch()
-        this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+        this.getGuild()
+        this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
+        // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
         this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
-      }
-    }
-    inviteMember()
-  },
-
-  sendInvitation: function () {
-    const nickname = document.getElementById('nonMemberToSendInvitation').value
-    let id
-    if (this.users.findWhere({ nickname: nickname })) {
-    	id = this.users.findWhere({ nickname: nickname }).id
-    } else {
-      console.log('error') // a gerer
-      return
-    }
-    const inviteMember = async () => {
-      try {
-        const response = await this.createRequest('/invitations/', 'POST', { user_id: id })
-        this.$el.find('#guildGlobalError').html('<p>Invitation successfully sent</p>')
-      } catch (e) {
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
-        if (e.status == 200) {
-          /* this.updateLists([this.membersList, this.nonMembersList], nickname, id)
-          this.users.get(id).set({ guild_id: this.guild.id }) */
-        }
-      } finally {
       }
     }
     inviteMember()
@@ -208,8 +223,9 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.createRequest('/members/' + id, 'DELETE')
         await this.users.fetch() && await this.guilds.fetch()
-        this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
+        this.getGuild()
+        this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
+        // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
         console.log(e)
       } finally {
@@ -226,11 +242,12 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.createRequest('/officers/' + id, 'POST')
         await this.users.fetch() && await this.guilds.fetch()
-        this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+        this.getGuild()
+        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
+        // this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
-        console.log(error)
-        this.renderError(error, '#guildGlobalError', Handlebars.templates.guildError)
+        console.log(e)
+        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
       }
     }
     promoteMember()
@@ -244,8 +261,9 @@ export const ManageGuildView = Backbone.View.extend({
         const officers = this.guild.get('officer_ids')
         const response = await this.createRequest('/officers/' + id, 'DELETE')
         await this.users.fetch() && await this.guilds.fetch()
-        this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+        this.getGuild()
+        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
+        // this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
       }
@@ -284,11 +302,6 @@ export const ManageGuildView = Backbone.View.extend({
 
   nicknameSearch: function (list, input, target) {
     const value = document.getElementById(input).value
-    console.log(value)
-    /* if (!value.length) {
-      this.$el.find(target).html(Handlebars.templates.nicknameSearchResult({}))
-      return
-    } */
     this.search = list.slice().filter(el => el.nickname.toLowerCase().includes(value.toLowerCase()) === true)
     const context = { search: JSON.parse(JSON.stringify(this.search)), input: input }
     this.$el.find(target).html(Handlebars.templates.nicknameSearchResult(context))
@@ -314,26 +327,26 @@ export const ManageGuildView = Backbone.View.extend({
 
   renderError: function (error, target, template) {
     this.$el.find(target).html(template({
-      status: error.status,
-      statusText: error.statusText,
-      body: JSON.stringify(error.responseJSON)
+      // status: error.status,
+      // statusText: error.statusText,
+      body: JSON.stringify(error.responseJSON.message)
     }))
   },
 
   list: function () {
     if (!this.ownerBool && !this.officerBool) { return }
-    this.nonMembersList = Array()
-    this.membersList = Array()
-    this.officersList = Array()
+    this.nonMembersList = []
+    this.membersList = []
+    this.officersList = []
     for (let i = 0; i < this.users.length; i++) {
       if (this.officerBool && (this.users.at(i).get('guild_id') === undefined ||
-			this.users.at(i).get('guild_id') === null)) {
+          this.users.at(i).get('guild_id') === null)) {
         this.nonMembersList.push(JSON.parse(JSON.stringify(this.users.at(i))))
       }
     }
     for (let i = 0; i < this.guild.get('member_ids').length; i++) {
       if (this.users.get(this.guild.get('member_ids')[i]).get('id') != this.guild.get('owner_id') &&
-			!this.guild.get('officer_ids').includes(this.guild.get('member_ids')[i])) {
+          !this.guild.get('officer_ids').includes(this.guild.get('member_ids')[i])) {
         this.membersList.push(JSON.parse(JSON.stringify(this.users.get(this.users.get(this.guild.get('member_ids')[i])))))
       }
     }
@@ -344,15 +357,13 @@ export const ManageGuildView = Backbone.View.extend({
 
   updateLists: function (l, nickname, id) {
     if (l[0].length > 0) {
-      console.log(1)
       l[0].push({
         nickname: nickname,
         id: id
-	 })
+      })
     }
-	 if (l[1].length > 0) {
-		 console.log(2)
-	 for (let i = 0; i < l[1].length; i++) {
+    if (l[1].length > 0) {
+      for (let i = 0; i < l[1].length; i++) {
         if (l[1][i].id === id) {
           l[1].splice(i, 1)
           break
@@ -362,18 +373,37 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   modal: function (e) {
+    const value = document.getElementById('nonMemberToInvite').value
+    this.search = this.nonMembersList.slice().filter(el => el.nickname.toLowerCase().includes(value.toLowerCase()) === true)
+    const context = {}
+    context.member = []
+    context.member = JSON.parse(JSON.stringify(this.search))
     const modal = document.getElementById('inviteMemberModal')
-    modal.style.display = 'block'
-    this.inviteModalSearch(e)
-    // this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#inviteMemberResult')
+    this.updateHTML('inviteMemberModal', Handlebars.templates.officerPannel(context))
+    modal.style.display = 'flex'
+  },
+
+  selectCheckbox: function (e) {
+    const id = e.currentTarget.getAttribute('for')
+    const checkbox = document.getElementById(id)
+    if (checkbox.checked === true) { checkbox.checked = false } else { checkbox.checked = true }
+  },
+
+  updateHTML: function (div, template) {
+    const html = template
+    const found = $(html).find('#' + div)[0].innerHTML
+    const currentDiv = document.getElementById(div)
+    currentDiv.innerHTML = found
   },
 
   inviteModalSearch: function (e) {
     const value = document.getElementById('nonMemberToInvite').value
-    console.log(value)
     this.search = this.nonMembersList.slice().filter(el => el.nickname.toLowerCase().includes(value.toLowerCase()) === true)
-    const context = { search: JSON.parse(JSON.stringify(this.search)), input: 'nonMemberToInvite' }
-    this.$el.find('#inviteMemberResult').html(Handlebars.templates.nicknameSearchResult(context))
+    const context = {}
+    context.member = []
+    context.member = JSON.parse(JSON.stringify(this.search))
+    const modal = document.getElementById('inviteMemberModal')
+    this.updateHTML('inviteMemberResult', Handlebars.templates.officerPannel(context))
   },
 
   closeModal: function (e) {
@@ -387,5 +417,21 @@ export const ManageGuildView = Backbone.View.extend({
       method: method,
       data: data
     })
+  },
+
+  getGuild: function () {
+    if (this.adminBool) {
+      this.guild = this.guilds.get(this.id)
+    } else {
+      this.guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
+    }
+  },
+
+  getTemplate: function (template) {
+    if (this.adminBool) {
+      this.$el.find('#manageGuildContent').html(Handlebars.templates.adminPannel(this.loadContext()))
+    } else {
+      this.$el.find('#manageGuildContent').html(template)
+    }
   }
 })

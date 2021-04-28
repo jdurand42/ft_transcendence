@@ -4,6 +4,7 @@
     height: 300px;
     position: relative;
     top: -85px;
+    width: 100vw;
 }
 .two_factor input {
     margin-bottom: 25px;

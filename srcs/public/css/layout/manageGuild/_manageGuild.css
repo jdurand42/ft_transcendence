@@ -1,7 +1,8 @@
 .manageGuildContainer {
 	display: flex;
+	flex-direction: row;
 	color: white;
-	font-family: roboto;
+	font-family: Roboto-Regular;
 	height: 100%;
 	width:100vw;
 	background: url('../../../images/background.jpg');
@@ -10,16 +11,14 @@
 	background-attachment: fixed;
 
 	overflow-x: hidden;
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .manageGuildContainer .manageGuildSideBar {
-	position: absolute;
 	display: flex;
 	width: 329px;
-	height: 100vh;
+	min-height: calc(100vh - var(--header-size));
 	left: 0px;
-	top: 82px;
 	background-color: transparent;
 	border-right: 1px solid #364050;
 	border-top: 1px solid #364050;
@@ -29,55 +28,113 @@
 }
 
 .manageGuildContainer .manageGuildContentContainer {
-	position: absolute;
+	background: rgba(15, 24, 37, 0.37);
+	width: calc(100vw - 330px);
+	overflow-x: hidden;
 	display: flex;
-	width: 100vw - 329px;
+	flex-direction: column;
+
+	border-top: 1px solid #313236;
+
+	/* position: absolute;
+	display: flex;
+	width: 100%;
 	height: 100vh;
 	left: 329px;
-	top: 82px;
 	min-width: 100vw - var(--header-size);
 	background-color: transparent;
 	border-top: 1px solid #364050;
 
 	overflow: hidden;
-	overflow-x: hidden;
+	overflow-x: hidden; */
+}
+
+.manageGuildContainer .save {
+	width: 95px;
+    height: 29px;
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 14px;
+	margin-bottom: 32px;
+}
+
+.manageGuildContainer .button {
+    height: 29px;
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    font-size: 14px;
 }
 
 .manageGuildContainer .manageGuildContentContainer #createGuildContent {
-	padding-left: 71px;
+	/* padding-left: 71px;
 	padding-top: 60px;
+	width: 100%; */
 }
 
 .manageGuildContainer .manageGuildContentContainer .manageGuildContent {
-	padding-left: 71px;
-	padding-top: 60px;
+	/* padding-left: 71px;
+	padding-top: 60px; */
+}
+
+.manageGuildSideBar {
+	color: white;
+	font-family: Roboto-Regular;
+
+	/* padding-top: 71px; */
+	/* margin-left: auto; */
+	/* margin-right: 10px; */
+
+	width: 330px;
+
+	font-size: 18px;
+	line-height: 21px;
+
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
 }
 
 .manageGuildSideBar .manageGuildSideBarContent {
-	color: white;
-	font-family: roboto;
-	padding-top: 71px;
-	margin-left: auto;
-	margin-right: 10px;
-
-	font-style: normal;
-	font-weight: normal;
-	font-size: 18px;
-	line-height: 21px;
+	margin-top: 64px;
+	margin-right: 8px;
+	cursor: pointer;
 }
 
 .manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl {
-	padding-bottom: 10px;
-	padding-top: 10px;
+	width: 170px;
+	height: 40px;
+
+	margin-top: 8px;
+    margin-bottom: 8px;
+	border-radius: 2px;
+}
+
+.manageGuildSideBar .manageGuildSideBarContent .open {
+	background: #202529;
+}
+
+
+.manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl p {
+	padding: 8px;
+	margin: 0;
 }
 
 .manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl:hover {
-	text-decoration: underline;
+    background: #364050;
+}
+
+.manageGuildSideBar .manageGuildSideBarContent .manageGuildSideBarContentEl:hover {
 }
 
 .manageGuildSideBar .manageGuildSideBarContent #leaveGuildSideBar {
 	color:  #FA0808;
 	border-top: 1px solid #364050;
+	padding: 8px;
+}
+
+.manageGuildContent #leaveGuildPage {
+	margin-top: 64px;
+	margin-left: 32px;
 }
 
 .manageGuildContent #leaveGuildPage div {
@@ -86,20 +143,35 @@
 }
 
 .manageGuildTitle {
-	font-style: bold;
+	margin-left: 64px;
+	font-size: 18px;
 }
 
-.manageGuildTitle #manageGuildExitButton {
-	padding-left: 100px;
+.manageGuildTitle .subtitle {
+	color: #C4C4C4;
+	font-size: 14px;
+	margin-bottom: 16px;
 }
+
+/* .manageGuildTitle #manageGuildExitButton {
+	position: relative;
+	top: 32px;
+	left: 495px;
+	width: 35px;
+	height: 57px;
+} */
 
 .manageGuildForm {
-	padding-top: 30px;
+	/* padding-top: 30px; */
 }
 
 .manageGuildForm div {
-	padding-top: 5px;
-	padding-bottom: 5px;
+	/* padding-top: 5px;
+	padding-bottom: 5px; */
+}
+
+.manageGuildTextInput {
+	margin-bottom: 32px;
 }
 
 .createGuild {
@@ -114,7 +186,7 @@
 	box-sizing: border-box;
 	border-radius: 3px;
 
-	font-family: Roboto;
+	font-family: Roboto-Regular;
 	font-style: normal;
 	font-weight: normal;
 	font-size: 14px;
@@ -135,10 +207,15 @@
 }
 
 .manageGuildTitle #guildNameIntro {
-	font-family: Roboto;
+	font-family: Roboto-Regular;
 	font-style: normal;
 	font-weight: normal;
 	font-size: 18px;
+
+}
+
+.manageGuildTitle .title {
+	margin-bottom: 32px;
 }
 
 .manageGuildTitle #guildNameIntro a {
@@ -147,41 +224,48 @@
 }
 
 .manageGuildTitle #guildNameIntro a:hover {
-	text-decoration: underline;
+	/* text-decoration: underline; */
 }
 
 .manageGuildTitle #guildAnagramIntro {
-	font-family: Roboto;
-	font-style: normal;
-	font-weight: normal;
-	font-size: 12px;
+	font-family: Roboto-Regular;
 }
 
 .manageGuildContent .manageGuildMembersList {
 	list-style: none;
 	border-top: 1px solid #364050;
+	width: 90%;
+	padding: 0;
+}
+
+#inviteMemberModalButton {
+	margin-top: 32px;
 }
 
 .manageGuildContent .manageGuildMembersList li {
 	display: grid;
-  grid-gap: 75px;
-  grid-auto-rows: 50px;
-  grid-template-areas:
+  	grid-gap: 75px;
+  	grid-auto-rows: 50px;
+  	grid-template-areas:
     "a a b b c c";
-  align-items: start;
-	align-items: start;
+  	align-items: start;
 	padding-right: 30px;
-	/*border-bottom: 1px solid #364050;*/
 	margin-top: 15px;
 }
 
 
-.manageGuildContent .memberProfilePicture {
+.manageGuildContent .image-container {
 	height: 34px;
 	width: 43px;
 	grid-area: a;
 	align-self: center;
  	justify-self: center;
+}
+
+.manageGuildContent .memberProfilePicture {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .manageGuildContent .manageGuildMembersList span {
@@ -220,12 +304,23 @@
 }
 
 /* The Close Button */
-.manageGuildModal .close {
+.manageGuildContainer .close {
   color: #aaa;
   float: right;
 	/*padding-right: 350px;*/
   font-size: 28px;
   font-weight: bold;
+
+  cursor: pointer;
+}
+
+#ManageGuildExitButton {
+	position: relative;
+	top: 32px;
+	left: 538px;
+	width: 35px;
+	height: 57px;
+	cursor: pointer;
 }
 
 .manageGuildModal .close:hover,

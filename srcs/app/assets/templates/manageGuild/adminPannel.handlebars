@@ -1,0 +1,68 @@
+<div class="closeParams exitButton" id="ManageGuildExitButton" onclick="window.location='#guild';">
+	<img src="./icons/esc.svg" class="">
+</div>
+<div class="manageGuildTitle">
+	<div class="title">
+	<span id="guildNameIntro"> MANAGE
+		<a href="#guild/{{this.guild.id}}/">{{this.guild.name}}</a>
+	</span> <span id="guildAnagram">[{{this.guild.anagram}}]</span>
+	</div>
+
+	<div class="manageGuildForm">
+
+		<div>OFFICERS</div>
+		<ul class="manageGuildMembersList" id="officersList">
+			{{#each this.officers}}
+			<li>
+				<div class="image-container">
+					<img class="memberProfilePicture" src={{this.image_url}}></img>
+				</div>
+				<span>{{this.nickname}}</span><button class="button" id="relegateMember" value="{{this.id}}">Relegate</button>
+			</li>
+			{{/each}}
+		</ul>
+
+		<div>MEMBERS</div>
+		<ul class="manageGuildMembersList" id="membersList">
+			{{#each this.members}}
+			<li>
+				<div class="image-container">
+					<img class="memberProfilePicture" src={{this.image_url}}></img>
+				</div>
+
+				<span>{{this.nickname}}</span><button class="button" id="promoteMember" value="{{this.id}}">Promote</button>
+			</li>
+			{{/each}}
+		</ul>
+
+{{#if this.ownerBool}}
+<div>OWNER AND OFFICERS</div>
+<ul class="manageGuildMembersList" id="membersList">
+	<li>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.owner.image_url}}></img>
+		</div>
+		<span>{{this.owner.nickname}}</span><button class="button" id="kickMember" value="{{this.owner.id}}">Kick</button>
+	</li>
+	{{#each this.officers}}
+	<li>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.image_url}}></img>
+		</div>
+		<span>{{this.nickname}}</span><button class="button" id="kickMember" value="{{this.id}}">Kick</button>
+	</li>
+	{{/each}}
+</ul>
+{{/if}}
+
+<div>MEMBERS</div>
+<ul class="manageGuildMembersList" id="membersList">
+	{{#each this.members}}
+	<li>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.image_url}}></img>
+		</div>
+		<span>{{this.nickname}}</span><button class="button" id="kickMember" value="{{this.id}}">Kick</button>
+	</li>
+	{{/each}}
+</ul>

@@ -16,9 +16,37 @@
     height: 100%;
     width: 100%;
 
-    position: absolute;
-    top: 0%;
-    left: 0%;
     cursor: pointer;
+}
 
+.choose-page {
+    display: flex;
+    flex-direction: column;
+
+    font-family: PressStart2P-Regular;
+    font-size: clamp(16px, 4vw, 50px);
+    color: var(--secondary-color);
+
+    width: 100vw;
+    height: calc(100vh - var(--header-size));
+
+    margin-top: 20vh;
+}
+
+.choose-page .choose-a-game {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 25vh;
+}
+
+.choose-page .choose {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+
+    color: var(--primary-color);
+    cursor: pointer;
 }

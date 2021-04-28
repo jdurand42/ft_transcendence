@@ -25,13 +25,17 @@ export const DeclareWar = Backbone.View.extend({
     this.fromId = options.fromId
     this.onId = options.onId
     this.warId = options.warId
-    this.negoWar = undefined
     this.router = options.router
+    this.notifView = options.notifView
+    this.socket = options.socket
+    this.negoWar = undefined
     this.fromGuild = new Guild({ id: this.fromId })
     this.onGuild = new Guild({ id: this.onId })
     this.fromWars = new Wars({ id: this.fromId })
     this.onWars = new Wars({ id: this.onId })
     this.warTimes = undefined
+
+    this.socket.updateContext(this, this.notifView)
 
     const fetchGuilds = async () => {
       const response1 = this.fromGuild.fetch()
@@ -420,19 +424,18 @@ export const DeclareWar = Backbone.View.extend({
       ladderEffort = true
     }
 
+    console.log(this.negoWar)
     let war
     if (this.warId == undefined) {
       war = new War()
     } else {
       war = this.negoWar
+      await this.negoWar.acceptRefuseWar('false')
       for (let i = 0; i < this.warTimes.length; i++) {
         await this.warTimes.at(i).delete(this.negoWar.get('id'))
       }
     }
     try {
-      console.log(this.startDate)
-      console.log(this.startDate.toISOString())
-      console.log(this.startDate.toString())
       const response = await war.createWar(
         Number(this.context.onId),
         this.startDate.toString(),
@@ -445,12 +448,12 @@ export const DeclareWar = Backbone.View.extend({
           day[i].innerText,
           Number(fromHH[i].value),
           Number(toHH[i].value),
-          Number(maxUnanswered[i].value),
-          Number(timeToAnswer[i].value)
+          Number(timeToAnswer[i].value),
+          Number(maxUnanswered[i].value)
         )
       }
       await war.acceptRefuseWar('true')
-      this.router.navigate('#guild/' + this.onId, true)
+      this.router.navigate('#guild/' + this.fromId, true)
     } catch (error) {
       console.log(error)
       document.getElementById('error').style.display = 'flex'

@@ -2,12 +2,18 @@
 	<div class="manageGuildSideBar">
 		<div class="manageGuildSideBarContent">
 			{{#if this.owner}}
-				<div class="manageGuildSideBarContentEl">Owner</div>
+				<div class="manageGuildSideBarContentEl" id="owner">
+					<p>Owner</p>
+				</div>
 			{{/if}}
 			{{#if this.officer}}
-				<div class="manageGuildSideBarContentEl">Officer</div>
+				<div class="manageGuildSideBarContentEl" id="officer">
+					<p>Officer</p>
+				</div>
 			{{/if}}
-			<div class="manageGuildSideBarContentEl" id="leaveGuildSideBar">Leave Guild</div>
+			{{#if this.member}}
+			<div class="" id="leaveGuildSideBar">Leave Guild</div>
+			{{/if}}
 		</div>
 	</div>
 	<div class="manageGuildContentContainer">

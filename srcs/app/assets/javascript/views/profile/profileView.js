@@ -44,7 +44,7 @@ export const ProfileView = Backbone.View.extend({
     this.socket = this.model.get('socket').get('obj')
     this.notifView = this.model.get('notifView').get('obj')
     this.myAchievements = new Achievements()
-    this.userId = this.model.get('userLoggedId')
+    this.userId = Number(this.model.get('userLoggedId'))
     this.myTournamentGames = new GameRecords()
     this.myLadderGames = new GameRecords()
     this.myDuelGames = new GameRecords()
@@ -55,6 +55,8 @@ export const ProfileView = Backbone.View.extend({
     this.socket.updateContext(this, this.notifView)
 
     // this.myWarGames = new GameRecords()
+    console.log(this.id)
+    console.log(this.userId)
     if (this.id === null) {
       this.id = this.userId
     }
@@ -148,8 +150,7 @@ export const ProfileView = Backbone.View.extend({
         return { top: _y, left: _x }
       }
       const off = getOffset(e.currentTarget)
-      // dropList.style.top = off.top + 45 - e.screenY
-      dropList.style.top = e.pageY + 30
+      dropList.style.top = e.pageY - 61
       dropList.style.position = 'absolute'
       dropList.style.left = off.left
       dropList.style.display = 'block'
@@ -488,7 +489,7 @@ export const ProfileView = Backbone.View.extend({
     let guild
     if (this.users.get(this.id).get('guild_id')) {
       guild = this.guild
-    } else if (this.userId === this.id) {
+    } else if (this.userId == this.id) {
       this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       return
     } else {
@@ -524,7 +525,7 @@ export const ProfileView = Backbone.View.extend({
     context.membersNumber = this.membersGuild.length
 
     this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
-    if (this.userId === this.id) {
+    if (this.userId == this.id) {
       if (guild.get('owner_id')[0] == this.userId || guild.get('officer_ids').some(el => el == this.userId) === true) {
         this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
       }
@@ -557,8 +558,8 @@ export const ProfileView = Backbone.View.extend({
       context: this,
       success: function (response) {
         // this.gameId = response.id
-        window.location.href = `#game/${response.id}`
         // navigate to game/{{this.gameId}}
+        console.log('game successfully created')
       }
     })
   },
@@ -569,7 +570,7 @@ export const ProfileView = Backbone.View.extend({
       this.requestDuel()
     } catch (e) {
       console.log(e)
-      // gérer dans la notif l'erreur?
+      // gérer dans la notif l'erreur? genre un print error dedans?
     }
   },
 
@@ -578,7 +579,20 @@ export const ProfileView = Backbone.View.extend({
     // check if same user
     // get user game
     // go spectate
-
+    const getGame = async () => {
+    		try {
+        // pending ou en cours?
+        const game = this.games.fetchInProgressGame(this.id)
+        await game
+        console.log(game)
+        if (game) {
+          window.location.href = '#game/' + game.get('id')
+        }
+    	} catch (e) {
+      	console.log(e)
+    	}
+    }
+    getGame()
   },
 
   followUser: function (e) {
@@ -623,8 +637,10 @@ export const ProfileView = Backbone.View.extend({
     const sendInvitation = async () => {
       try {
         const response = await guild.sendInvitation(this.id)
-        this.$el.find('#sendInvitationButton').html('<span>Invited</span>')
+        this.$el.find('#sendInvitationButton').html('<div class="invitation">You have sent an invitation</div>')
       } catch (e) {
+        document.getElementById('error-message').style.display = 'block'
+        document.getElementById('error-message').innerHTML = e.responseJSON.errors
       }
     }
     sendInvitation()

@@ -32,3 +32,8 @@
     font-family: Roboto-Medium;
     src: url(../../fonts/Roboto-Medium.ttf);
 }
+
+@font-face {
+    font-family: PressStart2P-Regular;
+    src: url(../../fonts/PressStart2P-Regular.ttf);
+}

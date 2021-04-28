@@ -1,6 +1,6 @@
 .warTimes
 .warTimesTitle {
-    margin-bottom: 32px;
+    margin-bottom: 3%;
 }
 
 .warTimes
@@ -16,7 +16,7 @@
     flex-direction: column;
     align-items: center;
 
-    max-height: calc(100vh - 541px);
+    max-height: 75%;
     width: 750px;
     overflow-y: auto;
 

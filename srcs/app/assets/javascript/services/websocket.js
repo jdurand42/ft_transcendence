@@ -63,6 +63,17 @@ export class MyWebSocket {
     this.socket.send(JSON.stringify(msg))
   }
 
+  unsubscribeChannel (chatRoomId, channelName) {
+    const msg = {
+      command: 'unsubscribe',
+      identifier: JSON.stringify({
+        id: chatRoomId,
+        channel: channelName
+      })
+    }
+    this.socket.send(JSON.stringify(msg))
+  }
+
   updateContext (objet, notif) {
     this.socket.onmessage = function (event) {
       const response = event.data
@@ -71,12 +82,14 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
-      // console.log(msg)
+      console.log(msg)
       if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
         try {
           notif.receiveMessage(msg.message)
         } catch (e) {
         }
+      } else if (msg.message && msg.message.action !== undefined && msg.message.action === 'guild_invitation') {
+        notif.receiveMessage(msg.message)
       } else if (msg.message) {
         try {
           objet.receiveMessage(msg)
@@ -91,7 +104,6 @@ export class MyWebSocket {
       const response = event.data
       // console.log(event)
       const msg = JSON.parse(response)
-      // console.log(msg)
       // console.log(msg)
       if (msg.type === 'ping') {
         objet.receivePing()

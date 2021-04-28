@@ -38,14 +38,14 @@
 .tournament-header
 .second-floor {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     flex-direction: row;
     justify-content: space-between;
 
     position: relative;
-    bottom: -32px;
     height: 100%;
 
+    margin-bottom: 16px;
     margin-left: 8vw;
     margin-right: 8vw;
 }

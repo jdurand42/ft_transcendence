@@ -6,10 +6,13 @@ export const AdminView = Backbone.View.extend({
     'click .banned': 'authorize',
     'click .administrator': 'administrator'
   },
-  initialize: function () {
+  initialize: function (options) {
     this.users = new Users()
     this.context = {}
     this.context.users = []
+
+    this.socket = options.socket
+    this.socket.updateContext(this, options.notifView)
 
     const fetch = async () => {
       await this.users.fetch()
@@ -21,7 +24,6 @@ export const AdminView = Backbone.View.extend({
 
   render: function (message = '') {
     const users = JSON.parse(JSON.stringify(this.users))
-    console.log(users)
     this.context.users = users
     this.context.nbUsers = users.length
     this.templateAdmin = Handlebars.templates.adminMain

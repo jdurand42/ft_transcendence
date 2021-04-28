@@ -1,5 +1,5 @@
 // views
-import { HomeView } from '../views/home_view'
+import { HomeView } from '../views/homeView'
 import { HeaderView } from '../views/headerView'
 import { LeaderboardView } from '../views/leaderboard/leaderboardView'
 import { TournamentView } from '../views/tournament/tournamentView'
@@ -12,7 +12,7 @@ import { ChatView } from '../views/chatView'
 import { ManageGuildView } from '../views/guild/manageGuildView'
 import { AdminView } from '../views/admin/adminView'
 import { NotifView } from '../views/notifView'
-import { GameView } from '../views/GameView'
+import { GameView } from '../views/gameView'
 
 // models
 import { User } from '../models/userModel'
@@ -36,7 +36,6 @@ import { OauthService } from '../services/oauthService'
 import { MyWebSocket } from '../services/websocket'
 
 // Views for test only
-import { TestView } from '../views/testView'
 import { FetchAPI } from '../services/fetchAPI'
 
 export const Router = Backbone.Router.extend({
@@ -58,9 +57,11 @@ export const Router = Backbone.Router.extend({
   {
     administration: 'admin_view',
     home: 'home_view',
+    profile: 'profile_view',
     'profile/(:id)': 'profile_view',
     'profile/(:id)/': 'profile_view',
     guilds: 'guilds_view',
+    guild: 'guild_view',
     'guild/(:id)': 'guild_view',
     'guild/(:id)/': 'guild_view',
     'chat/:id(/:page)': 'chat_view',
@@ -68,6 +69,7 @@ export const Router = Backbone.Router.extend({
     leaderboard: 'leaderboard_view',
     tournament: 'tournaments_view',
     manage_guild: 'manage_guild_view',
+    'manage_guild/(:id)': 'manage_guild_view',
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
     'declare_war/(:from_id)/(:on_id)/(:war_id)': 'declare_war',
     'game/(:gameId)': 'playGame',
@@ -121,7 +123,6 @@ export const Router = Backbone.Router.extend({
     if (this.view !== undefined) {
       this.remove_view()
     }
-    console.log(performance.getEntriesByType('navigation')[0].type)
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
@@ -158,7 +159,7 @@ export const Router = Backbone.Router.extend({
 
   admin_view: function () {
     if (this.accessPage()) { return }
-    const adminView = new AdminView({ model: this.loadWrapper() })
+    const adminView = new AdminView({ model: this.loadWrapper(), socket: this.socket, notifView: this.notifView })
   },
 
   oauth_view: function (url) {
@@ -175,7 +176,9 @@ export const Router = Backbone.Router.extend({
 
   profile_view: function (id, page) {
     if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
+    if (id == null) {
+      id = this.userLogged.get('id')
+    }
     this.view = this.profileController.loadView(id, this.loadWrapper())
   },
 
@@ -187,6 +190,9 @@ export const Router = Backbone.Router.extend({
 
   guild_view: function (id, page) {
     if (this.accessPage()) { return }
+    if (id == null) {
+      id = this.userLogged.get('guild_id')
+    }
     // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = this.guildController.loadView(id, this.loadWrapper())
   },
@@ -209,26 +215,18 @@ export const Router = Backbone.Router.extend({
     this.view = new TournamentView({ socket: this.socket, notifView: this.notifView })
   },
 
-  test_view: function () {
+  manage_guild_view: function (id) {
     if (this.accessPage()) { return }
-    const testView = new TestView({ model: this.loadWrapper() })
-  },
-
-  manage_guild_view: function () {
-    if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new ManageGuildView({ model: this.loadWrapper() })
+    this.view = new ManageGuildView({ model: this.loadWrapper(), id: id })
   },
 
   declare_war: function (fromId, onId, warId) {
     if (this.accessPage()) { return }
-    this.view = new DeclareWar({ fromId: fromId, onId: onId, warId: warId, router: this })
+    this.view = new DeclareWar({ socket: this.socket, notifView: this.notifView, fromId: fromId, onId: onId, warId: warId, router: this })
   },
 
   playGame: function (gameId) {
     if (this.accessPage()) { return }
-    console.log(gameId)
     this.view = new GameView({ model: this.loadWrapper(), socket: this.socket, notifView: this.notifView, gameId: gameId })
   },
 
@@ -251,10 +249,7 @@ export const Router = Backbone.Router.extend({
     // this._removeElement();
     this.view.$el.empty()
     if (this.view.canvas) {
-      // console.log('here')
-      // c'est fou que je doive faire ca
       this.view.data[0].end = true
-      // this.view.socket.close()
     }
     try {
       this.view.destroy()
