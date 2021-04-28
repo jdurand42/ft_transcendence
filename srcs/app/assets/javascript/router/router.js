@@ -69,6 +69,7 @@ export const Router = Backbone.Router.extend({
     leaderboard: 'leaderboard_view',
     tournament: 'tournaments_view',
     manage_guild: 'manage_guild_view',
+    'manage_guild/(:id)': 'manage_guild_view',
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
     'declare_war/(:from_id)/(:on_id)/(:war_id)': 'declare_war',
     'game/(:gameId)': 'playGame',
@@ -214,11 +215,9 @@ export const Router = Backbone.Router.extend({
     this.view = new TournamentView({ socket: this.socket, notifView: this.notifView })
   },
 
-  manage_guild_view: function () {
+  manage_guild_view: function (id) {
     if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
-    this.view = new ManageGuildView({ model: this.loadWrapper() })
+    this.view = new ManageGuildView({ model: this.loadWrapper(), id: id })
   },
 
   declare_war: function (fromId, onId, warId) {
