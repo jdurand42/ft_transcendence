@@ -77,7 +77,7 @@ module Api
     end
 
     def war_time
-      war = war_opened_side_help(current_user.guild, User.find(params[:opponent_id]).guild)
+      war = war_opened(current_user.guild, User.find(params[:opponent_id]).guild)
       running_war_time(war)
     end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe ChatPolicy do
@@ -31,7 +33,7 @@ describe ChatPolicy do
   end
 
   # chat admin, owner, superuser
-  [:kick?, :mutes?, :invites?, :promote?, :demote?].each do |e|
+  %i[kick? mutes? invites? promote? demote?].each do |e|
     permissions e do
       it "allows #{e} if owner" do
         expect(subject).to permit(owner, chat)

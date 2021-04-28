@@ -1,54 +1,56 @@
-require "rails_helper"
+# frozen_string_literal: true
 
-RSpec.describe "OmniauthCallbacksController", type: :request do
-  describe "Oauth" do
-    it "should register a new client",test:true do
+require 'rails_helper'
+
+RSpec.describe 'OmniauthCallbacksController', type: :request do
+  describe 'Oauth' do
+    it 'should register a new client', test: true do
       expect { login }.to change(ActiveStorage::Attachment, :count).by(1)
       expect(User.all.count).to eq(1)
       expect(response.status).to eq 200
     end
 
-    it "should sign-in an existing client" do
-      FactoryBot.create(:user, banned: false, uid: 1000, provider: "marvin", two_factor: false)
+    it 'should sign-in an existing client' do
+      FactoryBot.create(:user, banned: false, uid: 1000, provider: 'marvin', two_factor: false)
       login
       expect(response.status).to eq 200
     end
 
-    it "should promote owner, admin" do
+    it 'should promote owner, admin' do
       ENV['P42NG_OWNER_UID'] = '42'
       login(ENV['P42NG_OWNER_UID'])
       expect(response.status).to eq 200
       expect(User.first.admin?).to eq(true)
     end
 
-    it "should not sign-in a banned user" do
-      FactoryBot.create(:user, banned: true, uid: 1000, provider: "marvin", two_factor: false)
+    it 'should not sign-in a banned user' do
+      FactoryBot.create(:user, banned: true, uid: 1000, provider: 'marvin', two_factor: false)
       login
       expect(response.status).to eq 403
     end
 
-    it "should not sign-in a banned user with 2FA" do
-      FactoryBot.create(:user, banned: true, uid: 1000, provider: "marvin", two_factor: true)
+    it 'should not sign-in a banned user with 2FA' do
+      FactoryBot.create(:user, banned: true, uid: 1000, provider: 'marvin', two_factor: true)
       login
       expect(response.status).to eq 403
     end
 
-    it "should not sign-in a user with 2FA" do
-      FactoryBot.create(:user, banned: false, uid: 1000, provider: "marvin", two_factor: true, two_factor_code: "1234")
+    it 'should not sign-in a user with 2FA' do
+      FactoryBot.create(:user, banned: false, uid: 1000, provider: 'marvin', two_factor: true, two_factor_code: '1234')
       ActiveJob::Base.queue_adapter = :test
-      expect {
+      expect do
         login
-      }.to have_enqueued_job(TwoFactorResetJob)
+      end.to have_enqueued_job(TwoFactorResetJob)
       expect(response.status).to eq 200
     end
   end
 
-  def login(uid = "1000")
-    Rails.application.env_config["devise.mapping"] = Devise.mappings[:user] # If using Devise
-    Rails.application.env_config["omniauth.auth"] = OmniAuth.config.mock_auth[:marvin]
+  def login(uid = '1000')
+    Rails.application.env_config['devise.mapping'] = Devise.mappings[:user] # If using Devise
+    Rails.application.env_config['omniauth.auth'] = OmniAuth.config.mock_auth[:marvin]
     valid_marvin_login_setup(uid)
-    get "/auth/marvin", params: {
-      auth_origin_url: "http://www.example.com/"
+    get '/auth/marvin', params: {
+      auth_origin_url: 'http://www.example.com/'
     }
     follow_all_redirects!
   end
@@ -57,22 +59,22 @@ RSpec.describe "OmniauthCallbacksController", type: :request do
     if Rails.env.test?
       OmniAuth.config.test_mode = true
       OmniAuth.config.mock_auth[:marvin] = OmniAuth::AuthHash.new({
-        provider: "marvin",
-        uid: uid,
-        info: {
-          nickname: "herve",
-          email: "test@example.com",
-          image: "https://cdn.42.fr/toto/"
-        },
-        credentials: {
-          token: "123456",
-          expires_at: Time.now + 1.week
-        },
-        extra: {
-          raw_info: {
-          }
-        }
-      })
+                                                                    provider: 'marvin',
+                                                                    uid: uid,
+                                                                    info: {
+                                                                      nickname: 'herve',
+                                                                      email: 'test@example.com',
+                                                                      image: 'https://cdn.42.fr/toto/'
+                                                                    },
+                                                                    credentials: {
+                                                                      token: '123456',
+                                                                      expires_at: Time.now + 1.week
+                                                                    },
+                                                                    extra: {
+                                                                      raw_info: {
+                                                                      }
+                                                                    }
+                                                                  })
     end
   end
 

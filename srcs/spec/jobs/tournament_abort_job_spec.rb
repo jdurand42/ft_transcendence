@@ -12,4 +12,3 @@ RSpec.describe TournamentAbortJob, type: :job do
     expect(Tournament.first).to eq nil
   end
 end
-

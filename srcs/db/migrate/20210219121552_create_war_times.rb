@@ -8,6 +8,8 @@ class CreateWarTimes < ActiveRecord::Migration[6.0]
       t.integer :end_hour
       t.integer :time_to_answer, unsigned: true
       t.integer :max_unanswered, unsigned: true
+      t.integer :from_max_unanswered, unsigned: true
+      t.integer :on_max_unanswered, unsigned: true
       t.references :war, foreign_key: true
       t.timestamps
     end

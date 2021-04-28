@@ -29,5 +29,4 @@ RSpec.describe ApplicationCable::Connection, type: :channel do
     connect '/cable', headers: user.create_new_auth_token
     expect(connection.current_user.id).to eq user.id
   end
-
 end

@@ -37,7 +37,6 @@ describe 'Guild', type: :request do
       expect(json['member_ids'][0]).to eq auth.id
     end
     it 'should return guild wars' do
-      
     end
   end
 
@@ -107,7 +106,7 @@ describe 'Guild', type: :request do
       expect(GuildMember.where(user_id: user_1.id, guild_id: Guild.last.id)[0]).to eq nil
     end
   end
-  describe '#destroy_members',test:true do
+  describe '#destroy_members', test: true do
     before { post api_guilds_url, headers: access_token, params: attributes }
     it 'owner should kick a member' do
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
@@ -116,7 +115,7 @@ describe 'Guild', type: :request do
       expect(Guild.first.members.count).to eq 1
       expect(response.status).to eq 204
     end
-    it "member should leave" do
+    it 'member should leave' do
       GuildMember.create!(user_id: user_1.id, guild_id: Guild.first.id)
       expect(Guild.first.members.count).to eq 2
       delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: user_1_access
@@ -159,7 +158,7 @@ describe 'Guild', type: :request do
         post api_guilds_url, headers: access_token_2, params: attributes_2
         create(:war, from: Guild.first, on: Guild.last)
         delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
-        expect(json['errors']).to eq ["War ongoing"]
+        expect(json['errors']).to eq ['War ongoing']
       end
     end
   end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class WarTime < ApplicationRecord
+  before_create :max_unanswered_per_guild
+
   validates_presence_of :day, uniqueness: true
   validates_presence_of :start_hour
   validates_presence_of :end_hour
@@ -11,4 +13,8 @@ class WarTime < ApplicationRecord
   validates_numericality_of :time_to_answer, greater_than: -1
   validates_numericality_of :max_unanswered, greater_than: -1
   belongs_to :war
+
+  def max_unanswered_per_guild
+    self.from_max_unanswered = self.on_max_unanswered = max_unanswered
+  end
 end

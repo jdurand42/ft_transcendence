@@ -113,5 +113,4 @@ Rails.application.configure do
     password: ENV['MAILGUN_PASSWORD'],
     enable_starttls_auto: true
   }
-
 end

@@ -25,12 +25,12 @@ RSpec.describe 'Chats', type: :request do
       assert_equal Chat.first.privacy, json['privacy']
     end
   end
-  describe "Ban/Mute responses" do
+  describe 'Ban/Mute responses' do
     let(:user_1) { create(:user) }
-    before {
+    before do
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
       post invites_api_chat_url(Chat.first.id), headers: access_token, params: { participant_ids: [user_1.id] }
-    }
+    end
     it 'should get timeout_id' do
       post mutes_api_chat_url(Chat.first.id), headers: access_token, params: { user_id: user_1.id, duration: 10 }
       get api_chat_url(Chat.first.id), headers: access_token
@@ -52,7 +52,8 @@ RSpec.describe 'Chats', type: :request do
       end
       it 'two participants' do
         user = create(:user)
-        post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'private', participant_ids: [user.id] }
+        post api_chats_url, headers: access_token,
+                            params: { name: 'Hop', privacy: 'private', participant_ids: [user.id] }
         expect(response).to have_http_status(201)
         expect(ChatParticipant.first.user_id).to eq(auth.id)
         expect(ChatParticipant.last.user_id).to eq(user.id)
@@ -66,9 +67,10 @@ RSpec.describe 'Chats', type: :request do
         post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: 0 }
         expect(response).to have_http_status(201)
       end
-      it 'array including bad participant ID'do
+      it 'array including bad participant ID' do
         users = create_list(:user, 3)
-        post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: [users[0].id, [0], users[1].id, users[2].id] }
+        post api_chats_url, headers: access_token,
+                            params: { name: 'Hop', participant_ids: [users[0].id, [0], users[1].id, users[2].id] }
         expect(ChatParticipant.count).to eq 4
         expect(response).to have_http_status(201)
       end
@@ -83,7 +85,8 @@ RSpec.describe 'Chats', type: :request do
       end
       it 'two participants max if direct_message' do
         users = create_list(:user, 3)
-        post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'direct_message', participant_ids: [users[0].id, users[1].id, users[2].id] }
+        post api_chats_url, headers: access_token,
+                            params: { name: 'Hop', privacy: 'direct_message', participant_ids: [users[0].id, users[1].id, users[2].id] }
         expect(Chat.first.participants.count).to eq 2
         expect(Chat.first.participants.last.user_id).to eq users[0].id
       end
@@ -134,7 +137,7 @@ RSpec.describe 'Chats', type: :request do
     it 'should not let user join private chat' do
       Chat.first.update!(privacy: 'private')
       post participants_api_chat_url(Chat.first.id), headers: user_access
-      expect(json['error']).to eq ["You must be invited to join this chat"]
+      expect(json['error']).to eq ['You must be invited to join this chat']
     end
   end
   describe '#mutes' do
@@ -172,7 +175,6 @@ RSpec.describe 'Chats', type: :request do
       end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_banned', id: chat.id)
       expect(response).to have_http_status(201)
       expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{user.id}")).to eq(true)
-
     end
     it 'should return an error, due to bad parameters' do
       post bans_api_chat_url(chat.id), headers: access_token, params: { userP: user, duration: 2 }
@@ -254,8 +256,11 @@ RSpec.describe 'Chats', type: :request do
     let(:user) { create(:user) }
     let(:user_2) { create(:user) }
     let(:access) { user.create_new_auth_token }
-    before { post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'private', participant_ids: [user.id, user_2.id] } }
-    it 'should kick a participant',test:true do
+    before do
+      post api_chats_url, headers: access_token,
+                          params: { name: 'Hop', privacy: 'private', participant_ids: [user.id, user_2.id] }
+    end
+    it 'should kick a participant', test: true do
       expect do
         delete "/api/chats/#{Chat.first.id}/participants/#{user.id}", headers: access_token
       end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_kicked', id: Chat.first.id)
@@ -323,9 +328,9 @@ RSpec.describe 'Chats', type: :request do
   end
   describe '#admins' do
     let(:user) { create(:user) }
-    before {
+    before do
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
-    }
+    end
     it 'should promote a participant' do
       create(:chat_participant, chat_id: Chat.first.id, user: user)
       post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
@@ -333,7 +338,7 @@ RSpec.describe 'Chats', type: :request do
       expect(ChatParticipant.where(chat: Chat.first, role: 'admin').count).to eq 1
       expect(ChatParticipant.where(user: user, chat: Chat.first, role: 'admin')).to exist
     end
-    it "should not promote an owner" do
+    it 'should not promote an owner' do
       post "/api/chats/#{Chat.first.id}/admins/#{auth.id}", headers: access_token
       expect(response.status).to eq 403
     end

@@ -3,19 +3,12 @@
 class GameChannel < ApplicationCable::Channel
   def subscribed
     @game = Game.find(params[:id])
-
     return reject if @game.status == 'played'
 
     stream_from "game_#{@game.id}"
-
     return unless player?
 
-    @game.with_lock do
-      @game.reload
-      @game.connected_players += 1
-      GameEngineJob.perform_later(@game, 0) if @game.connected_players == 2
-      @game.save!
-    end
+    manage_game
   end
 
   def received(data)
@@ -29,7 +22,7 @@ class GameChannel < ApplicationCable::Channel
 
     @game.with_lock do
       @game.reload
-      @game.connected_players -= 1
+      @game.connected_players.delete(current_user.id)
       @game.save!
     end
   end
@@ -38,5 +31,14 @@ class GameChannel < ApplicationCable::Channel
 
   def player?
     @game.player_left.id == current_user.id || @game.player_right.id == current_user.id
+  end
+
+  def manage_game
+    @game.with_lock do
+      @game.reload
+      @game.connected_players << current_user.id
+      GameEngineJob.perform_later(@game, 0) if @game.connected_players.size == 2
+      @game.save!
+    end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Tournament, type: :model do
@@ -6,22 +8,22 @@ RSpec.describe Tournament, type: :model do
   it { validate_presence_of :time_to_answer }
   it { should have_many(:participants) }
 
-  describe "TournamentAbortJob" do
+  describe 'TournamentAbortJob' do
     it "enqueue job at 'start_date' change" do
-      expect{ Tournament.create!(start_date: DateTime.now) }.to have_enqueued_job
+      expect { Tournament.create!(start_date: DateTime.now) }.to have_enqueued_job
     end
     it "doesn't enqueue job at time_to_answer change" do
       Tournament.create!(start_date: DateTime.now + 2)
-      expect{ Tournament.first.update!(time_to_answer: 30) }.to_not have_enqueued_job
+      expect { Tournament.first.update!(time_to_answer: 30) }.to_not have_enqueued_job
     end
-    it "enqueue job at start_date change" do
+    it 'enqueue job at start_date change' do
       Tournament.create!(start_date: DateTime.now + 2)
-      expect{ Tournament.first.update!(start_date: DateTime.now + 1) }.to have_enqueued_job
+      expect { Tournament.first.update!(start_date: DateTime.now + 1) }.to have_enqueued_job
     end
   end
 
-  describe "achievement" do
-    it "unlock achievement for tournament winner",test:true do
+  describe 'achievement' do
+    it 'unlock achievement for tournament winner', test: true do
       winner = create(:user)
       create(:achievement, name: 'My Name Is Achilles')
       Tournament.create!(start_date: DateTime.now + 1)

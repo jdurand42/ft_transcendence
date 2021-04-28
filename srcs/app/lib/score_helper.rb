@@ -75,7 +75,7 @@ module ScoreHelper
     end
 
     def war_enemies?
-      @war = war_opened_side_help(@winner.guild, @looser.guild)
+      @war = war_opened(@winner.guild, @looser.guild)
       @war.present?
     end
 

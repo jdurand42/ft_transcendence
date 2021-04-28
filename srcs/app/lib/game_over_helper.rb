@@ -32,9 +32,9 @@ module GameOverHelper
     notify_players(game)
   end
 
-  def notify_unanswered(game_id, left_id, right_id)
-    ActionCable.server.broadcast("user_#{left_id}", { action: 'game_unanswered', id: game_id })
-    ActionCable.server.broadcast("user_#{right_id}", { action: 'game_unanswered', id: game_id })
+  def notify_unanswered(game)
+    ActionCable.server.broadcast("user_#{game.player_left.id}", { action: 'game_unanswered', id: game.id })
+    ActionCable.server.broadcast("user_#{game.player_right.id}", { action: 'game_unanswered', id: game.id })
   end
 
   def change_players_status(game, status)

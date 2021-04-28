@@ -8,5 +8,5 @@ class Guild < ApplicationRecord
   has_many :members, class_name: 'GuildMember', dependent: :destroy
   has_many :officers, -> { where(rank: 'officer') }, class_name: 'GuildMember'
   has_one :owner, -> { where(rank: 'owner') }, class_name: 'GuildMember'
-  has_many :wars, ->(guild) { unscope(:where).where(from: guild).or(where(on: guild)) }
+  has_many :wars, ->(guild) { unscope(:where).where(from: guild).or(where(on: guild)) }, dependent: :destroy
 end

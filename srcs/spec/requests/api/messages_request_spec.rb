@@ -1,52 +1,56 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.describe "Api::Messages", type: :request do
-  include_context "with cache"
+RSpec.describe 'Api::Messages', type: :request do
+  include_context 'with cache'
   let(:auth) { create(:user) }
-  let(:current_chat) { create(:chat)}
+  let(:current_chat) { create(:chat) }
   let(:access_token) { auth.create_new_auth_token }
 
-  describe "#post" do
-    it "should create message" do
+  describe '#post' do
+    it 'should create message' do
       ChatParticipant.create(chat: current_chat, user: auth)
-      expect { post "/api/chats/#{current_chat.id}/messages", headers: access_token, params: { content: "Hey"} }.to have_broadcasted_to("chat_#{current_chat.id}").exactly(:once)
-      #.with(sender_id: auth.id, content: "Hey", created_at: Time.now() )
+      expect do
+        post "/api/chats/#{current_chat.id}/messages", headers: access_token,
+                                                       params: { content: 'Hey' }
+      end.to have_broadcasted_to("chat_#{current_chat.id}").exactly(:once)
+      # .with(sender_id: auth.id, content: "Hey", created_at: Time.now() )
       expect(json.size).to eq 4
       expect(response.status).to eq 201
       expect(ChatMessage.all.count).to eq(1)
     end
 
-    it "should not create chat_message: not a participant" do
-      post "/api/chats/#{current_chat.id}/messages", headers: access_token, params: { content: "Hey"}
+    it 'should not create chat_message: not a participant' do
+      post "/api/chats/#{current_chat.id}/messages", headers: access_token, params: { content: 'Hey' }
       expect(response.status).to eq 403
       expect(ChatMessage.all.count).to eq(0)
     end
 
-    it "should not create chat_message: message too long" do
+    it 'should not create chat_message: message too long' do
       ChatParticipant.create(chat: current_chat, user: auth)
-      post "/api/chats/#{current_chat.id}/messages", headers: access_token, params: { content: "0" * 500 }
+      post "/api/chats/#{current_chat.id}/messages", headers: access_token, params: { content: '0' * 500 }
       expect(response.status).to eq 422
       expect(ChatMessage.all.count).to eq(0)
     end
 
-
-    it "should not create chat_message: user timeout" do
+    it 'should not create chat_message: user timeout' do
       ChatParticipant.create(chat: current_chat, user: auth)
       Rails.cache.write("timeout_chat_#{current_chat.id}_#{auth.id}", 1)
-      post "/api/chats/#{current_chat.id}/messages", headers: access_token, params: { content: "0" * 500 }
+      post "/api/chats/#{current_chat.id}/messages", headers: access_token, params: { content: '0' * 500 }
       expect(response.status).to eq 403
       expect(ChatMessage.all.count).to eq(0)
     end
 
-    it 'should not return 500 error without content parameter', test:true do
+    it 'should not return 500 error without content parameter', test: true do
       ChatParticipant.create(chat: current_chat, user: auth)
       post "/api/chats/#{current_chat.id}/messages", headers: access_token
       expect(json['error']).to eq 'param is missing or the value is empty: content'
     end
   end
 
-  describe "#get" do
-    it "should retrieves last 10 messages" do
+  describe '#get' do
+    it 'should retrieves last 10 messages' do
       chat = create(:chat_with_messages, messages_count: 20)
       create(:chat_participant, user: auth, chat: chat)
       get "/api/chats/#{chat.id}/messages", headers: access_token

@@ -6,7 +6,6 @@ class Game < ApplicationRecord
   belongs_to :winner, class_name: 'User', optional: true
   belongs_to :tournament, class_name: 'Tournament', optional: true
   belongs_to :war_time, class_name: 'WarTime', optional: true
-  validates_presence_of :connected_players
   validates_inclusion_of :mode, in: %w[duel ladder tournament war]
   validates_inclusion_of :status, in: %w[pending inprogress played]
   validates_uniqueness_of :player_left_id, conditions: -> { where.not(status: 'played') }

@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :chat do
     privacy { %w[public private].sample }
-    name { "Chatroom" }
+    name { 'Chatroom' }
     transient do
       owner { create(:user) }
     end

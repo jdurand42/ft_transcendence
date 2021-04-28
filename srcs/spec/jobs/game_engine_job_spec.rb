@@ -16,7 +16,7 @@ RSpec.describe GameEngineJob, type: :job do
     player_left.reload
     expect(player_left.status).to eq('online')
   end
-  it "updates Game with player_points at pongEngine end" do
+  it 'updates Game with player_points at pongEngine end' do
     game.update!(player_left_points: 1, player_right_points: 1)
     GameEngineJob.perform_later(game, 1)
     game.reload

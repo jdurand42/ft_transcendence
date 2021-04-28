@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe GuildPolicy do
@@ -5,61 +7,61 @@ describe GuildPolicy do
   include_context 'with cache'
   let(:user) { create(:user) }
   let(:admin) { create(:user, admin: true) }
-  let!(:guild) { create(:guild, name: "test", anagram: "t3st") }
+  let!(:guild) { create(:guild, name: 'test', anagram: 't3st') }
   let(:owner) { create(:user_with_guild, guild: guild, rank: 'owner') }
   let(:member) { create(:user_with_guild, guild: guild, rank: 'member') }
   let(:officer) { create(:user_with_guild, guild: guild, rank: 'officer') }
   subject { described_class }
 
   permissions :update? do
-    it "allows update if member is owner" do
+    it 'allows update if member is owner' do
       expect(subject).to permit(owner, guild)
     end
-    it "denies update if member is officer" do
+    it 'denies update if member is officer' do
       expect(subject).not_to permit(officer, guild)
     end
-    it "denies update if member" do
+    it 'denies update if member' do
       expect(subject).not_to permit(member, guild)
     end
   end
 
   permissions :accept_invites? do
-    it "allows join" do
+    it 'allows join' do
       guild_invite_user(guild.id, user.id)
       expect(subject).to permit(user, guild)
     end
 
-    it "denies join" do
+    it 'denies join' do
       expect(subject).not_to permit(user, guild)
     end
   end
 
   permissions :refuse_invitation? do
-    it "allows cancel" do
+    it 'allows cancel' do
       guild_invite_user(guild.id, user.id)
       expect(subject).to permit(user, guild)
     end
 
-    it "denies cancel" do
+    it 'denies cancel' do
       expect(subject).not_to permit(user, guild)
     end
   end
   permissions :destroy_members? do
-    it "allows destroy if admin" do
+    it 'allows destroy if admin' do
       expect(subject).to permit(admin, guild)
     end
-    it "allows destroy if owner" do
+    it 'allows destroy if owner' do
       expect(subject).to permit(owner, guild)
     end
-    it "allows destroy if officer" do
+    it 'allows destroy if officer' do
       expect(subject).to permit(officer, guild)
     end
-    it "allows destroy if member" do
+    it 'allows destroy if member' do
       expect(subject).to permit(member, guild)
     end
   end
 
-  [:create_members?, :create_officers?, :destroy_officers?, :create_invitation?].each do |e|
+  %i[create_members? create_officers? destroy_officers? create_invitation?].each do |e|
     permissions e do
       it "allows #{e} to an admin" do
         expect(subject).to permit(admin, guild)
