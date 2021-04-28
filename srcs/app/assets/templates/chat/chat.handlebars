@@ -86,7 +86,7 @@
                     <p class="nickname">{{nickname}}</p>
                     <div class="pastille" id="pastille{{userId}}"></div>
                     <p class="status">{{status}}</p>
-                    <div class="slide-show-container">
+                    <div class="slide-show-container" id="slide-show-container{{userId}}">
                         <img src="{{slide_show}}" class="slide-show"></img>
                     </div>
                     {{/unless}}
@@ -178,7 +178,7 @@
         </div>
         <div class="users usersInGame">
             {{#each usersInGame}}
-                <div class="user">
+                <div class="user" id="slide-show-container{{userId}}">
                     <div class="name">
                         <div class="image-container">
                             <img src={{image_url}} class="blockViewProfile image_url" id={{channelId}} for="{{userId}}"></img>

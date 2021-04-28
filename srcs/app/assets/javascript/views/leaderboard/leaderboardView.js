@@ -1,7 +1,9 @@
+/* eslint-disable eqeqeq */
 import { Users } from '../../collections/usersCollection'
 import { Guilds } from '../../collections/guildsCollection'
 import { Ladders } from '../../collections/laddersCollection'
 import { User } from '../../models/userModel'
+import { GameRecords } from '../../collections/gameRecords'
 
 export const LeaderboardView = Backbone.View.extend({
   events: {
@@ -94,34 +96,37 @@ export const LeaderboardView = Backbone.View.extend({
       if (this.usersLadder1.length === 0) {
         await this.usersLadder1.fetchByLadderId(1)
       }
-      this.updateContextLeaderboard(this.usersLadder1)
+      await this.updateContextLeaderboard(this.usersLadder1)
     } else if (this.ladderId === 2) {
       console.log(this.usersLadder2)
       if (this.usersLadder2.length === 0) {
         await this.usersLadder2.fetchByLadderId(2)
       }
-      this.updateContextLeaderboard(this.usersLadder2)
+      await this.updateContextLeaderboard(this.usersLadder2)
     } else if (this.ladderId === 3) {
       if (this.usersLadder3.length === 0) {
         await this.usersLadder3.fetchByLadderId(3)
       }
-      this.updateContextLeaderboard(this.usersLadder3)
+      await this.updateContextLeaderboard(this.usersLadder3)
     } else if (this.ladderId === 4) {
       if (this.usersLadder4.length === 0) {
         await this.usersLadder4.fetchByLadderId(4)
       }
-      this.updateContextLeaderboard(this.usersLadder4)
+      await this.updateContextLeaderboard(this.usersLadder4)
     } else if (this.ladderId === 5) {
       if (this.usersLadder5.length === 0) {
         await this.usersLadder5.fetchByLadderId(5)
       }
-      this.updateContextLeaderboard(this.usersLadder5)
+      await this.updateContextLeaderboard(this.usersLadder5)
     }
-
     this.$el.find('#leaderboardList-container').html(Handlebars.templates.leaderboardList(this.context))
+    const divs = document.getElementsByClassName('ingame-container')
+    for (let i = 0; i < divs.length; i++) {
+      divs[i].style.cursor = 'pointer'
+    }
   },
 
-  updateContextLeaderboard: function (users) {
+  updateContextLeaderboard: async function (users) {
     this.context.nbGamers = users.length
     this.context.users = []
     for (let i = 0; i < users.length; i++) {
@@ -142,11 +147,15 @@ export const LeaderboardView = Backbone.View.extend({
       } else {
         this.context.users[i].guild = this.guilds.get(user.get('guild_id')).get('name')
       }
-      // this.context.users[i].generalRank = '42'
       this.context.users[i].victories = user.get('ladder_games_won')
       this.context.users[i].totalGames = user.get('ladder_games_won') + user.get('ladder_games_lost')
 
       if (user.get('status') === 'ingame') {
+        const games = new GameRecords()
+        await games.fetchGameByUserIdStatus(user.get('id'), 'inprogress')
+        const game = games.at(0)
+        this.context.users[i].ingame = true
+        this.context.users[i].gameId = game.get('id')
         this.context.users[i].slide_show = './icons/slideshow-ingame.svg'
       } else {
         this.context.users[i].slide_show = './icons/slideshow.svg'
@@ -192,9 +201,27 @@ export const LeaderboardView = Backbone.View.extend({
   },
 
   receiveMessage: function (msg) {
-    const channelId = Number(JSON.parse(msg.identifier).id)
-    // if (channelId === msg.message.id) {
     this.users.get(msg.message.id).set({ status: msg.message.status })
+    let user = this.usersLadder1.find(el => el.get('id') == msg.message.id)
+    if (user != null) {
+      user.set({ status: msg.message.status })
+    }
+    user = this.usersLadder2.find(el => el.get('id') == msg.message.id)
+    if (user != null) {
+      user.set({ status: msg.message.status })
+    }
+    user = this.usersLadder3.find(el => el.get('id') == msg.message.id)
+    if (user != null) {
+      user.set({ status: msg.message.status })
+    }
+    user = this.usersLadder4.find(el => el.get('id') == msg.message.id)
+    if (user != null) {
+      user.set({ status: msg.message.status })
+    }
+    user = this.usersLadder5.find(el => el.get('id') == msg.message.id)
+    if (user != null) {
+      user.set({ status: msg.message.status })
+    }
 
     let div = document.getElementById('pastille' + msg.message.id)
     div.classList.remove('offline')
@@ -218,7 +245,10 @@ export const LeaderboardView = Backbone.View.extend({
       div.setAttribute('src', './icons/slideshow.svg')
     }
 
-    // this.users.fetch()
+    if (msg.message.status === 'ingame') {
+      div = document.getElementById('status-container' + msg.message.id)
+      div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + ';')
+      div.style.cursor = 'pointer'
+    }
   }
-  // }
 })

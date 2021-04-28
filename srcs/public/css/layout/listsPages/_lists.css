@@ -220,6 +220,11 @@
     background: var(--primary-color);
 }
 
+.listsBoard .tablesBoard .tableBoard
+.ingame-container {
+    cursor: pointer;
+}
+
 .listsBoard .guildTable {
     cursor: pointer;
 }

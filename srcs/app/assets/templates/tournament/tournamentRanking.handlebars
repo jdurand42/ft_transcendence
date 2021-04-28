@@ -37,7 +37,12 @@
             <td>{{defeats}}</td>
             <td>{{gapPoints}}</td>
             <td>
-                <div class="status-container">
+                {{#if ingame}}
+                <div class="status-container ingame-container" id="status-container{{id}}" onclick="window.location='#game/{{gameId}}';">
+                {{/if}}
+                {{#unless ingame}}
+                <div class="status-container" id="status-container">
+                {{/unless}}
                     <div class="pastille {{status}}" id="pastille{{id}}"></div>
                     <p class="status" id="status{{id}}">{{status}}</p>
                     <div class="slide-show-container"></div>

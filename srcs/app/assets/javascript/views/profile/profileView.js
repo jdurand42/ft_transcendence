@@ -226,12 +226,12 @@ export const ProfileView = Backbone.View.extend({
     this.profileGuild()
   },
 
-  renderPannel: function () {
+  renderPannel: async function () {
     const user = this.users.get(this.id)
     console.log(user)
 
     let slideShow
-    if (user.status === 'ingame') {
+    if (user.get('status') === 'ingame') {
       slideShow = './icons/slideshow-ingame.svg'
     } else {
       slideShow = './icons/slideshow.svg'
@@ -267,6 +267,17 @@ export const ProfileView = Backbone.View.extend({
       context.myPage = true
     }
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
+
+    if (user.get('status') === 'ingame') {
+      console.log('ici')
+      const games = new GameRecords()
+      await games.fetchGameByUserIdStatus(user.get('id'), 'inprogress')
+      const game = games.at(0)
+      const div = document.getElementById('status-container' + user.get('id'))
+      div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
+      div.style.cursor = 'pointer'
+    }
+
     if (this.id != this.userId) {
       this.renderProfileSubPannel()
     }
@@ -541,10 +552,13 @@ export const ProfileView = Backbone.View.extend({
     const leave = async () => {
       try {
         const response = await guild.leave(this.userId)
+        if (response.errors[0]) {
+          throw response.errors[0]
+        }
         this.users.get(this.userId).set({ guild_id: null })
         this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       } catch (e) {
-        console.log(e)
+        alert(e)
       }
     }
     leave()
@@ -580,7 +594,7 @@ export const ProfileView = Backbone.View.extend({
     // get user game
     // go spectate
     const getGame = async () => {
-    		try {
+      try {
         // pending ou en cours?
         const game = this.games.fetchInProgressGame(this.id)
         await game
@@ -588,9 +602,9 @@ export const ProfileView = Backbone.View.extend({
         if (game) {
           window.location.href = '#game/' + game.get('id')
         }
-    	} catch (e) {
-      	console.log(e)
-    	}
+      } catch (e) {
+        console.log(e)
+      }
     }
     getGame()
   },
@@ -680,6 +694,12 @@ export const ProfileView = Backbone.View.extend({
         div.setAttribute('src', './icons/slideshow-ingame.svg')
       } else {
         div.setAttribute('src', './icons/slideshow.svg')
+      }
+
+      if (msg.message.status === 'ingame') {
+        div = document.getElementById('status-container' + msg.message.id)
+        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
+        div.style.cursor = 'pointer'
       }
     } catch (e) {}
   }

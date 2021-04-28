@@ -33,12 +33,14 @@ export const Guild = Backbone.Model.extend({
     })
   },
 
-  leave: function (id) {
+  leave: async function (id) {
     const url = '/api/guilds/' + this.id + '/members/' + id
-    return fetch(url, {
+    const response = await fetch(url, {
       method: 'DELETE',
       headers: this.headers
     })
+    const json = await response.json()
+    return json
   },
 
   sendInvitation: function (id) {
