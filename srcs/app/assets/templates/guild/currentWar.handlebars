@@ -101,7 +101,7 @@
 			<div class="timer" id="next-war-time-in"></div>
 		</div>
 		<div class="nb-matches-missed-container">
-			<div class="nb-matches-missed-title">Number of matches calls missed during this war time:</div>
+			<div class="nb-matches-missed-title">Remaining number of authorized unanswered matches:</div>
 			<div class="matches-missed">
 				<div class="each-matches-missed from-matches-missed">
 					<div class="name from-name">{{fromName}}</div>
@@ -117,9 +117,13 @@
 			{{#if myPage}}
 			<div class="random-fight">
 				<div class="random-fight-title" id="random-fight-title">No random fight pending</div>
-				{{!-- <div class="title">{{randomFight}}</div> --}}
 				<div class="button-timer">
+					{{#if gameId}}
+					<button class="accept-random-fight" id="accept-random-fight" onclick="window.location='#game/{{gameId}}';" for="{{gameId}}">{{accept}}</button>
+					{{/if}}
+					{{#unless gameId}}
 					<button class="accept-random-fight" id="accept-random-fight">{{accept}}</button>
+					{{/unless}}
 					<div class="timer" id="war-time-timer">00j 00h 00m 00s</div>
 				</div>
 				<div class="error-message" id="error-message" style="display: none;"></div>

@@ -29,7 +29,8 @@ export const GuildView = Backbone.View.extend({
     this.ladders = this.model.get('ladders').get('obj')
     this.socket = this.model.get('socket').get('obj')
     this.notifView = this.model.get('notifView').get('obj')
-    this.userId = this.model.get('userLoggedId')
+    this.userId = Number(this.model.get('userLoggedId'))
+    this.router = this.model.get('router')
     this.members = new Users()
     this.wars = new Wars()
     this.userLogged = new User()
@@ -157,6 +158,8 @@ export const GuildView = Backbone.View.extend({
           try {
             document.getElementById('error-message').style.display = 'none'
           } catch (e) {}
+        } else if (challenge === 'Accept') {
+          this.router.navigate('game/' + challenge.getAttribute('for'), { trigger: true })
         }
       } catch (error) {
         document.getElementById('error-message').innerHTML = error.responseJSON.errors
@@ -170,6 +173,12 @@ export const GuildView = Backbone.View.extend({
   acceptWar: function (e) {
     const war = this.calendar.get(e.currentTarget.getAttribute('for'))
     war.acceptRefuseWar('true')
+    if (this.guild.get('id') === war.get('from_id')) {
+      war.set({ from_agreement: true })
+    } else {
+      war.set({ on_agreement: true })
+    }
+    this.displayCalendar()
   },
 
   refuseWar: function (e) {
@@ -203,7 +212,7 @@ export const GuildView = Backbone.View.extend({
     console.log(createdAt)
     const date = new Date(createdAt)
     console.log(date)
-    date.setMinutes(date.getMinutes() + tta)
+    date.setSeconds(date.getSeconds() + tta)
     console.log(date)
     const countDownDate = date.getTime()
     this.timer.push(setInterval(function () {
@@ -414,8 +423,10 @@ export const GuildView = Backbone.View.extend({
     if (games) {
       for (let i = 0; i < games.length; i++) {
         const game = games[i].games
-        if (game.get('status') === 'played') {
+        if (game.get('status') === 'played' && game.get('winner_id') != null) {
           this.pushMatchesDone(context.lastMatches, game)
+        } else if (game.get('status') === 'pending') {
+          context.gameId = game.get('id')
         }
       }
     }
@@ -479,7 +490,8 @@ export const GuildView = Backbone.View.extend({
             document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
             document.getElementById('accept-random-fight').style.cursor = 'pointer'
           } catch (e) {}
-          this.countMatchesUnansewered(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
+          this.countMatchesUnansewered(dates[0].warTimeId, this.currentWarTimes[0].find(el => el.id === dates[0].warTimeId))
+          this.initalizeAcceptButton(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
 
           return this
         } else if (dates[0].startDate <= now) {
@@ -519,26 +531,20 @@ export const GuildView = Backbone.View.extend({
     return id
   },
 
-  countMatchesUnansewered: function (warTimeId, currentGames) {
+  countMatchesUnansewered: function (warTimeId, warTime) {
+    document.getElementById('nb-matches-missed' + this.currentWar.at(0).get('from_id')).innerHTML = warTime.get('from_max_unanswer')
+    document.getElementById('nb-matches-missed' + this.currentWar.at(0).get('on_id')).innerHTML = warTime.get('on_max_unanswer')
+  },
+
+  initalizeAcceptButton: function (warTimeId, currentGames) {
     for (let i = 0; i < currentGames.games.length; i++) {
       if (currentGames.games[i].warTimeId === warTimeId) {
-        if ((currentGames.games[i].games.get('player_left_points') === 0 &&
-        currentGames.games[i].games.get('player_right_points') === 0) &&
-          currentGames.games[i].games.get('status') === 'played') {
-          const winner = this.members.find(el => el.get('id') === currentGames.games[i].games.get('winner_id'))
-          const id = this.playerInWichGuild(winner)
-
-          const value = document.getElementById('nb-matches-missed' + id).innerHTML
-          document.getElementById('nb-matches-missed' + id).innerHTML = (Number(value) + 1)
-        }
         try {
           if (currentGames.games[i].games.get('status') === 'pending') {
             const game = currentGames.games[i].games
             const player = this.members.find(el => el.get('id') === game.get('player_left_id'))
             const id = this.playerInWichGuild(player)
 
-            console.log(game)
-            console.log(this.userId)
             if (this.userId === game.get('player_right_id')) {
               document.getElementById('accept-random-fight').innerHTML = 'Accept'
               document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
@@ -549,7 +555,7 @@ export const GuildView = Backbone.View.extend({
               document.getElementById('accept-random-fight').style.cursor = 'auto'
             }
 
-            if (id === this.guild.get('id') && this.userId !== id) {
+            if (id === this.guild.get('id') && this.userId != id) {
               document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild challenged a member'
             } else {
               document.getElementById('random-fight-title').innerHTML = 'You have challenged someone of the other guild'
