@@ -223,7 +223,7 @@ export const Router = Backbone.Router.extend({
 
   declare_war: function (fromId, onId, warId) {
     if (this.accessPage()) { return }
-    this.view = new DeclareWar({ fromId: fromId, onId: onId, warId: warId, router: this, socket: this.socket, notifView: this.notifView })
+    this.view = new DeclareWar({ socket: this.socket, notifView: this.notifView, fromId: fromId, onId: onId, warId: warId, router: this })
   },
 
   playGame: function (gameId) {
