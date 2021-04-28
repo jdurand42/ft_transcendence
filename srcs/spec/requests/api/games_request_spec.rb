@@ -173,27 +173,17 @@ RSpec.describe 'Games', type: :request do
         auth_2.update!(status: 'online')
       end
       it 'should forfeit opponent at time_to_answer' do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
-        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        expect do
-          post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        end.to have_enqueued_job(WarOpenerJob).at(DateTime.yesterday)
-        perform_enqueued_jobs(only: WarOpenerJob)
-        post '/api/games', headers: access_token,
-                           params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
+        War.first.update!(opened: true)
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
         expect(WarTimeToAnswerJob).to have_been_enqueued
         perform_enqueued_jobs(only: WarTimeToAnswerJob)
         expect(Game.first.winner_id).to eq auth.id
       end
-      it 'should decrement max_unanswered at time_to_answer', test: true do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
-        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        perform_enqueued_jobs(only: WarOpenerJob)
-        post '/api/games', headers: access_token,
-                           params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+      it 'should decrement max_unanswered at time_to_answer' do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
+        War.first.update!(opened: true)
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
         game = Game.first
         game.connected_players.push(auth.id)
         game.save
@@ -204,15 +194,17 @@ RSpec.describe 'Games', type: :request do
         expect(WarTime.first.from_max_unanswered).to eq 1
         expect(WarTime.first.on_max_unanswered).to eq 0
       end
-      it "returns 'noWarTimeOnGoing' if no guild or warTime" do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
-        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        perform_enqueued_jobs(only: WarOpenerJob)
+      it "returns 'noWarTimeOnGoing' if no wartime" do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 22, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
+        War.first.update!(opened: true)
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
+        expect(json['errors']).to eq ["Can't launch game in war mode, no WarTime running"]
+      end
+      it "returns 'noWarTimeOnGoing' if user has no guild" do
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
+        War.first.update!(opened: true)
         token_3 = users[2].create_new_auth_token
-        post '/api/games', headers: token_3,
-                           params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        post '/api/games', headers: token_3, params: { mode: 'war', opponent_id: auth_2.id }
         expect(json['errors']).to eq ["Can't launch game in war mode, no WarTime running"]
       end
       it "can't create a game if existing 'inprogress' game" do
@@ -221,11 +213,9 @@ RSpec.describe 'Games', type: :request do
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
         perform_enqueued_jobs(only: WarOpenerJob)
-        post '/api/games', headers: access_token,
-                           params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
         Game.first.update!(status: 'inprogress')
-        post '/api/games', headers: users[0].create_new_auth_token,
-                           params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id }
+        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id }
         expect(json['errors']).to eq ['Your guild is already playing a war time match against this guild']
       end
       it "can create a game if existing 'played' game" do
@@ -234,11 +224,9 @@ RSpec.describe 'Games', type: :request do
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
         perform_enqueued_jobs(only: WarOpenerJob)
-        post '/api/games', headers: access_token,
-                           params: { mode: 'war', opponent_id: auth_2.id, war_time_id: WarTime.first.id }
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
         Game.first.update!(status: 'played')
-        post '/api/games', headers: users[0].create_new_auth_token,
-                           params: { mode: 'war', opponent_id: users[1].id, war_time_id: WarTime.first.id }
+        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id }
         expect(json['player_left_id']).to eq users[0].id
       end
     end
@@ -287,16 +275,36 @@ RSpec.describe 'Games', type: :request do
         expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
         expect(status).to eq 403
       end
-      it 'forfeit opponent at TTA' do
-        put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
-        post api_games_url, headers: token,
-                            params: { mode: 'tournament', opponent_id: users[1].id, tournament_id: Tournament.first.id }
-        perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
-        expect(Game.first.winner_id).to eq users[0].id
-        expect(Game.first.status).to eq 'played'
-        expect(TournamentParticipant.find_by(user_id: users[0].id).win_count).to eq 1
-        expect(TournamentParticipant.find_by(user_id: users[0].id).opponents).to include(users[1].id)
+      context "TTA" do
+        before {
+          put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
+          post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id, tournament_id: Tournament.first.id }
+        }
+        it 'users[0] wins at TTA' do
+          game = Game.first
+          game.connected_players << users[0].id
+          game.save
+          perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
+          expect(Game.first.winner_id).to eq users[0].id
+          expect(Game.first.status).to eq 'played'
+          winner = TournamentParticipant.find_by(user_id: users[0].id)
+          expect(winner.win_count).to eq 1
+          expect(winner.opponents).to include(users[1].id)
+          expect(TournamentParticipant.find_by(user_id: users[1].id).opponents).to include(users[0].id)
+        end
+        it 'users[1] wins at TTA' do
+          game = Game.first
+          game.connected_players << users[1].id
+          game.save
+          perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
+          expect(Game.first.winner_id).to eq users[1].id
+          expect(Game.first.status).to eq 'played'
+          winner = TournamentParticipant.find_by(user_id: users[1].id)
+          expect(winner.win_count).to eq 1
+          expect(winner.opponents).to include(users[0].id)
+          expect(TournamentParticipant.find_by(user_id: users[0].id).opponents).to include(users[1].id)
       end
     end
   end
+end
 end

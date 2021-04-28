@@ -8,7 +8,7 @@ class TournamentTimeToAnswerJob < ApplicationJob
   def perform(game)
     return unless game.status == 'pending'
 
-    game.update!(winner_id: game.player_left.id)
+    game.update!(winner_id: game.connected_players[0])
     game_over(game)
     manage_tournament(game)
   end
