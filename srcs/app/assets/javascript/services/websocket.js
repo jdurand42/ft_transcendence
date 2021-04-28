@@ -63,6 +63,17 @@ export class MyWebSocket {
     this.socket.send(JSON.stringify(msg))
   }
 
+  unsubscribeChannel (chatRoomId, channelName) {
+    const msg = {
+      command: 'unsubscribe',
+      identifier: JSON.stringify({
+        id: chatRoomId,
+        channel: channelName
+      })
+    }
+    this.socket.send(JSON.stringify(msg))
+  }
+
   updateContext (objet, notif) {
     this.socket.onmessage = function (event) {
       const response = event.data

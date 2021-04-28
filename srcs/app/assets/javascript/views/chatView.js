@@ -305,6 +305,9 @@ export const ChatView = Backbone.View.extend({
         this.chatInvitation(message.id, senderId)
       } else if (message.action === 'user_update_status') {
         this.updateStatus(channelId, message.id, message.status)
+      } else if (message.action === 'chat_banned' ||
+                  message.action === 'chat_kicked') {
+        this.socket.unsubscribeChannel(message.id, 'ChatChannel')
       }
     }
   },
