@@ -5,19 +5,17 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 
-		width: 100%;
+		width: 100vw;
 		background: url('../../../images/background.jpg');
 		background-position: 50% 0;
 		background-position: 0 0;
 		background-attachment: fixed;
 		text-align: center;
 		height: 100%;
-}
+		font-family: PressStart2P-Regular;
+	}
 
 #gameTitle {
-	font-family: Press Start 2P;
-	font-style: normal;
-	font-weight: normal;
 	font-size: 36px;
 	line-height: 36px;
 	color: var(--primary-color);

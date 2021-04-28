@@ -27,6 +27,8 @@ export const GuildView = Backbone.View.extend({
     this.users = this.model.get('users').get('obj')
     this.userLogged = new User()
     this.ladders = this.model.get('ladders').get('obj')
+    this.socket = this.model.get('socket').get('obj')
+    this.notifView = this.model.get('notifView').get('obj')
     this.userId = this.model.get('userLoggedId')
     this.members = new Users()
     this.wars = new Wars()
@@ -42,6 +44,8 @@ export const GuildView = Backbone.View.extend({
 
     this.currentGames = []
     this.lastWarsGames = []
+
+    this.socket.updateContext(this, this.notifView)
 
     // ce bloc est obligatoire pour la route /#guild/ et les checks pour #guild/id_ivalide et #guild/nimporte_quoi
     this.$el.html(Handlebars.templates.guild())
@@ -340,10 +344,14 @@ export const GuildView = Backbone.View.extend({
       return game.get('player_left_points')
     }
     const opponentId2 = getOpponentId2()
-    const opponent1 = this.users.get(opponentId1)
+    console.log(game)
+    console.log(opponentId1)
+    try { // TO REMOVE
+      const opponent1 = this.users.get(opponentId1)
+      context[length].opponent1 = opponent1.get('nickname')
+      context[length].avatarOpponent1 = opponent1.get('image_url')
+    } catch (e) {}
     const opponent2 = this.users.get(opponentId2)
-    context[length].opponent1 = opponent1.get('nickname')
-    context[length].avatarOpponent1 = opponent1.get('image_url')
     context[length].opponentId1 = opponentId1
     context[length].opponent2 = opponent2.get('nickname')
     context[length].avatarOpponent2 = opponent2.get('image_url')
@@ -529,6 +537,8 @@ export const GuildView = Backbone.View.extend({
             const player = this.members.find(el => el.get('id') === game.get('player_left_id'))
             const id = this.playerInWichGuild(player)
 
+            console.log(game)
+            console.log(this.userId)
             if (this.userId === game.get('player_right_id')) {
               document.getElementById('accept-random-fight').innerHTML = 'Accept'
               document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'

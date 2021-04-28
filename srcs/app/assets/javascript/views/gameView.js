@@ -1,3 +1,4 @@
+import { GameRecord } from '../models/gameRecord'
 // peut etre fetch juste la game plutot que toute la collec
 
 const MULT = 1

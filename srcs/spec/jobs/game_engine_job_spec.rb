@@ -10,7 +10,9 @@ RSpec.describe GameEngineJob, type: :job do
   ActiveJob::Base.queue_adapter = :test
   ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
   it 'starts pongEngine' do
-    GameEngineJob.perform_later(game, 1)
+    expect {
+      GameEngineJob.perform_later(game, 1)
+    }.to have_broadcasted_to("activity").with(a_hash_including(action: 'user_update_status', id: player_left.id, status: 'ingame', game_id: game.id)).once
     game.reload
     expect(game.status).to eq('played')
     player_left.reload
