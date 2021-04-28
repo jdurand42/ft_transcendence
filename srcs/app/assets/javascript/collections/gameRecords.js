@@ -31,7 +31,7 @@ export const GameRecords = Backbone.Collection.extend({
       url: this.urlRoot + '?user_id=' + userId + '&mode=' + mode + '&status=' + status
     })
   },
-  fetchPendingGame: function (userId, status = 'pending') {
+  fetchGameByUserIdStatus: function (userId, status = 'pending') {
     return this.fetch({
       url: this.urlRoot + '?user_id=' + userId + '&status=' + status
     })

@@ -218,10 +218,15 @@ export const TournamentView = Backbone.View.extend({
     createGame()
   },
 
-  fillContextRanked: function (user) {
+  fillContextRanked: async function (user) {
     this.context.ranked.push(JSON.parse(JSON.stringify(user)))
     const length = this.context.ranked.length - 1
     if (user.get('status') === 'ingame') {
+      const games = new GameRecords()
+      await games.fetchGameByUserIdStatus(user.get('id'), 'inprogress')
+      const game = games.at(0)
+      this.context.ranked[length].ingame = true
+      this.context.ranked[length].gameId = game.get('id')
       this.context.ranked[length].slide_show = './icons/slideshow-ingame.svg'
     } else {
       this.context.ranked[length].slide_show = './icons/slideshow.svg'
@@ -260,6 +265,10 @@ export const TournamentView = Backbone.View.extend({
           await this.registerUser(game.get('player_right_id'))
           this.fillContextRanked(this.registered.at(this.registered.length - 1))
         }
+      }
+      const divs = document.getElementsByClassName('ingame-container')
+      for (let i = 0; i < divs.length; i++) {
+        divs[i].style.cursor = 'pointer'
       }
     }
     register()
@@ -712,6 +721,12 @@ export const TournamentView = Backbone.View.extend({
         div.setAttribute('src', './icons/slideshow-ingame.svg')
       } else {
         div.setAttribute('src', './icons/slideshow.svg')
+      }
+
+      if (msg.message.status === 'ingame') {
+        div = document.getElementById('status-container' + msg.message.id)
+        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + ';')
+        div.style.cursor = 'pointer'
       }
     }
   },

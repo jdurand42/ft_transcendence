@@ -49,7 +49,9 @@ templates['profilePannel'] = template({"1":function(container,depth0,helpers,par
     + "</div>\n\n		<label class=\"image-container\">\n"
     + ((stack1 = lookupProperty(helpers,"if").call(alias3,(depth0 != null ? lookupProperty(depth0,"myPage") : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":53,"column":2},"end":{"line":56,"column":9}}})) != null ? stack1 : "")
     + ((stack1 = lookupProperty(helpers,"unless").call(alias3,(depth0 != null ? lookupProperty(depth0,"myPage") : depth0),{"name":"unless","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":57,"column":2},"end":{"line":59,"column":13}}})) != null ? stack1 : "")
-    + "		</label>\n\n\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n	<div class=\"status-container\">\n		<div class=\"pastille "
+    + "		</label>\n\n\n		<div id=\"profileButtons\" class=\"savageButtons\"></div>\n	</div>\n	<div class=\"status-container\" id=\"status-container"
+    + alias2(alias1((depth0 != null ? lookupProperty(depth0,"id") : depth0), depth0))
+    + "\">\n		<div class=\"pastille "
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"status_class") : depth0), depth0))
     + "\" id=\"pastille"
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"id") : depth0), depth0))

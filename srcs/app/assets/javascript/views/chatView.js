@@ -3,7 +3,7 @@ import { Users } from '../collections/usersCollection'
 import { ChatModel } from '../models/chatModel'
 import { User } from '../models/userModel'
 import { Channels } from '../collections/channels'
-import { MyWebSocket } from '../services/websocket'
+import { GameRecords } from '../collections/gameRecords'
 import { GameRecord } from '../models/gameRecord'
 
 export const ChatView = Backbone.View.extend({
@@ -161,6 +161,16 @@ export const ChatView = Backbone.View.extend({
       const templateDataChat = this.templateChat(this.context)
       this.$el.html(templateDataChat)
 
+      for (let i = 0; i < this.context.usersInGame.length; i++) {
+        const games = new GameRecords()
+        await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
+        const game = games.at(0)
+        const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
+        console.log(div)
+        div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
+        div.style.cursor = 'pointer'
+      }
+
       // update post render
       let currentTarget
       if (this.myChannels.length > 0) {
@@ -250,7 +260,7 @@ export const ChatView = Backbone.View.extend({
     fetchMyChannels()
   },
 
-  updateStatus: function (channelId, userId, status) {
+  updateStatus: function (channelId, userId, status, gameId) {
     this.users.get(userId).set({ status: status })
     let currentChannelId = document.getElementsByClassName('messages')
     if (currentChannelId.length > 0) {
@@ -275,6 +285,11 @@ export const ChatView = Backbone.View.extend({
       } else {
         this.updateContextRightSide(currentChannel)
         this.updateHTML('right-side')
+      }
+      if (status === 'ingame') {
+        const div = document.getElementById('slide-show-container' + userId)
+        div.setAttribute('onclick', 'window.location=\'#game/' + gameId + '\';')
+        div.style.cursor = 'pointer'
       }
     }
   },
@@ -304,7 +319,7 @@ export const ChatView = Backbone.View.extend({
       if (message.action === 'chat_invitation') {
         this.chatInvitation(message.id, senderId)
       } else if (message.action === 'user_update_status') {
-        this.updateStatus(channelId, message.id, message.status)
+        this.updateStatus(channelId, message.id, message.status, message.game_id)
       } else if (message.action === 'chat_banned' ||
                   message.action === 'chat_kicked') {
         this.socket.unsubscribeChannel(message.id, 'ChatChannel')
@@ -992,7 +1007,7 @@ export const ChatView = Backbone.View.extend({
     }
   },
 
-  openChat: function (e) {
+  openChat: async function (e) {
     // display
 
     const divId = e.currentTarget.getAttribute('id')
@@ -1017,6 +1032,16 @@ export const ChatView = Backbone.View.extend({
     // update HTML
     this.updateHTML('center')
     this.updateHTML('right-side')
+
+    for (let i = 0; i < this.context.usersInGame.length; i++) {
+      const games = new GameRecords()
+      await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
+      const game = games.at(0)
+      const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
+      console.log(div)
+      div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
+      div.style.cursor = 'pointer'
+    }
 
     if (currentChannel.get('timeout_ids').some(el => el == this.userLoggedId) === true) {
       document.getElementById('textInput').disabled = true
