@@ -90,7 +90,6 @@ export const ManageGuildView = Backbone.View.extend({
     }
     if (this.adminBool) {
       // this.guild = this.guilds.get(this.id)
-      console.log(this.guild)
       this.manageAdminView()
     } else if (this.users.get(this.userId).get('guild_id') === undefined ||
     this.users.get(this.userId).get('guild_id') === null) {
@@ -134,8 +133,6 @@ export const ManageGuildView = Backbone.View.extend({
     this.ownerBool = (parseInt(this.userId) === this.guild.get('owner_id')[0])
     this.officerBool = (this.guild.get('officer_ids').includes(parseInt(this.userId)) || this.ownerBool)
     this.memberBool = false
-    console.log(this.ownerBool)
-    console.log(this.officerBool)
   },
 
   manageGuildView: function () {

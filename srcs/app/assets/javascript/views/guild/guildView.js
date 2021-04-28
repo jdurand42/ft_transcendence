@@ -115,6 +115,10 @@ export const GuildView = Backbone.View.extend({
       context.onId = this.id
       context.declareWar = true
     }
+    if (this.userLogged.get('admin')) {
+      context.admin = true
+      context.guildId = this.id
+    }
     this.$el.html(Handlebars.templates.guild(context))
 
     this.$el.find('#guildSubNavBar').html(Handlebars.templates.guildSubNavBar(context))
