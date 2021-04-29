@@ -198,8 +198,9 @@ export const TournamentView = Backbone.View.extend({
   initializePlayButtons: function () {
     const playButtons = document.getElementsByClassName('play-my-matches')
     for (let i = 0; i < playButtons.length; i++) {
+      console.log(Number(playButtons[i].getAttribute('for')))
       const user = this.registered.get(Number(playButtons[i].getAttribute('for')))
-      if (user && user.get('status') !== 'online') {
+      if (user && user.get('status') != 'online') {
         playButtons[i].style.backgroundColor = '#C4C4C4'
         playButtons[i].style.cursor = 'auto'
       }
@@ -247,38 +248,37 @@ export const TournamentView = Backbone.View.extend({
     }
   },
 
-  listAllUsers: function () {
+  listAllUsers: async function () {
     for (let i = 0; i < this.registered.length; i++) {
       const user = this.registered.at(i)
       if (user.get('nickname') !== undefined) { // plaster
-        this.fillContextRanked(user)
+        await this.fillContextRanked(user)
       }
     }
-    const register = async () => {
-      for (let i = 0; i < this.games.length; i++) {
-        const game = this.games.at(i)
-        if (this.registered.find(el => el.get('id') === game.get('player_left_id')) == null) {
-          await this.registerUser(game.get('player_left_id'))
-          this.fillContextRanked(this.registered.at(this.registered.length - 1))
-        }
-        if (this.registered.find(el => el.get('id') === game.get('player_right_id')) == null) {
-          await this.registerUser(game.get('player_right_id'))
-          this.fillContextRanked(this.registered.at(this.registered.length - 1))
-        }
+    for (let i = 0; i < this.games.length; i++) {
+      const game = this.games.at(i)
+      if (this.registered.find(el => el.get('id') === game.get('player_left_id')) == null) {
+        await this.registerUser(game.get('player_left_id'))
+        await this.fillContextRanked(this.registered.at(this.registered.length - 1))
       }
-      const divs = document.getElementsByClassName('ingame-container')
-      for (let i = 0; i < divs.length; i++) {
-        divs[i].style.cursor = 'pointer'
+      if (this.registered.find(el => el.get('id') === game.get('player_right_id')) == null) {
+        await this.registerUser(game.get('player_right_id'))
+        await this.fillContextRanked(this.registered.at(this.registered.length - 1))
       }
     }
-    register()
+    const divs = document.getElementsByClassName('ingame-container')
+    for (let i = 0; i < divs.length; i++) {
+      divs[i].style.cursor = 'pointer'
+    }
   },
 
   fillVictoriesDefeats: function () {
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
+      console.log(game)
       if (game.get('status') === 'played') {
-        const index = this.context.ranked.findIndex(el => el.id === game.get('winner_id'))
+        const index = this.context.ranked.findIndex(el => el.id == game.get('winner_id'))
+        console.log(index)
         this.context.ranked[index].victories += 1
         let id
         if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -320,9 +320,9 @@ export const TournamentView = Backbone.View.extend({
     }
   },
 
-  initializeRanking: function () {
+  initializeRanking: async function () {
     // List all users
-    this.listAllUsers()
+    await this.listAllUsers()
 
     // Fill victories / defeats
     this.fillVictoriesDefeats()
@@ -515,8 +515,8 @@ export const TournamentView = Backbone.View.extend({
     }
   },
 
-  initializeContent: function (template, div) {
-    this.$el.find('#tournament-content-container').html(template(this.context))
+  initializeContent: async function (template, div) {
+    await this.$el.find('#tournament-content-container').html(template(this.context))
     try {
       document.getElementById('all-matches-nav').classList.remove('open')
       document.getElementById('ranking-nav').classList.remove('open')
@@ -713,7 +713,7 @@ export const TournamentView = Backbone.View.extend({
       } else if (msg.message.status === 'offline') {
         div.innerHTML = 'OFFLINE'
       } else {
-        div.innerHTML = 'IN GAME'
+        div.innerHTML = 'INGAME'
       }
 
       div = document.getElementById('slide-show' + msg.message.id)
@@ -725,7 +725,7 @@ export const TournamentView = Backbone.View.extend({
 
       if (msg.message.status === 'ingame') {
         div = document.getElementById('status-container' + msg.message.id)
-        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + ';')
+        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
         div.style.cursor = 'pointer'
       }
     }

@@ -235,7 +235,7 @@ export const LeaderboardView = Backbone.View.extend({
     } else if (msg.message.status === 'offline') {
       div.innerHTML = 'OFFLINE'
     } else {
-      div.innerHTML = 'IN GAME'
+      div.innerHTML = 'INGAME'
     }
 
     div = document.getElementById('slide-show' + msg.message.id)

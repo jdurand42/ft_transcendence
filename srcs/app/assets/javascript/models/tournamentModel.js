@@ -38,8 +38,7 @@ export const Tournament = Backbone.Model.extend({
     })
   },
   cancelTournament: function () {
-    console.log(this.id)
-    return fetch(this.url(), {
+    return fetch(this.urlRoot + '/' + this.id, {
       method: 'DELETE',
       headers: this.headers
     })

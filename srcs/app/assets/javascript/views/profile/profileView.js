@@ -51,12 +51,11 @@ export const ProfileView = Backbone.View.extend({
     this.membersGuild = new Users()
     this.guild = undefined
     this.userLogged = new User()
+    this.id = Number(this.id)
 
     this.socket.updateContext(this, this.notifView)
 
     // this.myWarGames = new GameRecords()
-    console.log(this.id)
-    console.log(this.userId)
     if (this.id === null) {
       this.id = this.userId
     }
@@ -269,7 +268,6 @@ export const ProfileView = Backbone.View.extend({
     this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
 
     if (user.get('status') === 'ingame') {
-      console.log('ici')
       const games = new GameRecords()
       await games.fetchGameByUserIdStatus(user.get('id'), 'inprogress')
       const game = games.at(0)
@@ -391,7 +389,7 @@ export const ProfileView = Backbone.View.extend({
     this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
   },
 
-  friends: function () {
+  friends: async function () {
     let friends
     if (this.id === this.userId) {
       friends = this.userLogged.get('friends')
@@ -402,8 +400,8 @@ export const ProfileView = Backbone.View.extend({
     const context = { friends: [], friendsNumber: friends.length }
     for (let i = 0; i < friends.length; i++) {
       // context.friends.push(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))))
-      context.friends.push(
-        this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))), i))
+      const obj = await this.updateContextForlist(JSON.parse(JSON.stringify(this.users.get(friends[i].friend_id))), i)
+      context.friends.push(obj)
       // context.friends[i] = this.updateContextForlist(context.friends[i])
       if (this.id === this.userId) {
         context.friends[i].myPage = true
@@ -436,7 +434,7 @@ export const ProfileView = Backbone.View.extend({
     return this
   },
 
-  updateContextForlist: function (user, i) {
+  updateContextForlist: async function (user, i) {
     user.trophy = 'icons/' + this.ladders.get(user.ladder_id).get('name').toLowerCase() + '.svg'
     user.rank = i + 1
     user.generalRank = '42'
@@ -444,6 +442,11 @@ export const ProfileView = Backbone.View.extend({
     user.totalGames = user.victories + user.ladder_games_lost
     if (user.status === 'ingame') {
       user.slide_show = './icons/slideshow-ingame.svg'
+      const games = new GameRecords()
+      await games.fetchGameByUserIdStatus(user.id, 'inprogress')
+      const game = games.at(0)
+      user.ingame = true
+      user.gameId = game.get('id')
     } else {
       user.slide_show = './icons/slideshow.svg'
     }
@@ -496,7 +499,7 @@ export const ProfileView = Backbone.View.extend({
     this.$el.find('#profileContent').html(Handlebars.templates.achievements(context))
   },
 
-  profileGuild: function () {
+  profileGuild: async function () {
     let guild
     if (this.users.get(this.id).get('guild_id')) {
       guild = this.guild
@@ -522,7 +525,8 @@ export const ProfileView = Backbone.View.extend({
     for (let i = 0; i < this.membersGuild.length; i++) {
       const member = this.membersGuild.at(i)
 
-      context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(member)), i))
+      const obj = await this.updateContextForlist(JSON.parse(JSON.stringify(member)), i)
+      context.members.push(obj)
 
       if (this.guild.get('owner_id')[0] === member.get('id')) {
         context.members[i].member = 'Owner'
@@ -686,7 +690,7 @@ export const ProfileView = Backbone.View.extend({
       } else if (msg.message.status === 'offline') {
         div.innerHTML = 'OFFLINE'
       } else {
-        div.innerHTML = 'IN GAME'
+        div.innerHTML = 'INGAME'
       }
 
       div = document.getElementById('slide-show' + msg.message.id)

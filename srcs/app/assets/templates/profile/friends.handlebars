@@ -39,20 +39,21 @@
             <td>{{victories}}</td>
             <td>{{totalGames}}</td>
             <td>
-                <div class="status-container">
+                {{#if ingame}}
+                <div class="status-container ingame-container" id="status-container{{id}}" onclick="window.location='#game/{{gameId}}';">
+                {{/if}}
+                {{#unless ingame}}
+                <div class="status-container" id="status-container{{id}}">
+                {{/unless}}
                     <div class="pastille {{status}}" id="pastille{{id}}"></div>
                     <p class="status" id="status{{id}}">{{status}}</p>
-                    <div class="slide-show-container"></div>
-                    <img src="{{slide_show}}" id="slide-show{{id}}" class="slide-show"></img>
+                    <div class="slide-show-container">
+                        <img src="{{slide_show}}" id="slide-show{{id}}" class="slide-show"></img>
+                    </div>
                 </div>
             </td>
             {{#if myPage}}
-                {{#unless follow}}
-                <td><button class="follow" id="follow" for={{id}}></button></td>
-                {{/unless}}
-                {{#if follow}}
                 <td><button class="unfollow" id="follow" for={{id}}></button></td>
-                {{/if}}
             {{/if}}
         </tr>
         {{/each}}

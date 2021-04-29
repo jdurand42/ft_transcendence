@@ -626,7 +626,7 @@ export const GuildView = Backbone.View.extend({
     return this
   },
 
-  updateMembers: function () {
+  updateMembers: async function () {
     const context = {
       name: this.guild.get('name'),
       id: this.id,
@@ -637,7 +637,8 @@ export const GuildView = Backbone.View.extend({
     for (let i = 0; i < this.members.length; i++) {
       const member = this.members.at(i)
 
-      context.members.push(this.updateContextForlist(JSON.parse(JSON.stringify(member)), i))
+      const obj = await this.updateContextForlist(JSON.parse(JSON.stringify(member)), i)
+      context.members.push(obj)
 
       if (this.guild.get('owner_id')[0] === member.get('id')) {
         context.members[i].member = 'Owner'
@@ -747,13 +748,18 @@ export const GuildView = Backbone.View.extend({
     explanation.style.left = e.pageX
   },
 
-  updateContextForlist: function (user, i) {
+  updateContextForlist: async function (user, i) {
     user.trophy = 'icons/' + this.ladders.get(user.ladder_id).get('name').toLowerCase() + '.svg'
     user.rank = i + 1
     user.victories = user.ladder_games_won
     user.totalGames = user.victories + user.ladder_games_lost
     if (user.status === 'ingame') {
       user.slide_show = './icons/slideshow-ingame.svg'
+      const games = new GameRecords()
+      await games.fetchGameByUserIdStatus(user.id, 'inprogress')
+      const game = games.at(0)
+      user.ingame = true
+      user.gameId = game.get('id')
     } else {
       user.slide_show = './icons/slideshow.svg'
     }
@@ -762,6 +768,44 @@ export const GuildView = Backbone.View.extend({
       user.guildName = this.guilds.get(user.guild_id).get('name')
     }
     return user
+  },
+
+  receiveMessage: function (msg) {
+    const channelId = Number(JSON.parse(msg.identifier).id)
+    this.users.get(msg.message.id).set({ status: msg.message.status })
+    if (msg.message.id === this.userId) {
+      this.userLogged.set({ status: msg.message.status })
+    }
+
+    try {
+      let div = document.getElementById('pastille' + msg.message.id)
+      div.classList.remove('offline')
+      div.classList.remove('ingame')
+      div.classList.remove('online')
+      div.classList.add(msg.message.status)
+
+      div = document.getElementById('status' + msg.message.id)
+      if (msg.message.status === 'online') {
+        div.innerHTML = 'ONLINE'
+      } else if (msg.message.status === 'offline') {
+        div.innerHTML = 'OFFLINE'
+      } else {
+        div.innerHTML = 'INGAME'
+      }
+
+      div = document.getElementById('slide-show' + msg.message.id)
+      if (msg.message.status === 'ingame') {
+        div.setAttribute('src', './icons/slideshow-ingame.svg')
+      } else {
+        div.setAttribute('src', './icons/slideshow.svg')
+      }
+
+      if (msg.message.status === 'ingame') {
+        div = document.getElementById('status-container' + msg.message.id)
+        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
+        div.style.cursor = 'pointer'
+      }
+    } catch (e) {}
   },
 
   destroy: function () {

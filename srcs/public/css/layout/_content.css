@@ -90,6 +90,14 @@
 	flex-direction: column;
 }
 
+.contentWrapper .buttons {
+	display: flex;
+}
+
+.contentWrapper #manageGuildButton {
+	margin-left: 8px;
+}
+
 .pannelContent .pannelLine {
 	width: 100%;
 	display: flex;

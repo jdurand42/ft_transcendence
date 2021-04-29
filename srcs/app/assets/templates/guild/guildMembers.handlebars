@@ -32,12 +32,18 @@
 	            <td>{{victories}}</td>
 	            <td>{{totalGames}}</td>
 	            <td>
-	                <div class="status-container">
-	                    <div class="pastille {{status}}" id="pastille"></div>
-	                    <p class="status">{{status}}</p>
-	                    <div class="slide-show-container"></div>
-	                    <img src="{{slide_show}}" class="slide-show"></img>
-	                </div>
+					{{#if ingame}}
+					<div class="status-container ingame-container" id="status-container{{id}}" onclick="window.location='#game/{{gameId}}';">
+					{{/if}}
+					{{#unless ingame}}
+					<div class="status-container" id="status-container{{id}}">
+					{{/unless}}
+	                    <div class="pastille {{status}}" id="pastille{{id}}"></div>
+	                    <p class="status" id="status{{id}}">{{status}}</p>
+	                    <div class="slide-show-container">
+	                    	<img src="{{slide_show}}" class="slide-show" id="slide-show{{id}}"></img>
+	                	</div>
+					</div>
 	            </td>
 	            <td>{{member}}</td>
 	        </tr>
