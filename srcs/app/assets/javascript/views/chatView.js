@@ -161,15 +161,17 @@ export const ChatView = Backbone.View.extend({
       const templateDataChat = this.templateChat(this.context)
       this.$el.html(templateDataChat)
 
-      for (let i = 0; i < this.context.usersInGame.length; i++) {
-        const games = new GameRecords()
-        await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
-        const game = games.at(0)
-        const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
-        console.log(div)
-        div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
-        div.style.cursor = 'pointer'
-      }
+      try {
+        for (let i = 0; i < this.context.usersInGame.length; i++) {
+          const games = new GameRecords()
+          await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
+          const game = games.at(0)
+          const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
+          console.log(div)
+          div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
+          div.style.cursor = 'pointer'
+        }
+      } catch (e) {}
 
       // update post render
       let currentTarget
