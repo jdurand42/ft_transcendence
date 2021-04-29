@@ -77,6 +77,7 @@ export const GuildView = Backbone.View.extend({
           this.currentWarTimes.push(new WarTimes(this.wars.at(i).get('id')))
           await this.currentWarTimes[this.currentWarTimes.length - 1].fetch()
           this.currentWar.add(this.wars.at(i))
+          console.log(this.wars.at(i))
           await this.initializeLastWarsGames(this.wars.at(i), this.currentWarTimes[this.currentWarTimes.length - 1], this.currentGames)
         }
         // GET LAST WARS -> LOAD ONE TIME ON CLICK ON LAST WARS
@@ -174,15 +175,20 @@ export const GuildView = Backbone.View.extend({
     randomFight()
   },
 
-  acceptWar: function (e) {
+  acceptWar: async function (e) {
     const war = this.calendar.get(e.currentTarget.getAttribute('for'))
-    war.acceptRefuseWar('true')
-    if (this.guild.get('id') === war.get('from_id')) {
-      war.set({ from_agreement: true })
-    } else {
-      war.set({ on_agreement: true })
+    try {
+      war.acceptRefuseWar('true')
+
+      if (this.guild.get('id') === war.get('from_id')) {
+        war.set({ from_agreement: true })
+      } else {
+        war.set({ on_agreement: true })
+      }
+      this.displayCalendar()
+    } catch (e) {
+      alert(e.responseJSON.message)
     }
-    this.displayCalendar()
   },
 
   refuseWar: function (e) {
@@ -701,7 +707,7 @@ export const GuildView = Backbone.View.extend({
     }
   },
 
-  displayCalendar: function (e) {
+  displayCalendar: async function (e) {
     const context = {}
     if (this.calendar.length > 0) {
       context.war = true
@@ -721,10 +727,10 @@ export const GuildView = Backbone.View.extend({
       context.war = false
     }
 
-    this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
+    await this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
 
     // line
-    if (this.calendar.length > 0) {
+    if (this.calendar.length > 1) {
       e.currentTarget = document.getElementById('validation-container-0')
       const div1 = e.currentTarget
       const center1X = div1.clientLeft + div1.clientWidth / 2
