@@ -3,24 +3,33 @@
 require 'rails_helper'
 
 RSpec.describe 'Games', type: :request do
-  let!(:auth) { create(:user, admin: true) }
   let(:access_token) { auth.create_new_auth_token }
-  let!(:ach) { Achievement.create(name: 'Tonight, We Dine In Hell !', description: 'You must declare a War') }
+  let(:auth) {User.find_by(nickname: 'auth') }
+  let(:sam) {User.find_by(nickname: 'sam') }
+  let(:pippin) {User.find_by(nickname: 'pippin') }
+  let(:merry) {User.find_by(nickname: 'merry') }
+  before(:all) {
+    FactoryBot.create(:user, nickname: 'auth', admin: true, status: 'online')
+    Achievement.create(name: 'Tonight, We Dine In Hell !', description: 'You must declare a War')
+    %w(sam pippin merry).map { |name| FactoryBot.create(:user, status: 'online', nickname: name) }
+  }
+  after(:all) {
+    User.destroy_by(nickname: 'auth')
+    Achievement.destroy_by(name: 'Tonight, We Dine In Hell !')
+    %w(sam pippin merry).map { |name| User.destroy_by(nickname: name) }
+  }
   describe 'requires auth token' do
-    before do
-      get '/api/games'
-    end
+    before { get '/api/games' }
     it 'returns status code 401' do
       expect(response).to have_http_status(401)
       expect(json).to_not be_empty
     end
   end
-
   describe 'retrieves all games played' do
     context 'search with user_id' do
       before do
         create_list(:game, 2)
-        get '/api/games', headers: auth.create_new_auth_token, params: { user_id: User.last.id, mode: 'duel' }
+        get '/api/games', headers: access_token, params: { user_id: User.last.id, mode: 'duel' }
       end
       it 'returns all games played' do
         expect(json).not_to be_empty
@@ -31,12 +40,11 @@ RSpec.describe 'Games', type: :request do
         expect(json).to_not be_empty
       end
     end
-
     context 'search with user_id and status' do
       before do
         create_list(:game, 2)
         Game.first.update!(status: 'inprogress')
-        get '/api/games', headers: auth.create_new_auth_token, params: { status: 'inprogress' }
+        get '/api/games', headers: access_token, params: { status: 'inprogress' }
       end
       it 'returns all games played' do
         expect(json).not_to be_empty
@@ -44,99 +52,81 @@ RSpec.describe 'Games', type: :request do
         expect(response).to have_http_status(200)
       end
     end
-
     context 'search with tournament_id' do
       it 'returns all tournament games' do
         create(:tournament)
-        create_list(:game, 2)
+        create_list(:game, 1)
         create_list(:game, 2, tournament_id: Tournament.first.id)
-        get '/api/games', headers: auth.create_new_auth_token, params: { tournament_id: Tournament.first.id }
+        get '/api/games', headers: access_token, params: { tournament_id: Tournament.first.id }
         expect(json.count).to eq 2
       end
     end
-
     context 'search with war_time_id' do
       it 'returns all war_time_id games' do
         FactoryBot.create(:war_with_times)
         create(:game)
         create_list(:game, 2, mode: 'war', war_time_id: WarTime.first.id)
-        get '/api/games', headers: auth.create_new_auth_token, params: { war_time_id: WarTime.first.id }
+        get '/api/games', headers: access_token, params: { war_time_id: WarTime.first.id }
         expect(json.count).to eq 2
       end
     end
-
     context 'everything' do
       before do
         create_list(:game, 2)
-        get '/api/games', headers: auth.create_new_auth_token
+        get '/api/games', headers: access_token
       end
       it 'returns all played matchs' do
         expect(json.size).to eq(2)
       end
-
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
     end
-
     context 'create' do
       describe 'a valid duel game' do
         it 'returns status code 201' do
-          to = create(:user, status: 'online')
           create(:game)
-          auth.update(status: 'online')
           expect do
-            post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel', opponent_id: to.id }
-          end.to have_broadcasted_to("user_#{to.id}").exactly(:once).with(sender_id: auth.id,
-                                                                          action: 'game_invitation', id: Game.maximum(:id).next)
+            post '/api/games', headers: access_token, params: { mode: 'duel', opponent_id: sam.id }
+          end.to have_broadcasted_to("user_#{sam.id}").exactly(:once).with(sender_id: auth.id, action: 'game_invitation', id: Game.maximum(:id).next)
           expect(response).to have_http_status(201)
           expect(json).not_to be_empty
           expect(Game.count).to eq(2)
         end
       end
-
       describe 'a duel with an already ingame player' do
         before do
-          to = create(:user, status: 'ingame')
-          auth.update(status: 'online')
-          post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel', opponent_id: to.id }
+          sam.update!(status: 'ingame')
+          post '/api/games', headers: access_token, params: { mode: 'duel', opponent_id: sam.id }
         end
-
         it 'returns status code 403' do
           expect(response).to have_http_status(403)
           expect(json).not_to be_empty
         end
       end
-
       it 'a duel game without opponent_id' do
-        post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel' }
+        post '/api/games', headers: access_token, params: { mode: 'duel' }
         expect(response).to have_http_status(422)
         expect(json).not_to be_empty
       end
-
       it 'already in another duel game' do
         create(:game, player_right: auth, status: 'pending')
-        to = create(:user, status: 'online')
-        post '/api/games', headers: auth.create_new_auth_token, params: { mode: 'duel', opponent_id: to.id }
+        post '/api/games', headers: access_token, params: { mode: 'duel', opponent_id: sam.id }
         expect(response).to have_http_status(403)
         expect(json).not_to be_empty
       end
-
       it 'already in another duel game' do
-        from = create(:user, status: 'online')
-        auth.update!(status: 'online')
         create(:game, player_left: auth, status: 'pending')
-        post '/api/games', headers: from.create_new_auth_token, params: { mode: 'duel', opponent_id: auth.id }
+        post '/api/games', headers: sam.create_new_auth_token, params: { mode: 'duel', opponent_id: auth.id }
         expect(response).to have_http_status(403)
         expect(json).not_to be_empty
       end
     end
-
     context 'delete' do
       describe 'cancel invitation' do
         before do
           game = create(:game, player_left: auth)
-          delete "/api/games/#{game.id}", headers: auth.create_new_auth_token
+          delete "/api/games/#{game.id}", headers: access_token
         end
         it 'returns status code 204' do
           expect(response).to have_http_status(204)
@@ -146,7 +136,7 @@ RSpec.describe 'Games', type: :request do
         before do
           game = create(:game)
           game.update!(status: 'played')
-          delete "/api/games/#{game.id}", headers: auth.create_new_auth_token
+          delete "/api/games/#{game.id}", headers: access_token
         end
         it 'returns status code 403' do
           expect(response).to have_http_status(403)
@@ -156,85 +146,63 @@ RSpec.describe 'Games', type: :request do
     end
 
     context 'WarTime' do
-      let(:attributes) do
-        { on_id: Guild.last.id, war_start: DateTime.yesterday, war_end: DateTime.new(2022), prize: 1000,
-          max_unanswered: 10 }
-      end
-      let(:auth_2) { create(:user) }
+      let(:auth_2) { User.find_by(nickname: 'auth_2') }
       let(:access_token_2) { auth_2.create_new_auth_token }
-      let(:users) { create_list(:user, 3, status: 'online') }
-      before do
-        post api_guilds_url, headers: access_token, params: { name: 'NoShroud', anagram: 'NOS' }
-        post api_guilds_url, headers: access_token_2, params: { name: 'BANG', anagram: 'ABCDE' }
-        post "/api/guilds/#{Guild.first.id}/members/#{users[0].id}", headers: access_token
-        post "/api/guilds/#{Guild.last.id}/members/#{users[1].id}", headers: access_token_2
-        post api_wars_url, headers: access_token, params: attributes
-        auth.update!(status: 'online')
-        auth_2.update!(status: 'online')
-      end
-      it 'should forfeit opponent at time_to_answer' do
-        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
-        War.first.update!(opened: true)
-        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
-        expect(WarTimeToAnswerJob).to have_been_enqueued
-        perform_enqueued_jobs(only: WarTimeToAnswerJob)
-        expect(Game.first.winner_id).to eq auth.id
-      end
+      before {
+        FactoryBot.create(:user, nickname: 'auth_2', status: 'online')
+        Guild.create(name: 'NoShroud', anagram: 'NOS')
+        Guild.create(name: 'BANG', anagram: 'ABCDE')
+        GuildMember.create(user_id: User.find_by(nickname: 'auth').id, guild_id: Guild.first.id, rank: 'owner')
+        GuildMember.create(user_id: User.find_by(nickname: 'auth_2').id, guild_id: Guild.last.id, rank: 'owner')
+        GuildMember.create(user_id: User.find_by(nickname: 'sam').id, guild_id: Guild.first.id, rank: 'member')
+        GuildMember.create(user_id: User.find_by(nickname: 'pippin').id, guild_id: Guild.last.id, rank: 'member')
+        create(:war, from_id: Guild.first.id, on_id: Guild.last.id)
+        WarTime.create(day: Date.today.strftime('%A'), start_hour: 8, end_hour: 22, time_to_answer: 10, max_unanswered: 1, war: War.first)
+      }
       it 'should decrement max_unanswered at time_to_answer' do
-        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
-        War.first.update!(opened: true)
         post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
-        game = Game.first
-        game.connected_players.push(auth.id)
-        game.save
-        expect(WarTimeToAnswerJob).to have_been_enqueued
+        accept_game_invite(Game.first, auth.id)
         perform_enqueued_jobs(only: WarTimeToAnswerJob)
         expect(Game.first.winner_id).to eq nil
         expect(WarTime.first.max_unanswered).to eq 1
         expect(WarTime.first.from_max_unanswered).to eq 1
         expect(WarTime.first.on_max_unanswered).to eq 0
       end
-      it "returns 'noWarTimeOnGoing' if no wartime" do
-        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 22, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
-        War.first.update!(opened: true)
-        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
-        expect(json['errors']).to eq ["Can't launch game in war mode, no WarTime running"]
-      end
       it "returns 'noWarTimeOnGoing' if user has no guild" do
-        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 1 }
-        War.first.update!(opened: true)
-        token_3 = users[2].create_new_auth_token
+        token_3 = merry.create_new_auth_token
         post '/api/games', headers: token_3, params: { mode: 'war', opponent_id: auth_2.id }
         expect(json['errors']).to eq ["Can't launch game in war mode, no WarTime running"]
       end
       it "can't create a game if existing 'inprogress' game" do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
-        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        perform_enqueued_jobs(only: WarOpenerJob)
         post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
         Game.first.update!(status: 'inprogress')
-        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id }
+        post '/api/games', headers: sam.create_new_auth_token, params: { mode: 'war', opponent_id: pippin.id }
         expect(json['errors']).to eq ['Your guild is already playing a war time match against this guild']
       end
       it "can create a game if existing 'played' game" do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 8, end_hour: 23, time_to_answer: 10, max_unanswered: 0 }
-        post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        perform_enqueued_jobs(only: WarOpenerJob)
+        Game.create(winner: auth, player_left_id: auth.id, player_right_id: auth_2.id, war_time_id: WarTime.first.id, mode: 'war', status: "played")
+        post '/api/games', headers: sam.create_new_auth_token, params: { mode: 'war', opponent_id: pippin.id }
+        expect(json['player_left_id']).to eq sam.id
+      end
+      it "returns 'noWarTimeOnGoing' if no wartime" do
+        WarTime.first.update!(start_hour: 21)
         post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
-        Game.first.update!(status: 'played')
-        post '/api/games', headers: users[0].create_new_auth_token, params: { mode: 'war', opponent_id: users[1].id }
-        expect(json['player_left_id']).to eq users[0].id
+        expect(json['errors']).to eq ["Can't launch game in war mode, no WarTime running"]
+      end
+      it 'should forfeit opponent at time_to_answer' do
+        WarTime.first.update!(on_max_unanswered: 0)
+        post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
+        accept_game_invite(Game.first, auth.id)
+        expect(WarTimeToAnswerJob).to have_been_enqueued
+        perform_enqueued_jobs(only: WarTimeToAnswerJob)
+        expect(Game.first.winner_id).to eq auth.id
       end
     end
     context 'Tournament' do
       include(TournamentHelper)
       let(:users) { create_list(:user, 2, status: 'online') }
-      let(:token) { users[0].create_new_auth_token }
-      let(:token_2) { users[1].create_new_auth_token }
+      let(:token) { sam.create_new_auth_token }
+      let(:token_2) { pippin.create_new_auth_token }
       before do
         post api_tournaments_url, headers: access_token, params: { start_date: DateTime.now + 1 }
         post participants_api_tournament_url(Tournament.first.id), headers: token
@@ -242,35 +210,34 @@ RSpec.describe 'Games', type: :request do
       end
       it "can't play twice against same opponent (one way)" do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
-        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: pippin.id }
         Game.first.update!(status: 'played')
-        TournamentParticipant.find_by_user_id(users[0].id).update!(opponents: [users[1].id])
-        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id }
+        TournamentParticipant.find_by_user_id(sam.id).update!(opponents: [pippin.id])
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: pippin.id }
         expect(Game.count).to eq 1
         expect(json['errors']).to eq ['You already challenged this player']
         expect(status).to eq 403
       end
       it "can't play twice against same opponent (both ways)" do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
-        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: pippin.id }
         Game.first.update!(status: 'played')
-        TournamentParticipant.find_by_user_id(users[0].id).update!(opponents: [users[1].id])
-        TournamentParticipant.find_by_user_id(users[1].id).update!(opponents: [users[0].id])
-        post api_games_url, headers: token_2, params: { mode: 'tournament', opponent_id: users[0].id }
+        TournamentParticipant.find_by_user_id(sam.id).update!(opponents: [pippin.id])
+        TournamentParticipant.find_by_user_id(pippin.id).update!(opponents: [sam.id])
+        post api_games_url, headers: token_2, params: { mode: 'tournament', opponent_id: sam.id }
         expect(Game.count).to eq 1
         expect(json['errors']).to eq ['You already challenged this player']
         expect(status).to eq 403
       end
       it "can't play before tournament starts" do
-        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: pippin.id }
         expect(Game.count).to eq 0
         expect(json['errors']).to eq ['Tournament has not started yet']
         expect(status).to eq 403
       end
-      it "can't play if opponent not participant" do
+      it "can't play if opponent not participant",test:true do
         put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
-        user = create(:user, status: 'online')
-        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: user.id }
+        post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: merry.id }
         expect(Game.count).to eq 0
         expect(json['errors']).to eq ["This player doesn't participate to the tournament"]
         expect(status).to eq 403
@@ -278,33 +245,33 @@ RSpec.describe 'Games', type: :request do
       context "TTA" do
         before {
           put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
-          post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: users[1].id, tournament_id: Tournament.first.id }
+          post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: pippin.id, tournament_id: Tournament.first.id }
         }
-        it 'users[0] wins at TTA' do
-          game = Game.first
-          game.connected_players << users[0].id
-          game.save
+        it 'sam wins at TTA' do
+          accept_game_invite(Game.first, sam.id)
           perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
-          expect(Game.first.winner_id).to eq users[0].id
+          expect(Game.first.winner_id).to eq sam.id
           expect(Game.first.status).to eq 'played'
-          winner = TournamentParticipant.find_by(user_id: users[0].id)
+          winner = TournamentParticipant.find_by(user_id: sam.id)
           expect(winner.win_count).to eq 1
-          expect(winner.opponents).to include(users[1].id)
-          expect(TournamentParticipant.find_by(user_id: users[1].id).opponents).to include(users[0].id)
+          expect(winner.opponents).to include(pippin.id)
+          expect(TournamentParticipant.find_by(user_id: pippin.id).opponents).to include(sam.id)
         end
-        it 'users[1] wins at TTA' do
-          game = Game.first
-          game.connected_players << users[1].id
-          game.save
+        it 'pippin wins at TTA' do
+          accept_game_invite(Game.first, pippin.id)
           perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
-          expect(Game.first.winner_id).to eq users[1].id
+          expect(Game.first.winner_id).to eq pippin.id
           expect(Game.first.status).to eq 'played'
-          winner = TournamentParticipant.find_by(user_id: users[1].id)
+          winner = TournamentParticipant.find_by(user_id: pippin.id)
           expect(winner.win_count).to eq 1
-          expect(winner.opponents).to include(users[0].id)
-          expect(TournamentParticipant.find_by(user_id: users[0].id).opponents).to include(users[1].id)
+          expect(winner.opponents).to include(sam.id)
+          expect(TournamentParticipant.find_by(user_id: sam.id).opponents).to include(pippin.id)
+        end
       end
     end
   end
-end
+  def accept_game_invite(game, *players)
+    game.connected_players.push(*players)
+    game.save
+  end
 end

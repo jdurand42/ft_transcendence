@@ -11,11 +11,10 @@ class WarTimeToAnswerJob < ApplicationJob
       decrement_max_unanswered(game, war_time)
       notify_unanswered(game)
     else
-      game.winner = game.player_left
+      game.winner_id = game.connected_players[0]
       game_over(game)
     end
-    game.status = 'played'
-    game.save!
+    game.update!(status: 'played')
   end
 
   def absent_player(game)

@@ -14,7 +14,6 @@ RSpec.describe War, type: :model do
   it 'should have correct association' do
     should belong_to(:from)
     should belong_to(:on)
-    should have_many(:war_addons)
     should have_many(:war_times)
   end
 

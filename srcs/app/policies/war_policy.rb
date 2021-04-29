@@ -6,24 +6,25 @@ class WarPolicy < ApplicationPolicy
   end
 
   def update?
-    guild_owner_officer?
+    owner_officer_admin?
   end
 
   def agreements?
-    guild_owner_officer?
+    owner_officer_admin?
   end
 
   def create_times?
-    guild_owner_officer?
+    owner_officer_admin?
   end
 
   def destroy_times?
-    guild_owner_officer?
+    owner_officer_admin?
   end
 
   private
 
-  def guild_owner_officer?
-    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, [record.from.id, record.on.id], %w[owner officer])
+  def owner_officer_admin?
+    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, [record.from.id, record.on.id],
+                                                      %w[owner officer]) || user.admin?
   end
 end

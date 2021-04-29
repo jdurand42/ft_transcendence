@@ -13,7 +13,6 @@ class War < ApplicationRecord
 
   belongs_to :from, class_name: 'Guild'
   belongs_to :on, class_name: 'Guild'
-  has_many :war_addons
   has_many :war_times
 
   def from_must_not_eq_on

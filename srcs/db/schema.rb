@@ -202,14 +202,6 @@ ActiveRecord::Schema.define(version: 2021_05_01_153639) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
-  create_table "war_addons", force: :cascade do |t|
-    t.string "name"
-    t.bigint "war_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["war_id"], name: "index_war_addons_on_war_id"
-  end
-
   create_table "war_times", force: :cascade do |t|
     t.string "day"
     t.integer "start_hour"
@@ -267,7 +259,6 @@ ActiveRecord::Schema.define(version: 2021_05_01_153639) do
   add_foreign_key "user_ignores", "users"
   add_foreign_key "user_ignores", "users", column: "ignored_id"
   add_foreign_key "users", "ladders"
-  add_foreign_key "war_addons", "wars"
   add_foreign_key "war_times", "wars"
   add_foreign_key "wars", "guilds", column: "from_id"
   add_foreign_key "wars", "guilds", column: "on_id"
