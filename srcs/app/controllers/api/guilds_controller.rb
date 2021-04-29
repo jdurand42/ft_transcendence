@@ -4,7 +4,7 @@ module Api
   class GuildsController < ApiController
     before_action :set_guild
     skip_before_action :set_guild, only: %i[index create guild_params manage_ownership]
-    after_action :verify_authorized, except: %i[index show create]
+    after_action :verify_authorized, except: %i[index show create destroy_members]
 
     def index
       json_response(Guild.all.order(score: :desc))
@@ -35,8 +35,8 @@ module Api
     end
 
     def destroy_members
-      authorize @guild
       target = GuildMember.find_by(user_id: params.fetch(:tid), guild: @guild)
+      raise ActiveRecord::RecordNotFound if target.nil?
       return if destroy_error?(target)
 
       target.destroy! unless ownership_changed?(@guild, target)
@@ -86,9 +86,9 @@ module Api
     end
 
     def destroy_error?(target)
+      return render_not_allowed if current_user.guild_member.member? && target.user != current_user
       return render_error('guildOwnerDeletion', 403) if mutiny?
       return render_error('warOngoing', 403) if current_user.guild.wars.where(opened: true).present?
-      raise ActiveRecord::RecordNotFound if target.nil?
 
       nil
     end

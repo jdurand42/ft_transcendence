@@ -46,20 +46,6 @@ describe GuildPolicy do
       expect(subject).not_to permit(user, guild)
     end
   end
-  permissions :destroy_members? do
-    it 'allows destroy if admin' do
-      expect(subject).to permit(admin, guild)
-    end
-    it 'allows destroy if owner' do
-      expect(subject).to permit(owner, guild)
-    end
-    it 'allows destroy if officer' do
-      expect(subject).to permit(officer, guild)
-    end
-    it 'allows destroy if member' do
-      expect(subject).to permit(member, guild)
-    end
-  end
 
   %i[create_members? create_officers? destroy_officers? create_invitation?].each do |e|
     permissions e do
