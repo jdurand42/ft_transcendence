@@ -50,3 +50,14 @@
     color: var(--primary-color);
     cursor: pointer;
 }
+
+.waiting-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: PressStart2P-Regular;
+    font-size: min(3vw, 70px);
+    color: var(--secondary-color);
+    width: 100vw;
+    margin-top: 5%;
+}

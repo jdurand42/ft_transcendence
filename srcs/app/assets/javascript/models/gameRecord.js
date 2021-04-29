@@ -23,6 +23,12 @@ export const GameRecord = Backbone.Model.extend({
     return this.urlRoot
   },
 
+  playGame: function (gameType) {
+    return this.save({
+      mode: gameType
+    })
+  },
+
   inviteGame: function (opponentId, gameType = 'duel') {
     fetch(this.urlRoot, {
       method: 'POST',

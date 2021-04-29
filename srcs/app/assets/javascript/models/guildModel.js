@@ -39,8 +39,7 @@ export const Guild = Backbone.Model.extend({
       method: 'DELETE',
       headers: this.headers
     })
-    const json = await response.json()
-    return json
+    return response
   },
 
   sendInvitation: function (id) {
