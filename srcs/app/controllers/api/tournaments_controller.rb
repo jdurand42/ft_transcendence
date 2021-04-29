@@ -15,8 +15,8 @@ module Api
     end
 
     def create
-      return render_not_allowed unless current_user.admin?
-      return render_error('trnmtUnique', 403) unless Tournament.count.zero?
+      raise NotAllowedError unless current_user.admin?
+      raise TournamentRunningError unless Tournament.count.zero?
 
       trnmt = Tournament.create!(tournament_params)
       json_response(trnmt, 201)
@@ -41,7 +41,7 @@ module Api
 
     def leave
       target_id = params.fetch(:tid)
-      return render_not_allowed unless current_user.admin? || current_user.id == target_id.to_i
+      raise NotAllowedError unless current_user.admin? || current_user.id == target_id.to_i
 
       TournamentParticipant.find_by_user_id(target_id).destroy!
       head :no_content
@@ -54,7 +54,7 @@ module Api
     end
 
     def tournament_running?
-      render_error('trnmtRunning', 403) unless DateTime.now.in_time_zone(1) < @trnmt.start_date
+      raise TournamentRunningError unless DateTime.now.in_time_zone(1) < @trnmt.start_date
     end
 
     def set_tournament

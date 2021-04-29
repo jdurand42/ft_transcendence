@@ -129,7 +129,7 @@ RSpec.describe 'Users', type: :request do
         patch "/api/users/#{auth.id}", params: { user: { banned: true } }, headers: auth.create_new_auth_token
       end
       it 'returns status code 403' do
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(401)
       end
     end
 
@@ -142,7 +142,7 @@ RSpec.describe 'Users', type: :request do
         patch "/api/users/#{owner.id}", params: { user: { banned: true } }, headers: auth.create_new_auth_token
       end
       it 'returns status code 403' do
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(401)
       end
     end
 
@@ -153,7 +153,7 @@ RSpec.describe 'Users', type: :request do
         patch "/api/users/#{owner.id}", params: { user: { admin: false } }, headers: owner.create_new_auth_token
       end
       it 'returns status code 403' do
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(401)
       end
     end
 

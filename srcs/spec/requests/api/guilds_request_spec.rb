@@ -145,7 +145,7 @@ describe 'Guild', type: :request do
     it 'should not let member kick someone else' do
       GuildMember.create(user: user_1, guild: Guild.first, rank: 'member')
       delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: user_1_access
-      expect(json['errors']).to eq ["This action is not allowed with your current privileges."]
+      expect(json['error']).to eq "This action is not allowed with your current privileges."
     end
     context 'if owner leaves' do
       it 'should destroy guild if he is the last to leave' do

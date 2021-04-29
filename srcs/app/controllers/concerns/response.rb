@@ -6,9 +6,7 @@ module Response
   end
 
   def render_not_allowed
-    render json: {
-      errors: [I18n.t('notAllowed')]
-    }, status: 403
+    render json: { errors: [I18n.t('notAllowed')] }, status: 403
   end
 
   def render_error(arg, status)

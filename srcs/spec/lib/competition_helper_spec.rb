@@ -7,15 +7,15 @@ RSpec.describe CompetitionHelper do
   let!(:player) { create(:user, status: 'online', ladder: ladder) }
   let!(:player_1) { create(:user, status: 'online', ladder: ladder) }
   describe 'match a player' do
-    it 'with better score' do
+    it 'with a better score' do
       player.update!(score: 10)
       player_1.update!(score: 100)
-      expect(match_maker(player)).to eq player_1
+      expect(main_match_maker(player)).to eq player_1.id.to_s
     end
     it 'with the best score if no better score' do
       player.update!(score: 100)
       player_1.update!(score: 90)
-      expect(match_maker(player)).to eq player_1
+      expect(main_match_maker(player)).to eq player_1.id.to_s
     end
   end
   describe 'assign_ladder' do
@@ -51,6 +51,23 @@ RSpec.describe CompetitionHelper do
       player.update!(score: 12_010)
       expect { assign_ladder(player) }.to change { player.ladder_id }.to(diamond.id)
       expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_4.id))
+    end
+  end
+  context 'WarTime MatchMaking' do
+    let!(:guilds) { create_list(:guild_with_members, 2, count: 1) }
+    let!(:war) { create(:war, from: Guild.first, on: Guild.last) }
+    before {
+      War.first.update!(opened: true)
+      User.update_all(status: 'online')
+    }
+    it 'finds a opponent' do
+      opponent = wartime_matchmaker(User.find(Guild.first.members.first.user_id))
+      expect(User.find(opponent).guild).to eq Guild.last
+    end
+    it 'finds only online opponents' do
+      Guild.last.members.pluck(:user_id).map { |user| User.find(user).update!(status: 'offline') }
+      opponent = wartime_matchmaker(User.find(Guild.first.members.first.user_id))
+      expect(opponent).to eq ''
     end
   end
 end

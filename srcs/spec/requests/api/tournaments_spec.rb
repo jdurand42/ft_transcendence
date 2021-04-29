@@ -41,8 +41,8 @@ RSpec.describe 'Tournaments', type: :request do
     it 'should not create two tournaments' do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now }
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
-      expect(json['errors']).to eq ['There can be only one tournament at a time']
-      expect(response.status).to eq 403
+      expect(json['error']).to eq 'The tournament has begun'
+      expect(response.status).to eq 401
       expect(Tournament.count).to eq 1
     end
   end
@@ -57,8 +57,8 @@ RSpec.describe 'Tournaments', type: :request do
     it 'should not update running tournament' do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.yesterday }
       put api_tournament_url(Tournament.first.id), headers: token, params: { start_date: DateTime.now }
-      expect(response.status).to eq 403
-      expect(json['errors']).to eq ['The tournament has begun']
+      expect(response.status).to eq 401
+      expect(json['error']).to eq 'The tournament has begun'
       expect(Tournament.first.start_date.strftime('%d/%b/%Y')).to eq DateTime.yesterday.strftime('%d/%b/%Y')
     end
   end
@@ -83,7 +83,7 @@ RSpec.describe 'Tournaments', type: :request do
       user = create(:user)
       token_2 = user.create_new_auth_token
       post participants_api_tournament_url(Tournament.first.id), headers: token_2
-      expect(json['errors']).to eq ['The tournament has begun']
+      expect(json['error']).to eq 'The tournament has begun'
       expect(Tournament.first.participants.count).to eq 0
     end
   end
@@ -111,7 +111,7 @@ RSpec.describe 'Tournaments', type: :request do
       token_3 = users[1].create_new_auth_token
       post participants_api_tournament_url(Tournament.first.id), headers: token_2
       delete "/api/tournaments/#{Tournament.first.id}/participants/#{users[0].id}", headers: token_3
-      expect(status).to eq 403
+      expect(status).to eq 401
     end
   end
 end

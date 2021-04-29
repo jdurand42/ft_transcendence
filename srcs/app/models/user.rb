@@ -11,17 +11,16 @@ class User < ApplicationRecord
 
   has_one :guild_member, dependent: :destroy
   has_one :guild, through: :guild_member
-
-  has_many :wars, through: :guild
-  # has_many :wars_from_enemy, through: :guild
-
   has_one_attached :avatar
 
+  has_many :wars, through: :guild
+  has_many :games, foreign_key: 'player_left_id', dependent: :destroy
   has_many :chat_participant, dependent: :destroy
   has_many :user_achievements, dependent: :destroy
   has_many :achievements, through: :user_achievements
   has_many :ignores, foreign_key: 'user_id', dependent: :destroy, class_name: 'UserIgnore'
   has_many :friendship, foreign_key: 'user_id', dependent: :destroy, class_name: 'Friendship'
+
   validates_presence_of :nickname
   validates :nickname, uniqueness: true
   validates :two_factor, inclusion: [true, false]
