@@ -542,8 +542,8 @@ export const GuildView = Backbone.View.extend({
   },
 
   countMatchesUnansewered: function (warTimeId, warTime) {
-    document.getElementById('nb-matches-missed' + this.currentWar.at(0).get('from_id')).innerHTML = warTime.get('from_max_unanswer')
-    document.getElementById('nb-matches-missed' + this.currentWar.at(0).get('on_id')).innerHTML = warTime.get('on_max_unanswer')
+    document.getElementById('nb-matches-missed' + this.currentWar.at(0).get('from_id')).innerHTML = warTime.get('from_max_unanswered')
+    document.getElementById('nb-matches-missed' + this.currentWar.at(0).get('on_id')).innerHTML = warTime.get('on_max_unanswered')
   },
 
   initalizeAcceptButton: function (warTimeId, currentGames) {
@@ -566,9 +566,9 @@ export const GuildView = Backbone.View.extend({
             }
 
             if (id === this.guild.get('id') && this.userId != id) {
-              document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild challenged a member'
+              document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild has sent a challenge'
             } else {
-              document.getElementById('random-fight-title').innerHTML = 'You have challenged someone of the other guild'
+              document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild has been challenged'
             }
             const warTime = this.currentWarTimes[0].find(el => el.get('id') === warTimeId)
             this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
@@ -742,6 +742,8 @@ export const GuildView = Backbone.View.extend({
       line.style.top = center1Y
       line.style.left = center1X
       line.style.height = height
+    } else {
+      document.getElementById('line').style.display = 'none'
     }
 
     return this
