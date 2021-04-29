@@ -10,13 +10,23 @@ RSpec.describe 'Games', type: :request do
   let(:merry) {User.find_by(nickname: 'merry') }
   before(:all) {
     FactoryBot.create(:user, nickname: 'auth', admin: true, status: 'online')
+    FactoryBot.create(:user, nickname: 'auth_2', status: 'online')
     Achievement.create(name: 'Tonight, We Dine In Hell !', description: 'You must declare a War')
     %w(sam pippin merry).map { |name| FactoryBot.create(:user, status: 'online', nickname: name) }
+    Guild.create(name: 'NoShroud', anagram: 'NOS')
+    Guild.create(name: 'BANG', anagram: 'ABCDE')
+    GuildMember.create(user_id: User.find_by(nickname: 'auth').id, guild_id: Guild.first.id, rank: 'owner')
+    GuildMember.create(user_id: User.find_by(nickname: 'auth_2').id, guild_id: Guild.last.id, rank: 'owner')
+    GuildMember.create(user_id: User.find_by(nickname: 'sam').id, guild_id: Guild.first.id, rank: 'member')
+    GuildMember.create(user_id: User.find_by(nickname: 'pippin').id, guild_id: Guild.last.id, rank: 'member')
+    FactoryBot.create(:war, from_id: Guild.first.id, on_id: Guild.last.id)
   }
   after(:all) {
-    User.destroy_by(nickname: 'auth')
-    Achievement.destroy_by(name: 'Tonight, We Dine In Hell !')
-    %w(sam pippin merry).map { |name| User.destroy_by(nickname: name) }
+    GuildMember.destroy_all
+    War.destroy_all
+    User.destroy_all
+    Achievement.destroy_all
+    Guild.destroy_all
   }
   describe 'requires auth token' do
     before { get '/api/games' }
@@ -149,14 +159,6 @@ RSpec.describe 'Games', type: :request do
       let(:auth_2) { User.find_by(nickname: 'auth_2') }
       let(:access_token_2) { auth_2.create_new_auth_token }
       before {
-        FactoryBot.create(:user, nickname: 'auth_2', status: 'online')
-        Guild.create(name: 'NoShroud', anagram: 'NOS')
-        Guild.create(name: 'BANG', anagram: 'ABCDE')
-        GuildMember.create(user_id: User.find_by(nickname: 'auth').id, guild_id: Guild.first.id, rank: 'owner')
-        GuildMember.create(user_id: User.find_by(nickname: 'auth_2').id, guild_id: Guild.last.id, rank: 'owner')
-        GuildMember.create(user_id: User.find_by(nickname: 'sam').id, guild_id: Guild.first.id, rank: 'member')
-        GuildMember.create(user_id: User.find_by(nickname: 'pippin').id, guild_id: Guild.last.id, rank: 'member')
-        create(:war, from_id: Guild.first.id, on_id: Guild.last.id)
         WarTime.create(day: Date.today.strftime('%A'), start_hour: 8, end_hour: 22, time_to_answer: 10, max_unanswered: 1, war: War.first)
       }
       it 'should decrement max_unanswered at time_to_answer' do
