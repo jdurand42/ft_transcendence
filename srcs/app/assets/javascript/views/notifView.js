@@ -1,3 +1,4 @@
+import { GameRecords } from '../collections/gameRecords'
 import { Users } from '../collections/usersCollection'
 import { GameRecord } from '../models/gameRecord'
 import { Guild } from '../models/guildModel'
@@ -11,7 +12,21 @@ export const NotifView = Backbone.View.extend({
   },
   initialize: function () {
     this.users = this.collection
+    this.games = new GameRecords()
     this.context = {}
+
+    this.users.on('sync', function () {
+      const fetchPendingGames = async () => {
+        await this.games.fetchGameByUserIdStatus(window.localStorage.getItem('user_id'))
+        for (let i = 0; i < this.games.length; i++) {
+          const msg = {}
+          msg.id = this.games.at(i).get('game_id')
+          msg.sender_id = this.games.at(i).get('player_left_id')
+          this.gameInvitation(msg)
+        }
+      }
+      fetchPendingGames()
+    }, this)
   },
   el: $('#notif'),
   render: function () {
