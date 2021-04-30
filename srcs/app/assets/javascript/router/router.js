@@ -249,7 +249,9 @@ export const Router = Backbone.Router.extend({
     // this._removeElement();
     this.view.$el.empty()
     if (this.view.canvas) {
-      this.view.data[0].end = true
+      try {
+      	this.view.data[0].end = true
+      } catch (e) {}
     }
     try {
       this.view.destroy()

@@ -1,4 +1,3 @@
-import { GameRecord } from '../models/gameRecord'
 // peut etre fetch juste la game plutot que toute la collec
 
 const MULT = 1
@@ -24,6 +23,8 @@ export const GameView = Backbone.View.extend({
     this.socket = options.socket
     this.gameId = options.gameId
     this.games = this.model.get('gameRecords').get('obj')
+    this.canvas = document.getElementById('gameWindow')
+    this.ctx = this.canvas.getContext('2d')
     // console.log(this.opponentId)
     this.loadModels()
   },
@@ -34,49 +35,35 @@ export const GameView = Backbone.View.extend({
         await this.users.fetch() &&
 				await this.games.fetch()
         this.user = this.users.get(this.id)
-        if (this.gameId === undefined || this.gameId === null ||
-				isNaN(this.gameId)) {
-          // $(document).ready(this.playLadder())
-          // fetch Pending games?
-          this.$el.find('#gameTitle').html('Playing Ladder or Alfred, for now')
-          $(document).ready(this.challengeAlfred())
-        } else {
-          try {
-            this.game = JSON.parse(JSON.stringify(this.games.get(this.gameId)))
-          } catch {
-            console.log('game doesnt exist, redirecting to ladder games')
-            $(document).ready(this.playLadder())
-          }
-          console.log(this.game)
-          this.mode = this.game.mode
-          if (this.mode === 'duel') {
-            this.$el.find('#gameTitle').html('Playing Duel')
-            $(document).ready(this.playDuel())
-          } else if (this.mode === 'war') {
-            this.$el.find('#gameTitle').html('Playing War match')
-            $(document).ready(this.playWar())
-          } else if (this.mode === 'tournament') {
-            this.$el.find('#gameTitle').html('Playing tournament match')
-            $(document).ready(this.playTournament())
-          }
+        this.game = JSON.parse(JSON.stringify(this.games.get(this.gameId)))
+        if (this.game.status === 'played') {
+          throw 'Game is already played'
         }
+        console.log(this.game)
+        this.mode = this.game.mode
+        this.$el.find('#gameTitle').html('playing ' + this.mode + ' match')
+        $(document).ready(this.initializeGame())
       } catch (e) {
         console.log('Error while fetching models')
         console.log(e)
+        this.handleGameNotFound()
       }
     }
     load()
   },
 
-  loadFullDocument: function () {
-    /* if (this.game) {
-      this.$el.html(Handlebars.templates.game({ mode: this.game.get('mode'), width: WIDTH * MULT, height: HEIGHT * MULT }))
-    } else {
-    	this.$el.html(Handlebars.templates.game({ mode: 'ladder', width: WIDTH * MULT, height: HEIGHT * MULT }))
-    } */
+  handleGameNotFound: function () {
+    // console.log("here")
+    this.$el.find('#gameTitle').html('Game not found')
+    const px_height = 35
+    const arg = 'Oups ! Game not found. Perphaps it was declined'
+    this.ctx.textAlign = 'center'
+    this.ctx.fillStyle = 'yellow'
+    this.ctx.font = px_height + 'PressStart2P-Regular'
+    this.ctx.fillText(arg, WIDTH / 2, HEIGHT / 2)
   },
 
-  requestMatchmaking: async function () {
+  /* requestMatchmaking: async function () {
     return await $.ajax({
       url: '/api/games/',
       data: { mode: 'ladder' },
@@ -88,26 +75,9 @@ export const GameView = Backbone.View.extend({
         this.game = response
         // navigate to game/{{this.gameId}}
       }
-    })
-  },
+    }) */
 
-	  playLadder: function () { // a refaire comme pour alfred
-	    // lancer matchMaking
-	    const loadMatchMaking = async () => {
-	      // afficher Waiting
-	      try {
-	      	this.requestMatchmaking()
-	        this.initializeGame()
-	      } catch (e) {
-	        console.log('error while requesting ladder match')
-	        console.log(e)
-	        // this.initializeGame()
-	      }
-	    }
-	    loadMatchMaking()
-	  },
-
-	  callAlfred: async function () {
+	  /* callAlfred: async function () {
 	    return await $.ajax({
 	      url: '/api/games/',
 	      data: { mode: 'duel', opponent_id: '1' },
@@ -119,80 +89,22 @@ export const GameView = Backbone.View.extend({
 	        this.initializeGame()
 	      }
 	    })
-	  },
+	  }
 
-	  challengeAlfred: function () {
-	    // const load = async () => {
+	 	challengeAlfred: function () {
 	    try {
 	     	this.callAlfred()
-	      /* console.log('la')
-	      console.log(this.game) */
 	    } catch (e) {
 	      console.log('error while trying to challengeAlfred')
 	      console.log(e)
 	    }
-	    // }
-	    // load()
-	  },
-
-  playDuel: function () {
-    this.initializeGame()
-  },
-
-  playWar: function () {
-    this.initializeGame()
-  },
-
-  playTournament: function () {
-    this.initializeGame()
-  },
-
-  receivePing: function () {
-    // console.log('ping')
-
-    /* this.data[0].newDate = this.data[0].newDate.getMilliseconds()
-    this.data[0].ping = this.data[0].newDate - this.data[0].oldDate
-    this.data[0].oldDate = this.data[0].newDate */
-  },
-
-  receiveMessage: function (msg) {
-    const message = msg.message
-    /* const newDate = Date.now()
-    this.data[0].drop = newDate - this.data[0].oldDate
-    this.data[0].oldDate = newDate */
-    if (message.player_left) {
-      this.data[0].playerLeft.y = message.player_left.pos
-      this.data[0].playerLeft.score = message.player_left.score
-    }
-    if (message.player_right) {
-      this.data[0].playerRight.y = message.player_right.pos
-      this.data[0].playerRight.score = message.player_right.score
-    }
-    if (message.ball) {
-      // console.log(message.ball)
-      this.data[0].ball.x = message.ball.x
-      this.data[0].ball.y = message.ball.y
-      this.data[0].ball.dirx = (message.ball.left) ? -1 : 1
-      this.data[0].ball.diry = (message.ball.up) ? 1 : -1
-    }
-
-    if (message.action && message.action === 'game_won') {
-      this.data[0].end = true
-      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
-    } else if (message.action && message.action === 'game_lost') {
-      console.log('loose')
-      this.data[0].end = true
-      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
-    }
-  },
+	  }, */
 
   initializeGame: function () {
-    this.canvas = document.getElementById('gameWindow')
-    this.gameId = this.game.id
    	this.data = [{
       canvas: this.canvas,
       canvasLocation: undefined,
-      ctx: undefined,
+      ctx: this.ctx,
       playerLeft: {
 	      nickname: this.users.get(this.game.player_left_id).get('nickname'),
 	      // nickname: 'left',
@@ -219,6 +131,7 @@ export const GameView = Backbone.View.extend({
 	    },
       socket: this.socket,
       end: false,
+      started: false,
       gameId: this.gameId,
       frameLimiter: true,
       ping: 0,
@@ -227,11 +140,6 @@ export const GameView = Backbone.View.extend({
       oldDate: Date.now()
     }]
     this.data[0].canvasLocation = this.data[0].canvas.getBoundingClientRect()
-    this.data[0].ctx = this.data[0].canvas.getContext('2d')
-    // this.data[0].ctx.witdh = WIDTH
-    // this.data[0].ctx.height = HEIGHT
-    /* console.log(this.game.player_left_id)
-		console.log(this.id) */
     if (parseInt(this.game.player_left_id) == this.id) {
 	  	this.data[0].playerLeft.isUser = true
     } else if (parseInt(this.game.player_right_id) == this.id) {
@@ -250,6 +158,43 @@ export const GameView = Backbone.View.extend({
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
     preGameLoop(this.data)
+  },
+
+  receivePing: function () {
+    // console.log('ping')
+
+    /* this.data[0].newDate = this.data[0].newDate.getMilliseconds()
+		this.data[0].ping = this.data[0].newDate - this.data[0].oldDate
+		this.data[0].oldDate = this.data[0].newDate */
+  },
+
+  receiveMessage: function (msg) {
+    const message = msg.message
+    if (message.player_left) {
+      this.data[0].playerLeft.y = message.player_left.pos
+      this.data[0].playerLeft.score = message.player_left.score
+    }
+    if (message.player_right) {
+      this.data[0].playerRight.y = message.player_right.pos
+      this.data[0].playerRight.score = message.player_right.score
+    }
+    if (message.ball) {
+      // console.log(message.ball)
+      this.data[0].started = true
+      this.data[0].ball.x = message.ball.x
+      this.data[0].ball.y = message.ball.y
+      this.data[0].ball.dirx = (message.ball.left) ? -1 : 1
+      this.data[0].ball.diry = (message.ball.up) ? 1 : -1
+    }
+
+    if (message.action && message.action === 'game_won') {
+      this.data[0].end = true
+      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
+    } else if (message.action && message.action === 'game_lost') {
+      console.log('loose')
+      this.data[0].end = true
+      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
+    }
   }
 })
 
@@ -301,7 +246,7 @@ function printTextBoxes (data) {
 }
 
 function printEndScreen (data) {
-  const px_height = 35
+  const px_height = 15
   let arg
   if (data.playerRight.score > data.playerLeft.score) {
     arg = data.playerRight.nickname
@@ -330,7 +275,7 @@ function limitInput (n) {
 }
 
 function move (e, data) {
-  const mouseLocation = limitInput(parseInt(event.clientY - data.canvasLocation.y))
+  const mouseLocation = parseInt(event.clientY - data.canvasLocation.y)
   data.socket.sendForGame({ position: mouseLocation, action: 'received' }, data.gameId)
 }
 
@@ -347,6 +292,15 @@ function checkFrames (data) {
   }
 }
 
+function handleWaiting (data) {
+  const px_height = 35
+  const arg = 'Waiting for your opponent to join'
+  data.ctx.textAlign = 'center'
+  data.ctx.fillStyle = 'yellow'
+  data.ctx.font = px_height + 'px serif'
+  data.ctx.fillText(arg, WIDTH / 2, HEIGHT / 2)
+}
+
 function gameLoop (data) {
   let animation
   data[0].frameLimiter = !data[0].frameLimiter
@@ -354,6 +308,9 @@ function gameLoop (data) {
   printTextBoxes(data[0])
   printPaddles(data[0])
   printBall(data[0])
+  if (!data[0].started) {
+    handleWaiting(data[0])
+  }
   // console.log('frame')
   // printPing(data[0])
   if (!data[0].end) {
@@ -378,7 +335,6 @@ function preGameLoop (data) {
 
 	*/
   // setInterval(printPing(data[0]), 1000)
-  console.log(data[0].end)
   gameLoop(data)
   console.log(data[0].socket)
 }
