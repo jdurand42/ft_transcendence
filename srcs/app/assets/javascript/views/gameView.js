@@ -44,7 +44,7 @@ export const GameView = Backbone.View.extend({
         this.$el.find('#gameTitle').html('playing ' + this.mode + ' match')
         $(document).ready(this.initializeGame())
       } catch (e) {
-        console.log('Error while fetching models')
+        // console.log('Error while fetching models')
         console.log(e)
         this.handleGameNotFound()
       }
@@ -62,20 +62,6 @@ export const GameView = Backbone.View.extend({
     this.ctx.font = px_height + 'PressStart2P-Regular'
     this.ctx.fillText(arg, WIDTH / 2, HEIGHT / 2)
   },
-
-  /* requestMatchmaking: async function () {
-    return await $.ajax({
-      url: '/api/games/',
-      data: { mode: 'ladder' },
-      method: 'POST',
-      context: this,
-      success: function (response) {
-        console.log(response)
-        this.gameId = response.id
-        this.game = response
-        // navigate to game/{{this.gameId}}
-      }
-    }) */
 
 	  /* callAlfred: async function () {
 	    return await $.ajax({
@@ -157,7 +143,15 @@ export const GameView = Backbone.View.extend({
     if (this.data[0].playerRight.isUser || this.data[0].playerLeft.isUser) {
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
-    preGameLoop(this.data)
+    this.preGameLoop()
+  },
+
+  preGameLoop: function () {
+    printWaitingScreen(this.data[0])
+    gameLoop(this.data)
+  },
+
+  handleWaiting: function () {
   },
 
   receivePing: function () {
@@ -180,7 +174,9 @@ export const GameView = Backbone.View.extend({
     }
     if (message.ball) {
       // console.log(message.ball)
-      this.data[0].started = true
+      if (!this.data[0].started) {
+        this.data[0].started = true
+      }
       this.data[0].ball.x = message.ball.x
       this.data[0].ball.y = message.ball.y
       this.data[0].ball.dirx = (message.ball.left) ? -1 : 1
@@ -189,11 +185,10 @@ export const GameView = Backbone.View.extend({
 
     if (message.action && message.action === 'game_won') {
       this.data[0].end = true
-      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
+      // this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
     } else if (message.action && message.action === 'game_lost') {
-      console.log('loose')
       this.data[0].end = true
-      this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
+      // this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
     }
   }
 })
@@ -292,13 +287,17 @@ function checkFrames (data) {
   }
 }
 
-function handleWaiting (data) {
+function printWaitingScreen (data) {
   const px_height = 35
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'
   data.ctx.fillStyle = 'yellow'
   data.ctx.font = px_height + 'px serif'
   data.ctx.fillText(arg, WIDTH / 2, HEIGHT / 2)
+}
+
+function clearCanvas (data) {
+  data.ctx.clearRect(0, 0, WIDTH, HEIGHT)
 }
 
 function gameLoop (data) {
@@ -309,32 +308,19 @@ function gameLoop (data) {
   printPaddles(data[0])
   printBall(data[0])
   if (!data[0].started) {
-    handleWaiting(data[0])
+    printWaitingScreen(data[0])
   }
   // console.log('frame')
   // printPing(data[0])
+
   if (!data[0].end) {
     // if (data[0].frameLimiter) {
     	// simulateBall(data[0])
     // }
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
   } else {
-    data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data[0]) }) // ca marche???
+    data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
+    clearCanvas(data[0])
     printEndScreen(data[0])
-
-    // data[0].socket.close()
   }
-}
-
-function preGameLoop (data) {
-  /* Suscribe to start playing
-	get invitation
-	data[0].socket.subscribeChannel(roomId ????, 'GameChannel')
-	data[0].socket.subscribeChannel(data.gameId, 'GameChannel')
-	data[0]
-
-	*/
-  // setInterval(printPing(data[0]), 1000)
-  gameLoop(data)
-  console.log(data[0].socket)
 }
