@@ -72,12 +72,11 @@ export const ChatView = Backbone.View.extend({
     this.userLogged.fetchUser(this.userLoggedId)
 
     this.myChannels.on('remove', function () {
-      this.channel = this.channels.fetch()
+      this.channels.fetch()
     }, this)
 
-    this.channels.fetch()
-
     const fetch = async () => {
+      const response3 = this.channels.fetch()
       const response2 = this.myChannels.fetchByUserId(window.localStorage.getItem('user_id'))
       const response1 = this.users.fetch()
       await response1 && await response2
@@ -91,6 +90,9 @@ export const ChatView = Backbone.View.extend({
         } else {
           this.myChannels.remove(channelId)
         }
+      }
+      if (this.userLogged.get('admin') === true) {
+        await response3
       }
       this.render()
     }
