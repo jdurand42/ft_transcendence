@@ -1,3 +1,4 @@
+// peut etre fetch juste la game plutot que toute la collec
 
 const MULT = 1
 const WIDTH = 512
@@ -8,16 +9,13 @@ const PLAYER_SIZE_X = 2
 const PLAYER_SIZE_Y = 28
 const PADDING = 10
 const BALL_SPEED = 1
-const BALL_RAY = 5
 const AIMED_PING = 3000
 const FRAMES = 10
 
 export const GameView = Backbone.View.extend({
   el: $('#app'),
   initialize: function (options) {
-    this.adaptToScreenSize()
-    // this.$el.html(Handlebars.templates.game({ width: WIDTH * MULT, height: HEIGHT * MULT }))
-    this.$el.html(Handlebars.templates.game({ width: this.width, height: this.height }))
+    this.$el.html(Handlebars.templates.game({ width: WIDTH * MULT, height: HEIGHT * MULT }))
     this.users = this.model.get('users').get('obj')
     this.id = this.model.get('userLoggedId')
     // this.opponentId = options.opponentId
@@ -27,19 +25,8 @@ export const GameView = Backbone.View.extend({
     this.games = this.model.get('gameRecords').get('obj')
     this.canvas = document.getElementById('gameWindow')
     this.ctx = this.canvas.getContext('2d')
-
     // console.log(this.opponentId)
     this.loadModels()
-  },
-
-  adaptToScreenSize: function () {
-    this.width = parseInt(window.innerWidth * 0.66)
-    if (this.width < WIDTH) {
-      this.width = WIDTH
-    }
-    this.height = parseInt(this.width / 2)
-    this.ratio = this.width / WIDTH
-    // this.width = (this.width < 512)
   },
 
   loadModels: function () {
@@ -68,12 +55,12 @@ export const GameView = Backbone.View.extend({
   handleGameNotFound: function () {
     // console.log("here")
     this.$el.find('#gameTitle').html('Game not found')
-    const px_height = parseInt(15 * this.ratio)
+    const px_height = 35
     const arg = 'Oups ! Game not found. Perphaps it was declined'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
-    this.ctx.font = px_height + 'px serif'
-    this.ctx.fillText(arg, this.width / 2, this.height / 2)
+    this.ctx.font = px_height + 'PressStart2P-Regular'
+    this.ctx.fillText(arg, WIDTH / 2, HEIGHT / 2)
   },
 
 	  /* callAlfred: async function () {
@@ -99,24 +86,35 @@ export const GameView = Backbone.View.extend({
 	    }
 	  }, */
 
-  initializeData: function () {
-    this.data = [{
+  initializeGame: function () {
+   	this.data = [{
       canvas: this.canvas,
       canvasLocation: undefined,
       ctx: this.ctx,
-     	ratio: this.ratio,
-      width: this.width,
-      height: this.height,
-      halfWidth: parseInt(this.width / 2),
-      halfHeight: parseInt(this.height / 2),
-      playerSizeX: parseInt(PLAYER_SIZE_X * this.ratio),
-      playerSizeY: parseInt(PLAYER_SIZE_Y * this.ratio),
-      halfPlayerSizeX: parseInt(parseInt(PLAYER_SIZE_X * this.ratio) / 2),
-      halfPlayerSizeY: parseInt(parseInt(PLAYER_SIZE_Y * this.ratio) / 2),
-      padding: parseInt(PADDING * this.ratio),
-      playerLeft: undefined,
-      playerRight: undefined,
-      ball: undefined,
+      playerLeft: {
+	      nickname: this.users.get(this.game.player_left_id).get('nickname'),
+	      // nickname: 'left',
+		 		score: 0,
+	      isUser: false,
+	      x: PADDING,
+	      y: HEIGHT / 2 - PLAYER_SIZE_Y / 2
+	    },
+      playerRight: {
+	      nickname: this.users.get(this.game.player_right_id).get('nickname'),
+	      // nickname: 'right',
+		 		score: 0,
+	      isUser: false,
+	      x: WIDTH - PADDING,
+	      y: HEIGHT / 2 - PLAYER_SIZE_Y / 2
+	    },
+      ball: {
+	      x: WIDTH / 2,
+	      y: HEIGHT / 2,
+	      r: 5,
+        dirx: 0,
+        diry: 0,
+        speed: BALL_SPEED
+	    },
       socket: this.socket,
       end: false,
       started: false,
@@ -127,32 +125,6 @@ export const GameView = Backbone.View.extend({
       frames: 0,
       oldDate: Date.now()
     }]
-    this.data[0].playerLeft = {
-      nickname: this.users.get(this.game.player_left_id).get('nickname'),
-      score: 0,
-      isUser: false,
-      x: this.data[0].padding,
-      y: parseInt(this.data[0].halfHeight - this.data[0].halfPlayerSizeY)
-    }
-    this.data[0].playerRight = {
-      nickname: this.users.get(this.game.player_right_id).get('nickname'),
-      score: 0,
-      isUser: false,
-      x: this.width - this.data[0].padding,
-      y: parseInt(this.data[0].halfHeight - this.data[0].halfPlayerSizeY)
-    }
-    this.data[0].ball = {
-      x: this.data[0].halfWidth,
-      y: this.data[0].halfHeight,
-      r: parseInt(BALL_RAY * this.ratio),
-      dirx: 0,
-      diry: 0,
-      speed: BALL_SPEED
-    }
-  },
-
-  initializeGame: function () {
-    this.initializeData()
     this.data[0].canvasLocation = this.data[0].canvas.getBoundingClientRect()
     if (parseInt(this.game.player_left_id) == this.id) {
 	  	this.data[0].playerLeft.isUser = true
@@ -193,11 +165,11 @@ export const GameView = Backbone.View.extend({
   receiveMessage: function (msg) {
     const message = msg.message
     if (message.player_left) {
-      this.data[0].playerLeft.y = parseInt(message.player_left.pos * this.data[0].ratio)
+      this.data[0].playerLeft.y = message.player_left.pos
       this.data[0].playerLeft.score = message.player_left.score
     }
     if (message.player_right) {
-      this.data[0].playerRight.y = parseInt(message.player_right.pos * this.data[0].ratio)
+      this.data[0].playerRight.y = message.player_right.pos
       this.data[0].playerRight.score = message.player_right.score
     }
     if (message.ball) {
@@ -205,8 +177,8 @@ export const GameView = Backbone.View.extend({
       if (!this.data[0].started) {
         this.data[0].started = true
       }
-      this.data[0].ball.x = parseInt(message.ball.x * this.data[0].ratio)
-      this.data[0].ball.y = parseInt(message.ball.y * this.data[0].ratio)
+      this.data[0].ball.x = message.ball.x
+      this.data[0].ball.y = message.ball.y
       this.data[0].ball.dirx = (message.ball.left) ? -1 : 1
       this.data[0].ball.diry = (message.ball.up) ? 1 : -1
     }
@@ -223,11 +195,11 @@ export const GameView = Backbone.View.extend({
 
 function printField (data) {
   data.ctx.fillStyle = 'black'
-  data.ctx.fillRect(0, 0, data.width, data.height)
+  data.ctx.fillRect(0, 0, WIDTH, HEIGHT)
   data.ctx.strokeStyle = 'white'
   data.ctx.beginPath()
-  data.ctx.moveTo(data.halfWidth, 0)
-  data.ctx.lineTo(data.halfWidth, data.height)
+  data.ctx.moveTo(WIDTH / 2, 0)
+  data.ctx.lineTo(WIDTH / 2, HEIGHT)
   data.ctx.stroke()
   data.ctx.closePath()
 }
@@ -235,8 +207,8 @@ function printField (data) {
 function printPaddles (data) {
   data.ctx.strokeStyle = 'white'
   data.ctx.fillStyle = 'white'
-  data.ctx.fillRect(data.playerLeft.x, data.playerLeft.y - data.halfPlayerSizeY, data.playerSizeX, data.playerSizeY)
-  data.ctx.fillRect(data.playerRight.x, data.playerRight.y - data.halfPlayerSizeY, data.playerSizeX, data.playerSizeY)
+  data.ctx.fillRect(data.playerLeft.x, data.playerLeft.y - (PLAYER_SIZE_Y / 2), PLAYER_SIZE_X, PLAYER_SIZE_Y)
+  data.ctx.fillRect(data.playerRight.x, data.playerRight.y - (PLAYER_SIZE_Y / 2), PLAYER_SIZE_X, PLAYER_SIZE_Y)
 }
 
 function printBall (data) {
@@ -250,7 +222,7 @@ function printBall (data) {
 }
 
 function printTextBoxes (data) {
-  const px_height = parseInt(15 * data.ratio)
+  const px_height = 15
   data.ctx.fillStyle = 'white'
   data.ctx.font = px_height + 'px serif'
   data.ctx.textAlign = 'left'
@@ -260,18 +232,16 @@ function printTextBoxes (data) {
   // penser a réduire si le nom est trop grand
   data.ctx.fillText(boxes_text, 0, 0)
   boxes_text = data.playerLeft.score
-  data.ctx.fillStyle = 'white'
   data.ctx.fillText(boxes_text, 0, px_height + 5)
 
   boxes_text = data.playerRight.nickname
-  data.ctx.fillText(boxes_text, data.width - (data.ctx.measureText(boxes_text).width), 0)
-  data.ctx.fillStyle = 'white'
+  data.ctx.fillText(boxes_text, WIDTH - (data.ctx.measureText(boxes_text).width), 0)
   boxes_text = data.playerRight.score
-  data.ctx.fillText(boxes_text, data.width - (data.ctx.measureText(boxes_text).width), px_height + 5)
+  data.ctx.fillText(boxes_text, WIDTH - (data.ctx.measureText(boxes_text).width), px_height + 5)
 }
 
 function printEndScreen (data) {
-  const px_height = parseInt(15 * data.ratio)
+  const px_height = 15
   let arg
   if (data.playerRight.score > data.playerLeft.score) {
     arg = data.playerRight.nickname
@@ -281,7 +251,7 @@ function printEndScreen (data) {
   data.ctx.fillStyle = 'yellow'
   data.ctx.font = px_height + 'px serif'
   data.ctx.textAlign = 'center'
-  data.ctx.fillText(`${arg} wins the MATCH`, data.halfWidth, data.halfHeight)
+  data.ctx.fillText(`${arg} wins the MATCH`, WIDTH / 2, HEIGHT / 2)
 }
 
 function printPing (data) {
@@ -289,11 +259,11 @@ function printPing (data) {
   console.log(data.drop)
 }
 
-function limitInput (data, n) {
-  if (n <= data.halfPlayerSizeY) {
-    return data.halfPlayerSizeY
-  } else if (n >= data.height - data.halfPlayerSizeY) {
-    return data.height - data.halfPlayerSizeY
+function limitInput (n) {
+  if (n <= PLAYER_SIZE_Y / 2) {
+    return PLAYER_SIZE_Y / 2
+  } else if (n >= HEIGHT - PLAYER_SIZE_Y / 2) {
+    return HEIGHT - PLAYER_SIZE_Y / 2
   } else {
     return n
   }
@@ -301,7 +271,7 @@ function limitInput (data, n) {
 
 function move (e, data) {
   const mouseLocation = parseInt(event.clientY - data.canvasLocation.y)
-  data.socket.sendForGame({ position: parseInt(mouseLocation / data.ratio), action: 'received' }, data.gameId)
+  data.socket.sendForGame({ position: mouseLocation, action: 'received' }, data.gameId)
 }
 
 function simulateBall (data) {
@@ -318,16 +288,16 @@ function checkFrames (data) {
 }
 
 function printWaitingScreen (data) {
-  const px_height = parseInt(35 * data.ratio)
+  const px_height = 35
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'
   data.ctx.fillStyle = 'yellow'
   data.ctx.font = px_height + 'px serif'
-  data.ctx.fillText(arg, data.halfWidth, data.halfHeight)
+  data.ctx.fillText(arg, WIDTH / 2, HEIGHT / 2)
 }
 
 function clearCanvas (data) {
-  data.ctx.clearRect(0, 0, data.width, data.height)
+  data.ctx.clearRect(0, 0, WIDTH, HEIGHT)
 }
 
 function gameLoop (data) {
@@ -352,6 +322,5 @@ function gameLoop (data) {
     data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
     clearCanvas(data[0])
     printEndScreen(data[0])
-    data[0].socket.unsubscribeChannel(parseInt(data[0].gameId), 'GameChannel')
   }
 }
