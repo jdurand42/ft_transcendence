@@ -155,7 +155,7 @@ export const GameView = Backbone.View.extend({
     this.initializeData()
     this.data[0].canvasLocation = this.data[0].canvas.getBoundingClientRect()
     if (parseInt(this.game.player_left_id) == this.id) {
-	  	this.data[0].playerLeft.isUser = true
+      this.data[0].playerLeft.isUser = true
     } else if (parseInt(this.game.player_right_id) == this.id) {
       this.data[0].playerRight.isUser = true
     }
