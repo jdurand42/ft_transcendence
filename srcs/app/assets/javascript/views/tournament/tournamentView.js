@@ -362,8 +362,8 @@ export const TournamentView = Backbone.View.extend({
       }
     }
 
-    this.initializeAllMatchesToDo()
     this.initializeAllMatchesDone()
+    this.initializeAllMatchesToDo()
   },
 
   pushDone: function (context, game) {
@@ -475,6 +475,7 @@ export const TournamentView = Backbone.View.extend({
   },
 
   initializeAllMatchesToDo: function () {
+    console.log(this.matchesToDo)
     for (let i = 0; i < this.matchesToDo.length; i++) {
       const opponent1 = this.registered.get(this.matchesToDo[i].opponent1)
       const opponent2 = this.registered.get(this.matchesToDo[i].opponent2)
