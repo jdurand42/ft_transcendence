@@ -118,8 +118,8 @@ export class MyWebSocket {
 
   sendForGame (data, id) {
     const identifier = {
-      id: id,
-      channel: 'GameChannel'
+      channel: 'GameChannel',
+      id: id
     }
     const msg = {
       command: 'message',

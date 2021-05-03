@@ -192,6 +192,7 @@ export const GameView = Backbone.View.extend({
 
   receiveMessage: function (msg) {
     const message = msg.message
+    console.log(message)
     if (message.player_left) {
       this.data[0].playerLeft.y = parseInt(message.player_left.pos * this.data[0].ratio)
       this.data[0].playerLeft.score = message.player_left.score
