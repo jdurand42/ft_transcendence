@@ -37,6 +37,7 @@ label {
 
 :root {
     --primary-color:#F2C94C;
+		--primary-color-shadowed: rgba(242, 201, 76, 0.3);
     --secondary-color: #fff;
     --third-color: #C4C4C4;
     --table-color: #1B2534;

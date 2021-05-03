@@ -117,15 +117,15 @@ export class MyWebSocket {
   }
 
   sendForGame (data, id) {
+    const identifier = {
+      id: id,
+      channel: 'GameChannel'
+    }
     const msg = {
       command: 'message',
-      identifier: JSON.stringify({
-        id: id,
-        channel: 'GameChannel'
-      }),
+      identifier: JSON.stringify(identifier),
       data: JSON.stringify(data)
     }
-    // console.log(msg)
     this.socket.send(JSON.stringify(msg))
   }
 
