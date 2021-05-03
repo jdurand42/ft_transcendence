@@ -15,12 +15,12 @@ export const NotifView = Backbone.View.extend({
     this.games = new GameRecords()
     this.context = {}
 
-    this.users.on('sync', function () {
+    this.users.once('sync', function () {
       const fetchPendingGames = async () => {
         await this.games.fetchGameByUserIdStatus(window.localStorage.getItem('user_id'))
         for (let i = 0; i < this.games.length; i++) {
           const msg = {}
-          msg.id = this.games.at(i).get('game_id')
+          msg.id = this.games.at(i).get('id')
           msg.sender_id = this.games.at(i).get('player_left_id')
           this.gameInvitation(msg)
         }
