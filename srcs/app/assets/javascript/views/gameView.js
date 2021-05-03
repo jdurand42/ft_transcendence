@@ -29,6 +29,7 @@ export const GameView = Backbone.View.extend({
     this.ctx = this.canvas.getContext('2d')
 
     // console.log(this.opponentId)
+    console.log('cest la')
     this.loadModels()
   },
 
@@ -120,7 +121,7 @@ export const GameView = Backbone.View.extend({
       socket: this.socket,
       end: false,
       started: false,
-      gameId: this.gameId,
+      gameId: this.game.id,
       frameLimiter: true,
       ping: 0,
       drop: 0,
@@ -154,9 +155,9 @@ export const GameView = Backbone.View.extend({
   initializeGame: function () {
     this.initializeData()
     this.data[0].canvasLocation = this.data[0].canvas.getBoundingClientRect()
-    if (parseInt(this.game.player_left_id) == this.id) {
-      this.data[0].playerLeft.isUser = true
-    } else if (parseInt(this.game.player_right_id) == this.id) {
+    if (parseInt(this.game.player_left_id) === parseInt(this.id)) {
+	  	this.data[0].playerLeft.isUser = true
+    } else if (parseInt(this.game.player_right_id) === parseInt(this.id)) {
       this.data[0].playerRight.isUser = true
     }
     printField(this.data[0])
@@ -164,18 +165,19 @@ export const GameView = Backbone.View.extend({
     printPaddles(this.data[0])
     printBall(this.data[0])
 
-    const chanId = this.gameId
+    const chanId = this.game.id
     const data = this.data[0]
-    data.socket.subscribeChannel(parseInt(chanId), 'GameChannel')
+    data.socket.subscribeChannel(chanId, 'GameChannel')
     data.socket.updateContext(this, this.model.get('notifView').get('obj'))
     if (this.data[0].playerRight.isUser || this.data[0].playerLeft.isUser) {
+      console.log('ici')
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
     this.preGameLoop()
   },
 
   preGameLoop: function () {
-    printWaitingScreen(this.data[0])
+   	printWaitingScreen(this.data[0])
     gameLoop(this.data)
   },
 
@@ -192,7 +194,7 @@ export const GameView = Backbone.View.extend({
 
   receiveMessage: function (msg) {
     const message = msg.message
-    console.log(message)
+    // console.log(message)
     if (message.player_left) {
       this.data[0].playerLeft.y = parseInt(message.player_left.pos * this.data[0].ratio)
       this.data[0].playerLeft.score = message.player_left.score
@@ -259,16 +261,16 @@ function printTextBoxes (data) {
 
   let boxes_text = data.playerLeft.nickname
   // penser a réduire si le nom est trop grand
-  data.ctx.fillText(boxes_text, 0, 0)
+  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, 0)
   boxes_text = data.playerLeft.score
   data.ctx.fillStyle = 'white'
-  data.ctx.fillText(boxes_text, 0, px_height + 5)
+  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, px_height + 5)
 
   boxes_text = data.playerRight.nickname
-  data.ctx.fillText(boxes_text, data.width - (data.ctx.measureText(boxes_text).width), 0)
+  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, 0)
   data.ctx.fillStyle = 'white'
   boxes_text = data.playerRight.score
-  data.ctx.fillText(boxes_text, data.width - (data.ctx.measureText(boxes_text).width), px_height + 5)
+  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, px_height + 5)
 }
 
 function printEndScreen (data) {
@@ -333,7 +335,7 @@ function clearCanvas (data) {
 
 function gameLoop (data) {
   let animation
-  data[0].frameLimiter = !data[0].frameLimiter
+  // data[0].frameLimiter = !data[0].frameLimiter
   printField(data[0])
   printTextBoxes(data[0])
   printPaddles(data[0])
@@ -350,9 +352,9 @@ function gameLoop (data) {
     // }
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
   } else {
-    data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
+    // data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
     clearCanvas(data[0])
     printEndScreen(data[0])
-    data[0].socket.unsubscribeChannel(parseInt(data[0].gameId), 'GameChannel')
+    // data[0].socket.unsubscribeChannel(parseInt(data[0].gameId), 'GameChannel')
   }
 }
