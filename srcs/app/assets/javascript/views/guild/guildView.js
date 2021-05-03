@@ -42,6 +42,7 @@ export const GuildView = Backbone.View.extend({
     this.calendarWarTimes = []
     this.timer = []
     this.guild = undefined
+    this.warTimeId = undefined
 
     this.currentGames = []
     this.lastWarsGames = []
@@ -240,6 +241,10 @@ export const GuildView = Backbone.View.extend({
       }
       if (distance < 0) {
         clearInterval(this)
+        document.getElementById('accept-random-fight').innerHTML = 'Challenge'
+        document.getElementById('random-fight-title').innerHTML = 'No random fight pending'
+        document.getElementById('random-fight-title').style.cursor = 'pointer'
+        document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
       }
     }, 1000))
   },
@@ -500,6 +505,7 @@ export const GuildView = Backbone.View.extend({
             document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
             document.getElementById('accept-random-fight').style.cursor = 'pointer'
           } catch (e) {}
+          this.warTimeId = dates[0].warTimeId
           this.countMatchesUnansewered(dates[0].warTimeId, this.currentWarTimes[0].find(el => el.id === dates[0].warTimeId))
           this.initalizeAcceptButton(dates[0].warTimeId, this.currentGames.find(el => el.warId === this.currentWar.at(0).get('id')))
 
@@ -743,7 +749,9 @@ export const GuildView = Backbone.View.extend({
       line.style.left = center1X
       line.style.height = height
     } else {
-      document.getElementById('line').style.display = 'none'
+      try {
+        document.getElementById('line').style.display = 'none'
+      } catch (e) {}
     }
 
     return this
@@ -779,41 +787,66 @@ export const GuildView = Backbone.View.extend({
   },
 
   receiveMessage: function (msg) {
-    const channelId = Number(JSON.parse(msg.identifier).id)
-    this.users.get(msg.message.id).set({ status: msg.message.status })
-    if (msg.message.id === this.userId) {
-      this.userLogged.set({ status: msg.message.status })
+    const asyncFunc = async () => {
+      console.log(msg)
+      if (msg.message.action === 'game_invitation') {
+        console.log('game invitation')
+        console.log(msg)
+        const games = new GameRecords()
+        await games.fetchMyGames(this.userId, 'war', 'pending')
+        console.log(games)
+        console.log(games.length)
+        const warTime = this.currentWarTimes[0].find(el => el.get('id') === this.warTimeId)
+        if (games.length > 0 && msg.message.sender_id !== this.userId) {
+          this.initializeTimerTTA(games.at(0).get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
+          document.getElementById('accept-random-fight').innerHTML = 'Accept'
+          document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild has been challenged'
+        } else if (games.length > 0 && msg.message.sender_id === this.userId) {
+          const warTime = this.currentWarTimes[0].find(el => el.get('id') === this.warTimeId)
+          this.initializeTimerTTA(games.at(0).get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
+          document.getElementById('accept-random-fight').innerHTML = 'Pending'
+          document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
+          document.getElementById('accept-random-fight').style.cursor = 'auto'
+          document.getElementById('random-fight-title').innerHTML = 'You have sent an invitation to someone from the other guild'
+        }
+      } else if (msg.message.action === 'status_update') {
+        const channelId = Number(JSON.parse(msg.identifier).id)
+        try {
+          this.users.get(msg.message.id).set({ status: msg.message.status })
+          if (msg.message.id === this.userId) {
+            this.userLogged.set({ status: msg.message.status })
+          }
+          let div = document.getElementById('pastille' + msg.message.id)
+          div.classList.remove('offline')
+          div.classList.remove('ingame')
+          div.classList.remove('online')
+          div.classList.add(msg.message.status)
+
+          div = document.getElementById('status' + msg.message.id)
+          if (msg.message.status === 'online') {
+            div.innerHTML = 'ONLINE'
+          } else if (msg.message.status === 'offline') {
+            div.innerHTML = 'OFFLINE'
+          } else {
+            div.innerHTML = 'INGAME'
+          }
+
+          div = document.getElementById('slide-show' + msg.message.id)
+          if (msg.message.status === 'ingame') {
+            div.setAttribute('src', './icons/slideshow-ingame.svg')
+          } else {
+            div.setAttribute('src', './icons/slideshow.svg')
+          }
+
+          if (msg.message.status === 'ingame') {
+            div = document.getElementById('status-container' + msg.message.id)
+            div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
+            div.style.cursor = 'pointer'
+          }
+        } catch (e) {}
+      }
     }
-
-    try {
-      let div = document.getElementById('pastille' + msg.message.id)
-      div.classList.remove('offline')
-      div.classList.remove('ingame')
-      div.classList.remove('online')
-      div.classList.add(msg.message.status)
-
-      div = document.getElementById('status' + msg.message.id)
-      if (msg.message.status === 'online') {
-        div.innerHTML = 'ONLINE'
-      } else if (msg.message.status === 'offline') {
-        div.innerHTML = 'OFFLINE'
-      } else {
-        div.innerHTML = 'INGAME'
-      }
-
-      div = document.getElementById('slide-show' + msg.message.id)
-      if (msg.message.status === 'ingame') {
-        div.setAttribute('src', './icons/slideshow-ingame.svg')
-      } else {
-        div.setAttribute('src', './icons/slideshow.svg')
-      }
-
-      if (msg.message.status === 'ingame') {
-        div = document.getElementById('status-container' + msg.message.id)
-        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
-        div.style.cursor = 'pointer'
-      }
-    } catch (e) {}
+    asyncFunc()
   },
 
   destroy: function () {

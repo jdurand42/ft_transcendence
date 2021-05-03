@@ -90,7 +90,8 @@ export class MyWebSocket {
         }
       } else if (msg.message && msg.message.action !== undefined && msg.message.action === 'guild_invitation') {
         notif.receiveMessage(msg.message)
-      } else if (msg.message) {
+      }
+      if (msg.message) {
         try {
           objet.receiveMessage(msg)
         } catch (e) {
