@@ -83,11 +83,11 @@ export const NotifView = Backbone.View.extend({
       const id = e.currentTarget.getAttribute('for')
       if (document.getElementById('gameNotif' + id) !== null) {
         const gameRecord = new GameRecord({ id: id })
-        gameRecord.refuseInvitationGame(id)
+        gameRecord.deleteGame(id)
         document.getElementById('gameNotif' + id).remove()
       } else if (document.getElementById('senderGameNotif' + id) !== null) {
         const gameRecord = new GameRecord({ id: id })
-        gameRecord.refuseInvitationGame(id)
+        gameRecord.deleteGame(id)
         document.getElementById('senderGameNotif' + id).remove()
       } else if (document.getElementById('guildNotif' + id) !== null) {
         const guild = new Guild({ id: id })
