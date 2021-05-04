@@ -106,7 +106,7 @@ describe 'Guild', type: :request do
       expect(GuildMember.where(user_id: user_1.id, guild_id: Guild.last.id)[0]).to eq nil
     end
   end
-  describe '#destroy_members', test: true do
+  describe '#destroy_members' do
     before { post api_guilds_url, headers: access_token, params: attributes }
     it 'owner should kick a member' do
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
@@ -115,8 +115,15 @@ describe 'Guild', type: :request do
       expect(Guild.first.members.count).to eq 1
       expect(response.status).to eq 204
     end
+    it 'shouldnt kick an invalid guild user' do
+      post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
+      delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
+      delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
+      expect(Guild.first.members.count).to eq 1
+      expect(response.status).to eq 404
+    end
     it 'member should leave' do
-      GuildMember.create!(user_id: user_1.id, guild_id: Guild.first.id)
+      GuildMember.create(user: user_1, guild: Guild.first, rank: 'member')
       expect(Guild.first.members.count).to eq 2
       delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: user_1_access
       expect(Guild.first.members.count).to eq 1
@@ -134,6 +141,11 @@ describe 'Guild', type: :request do
       delete "/api/guilds/#{Guild.last.id}/members/#{auth.id}", headers: access_token_2
       expect(response.status).to eq 403
       expect(Guild.first.owner).to eq auth.guild_member
+    end
+    it 'should not let member kick someone else' do
+      GuildMember.create(user: user_1, guild: Guild.first, rank: 'member')
+      delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: user_1_access
+      expect(json['error']).to eq "This action is not allowed with your current privileges."
     end
     context 'if owner leaves' do
       it 'should destroy guild if he is the last to leave' do
