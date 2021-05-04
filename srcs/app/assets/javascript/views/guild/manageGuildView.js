@@ -66,17 +66,21 @@ export const ManageGuildView = Backbone.View.extend({
     if (e.target.textContent === 'Owner') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       document.getElementById('owner').classList.add('open')
-      document.getElementById('officer').classList.remove('open')
+      try {
+        document.getElementById('officer').classList.remove('open')
+      } catch (e) {}
     } else if (e.target.textContent === 'Officer') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       document.getElementById('officer').classList.add('open')
-      document.getElementById('owner').classList.remove('open')
+      try {
+        document.getElementById('owner').classList.remove('open')
+      } catch (e) {}
     }
   },
 
   chooseView: function () {
     if (this.id !== undefined && this.id !== null &&
-		!isNaN(this.id) && this.users.get(this.userId).get('admin')) {
+        !isNaN(this.id) && this.users.get(this.userId).get('admin')) {
       try {
         this.adminBool = true
         this.guild = this.guilds.get(this.id)
