@@ -260,7 +260,7 @@ RSpec.describe 'Wars', type: :request do
       end
       it 'unlock an achievement' do
         user = create(:user)
-        GuildMember.create(user: user, guild: Guild.first)
+        GuildMember.create(user_id: user.id, guild: Guild.first)
         War.first.update!(from_score: 2, on_score: 1)
         perform_enqueued_jobs(only: WarCloserJob)
         expect(UserAchievement.find_by_user_id_and_achievement_id(auth.id, ach_2.id)).to be_present

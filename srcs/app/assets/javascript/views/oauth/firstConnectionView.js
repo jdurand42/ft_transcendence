@@ -1,4 +1,4 @@
-export const FirstConnexionView = Backbone.View.extend({
+export const FirstConnectionView = Backbone.View.extend({
   events: {
     'click .validate': 'validate',
     'change input[type=file]': 'loadFile',

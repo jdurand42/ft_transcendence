@@ -72,12 +72,11 @@ export const ChatView = Backbone.View.extend({
     this.userLogged.fetchUser(this.userLoggedId)
 
     this.myChannels.on('remove', function () {
-      this.channel = this.channels.fetch()
+      this.channels.fetch()
     }, this)
 
-    this.channels.fetch()
-
     const fetch = async () => {
+      const response3 = this.channels.fetch()
       const response2 = this.myChannels.fetchByUserId(window.localStorage.getItem('user_id'))
       const response1 = this.users.fetch()
       await response1 && await response2
@@ -91,6 +90,9 @@ export const ChatView = Backbone.View.extend({
         } else {
           this.myChannels.remove(channelId)
         }
+      }
+      if (this.userLogged.get('admin') === true) {
+        await response3
       }
       this.render()
     }
@@ -161,15 +163,17 @@ export const ChatView = Backbone.View.extend({
       const templateDataChat = this.templateChat(this.context)
       this.$el.html(templateDataChat)
 
-      for (let i = 0; i < this.context.usersInGame.length; i++) {
-        const games = new GameRecords()
-        await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
-        const game = games.at(0)
-        const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
-        console.log(div)
-        div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
-        div.style.cursor = 'pointer'
-      }
+      try {
+        for (let i = 0; i < this.context.usersInGame.length; i++) {
+          const games = new GameRecords()
+          await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
+          const game = games.at(0)
+          const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
+          console.log(div)
+          div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
+          div.style.cursor = 'pointer'
+        }
+      } catch (e) {}
 
       // update post render
       let currentTarget
@@ -222,8 +226,12 @@ export const ChatView = Backbone.View.extend({
     if (sender !== undefined && document.getElementById('messages' + channelId) !== null) {
       if (broadcast === true) {
         this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
+        this.context.messages[0].channelId = channelId
+        console.log(this.context.messages[0].channelId)
       } else {
         this.context.messages.push(JSON.parse(JSON.stringify(sender)))
+        this.context.messages[this.context.messages.length - 1].channelId = channelId
+        console.log(this.context.messages[this.context.messages.length - 1].channelId)
       }
       if (message.created_at) {
         let date = message.created_at.replace('T', ' ')
@@ -365,7 +373,7 @@ export const ChatView = Backbone.View.extend({
     const dropList = document.getElementById('droplistBlockViewProfile')
     const viewProfile = document.getElementById('view-profile')
     const blockDiv = document.getElementById('block')
-    const userId = e.currentTarget.getAttribute('for')
+    const userId = Number(e.currentTarget.getAttribute('for'))
     dropList.style.display = 'flex'
     blockDiv.setAttribute('for', userId)
     blockDiv.setAttribute('channel-id', e.currentTarget.getAttribute('id'))
@@ -374,14 +382,21 @@ export const ChatView = Backbone.View.extend({
     dropList.style.top = e.pageY
     dropList.style.left = e.pageX
 
-    const block = dropList.childNodes[3]
+    console.log(userId)
+    console.log(this.userLoggedId)
+    if (userId != this.userLoggedId) {
+      const block = dropList.childNodes[3]
+      document.getElementById('block').style.display = 'block'
 
-    if (this.userLogged.get('ignores').find(el => {
-      return el.ignored_id == userId
-    })) {
-      block.innerHTML = 'Unblock'
+      if (this.userLogged.get('ignores').find(el => {
+        return el.ignored_id == userId
+      })) {
+        block.innerHTML = 'Unblock'
+      } else {
+        block.innerHTML = 'Block'
+      }
     } else {
-      block.innerHTML = 'Block'
+      document.getElementById('block').style.display = 'none'
     }
   },
 
@@ -570,8 +585,7 @@ export const ChatView = Backbone.View.extend({
     }
     this.context.members = []
     for (let i = 0; i < members.length; i++) {
-      if (members[i] !== this.userLogged.get('id') &&
-        !admins.find(el => el === members[i]) &&
+      if (!admins.find(el => el === members[i]) &&
         members[i] !== ownerId) {
         const member = this.users.get(members[i])
         let anagram
@@ -995,13 +1009,16 @@ export const ChatView = Backbone.View.extend({
           } else {
             sender = this.users.get(message.sender_id)
           }
-          this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
-          if (message.created_at) {
-            let date = message.created_at.replace('T', ' ')
-            date = date.substr(0, 19)
-            this.context.messages[0].time = date
+          if (this.userLogged.get('ignores').some(el => el.ignored_id === sender.get('id')) === false) {
+            this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
+            this.context.messages[0].channelId = channelId
+            if (message.created_at) {
+              let date = message.created_at.replace('T', ' ')
+              date = date.substr(0, 19)
+              this.context.messages[0].time = date
+            }
+            this.context.messages[0].message = message.content
           }
-          this.context.messages[0].message = message.content
         }
       }
     }
@@ -1038,7 +1055,6 @@ export const ChatView = Backbone.View.extend({
       await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
       const game = games.at(0)
       const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
-      console.log(div)
       div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
       div.style.cursor = 'pointer'
     }
@@ -1334,6 +1350,7 @@ export const ChatView = Backbone.View.extend({
         if (this.myChannels.find(el => el.id == id) === undefined) {
           const channel = this.channels.get(id)
           const response = await channel.subscribeChannel(password)
+          this.socket.subscribeChannel(channel.get('id'), 'ChatChannel')
           this.myChannels.add(channel)
           this.context.myChannels.push(JSON.parse(JSON.stringify(channel)))
           this.updateHTML('myChannels')

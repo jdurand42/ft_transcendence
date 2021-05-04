@@ -19,8 +19,14 @@ export const GameRecord = Backbone.Model.extend({
 
   urlRoot: 'api/games',
   url: function () {
-    if (this.id !== undefined) { return this.urlRoot + this.id }
+    if (this.id !== undefined) { return this.urlRoot + '/' + this.id }
     return this.urlRoot
+  },
+
+  playGame: function (gameType) {
+    return this.save({
+      mode: gameType
+    })
   },
 
   inviteGame: function (opponentId, gameType = 'duel') {
@@ -37,8 +43,8 @@ export const GameRecord = Backbone.Model.extend({
   deleteGame: function (gameId) {
     try {
       $.ajax({
-        method: 'delete',
-        url: this.urlRoot + gameId
+        method: 'DELETE',
+        url: this.urlRoot + '/' + gameId
       })
     } catch (e) {
       // en principe on s'en fout
@@ -48,13 +54,6 @@ export const GameRecord = Backbone.Model.extend({
   randomFight: function (gameType = 'war') {
     this.save({
       mode: gameType
-    })
-  },
-
-  refuseInvitationGame: function (gameId) {
-    fetch(this.urlRoot + '/' + gameId, {
-      method: 'DELETE',
-      headers: this.headers
     })
   },
 

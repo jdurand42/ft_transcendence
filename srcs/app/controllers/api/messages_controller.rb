@@ -5,7 +5,7 @@ module Api
     before_action :authorize
 
     def create
-      return render_not_allowed unless send_forbidden? == false
+      raise NotAllowedError unless send_forbidden? == false
 
       content = message_params.fetch('content')
       raise MessageTooLongError if content.length > 300
@@ -43,7 +43,7 @@ module Api
 
     def authorize
       set_chat_id
-      render_not_allowed if reject_user?
+      raise NotAllowedError if reject_user?
     end
   end
 end

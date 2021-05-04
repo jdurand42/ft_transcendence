@@ -49,7 +49,8 @@ module WarHelper
 
   def running_war_time(war)
     war&.war_times&.each do |t|
-      return t if t.day.casecmp(Date.today.strftime('%A')).zero? && Time.now.hour.between?(t.start_hour, t.end_hour)
+      return t if t.day.casecmp(DateTime.now.in_time_zone('Europe/Paris').strftime('%A')).zero?\
+      && Time.now.in_time_zone('Europe/Paris').hour.between?(t.start_hour, t.end_hour)
     end
     false
   end

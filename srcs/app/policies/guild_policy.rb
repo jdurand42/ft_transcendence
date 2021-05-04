@@ -18,10 +18,6 @@ class GuildPolicy < ApplicationPolicy
     owner_admin? || officer?
   end
 
-  def destroy_members?
-    owner_admin? || officer? || GuildMember.find_by_user_id_and_guild_id(user.id, record.id).rank == 'member'
-  end
-
   def create_officers?
     owner_admin? || officer?
   end

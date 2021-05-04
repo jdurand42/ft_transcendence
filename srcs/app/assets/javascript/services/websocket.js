@@ -82,7 +82,7 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
-      console.log(msg)
+      // console.log(msg)
       if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
         try {
           notif.receiveMessage(msg.message)
@@ -90,7 +90,8 @@ export class MyWebSocket {
         }
       } else if (msg.message && msg.message.action !== undefined && msg.message.action === 'guild_invitation') {
         notif.receiveMessage(msg.message)
-      } else if (msg.message) {
+      }
+      if (msg.message) {
         try {
           objet.receiveMessage(msg)
         } catch (e) {

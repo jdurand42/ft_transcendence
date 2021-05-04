@@ -22,11 +22,9 @@ module Api
 
     def update
       authorize @user
-
-      return render_not_allowed if forbidden_updated_attributes?
+      raise NotAllowedError if forbidden_updated_attributes?
 
       ban_hammer if banning?
-
       @user.update!(user_params)
       json_response(@user)
     end

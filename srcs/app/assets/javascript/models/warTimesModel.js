@@ -7,6 +7,8 @@ export const WarTime = Backbone.Model.extend({
     end_hour: undefined,
     time_to_answer: undefined,
     max_unanswered: undefined,
+    from_max_unanswered: undefined,
+    on_max_unanswered: undefined,
     id: undefined
   },
 

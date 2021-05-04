@@ -4,7 +4,7 @@ module Api
   class GamesController < ApiController
     before_action :set_game, only: %i[destroy]
     include(WarHelper)
-    include(WartimeMatchmaking)
+    include(CompetitionHelper)
 
     GameReducer = Rack::Reducer.new(
       Game.all,
@@ -23,10 +23,7 @@ module Api
     def create
       @games_params = params.permit(:mode)
       player_sides
-      return if war_time_error?
-      return if tournament_error?
-      return render_error('gamePlayersAlreadyInGame', 403) if players_already_in_game?
-      return render_error('opponentNotAvailable', 403) unless opponent_available?
+      creation_errors?
 
       game = create_game
       GameCleanupJob.set(wait: 300).perform_later(game)
@@ -44,39 +41,30 @@ module Api
 
     def player_sides
       @games_params[:player_left_id] = current_user.id
-      params[:opponent_id] = wartime_matchmaker(current_user) if params[:mode] == 'war' && current_user.guild
+      params[:opponent_id] ||= match_maker(current_user, @games_params[:mode])
       @games_params[:player_right_id] = params.fetch(:opponent_id).to_i
     end
 
-    def tournament_error?
-      return nil unless @games_params[:mode] == 'tournament'
-      return render_error('trnmtNotStarted', 403) unless tournament_started?
-      return render_error('alreadyPlayed', 403) if match_played_already?
-      return render_error('opponentNotParticipant', 403) unless opponent_participant?
+    def creation_errors?
+      war_time_error if @games_params[:mode] == 'war'
+      tournament_error if @games_params[:mode] == 'tournament'
+      raise PlayerInGameError if players_already_in_game?
+      raise OpponentNotAvailableError unless opponent_available?
+    end
+
+    def tournament_error
+      raise TournamentNotStartedError unless tournament_started?
+      raise AlreadyPlayedError if match_played_already?
+      raise OpponentNotParticipantError unless opponent_participant?
 
       @games_params.merge!(tournament_id: Tournament.last.id)
-      nil
     end
 
-    def tournament_started?
-      DateTime.now.in_time_zone(1) >= Tournament.last.start_date
-    end
-
-    def match_played_already?
-      TournamentParticipant.find_by_user_id(current_user.id).opponents.include?(params[:opponent_id].to_i)
-    end
-
-    def opponent_participant?
-      TournamentParticipant.find_by_user_id(params[:opponent_id]).present?
-    end
-
-    def war_time_error?
-      return nil unless @games_params[:mode] == 'war'
-      return render_error('noWarTimeOnGoing', 403) unless war_time.present?
-      return render_error('warTimeMatchLimit', 403) if Game.where(war_time_id: war_time.id, status: 'inprogress').any?
+    def war_time_error
+      raise RunningWarTimeError unless war_time.present?
+      raise WarTimeMatchLimitError if Game.where(war_time_id: war_time.id, status: 'inprogress').any?
 
       @games_params.merge!(war_time_id: war_time.id)
-      nil
     end
 
     def war_time
@@ -89,6 +77,16 @@ module Api
       invite(game.player_right.id, game.id)
       war_time_to_answer(game) if game.mode == 'war'
       tournament_time_to_answer(game) if game.mode == 'tournament'
+    end
+
+    def create_game
+      game = Game.create!(@games_params)
+      send_invites(game)
+      game
+    end
+
+    def set_game
+      @game = Game.find(params[:id])
     end
 
     def war_time_to_answer(game)
@@ -108,14 +106,16 @@ module Api
       User.find(params['opponent_id']).status == 'online'
     end
 
-    def create_game
-      game = Game.create!(@games_params)
-      send_invites(game)
-      game
+    def tournament_started?
+      DateTime.now.in_time_zone(1) >= Tournament.last.start_date
     end
 
-    def set_game
-      @game = Game.find(params[:id])
+    def match_played_already?
+      TournamentParticipant.find_by_user_id(current_user.id).opponents.include?(params[:opponent_id].to_i)
+    end
+
+    def opponent_participant?
+      TournamentParticipant.find_by_user_id(params[:opponent_id]).present?
     end
 
     def players_already_in_game?

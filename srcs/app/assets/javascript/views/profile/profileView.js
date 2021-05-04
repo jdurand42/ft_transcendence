@@ -549,21 +549,17 @@ export const ProfileView = Backbone.View.extend({
   },
 
   leaveGuild: function () {
-    if (this.users.get(this.userId).get('guild_id') === null) {
+    if (this.users.get(this.userId).get('guild_id') == null) {
       return
     }
-    const guild = this.guilds.get(this.users.get(this.userId).get('guild_id'))
     const leave = async () => {
-      try {
-        const response = await guild.leave(this.userId)
-        if (response.errors[0]) {
-          throw response.errors[0]
-        }
-        this.users.get(this.userId).set({ guild_id: null })
-        this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
-      } catch (e) {
-        alert(e)
+      const guild = this.guilds.get(this.users.get(this.id).get('guild_id'))
+      const response = await guild.leave(this.id)
+      if (response.status !== 204) {
+        alert(response.error)
       }
+      this.users.get(this.userId).set({ guild_id: null })
+      this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
     }
     leave()
   },

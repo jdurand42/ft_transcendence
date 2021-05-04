@@ -6,7 +6,7 @@ import { TournamentView } from '../views/tournament/tournamentView'
 import { OauthView } from '../views/oauth/oauthView'
 import { GuildsView } from '../views/guild/guildsView'
 import { DeclareWar } from '../views/guild/declareWarView'
-import { FirstConnexionView } from '../views/oauth/firstConnexionView'
+import { FirstConnectionView } from '../views/oauth/firstConnectionView'
 import { TwoFactorView } from '../views/oauth/twoFactorView'
 import { ChatView } from '../views/chatView'
 import { ManageGuildView } from '../views/guild/manageGuildView'
@@ -73,15 +73,15 @@ export const Router = Backbone.Router.extend({
     'declare_war/(:from_id)/(:on_id)': 'declare_war',
     'declare_war/(:from_id)/(:on_id)/(:war_id)': 'declare_war',
     'game/(:gameId)': 'playGame',
-    connexion: 'connexion',
+    connection: 'connection',
     exit: 'exit',
-    firstConnexion: 'firstConnexion_view',
-    two_factor_connexion: 'two_factor_connexion',
+    first_connection: 'first_connection_view',
+    two_factor_connection: 'two_factor_connection',
     twoFactor: 'twoFactor_view',
     '': 'oauth_view'
   },
 
-  connexion: function (url) {
+  connection: function (url) {
     // Two-Factor redirection
     this.urlParams = new URLSearchParams(window.location.search)
     if (this.urlParams.get('two_factor') === 'true') {
@@ -93,7 +93,7 @@ export const Router = Backbone.Router.extend({
         this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
         this.userLogged.save({ first_login: true }, { patch: true })
-        if (this.userLogged.get('first_login')) { this.navigate('#firstConnexion', { trigger: true }) } else {
+        if (this.userLogged.get('first_login')) { this.navigate('#first_connection', { trigger: true }) } else {
           this.navigate('#home', { trigger: true })
         }
       }
@@ -109,7 +109,7 @@ export const Router = Backbone.Router.extend({
     await response2
   },
 
-  two_factor_connexion: function (url) {
+  two_factor_connection: function (url) {
     const fetchUser = async () => {
       this.socket = new MyWebSocket(this)
       await this.setUpUser(this.users, this.oauthService, this.userLogged)
@@ -131,7 +131,7 @@ export const Router = Backbone.Router.extend({
       const fetchUser = async () => {
         this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
-        if (url !== 'firstConnexion' && url !== 'twoFactor') { this.headerView.render() }
+        if (url !== 'first_connection' && url !== 'twoFactor') { this.headerView.render() }
       }
       if (this.socket === undefined) {
         fetchUser()
@@ -139,9 +139,9 @@ export const Router = Backbone.Router.extend({
     }
   },
 
-  firstConnexion_view: function () {
-    if (this.accessPage('firstConnexion')) { return }
-    const firstConnexionView = new FirstConnexionView({ model: this.userLogged })
+  first_connection_view: function () {
+    if (this.accessPage('first_connection')) { return }
+    const firstConnectionView = new FirstConnectionView({ model: this.userLogged })
   },
 
   twoFactor_view: function () {
@@ -249,7 +249,9 @@ export const Router = Backbone.Router.extend({
     // this._removeElement();
     this.view.$el.empty()
     if (this.view.canvas) {
-      this.view.data[0].end = true
+      try {
+      	this.view.data[0].end = true
+      } catch (e) {}
     }
     try {
       this.view.destroy()

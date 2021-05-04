@@ -123,7 +123,7 @@ RSpec.describe 'Chats', type: :request do
     end
     it 'should return error : passwordIncorrect' do
       post participants_api_chat_url(Chat.first.id), headers: user_access, params: { password: 'cbd' }
-      expect(response.status).to eq 422
+      expect(response.status).to eq 403
       expect(response.body).to match(I18n.t('passwordIncorrect'))
       expect(ChatParticipant.count).to eq(1)
     end
@@ -137,7 +137,7 @@ RSpec.describe 'Chats', type: :request do
     it 'should not let user join private chat' do
       Chat.first.update!(privacy: 'private')
       post participants_api_chat_url(Chat.first.id), headers: user_access
-      expect(json['error']).to eq ['You must be invited to join this chat']
+      expect(json['error']).to eq 'You must be invited to join this chat'
     end
   end
   describe '#mutes' do
@@ -281,7 +281,7 @@ RSpec.describe 'Chats', type: :request do
     it 'should not let admin kick the owner' do
       post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
       delete "/api/chats/#{Chat.first.id}/participants/#{auth.id}", headers: access
-      expect(response.status).to eq 403
+      expect(response.status).to eq 401
       expect(ChatParticipant.where(user: auth, chat: Chat.first)).to exist
     end
     it 'should let admin kick admin' do
@@ -340,7 +340,7 @@ RSpec.describe 'Chats', type: :request do
     end
     it 'should not promote an owner' do
       post "/api/chats/#{Chat.first.id}/admins/#{auth.id}", headers: access_token
-      expect(response.status).to eq 403
+      expect(response.status).to eq 401
     end
     it 'should demote an admin' do
       post participants_api_chat_url(Chat.first.id), headers: access_token
