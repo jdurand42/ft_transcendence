@@ -142,11 +142,11 @@ export const Router = Backbone.Router.extend({
 
   first_connection_view: function () {
     if (this.accessPage('first_connection')) { return }
-    const firstConnectionView = new FirstConnectionView({ model: this.userLogged })
+    this.view = new FirstConnectionView({ model: this.userLogged })
   },
 
   twoFactor_view: function () {
-    const twoFactorView = new TwoFactorView()
+    this.view = new TwoFactorView()
   },
 
   exit: function () {
@@ -160,13 +160,13 @@ export const Router = Backbone.Router.extend({
 
   admin_view: function () {
     if (this.accessPage()) { return }
-    const adminView = new AdminView({ model: this.loadWrapper(), socket: this.socket, notifView: this.notifView })
+    this.view = new AdminView({ model: this.loadWrapper(), socket: this.socket, notifView: this.notifView })
   },
 
   oauth_view: function (url) {
     if (this.headerView !== undefined) { this.headerView.remove() }
     history.replaceState({}, null, '/')
-    const oauthView = new OauthView()
+    this.view = new OauthView()
   },
 
   home_view: function (url) {
