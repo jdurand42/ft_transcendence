@@ -42,7 +42,7 @@
                         <div class="image-container">
                             <img src={{image_url}} id={{id}} class="blockViewProfile image_url" for={{userId}}></img>
                         </div>
-                        <p class="anagram_nickname">{{nickname}}</p>
+                        <p class="anagram_nickname">{{anagram}} {{nickname}}</p>
                         {{!-- <div class="close">
                             <img src='./icons/close.svg' class="close-icon" for={{id}}></img>
                         </div> --}}
@@ -82,7 +82,7 @@
                 {{/unless}}
                 <div class="info">
                     {{#unless channel}}
-                    <p class="anagram">{{anagram}}</p>
+                    <p class="anagram_center">{{anagram}}&nbsp</p>
                     <p class="nickname">{{nickname}}</p>
                     <div class="pastille" id="pastille{{userId}}"></div>
                     <p class="status">{{status}}</p>
@@ -119,28 +119,12 @@
                         <div class="image-container">
                             <img src={{image_url}} class="blockViewProfile image_url" id="{{channelId}}" for="{{id}}"></img>
                         </div>
-                        <div class="anagram">{{anagram}}</div>
                         <div class="nickname">{{nickname}}</div>
                         <div class="time">{{time}}</div>
                     </div>
                     <div class="output">{{message}}</div>
                 </div>
                 {{/if}}
-                {{!-- {{#unless message}}
-                <div class="invitation">
-                    <div class="textInvitation">{{sender}} invites {{receiver}} to join a game.</div>
-                    {{#if invitation}}
-                    <div class="buttons">
-                        <div class="acceptInvitation">
-                            <button class="button yes acceptInvit">Accept</button>
-                        </div>
-                        <div class="refuseInvitation">
-                            <button class="button no">Refuse</button>
-                        </div>
-                    </div>
-                    {{/if}}
-                </div>
-                {{/unless}} --}}
                 {{/each}}
             </div>
         <div class="input-container">
