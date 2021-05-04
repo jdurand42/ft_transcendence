@@ -37,6 +37,11 @@ module GameOverHelper
     ActionCable.server.broadcast("user_#{game.player_right.id}", { action: 'game_unanswered', id: game.id })
   end
 
+  def notify_declined(game)
+    ActionCable.server.broadcast("user_#{game.player_left.id}", { action: 'game_declined', id: game.id })
+    ActionCable.server.broadcast("user_#{game.player_right.id}", { action: 'game_declined', id: game.id })
+  end
+
   def change_players_status(game, status)
     update_user_status(game.player_left, status) if game.player_left.status != 'offline'
     update_user_status(game.player_right, status) if game.player_right.status != 'offline'

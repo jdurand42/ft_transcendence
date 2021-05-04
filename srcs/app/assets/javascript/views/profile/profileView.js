@@ -60,8 +60,8 @@ export const ProfileView = Backbone.View.extend({
       this.id = this.userId
     }
 
-    this.$el.html(Handlebars.templates.profile({}))
     const fetchUsers = async () => {
+      await this.$el.html(Handlebars.templates.profile({}))
       try {
         await this.userLogged.fetchUser(this.id)
       } catch (e) {
@@ -174,15 +174,23 @@ export const ProfileView = Backbone.View.extend({
     this.matchHistory('Duel')
   },
 
-  loadMatchHistory: function () {
-    this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
-    document.getElementById('friends').classList.remove('open')
-    document.getElementById('achievements').classList.remove('open')
-    document.getElementById('profileGuild').classList.remove('open')
+  loadMatchHistory: async function () {
+    await this.$el.find('#profileSubNavBar').html(Handlebars.templates.profileSubNavBar({}))
+    try {
+      document.getElementById('friends').classList.remove('open')
+    } catch (e) {}
+    try {
+      document.getElementById('achievements').classList.remove('open')
+    } catch (e) {}
+    try {
+      document.getElementById('profileGuild').classList.remove('open')
+    } catch (e) {}
 
     const div = document.getElementById('matchHistory')
-    div.classList.add('open')
-    this.positionSquare(div.getBoundingClientRect())
+    try {
+      div.classList.add('open')
+      this.positionSquare(div.getBoundingClientRect())
+    } catch (e) {}
     this.matchHistory('All')
   },
 
@@ -265,7 +273,7 @@ export const ProfileView = Backbone.View.extend({
     if (this.id === this.userId) {
       context.myPage = true
     }
-    this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
+    await this.$el.find('#profilePannel').html(Handlebars.templates.profilePannel(context))
 
     if (user.get('status') === 'ingame') {
       const games = new GameRecords()
@@ -282,8 +290,8 @@ export const ProfileView = Backbone.View.extend({
     // this.$el.find('#profilePictureContainer').html('<img id="profilePicture" src=\'' + this.users.get(this.id).get('image_url') + '\'></img>')
   },
 
-  renderProfileSubPannel: function () {
-    this.$el.find('#profileButtons').html(Handlebars.templates.profileButtons())
+  renderProfileSubPannel: async function () {
+    await this.$el.find('#profileButtons').html(Handlebars.templates.profileButtons())
     const friends = this.users.get(this.userId).get('friends')
     for (let i = 0; i < friends.length; i++) {
       if (friends[i].friend_id == this.id) {
@@ -356,7 +364,7 @@ export const ProfileView = Backbone.View.extend({
     }
   },
 
-  matchHistory: function (type) {
+  matchHistory: async function (type) {
     const template = Handlebars.templates.matchHistory
     const context = {}
     context.match = []
@@ -386,7 +394,7 @@ export const ProfileView = Backbone.View.extend({
 
     context.nbMatches = context.myDone.length
 
-    this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
+    await this.$el.find('#profileContent').html(Handlebars.templates.matchHistory(context))
   },
 
   friends: async function () {
@@ -430,7 +438,7 @@ export const ProfileView = Backbone.View.extend({
       context.friends[i].rank = i + 1
     }
 
-    this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
+    await this.$el.find('#profileContent').html(Handlebars.templates.friends(context))
     return this
   },
 
@@ -457,7 +465,7 @@ export const ProfileView = Backbone.View.extend({
     return user
   },
 
-  achievementsView: function () {
+  achievementsView: async function () {
     const context = {}
     context.achievement = []
 
@@ -496,7 +504,7 @@ export const ProfileView = Backbone.View.extend({
         context.achievement[length].achieved = 'not-achieved'
       }
     }
-    this.$el.find('#profileContent').html(Handlebars.templates.achievements(context))
+    await this.$el.find('#profileContent').html(Handlebars.templates.achievements(context))
   },
 
   profileGuild: async function () {
@@ -504,14 +512,14 @@ export const ProfileView = Backbone.View.extend({
     if (this.users.get(this.id).get('guild_id')) {
       guild = this.guild
     } else if (this.userId == this.id) {
-      this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
+      await this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       return
     } else {
-      this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
+      await this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       if (this.users.get(this.userId).get('guild_id') &&
       (this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
       this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.officer_ids)))) {
-        this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
+        await this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
       }
       return
     }
@@ -539,16 +547,16 @@ export const ProfileView = Backbone.View.extend({
 
     context.membersNumber = this.membersGuild.length
 
-    this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
+    await this.$el.find('#profileContent').html(Handlebars.templates.profileGuild(context))
     if (this.userId == this.id) {
       if (guild.get('owner_id')[0] == this.userId || guild.get('officer_ids').some(el => el == this.userId) === true) {
-        this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
+        await this.$el.find('#manageGuildButton').html('<button id="manageGuild">Manage guild</button>')
       }
-      this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
+      await this.$el.find('#leaveGuildButton').html('<button id="leaveGuild">Leave guild</button>')
     }
   },
 
-  leaveGuild: function () {
+  leaveGuild: async function () {
     if (this.users.get(this.userId).get('guild_id') == null) {
       return
     }
@@ -559,7 +567,7 @@ export const ProfileView = Backbone.View.extend({
         alert(response.error)
       }
       this.users.get(this.userId).set({ guild_id: null })
-      this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
+      await this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
     }
     leave()
   },
@@ -653,7 +661,7 @@ export const ProfileView = Backbone.View.extend({
     const sendInvitation = async () => {
       try {
         const response = await guild.sendInvitation(this.id)
-        this.$el.find('#sendInvitationButton').html('<div class="invitation">You have sent an invitation</div>')
+        await this.$el.find('#sendInvitationButton').html('<div class="invitation">You have sent an invitation</div>')
       } catch (e) {
         document.getElementById('error-message').style.display = 'block'
         document.getElementById('error-message').innerHTML = e.responseJSON.errors

@@ -25,11 +25,14 @@ module Api
       player_sides
       creation_errors?
 
-      json_response(create_game, 201)
+      game = create_game
+      GameCleanupJob.set(wait: 300).perform_later(game)
+      json_response(game, 201)
     end
 
     def destroy
       authorize @game
+      notify_declined(@game)
       @game.destroy
       head :no_content
     end
