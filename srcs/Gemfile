@@ -57,6 +57,7 @@ end
 group :test do
   gem 'factory_bot_rails', '~> 4.0'
   gem 'pundit-matchers', '~> 1.6.0'
+  gem 'rubocop-rails'
   gem 'rubocop-rspec', require: false
   gem 'shoulda-matchers', '~> 3.1'
   gem 'simplecov', require: false
