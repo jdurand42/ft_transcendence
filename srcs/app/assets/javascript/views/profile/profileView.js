@@ -582,6 +582,8 @@ export const ProfileView = Backbone.View.extend({
         // this.gameId = response.id
         // navigate to game/{{this.gameId}}
         console.log('game successfully created')
+        console.log('Item game created in requestDuel: ')
+        console.log(response)
       }
     })
   },
