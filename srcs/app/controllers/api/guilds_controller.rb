@@ -89,7 +89,7 @@ module Api
     def destroy_error?(target)
       raise NotAllowedError if current_user.guild_member.member? && target.user != current_user
       return render_error('guildOwnerDeletion', 403) if mutiny?
-      return render_error('warOngoing', 403) if current_user.guild.wars.where(opened: true).present?
+      return render_error('warOngoing', 403) if @guild.owner == target && @guild.wars.where(opened: true).present?
 
       nil
     end

@@ -115,7 +115,7 @@ describe 'Guild', type: :request do
       expect(Guild.first.members.count).to eq 1
       expect(response.status).to eq 204
     end
-    it 'shouldnt kick an invalid guild user' do
+    it 'shouldnt kick an invalid guild user',test:true do
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
       delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
@@ -159,11 +159,21 @@ describe 'Guild', type: :request do
         expect(response.status).to eq 204
         expect(Guild.first.owner).to eq user_1.guild_member
       end
-      it 'should not let owner leave if guild at war' do
-        post api_guilds_url, headers: access_token_2, params: attributes_2
-        create(:war, from: Guild.first, on: Guild.last)
-        delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
-        expect(json['errors']).to eq ['War ongoing']
+      context "at war" do
+        before {
+          post api_guilds_url, headers: access_token_2, params: attributes_2
+          create(:war, from: Guild.first, on: Guild.last)
+        }
+        it 'should not let owner leave' do
+          delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
+          expect(json['errors']).to eq ['War ongoing']
+        end
+        it 'should let super_user kick' do
+          auth.update(admin: true)
+          GuildMember.create(user: user_1, guild: Guild.first, rank: 'member')
+          delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
+          expect(status).to eq 204
+        end
       end
     end
   end
@@ -234,7 +244,6 @@ describe 'Guild', type: :request do
     include_context 'with cache'
     let(:user) { create(:user, status: 'online') }
     let(:current_guild) { create(:guild) }
-
     it 'should not invite an offline user' do
       GuildMember.create(guild: current_guild, rank: 'officer', user: auth)
       user.update(status: 'offline')
@@ -243,7 +252,6 @@ describe 'Guild', type: :request do
       expect(response.status).to eq 403
       expect(json.size).to eq(1)
     end
-
     it 'should not invite an user if you arent officer or owner' do
       post invitations_api_guild_url(current_guild.id), headers: access_token, params: { user_id: user.id }
       expect(response.status).to eq 403
