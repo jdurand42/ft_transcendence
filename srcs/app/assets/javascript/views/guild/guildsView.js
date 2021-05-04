@@ -29,12 +29,12 @@ export const GuildsView = Backbone.View.extend({
 
   el: $('#app'),
 
-  render: function () {
+  render: async function () {
     this.templateGuilds = Handlebars.templates.guildsMain
     const templateData = this.templateGuilds(this.context)
 
     this.$el.html(templateData)
-    this.$el.find('#guildsHeader-container').html(Handlebars.templates.guildsHeader(this.context))
+    await this.$el.find('#guildsHeader-container').html(Handlebars.templates.guildsHeader(this.context))
     return this
   },
 
