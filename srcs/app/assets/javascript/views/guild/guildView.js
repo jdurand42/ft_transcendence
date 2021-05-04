@@ -241,10 +241,12 @@ export const GuildView = Backbone.View.extend({
       }
       if (distance < 0) {
         clearInterval(this)
-        document.getElementById('accept-random-fight').innerHTML = 'Challenge'
-        document.getElementById('random-fight-title').innerHTML = 'No random fight pending'
-        document.getElementById('random-fight-title').style.cursor = 'pointer'
-        document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
+        try {
+          document.getElementById('accept-random-fight').innerHTML = 'Challenge'
+          document.getElementById('random-fight-title').innerHTML = 'No random fight pending'
+          document.getElementById('random-fight-title').style.cursor = 'pointer'
+          document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
+        } catch (e) {}
       }
     }, 1000))
   },
@@ -615,7 +617,6 @@ export const GuildView = Backbone.View.extend({
       context.war = false
     }
 
-    console.log(this.lastWars)
     context.wars = []
     for (let i = 0; i < this.lastWars.length; i++) {
       context.wars.push({})
@@ -724,12 +725,7 @@ export const GuildView = Backbone.View.extend({
       for (let i = 0; i < this.calendar.length; i++) {
         context.wars.push({})
 
-        console.log(this.calendarWarTimes[i])
-        // if (this.calendarWarTimes[i].at(0).attributes.day === undefined) {
-        // this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), undefined, undefined, i)
-        // } else {
         this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), this.calendarWarTimes[i], undefined, i)
-        // }
         this.isProposal(context.wars[i], this.calendar.at(i))
       }
     } else {
@@ -791,22 +787,17 @@ export const GuildView = Backbone.View.extend({
 
   receiveMessage: function (msg) {
     const asyncFunc = async () => {
-      console.log(msg)
       if (msg.message.action === 'game_invitation') {
-        console.log('game invitation')
-        console.log(msg)
-        const games = new GameRecords()
-        await games.fetchMyGames(this.userId, 'war', 'pending')
-        console.log(games)
-        console.log(games.length)
+        const game = new GameRecord({ id: msg.message.id })
+        await game.fetch()
         const warTime = this.currentWarTimes[0].find(el => el.get('id') === this.warTimeId)
-        if (games.length > 0 && msg.message.sender_id !== this.userId) {
-          this.initializeTimerTTA(games.at(0).get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
+        if (game != undefined && msg.message.sender_id !== this.userId) {
+          this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
           document.getElementById('accept-random-fight').innerHTML = 'Accept'
           document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild has been challenged'
-        } else if (games.length > 0 && msg.message.sender_id === this.userId) {
+        } else if (game != undefined && msg.message.sender_id === this.userId) {
           const warTime = this.currentWarTimes[0].find(el => el.get('id') === this.warTimeId)
-          this.initializeTimerTTA(games.at(0).get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
+          this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
           document.getElementById('accept-random-fight').innerHTML = 'Pending'
           document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
           document.getElementById('accept-random-fight').style.cursor = 'auto'
@@ -814,17 +805,26 @@ export const GuildView = Backbone.View.extend({
         }
       } else if (msg.message.action === 'status_update') {
         const channelId = Number(JSON.parse(msg.identifier).id)
+        this.users.get(msg.message.id).set({ status: msg.message.status })
+        if (msg.message.id === this.userId) {
+          this.userLogged.set({ status: msg.message.status })
+        }
+        let div = document.getElementById('pastille' + msg.message.id)
         try {
-          this.users.get(msg.message.id).set({ status: msg.message.status })
-          if (msg.message.id === this.userId) {
-            this.userLogged.set({ status: msg.message.status })
-          }
-          let div = document.getElementById('pastille' + msg.message.id)
           div.classList.remove('offline')
+        } catch (e) {}
+        try {
           div.classList.remove('ingame')
+        } catch (e) {}
+        try {
           div.classList.remove('online')
+        } catch (e) {
+        }
+        try {
           div.classList.add(msg.message.status)
+        } catch (e) {}
 
+        try {
           div = document.getElementById('status' + msg.message.id)
           if (msg.message.status === 'online') {
             div.innerHTML = 'ONLINE'
@@ -833,14 +833,18 @@ export const GuildView = Backbone.View.extend({
           } else {
             div.innerHTML = 'INGAME'
           }
+        } catch (e) {}
 
+        try {
           div = document.getElementById('slide-show' + msg.message.id)
           if (msg.message.status === 'ingame') {
             div.setAttribute('src', './icons/slideshow-ingame.svg')
           } else {
             div.setAttribute('src', './icons/slideshow.svg')
           }
+        } catch (e) {}
 
+        try {
           if (msg.message.status === 'ingame') {
             div = document.getElementById('status-container' + msg.message.id)
             div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')

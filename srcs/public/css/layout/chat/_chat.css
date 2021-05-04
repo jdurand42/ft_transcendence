@@ -350,6 +350,10 @@
     align-items: center;
 }
 
+.chat .anagram {
+    width: 45px;
+}
+
 .chat .center .messages
 .scrollable {
     display: flex;
