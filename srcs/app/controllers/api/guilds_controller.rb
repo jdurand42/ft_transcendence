@@ -36,6 +36,7 @@ module Api
 
     def destroy_members
       target = GuildMember.find_by(user_id: params.fetch(:tid), guild: @guild)
+      raise NotAllowedError if @guild != current_user.guild
       raise ActiveRecord::RecordNotFound if target.nil?
       return if destroy_error?(target)
 
@@ -108,6 +109,10 @@ module Api
 
     def guild_params
       params.permit(:name, :anagram)
+    end
+
+    def check_guild
+      raise NotAllowedError if @guild != current_user.guild
     end
 
     def set_guild

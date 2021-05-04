@@ -120,20 +120,13 @@ describe 'Guild', type: :request do
       delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
       delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
       expect(Guild.first.members.count).to eq 1
-      expect(response.status).to eq 404
+      expect(response.status).to eq 401
     end
     it 'member should leave' do
       GuildMember.create(user: user_1, guild: Guild.first, rank: 'member')
       expect(Guild.first.members.count).to eq 2
       delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: user_1_access
       expect(Guild.first.members.count).to eq 1
-    end
-    it 'should not destroy a member of another guild' do
-      post api_guilds_url, headers: access_token_2, params: attributes_2
-      post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
-      delete "/api/guilds/#{Guild.last.id}/members/#{user_1.id}", headers: access_token_2
-      expect(status).to eq 404
-      expect(GuildMember.where(user_id: user_1.id, guild_id: Guild.first.id)).to exist
     end
     it 'should not let officer destroy owner' do
       post "/api/guilds/#{Guild.first.id}/members/#{auth_2.id}", headers: access_token
@@ -174,12 +167,11 @@ describe 'Guild', type: :request do
       end
     end
   end
-
   describe '#officers' do
-    before do
+    before {
       post api_guilds_url, headers: access_token, params: attributes
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
-    end
+    }
     it 'should let owner add officers' do
       post "/api/guilds/#{Guild.first.id}/officers/#{user_1.id}", headers: access_token
       expect(Guild.first.officers.count).to eq 1
@@ -210,7 +202,6 @@ describe 'Guild', type: :request do
       expect(Guild.first.officers.count).to eq 1
     end
   end
-
   describe '#Invitations' do
     include(CacheHelper)
     include_context 'with cache'
@@ -238,7 +229,6 @@ describe 'Guild', type: :request do
       expect(guild_pending_invitation?(current_guild.id, user.id)).to be_falsey
     end
   end
-
   describe '#NoInvitations' do
     include(CacheHelper)
     include_context 'with cache'
@@ -258,6 +248,31 @@ describe 'Guild', type: :request do
       post invitations_api_guild_url(current_guild.id), headers: access_token, params: { user_id: user.id }
       expect(response.status).to eq 403
       expect(json.size).to eq(1)
+    end
+  end
+  describe "should not work on another guild" do
+    let!(:guild) { create(:guild_with_members, count: 1) }
+    let(:user_to_kick) { guild.members.first }
+    before { post api_guilds_url, headers: access_token, params: attributes }
+    it '#create_members' do
+      post "/api/guilds/#{guild.id}/members/#{user_1.id}", headers: access_token
+      expect(json["errors"]).to eq ["This action is not allowed with your current privileges."]
+      expect(status).to eq 403
+    end
+    it '#create_officers' do
+      post "/api/guilds/#{guild.id}/officers/#{user_1.id}", headers: access_token
+      expect(json["errors"]).to eq ["This action is not allowed with your current privileges."]
+      expect(status).to eq 403
+    end
+    it '#destroy_members' do
+      delete "/api/guilds/#{guild.id}/members/#{user_to_kick.id}", headers: access_token
+      expect(json["error"]).to eq "This action is not allowed with your current privileges."
+      expect(status).to eq 401
+    end
+    it '#destroy_officers' do
+      delete "/api/guilds/#{guild.id}/officers/#{user_to_kick.id}", headers: access_token
+      expect(json["errors"]).to eq ["This action is not allowed with your current privileges."]
+      expect(status).to eq 403
     end
   end
 end

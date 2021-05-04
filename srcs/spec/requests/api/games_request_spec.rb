@@ -35,6 +35,14 @@ RSpec.describe 'Games', type: :request do
       expect(json).to_not be_empty
     end
   end
+  describe 'retrieves one game' do
+    before { create_list(:game, 2) }
+    it 'returns one game',test:true do
+      get api_game_url(Game.first.id), headers: access_token
+      expect(json['id']).to eq Game.first.id
+      expect(status).to eq 200
+    end
+  end
   describe 'retrieves all games played' do
     context 'search with user_id' do
       before do
@@ -153,7 +161,7 @@ RSpec.describe 'Games', type: :request do
   context 'WarTime' do
     let(:auth_2) { User.find_by(nickname: 'auth_2') }
     let(:access_token_2) { auth_2.create_new_auth_token }
-    before { WarTime.create(day: Date.today.strftime('%A'), start_hour: 8, end_hour: 22, time_to_answer: 10, max_unanswered: 1, war: War.first) }
+    before { WarTime.create(day: Date.today.strftime('%A'), start_hour: 2, end_hour: 23, time_to_answer: 10, max_unanswered: 1, war: War.first) }
     it 'should decrement max_unanswered at time_to_answer' do
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
       accept_game_invite(Game.first, auth.id)
@@ -163,7 +171,7 @@ RSpec.describe 'Games', type: :request do
       expect(WarTime.first.from_max_unanswered).to eq 1
       expect(WarTime.first.on_max_unanswered).to eq 0
     end
-    it "returns 'noWarTimeOnGoing' if user has no guild",test:true do
+    it "returns 'noWarTimeOnGoing' if user has no guild" do
       token_3 = merry.create_new_auth_token
       post '/api/games', headers: token_3, params: { mode: 'war', opponent_id: auth_2.id }
       expect(json['error']).to eq "Can't launch game in war mode, no running WarTime"
@@ -180,7 +188,7 @@ RSpec.describe 'Games', type: :request do
       expect(json['player_left_id']).to eq sam.id
     end
     it "returns 'noWarTimeOnGoing' if no wartime" do
-      WarTime.first.update!(start_hour: 21)
+      WarTime.first.update!(end_hour: 3)
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
       expect(json['error']).to eq "Can't launch game in war mode, no running WarTime"
     end
