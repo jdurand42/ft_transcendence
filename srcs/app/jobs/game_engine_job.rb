@@ -21,6 +21,6 @@ class GameEngineJob < ApplicationJob
     paddle_left = game_get_paddle_pos(pong.game.id, pong.game.player_left.id)
     paddle_right = game_get_paddle_pos(pong.game.id, pong.game.player_right.id)
     pong.tick(paddle_left, paddle_right)
-    sleep(0.01.seconds)
+    sleep(0.005.seconds)
   end
 end
