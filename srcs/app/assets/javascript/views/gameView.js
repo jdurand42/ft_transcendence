@@ -54,6 +54,7 @@ export const GameView = Backbone.View.extend({
         if (this.game.status === 'played') {
           throw 'Game is already played'
         }
+        console.log('Item game in gameView:')
         console.log(this.game)
         this.mode = this.game.mode
         this.$el.find('#gameTitle').html('playing ' + this.mode + ' match')
