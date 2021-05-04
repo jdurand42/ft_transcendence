@@ -113,7 +113,8 @@ export const Router = Backbone.Router.extend({
     const fetchUser = async () => {
       this.socket = new MyWebSocket(this)
       await this.setUpUser(this.users, this.oauthService, this.userLogged)
-      this.navigate('#home', { trigger: true })
+      this.navigate('#first_connection', { trigger: true })
+      // this.navigate('#home', { trigger: true })
     }
     fetchUser()
   },

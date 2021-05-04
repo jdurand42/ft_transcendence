@@ -722,11 +722,12 @@ export const GuildView = Backbone.View.extend({
       for (let i = 0; i < this.calendar.length; i++) {
         context.wars.push({})
 
-        if (this.calendarWarTimes[i].at(0).attributes.day === undefined) {
-          this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), undefined, undefined, i)
-        } else {
-          this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), this.calendarWarTimes[i], undefined, i)
-        }
+        console.log(this.calendarWarTimes[i])
+        // if (this.calendarWarTimes[i].at(0).attributes.day === undefined) {
+        // this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), undefined, undefined, i)
+        // } else {
+        this.updateContextCurrentWar(context.wars[i], this.calendar.at(i), this.calendarWarTimes[i], undefined, i)
+        // }
         this.isProposal(context.wars[i], this.calendar.at(i))
       }
     } else {
