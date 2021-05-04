@@ -565,9 +565,10 @@ export const ProfileView = Backbone.View.extend({
       const response = await guild.leave(this.id)
       if (response.status !== 204) {
         alert(response.error)
+      } else {
+        this.users.get(this.userId).set({ guild_id: null })
+        await this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
       }
-      this.users.get(this.userId).set({ guild_id: null })
-      await this.$el.find('#profileContent').html(Handlebars.templates.userLoggedNoGuild(JSON.parse(JSON.stringify(this.users.get(this.userId)))))
     }
     leave()
   },

@@ -115,25 +115,18 @@ describe 'Guild', type: :request do
       expect(Guild.first.members.count).to eq 1
       expect(response.status).to eq 204
     end
-    it 'shouldnt kick an invalid guild user' do
+    it 'shouldnt kick an invalid guild user',test:true do
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
       delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
       delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
       expect(Guild.first.members.count).to eq 1
-      expect(response.status).to eq 404
+      expect(response.status).to eq 401
     end
     it 'member should leave' do
       GuildMember.create(user: user_1, guild: Guild.first, rank: 'member')
       expect(Guild.first.members.count).to eq 2
       delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: user_1_access
       expect(Guild.first.members.count).to eq 1
-    end
-    it 'should not destroy a member of another guild' do
-      post api_guilds_url, headers: access_token_2, params: attributes_2
-      post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
-      delete "/api/guilds/#{Guild.last.id}/members/#{user_1.id}", headers: access_token_2
-      expect(status).to eq 404
-      expect(GuildMember.where(user_id: user_1.id, guild_id: Guild.first.id)).to exist
     end
     it 'should not let officer destroy owner' do
       post "/api/guilds/#{Guild.first.id}/members/#{auth_2.id}", headers: access_token
@@ -166,20 +159,29 @@ describe 'Guild', type: :request do
         expect(response.status).to eq 204
         expect(Guild.first.owner).to eq user_1.guild_member
       end
-      it 'should not let owner leave if guild at war' do
-        post api_guilds_url, headers: access_token_2, params: attributes_2
-        create(:war, from: Guild.first, on: Guild.last)
-        delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
-        expect(json['errors']).to eq ['War ongoing']
+      context "at war" do
+        before {
+          post api_guilds_url, headers: access_token_2, params: attributes_2
+          create(:war, from: Guild.first, on: Guild.last)
+        }
+        it 'should not let owner leave' do
+          delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
+          expect(json['errors']).to eq ['War ongoing']
+        end
+        it 'should let super_user kick' do
+          auth.update(admin: true)
+          GuildMember.create(user: user_1, guild: Guild.first, rank: 'member')
+          delete "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
+          expect(status).to eq 204
+        end
       end
     end
   end
-
   describe '#officers' do
-    before do
+    before {
       post api_guilds_url, headers: access_token, params: attributes
       post "/api/guilds/#{Guild.first.id}/members/#{user_1.id}", headers: access_token
-    end
+    }
     it 'should let owner add officers' do
       post "/api/guilds/#{Guild.first.id}/officers/#{user_1.id}", headers: access_token
       expect(Guild.first.officers.count).to eq 1
@@ -210,7 +212,6 @@ describe 'Guild', type: :request do
       expect(Guild.first.officers.count).to eq 1
     end
   end
-
   describe '#Invitations' do
     include(CacheHelper)
     include_context 'with cache'
@@ -238,13 +239,11 @@ describe 'Guild', type: :request do
       expect(guild_pending_invitation?(current_guild.id, user.id)).to be_falsey
     end
   end
-
   describe '#NoInvitations' do
     include(CacheHelper)
     include_context 'with cache'
     let(:user) { create(:user, status: 'online') }
     let(:current_guild) { create(:guild) }
-
     it 'should not invite an offline user' do
       GuildMember.create(guild: current_guild, rank: 'officer', user: auth)
       user.update(status: 'offline')
@@ -253,11 +252,35 @@ describe 'Guild', type: :request do
       expect(response.status).to eq 403
       expect(json.size).to eq(1)
     end
-
     it 'should not invite an user if you arent officer or owner' do
       post invitations_api_guild_url(current_guild.id), headers: access_token, params: { user_id: user.id }
       expect(response.status).to eq 403
       expect(json.size).to eq(1)
+    end
+  end
+  describe "should not work on another guild" do
+    let!(:guild) { create(:guild_with_members, count: 1) }
+    let(:user_to_kick) { guild.members.first }
+    before { post api_guilds_url, headers: access_token, params: attributes }
+    it '#create_members' do
+      post "/api/guilds/#{guild.id}/members/#{user_1.id}", headers: access_token
+      expect(json["errors"]).to eq ["This action is not allowed with your current privileges."]
+      expect(status).to eq 403
+    end
+    it '#create_officers' do
+      post "/api/guilds/#{guild.id}/officers/#{user_1.id}", headers: access_token
+      expect(json["errors"]).to eq ["This action is not allowed with your current privileges."]
+      expect(status).to eq 403
+    end
+    it '#destroy_members' do
+      delete "/api/guilds/#{guild.id}/members/#{user_to_kick.id}", headers: access_token
+      expect(json["error"]).to eq "This action is not allowed with your current privileges."
+      expect(status).to eq 401
+    end
+    it '#destroy_officers' do
+      delete "/api/guilds/#{guild.id}/officers/#{user_to_kick.id}", headers: access_token
+      expect(json["errors"]).to eq ["This action is not allowed with your current privileges."]
+      expect(status).to eq 403
     end
   end
 end

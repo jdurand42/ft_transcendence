@@ -6,6 +6,10 @@ RSpec.describe 'Chats', type: :request do
   include_context 'with cache'
   let(:auth) { create(:user) }
   let(:access_token) { auth.create_new_auth_token }
+  let(:user) { create(:user) }
+  let(:user_access) { user.create_new_auth_token }
+  let(:users) { create_list(:user, 3) }
+  let(:chat) { create(:chat, owner: auth) }
   describe '#index' do
     let!(:chats) { create_list(:chat, 2) }
     it 'should get chats' do
@@ -26,20 +30,19 @@ RSpec.describe 'Chats', type: :request do
     end
   end
   describe 'Ban/Mute responses' do
-    let(:user_1) { create(:user) }
     before do
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
-      post invites_api_chat_url(Chat.first.id), headers: access_token, params: { participant_ids: [user_1.id] }
+      post invites_api_chat_url(Chat.first.id), headers: access_token, params: { participant_ids: [user.id] }
     end
     it 'should get timeout_id' do
-      post mutes_api_chat_url(Chat.first.id), headers: access_token, params: { user_id: user_1.id, duration: 10 }
+      post mutes_api_chat_url(Chat.first.id), headers: access_token, params: { user_id: user.id, duration: 10 }
       get api_chat_url(Chat.first.id), headers: access_token
-      expect(json['timeout_ids'][0]).to eq user_1.id
+      expect(json['timeout_ids'][0]).to eq user.id
     end
     it 'should get ban_id' do
-      post bans_api_chat_url(Chat.first.id), headers: access_token, params: { user_id: user_1.id, duration: 10 }
+      post bans_api_chat_url(Chat.first.id), headers: access_token, params: { user_id: user.id, duration: 10 }
       get api_chat_url(Chat.first.id), headers: access_token
-      expect(json['ban_ids'][0]).to eq user_1.id
+      expect(json['ban_ids'][0]).to eq user.id
     end
   end
 
@@ -51,9 +54,7 @@ RSpec.describe 'Chats', type: :request do
         expect(ChatParticipant.first.role).to eq('owner')
       end
       it 'two participants' do
-        user = create(:user)
-        post api_chats_url, headers: access_token,
-                            params: { name: 'Hop', privacy: 'private', participant_ids: [user.id] }
+        post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'private', participant_ids: [user.id] }
         expect(response).to have_http_status(201)
         expect(ChatParticipant.first.user_id).to eq(auth.id)
         expect(ChatParticipant.last.user_id).to eq(user.id)
@@ -68,9 +69,7 @@ RSpec.describe 'Chats', type: :request do
         expect(response).to have_http_status(201)
       end
       it 'array including bad participant ID' do
-        users = create_list(:user, 3)
-        post api_chats_url, headers: access_token,
-                            params: { name: 'Hop', participant_ids: [users[0].id, [0], users[1].id, users[2].id] }
+        post api_chats_url, headers: access_token, params: { name: 'Hop', participant_ids: [users[0].id, [0], users[1].id, users[2].id] }
         expect(ChatParticipant.count).to eq 4
         expect(response).to have_http_status(201)
       end
@@ -84,9 +83,7 @@ RSpec.describe 'Chats', type: :request do
         expect(json).to include('name' => 'Hop')
       end
       it 'two participants max if direct_message' do
-        users = create_list(:user, 3)
-        post api_chats_url, headers: access_token,
-                            params: { name: 'Hop', privacy: 'direct_message', participant_ids: [users[0].id, users[1].id, users[2].id] }
+        post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'direct_message', participant_ids: [users[0].id, users[1].id, users[2].id] }
         expect(Chat.first.participants.count).to eq 2
         expect(Chat.first.participants.last.user_id).to eq users[0].id
       end
@@ -107,8 +104,6 @@ RSpec.describe 'Chats', type: :request do
 
   describe '#join' do
     let(:chat_attributes) { { name: 'Hop', privacy: 'protected', password: 'abc' } }
-    let(:user) { create(:user) }
-    let(:user_access) { user.create_new_auth_token }
     before { post api_chats_url, headers: access_token, params: chat_attributes }
     it 'should let a user join a protected chat' do
       post participants_api_chat_url(Chat.first.id), headers: user_access, params: { password: 'abc' }
@@ -141,8 +136,6 @@ RSpec.describe 'Chats', type: :request do
     end
   end
   describe '#mutes' do
-    let(:user) { create(:user) }
-    let(:chat) { create(:chat, owner: auth) }
     it 'should mute a participant' do
       timer = 2
       post participants_api_chat_url(chat.id), headers: access_token, params: { user: user, chat: chat }
@@ -157,41 +150,86 @@ RSpec.describe 'Chats', type: :request do
       expect(response).to have_http_status(422)
     end
     it 'should not let participant mute' do
-      access = user.create_new_auth_token
-      post participants_api_chat_url(chat.id), headers: access, params: { user: user, chat: chat }
-      post mutes_api_chat_url(chat.id), headers: access, params: { user_id: user.id, duration: 2 }
+      post participants_api_chat_url(chat.id), headers: user_access, params: { user: user, chat: chat }
+      post mutes_api_chat_url(chat.id), headers: user_access, params: { user_id: user.id, duration: 2 }
       expect(response).to have_http_status(403)
       expect(json['errors']).to eq ['This action is not allowed with your current privileges.']
+    end
+    context "super_user" do
+      before { user.update(admin: true) }
+      it 'should ban participant' do
+        to_be_banned = ChatParticipant.create(user: users[1], chat: chat, role: 'participant')
+        post bans_api_chat_url(chat.id), headers: user_access, params: { user_id: to_be_banned.id, duration: 10 }
+        expect(response).to have_http_status(201)
+        expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{to_be_banned.id}")).to eq(true)
+      end
+      it 'should ban chat_admin' do
+        to_be_banned = ChatParticipant.create(user: users[1], chat: chat, role: 'admin')
+        post bans_api_chat_url(chat.id), headers: user_access, params: { user_id: to_be_banned.id, duration: 10 }
+        expect(response).to have_http_status(201)
+        expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{to_be_banned.id}")).to eq(true)
+      end
+      it 'should ban owner' do
+        post bans_api_chat_url(chat.id), headers: user_access, params: { user_id: auth.id, duration: 10 }
+        expect(response).to have_http_status(201)
+        expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{auth.id}")).to eq(true)
+      end
     end
   end
   describe '#bans' do
-    let(:user) { create(:user) }
-    let(:chat) { create(:chat, owner: auth) }
-    it 'should ban a participant' do
-      timer = 2
-      post participants_api_chat_url(chat.id), headers: access_token, params: { user: user, chat: chat }
-      expect do
-        post bans_api_chat_url(chat.id), headers: access_token, params: { user_id: user.id, duration: timer }
-      end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_banned', id: chat.id)
+    it 'owner should ban' do
+      to_be_banned = ChatParticipant.create(user: users[0], chat: chat, role: 'participant')
+      post bans_api_chat_url(chat.id), headers: access_token, params: { user_id: to_be_banned.id, duration: 10 }
       expect(response).to have_http_status(201)
-      expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{user.id}")).to eq(true)
+      expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{to_be_banned.id}")).to eq(true)
     end
-    it 'should return an error, due to bad parameters' do
-      post bans_api_chat_url(chat.id), headers: access_token, params: { userP: user, duration: 2 }
-      expect(response).to have_http_status(422)
+    it 'chat_admin should ban' do
+      ChatParticipant.create(user: users[0], chat: chat, role: 'admin')
+      admin_access = users[0].create_new_auth_token
+      to_be_banned = ChatParticipant.create(user: users[1], chat: chat, role: 'participant')
+      post bans_api_chat_url(chat.id), headers: admin_access, params: { user_id: to_be_banned.id, duration: 10 }
+      expect(response).to have_http_status(201)
+      expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{to_be_banned.id}")).to eq(true)
     end
-    it 'should not let participant ban' do
-      access = user.create_new_auth_token
-      post participants_api_chat_url(chat.id), headers: access, params: { user: user, chat: chat }
-      post bans_api_chat_url(chat.id), headers: access, params: { user_id: user.id, duration: 2 }
+    it 'participant should not ban' do
+      ChatParticipant.create(user: users[0], chat: chat, role: 'participant')
+      to_be_banned = ChatParticipant.create(user: users[1], chat: chat, role: 'participant')
+      post bans_api_chat_url(chat.id), headers: user_access, params: { user_id: to_be_banned.id, duration: 10 }
       expect(response).to have_http_status(403)
       expect(json['errors']).to eq ['This action is not allowed with your current privileges.']
+    end
+    context "super_user" do
+      before { user.update(admin: true) }
+      it 'should ban participant' do
+        to_be_banned = ChatParticipant.create(user: users[1], chat: chat, role: 'participant')
+        post bans_api_chat_url(chat.id), headers: user_access, params: { user_id: to_be_banned.id, duration: 10 }
+        expect(response).to have_http_status(201)
+        expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{to_be_banned.id}")).to eq(true)
+      end
+      it 'should ban chat_admin' do
+        to_be_banned = ChatParticipant.create(user: users[1], chat: chat, role: 'admin')
+        post bans_api_chat_url(chat.id), headers: user_access, params: { user_id: to_be_banned.id, duration: 10 }
+        expect(response).to have_http_status(201)
+        expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{to_be_banned.id}")).to eq(true)
+      end
+      it 'should ban owner' do
+        post bans_api_chat_url(chat.id), headers: user_access, params: { user_id: auth.id, duration: 10 }
+        expect(response).to have_http_status(201)
+        expect(Rails.cache.exist?("ban_chat_#{chat.id}_#{auth.id}")).to eq(true)
+      end
+    end
+    it 'should return an error, due to bad parameters' do
+      post bans_api_chat_url(chat.id), headers: access_token, params: { userP: users[0], duration: 10 }
+      expect(response).to have_http_status(422)
+    end
+    it 'should notify' do
+      expect do
+        post bans_api_chat_url(chat.id), headers: access_token, params: { user_id: user.id, duration: 10 }
+      end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_banned', id: chat.id)
     end
   end
 
   describe '#update' do
-    let(:user) { create(:user) }
-    let(:access) { user.create_new_auth_token }
     it "should change chat's name and privacy" do
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
       put api_chat_url(Chat.first.id), headers: access_token, params: { name: 'Custom Name', privacy: 'private' }
@@ -200,19 +238,16 @@ RSpec.describe 'Chats', type: :request do
     end
     it "should return 'not_allowed'" do
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
-      put api_chat_url(Chat.first.id), headers: access, params: { admin_ids: [user.id] }
+      put api_chat_url(Chat.first.id), headers: user_access, params: { admin_ids: [user.id] }
       expect(response).to have_http_status(403)
       expect(response.body).to match(I18n.t('notAllowed'))
     end
   end
 
   describe '#leave' do
-    let(:user) { create(:user) }
-    let(:chat) { create(:chat) }
-    let(:access) { user.create_new_auth_token }
     it 'should let participant leave chat' do
-      post participants_api_chat_url(chat.id), headers: access, params: { user: user, chat: chat }
-      delete participants_api_chat_url(chat.id), headers: access
+      post participants_api_chat_url(chat.id), headers: user_access, params: { user: user, chat: chat }
+      delete participants_api_chat_url(chat.id), headers: user_access
       expect(ChatParticipant.count).to eq(1)
     end
     it 'should let participant leave protected chat' do
@@ -223,8 +258,8 @@ RSpec.describe 'Chats', type: :request do
       expect(Chat.first).to eq nil
     end
     it 'should delete participant and chat' do
-      post api_chats_url, headers: access, params: { name: 'Hop' }
-      delete participants_api_chat_url(Chat.first.id), headers: access
+      post api_chats_url, headers: access_token, params: { name: 'Hop' }
+      delete participants_api_chat_url(Chat.first.id), headers: access_token
       expect(ChatParticipant.count).to eq(0)
       expect(Chat.first).to eq nil
     end
@@ -252,44 +287,38 @@ RSpec.describe 'Chats', type: :request do
     end
   end
 
-  describe '#kick' do
-    let(:user) { create(:user) }
-    let(:user_2) { create(:user) }
-    let(:access) { user.create_new_auth_token }
-    before do
-      post api_chats_url, headers: access_token,
-                          params: { name: 'Hop', privacy: 'private', participant_ids: [user.id, user_2.id] }
-    end
-    it 'should kick a participant', test: true do
+  describe '#kick',test:true do
+    before { post api_chats_url, headers: access_token, params: { name: 'Hop', privacy: 'private', participant_ids: [ user.id, users[0].id, users[1].id] } }
+    it 'should kick a participant' do
       expect do
-        delete "/api/chats/#{Chat.first.id}/participants/#{user.id}", headers: access_token
-      end.to have_broadcasted_to("user_#{user.id}").exactly(:once).with(action: 'chat_kicked', id: Chat.first.id)
+        delete "/api/chats/#{Chat.first.id}/participants/#{users[0].id}", headers: access_token
+      end.to have_broadcasted_to("user_#{users[0].id}").exactly(:once).with(action: 'chat_kicked', id: Chat.first.id)
       expect(response.status).to eq 204
-      expect(ChatParticipant.where(user: user, chat: Chat.first).first).to eq nil
+      expect(ChatParticipant.find_by(user: users[0], chat: Chat.first)).to eq nil
     end
     it 'should not let participant kick a participant' do
-      delete "/api/chats/#{Chat.first.id}/participants/#{user.id}", headers: access
+      delete "/api/chats/#{Chat.first.id}/participants/#{users[0].id}", headers: user_access
       expect(response.status).to eq 403
-      expect(ChatParticipant.count).to eq 3
+      expect(ChatParticipant.count).to eq 4
     end
-    it 'should let admin kick a participant' do
-      post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
-      delete "/api/chats/#{Chat.first.id}/participants/#{user_2.id}", headers: access
-      expect(response.status).to eq 204
-      expect(ChatParticipant.where(user: user_2, chat: Chat.first).first).to eq nil
-    end
-    it 'should not let admin kick the owner' do
-      post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
-      delete "/api/chats/#{Chat.first.id}/participants/#{auth.id}", headers: access
-      expect(response.status).to eq 401
-      expect(ChatParticipant.where(user: auth, chat: Chat.first)).to exist
-    end
-    it 'should let admin kick admin' do
-      post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token
-      post "/api/chats/#{Chat.first.id}/admins/#{user_2.id}", headers: access_token
-      delete "/api/chats/#{Chat.first.id}/participants/#{user_2.id}", headers: access
-      expect(response.status).to eq 204
-      expect(ChatParticipant.where(user: user_2, chat: Chat.first)).to_not exist
+    context "admin should" do
+      before { ChatParticipant.find_by(user: user, chat: Chat.first).update(role: 'admin') }
+      it 'kick a participant' do
+        delete "/api/chats/#{Chat.first.id}/participants/#{users[0].id}", headers: user_access
+        expect(response.status).to eq 204
+        expect(ChatParticipant.find_by(user: users[0], chat: Chat.first)).to eq nil
+      end
+      it 'not kick the owner' do
+        delete "/api/chats/#{Chat.first.id}/participants/#{auth.id}", headers: user_access
+        expect(response.status).to eq 401
+        expect(ChatParticipant.where(user: auth, chat: Chat.first)).to exist
+      end
+      it 'kick an admin' do
+        ChatParticipant.find_by(user: users[0], chat: Chat.first).update(role: 'admin')
+        delete "/api/chats/#{Chat.first.id}/participants/#{users[0].id}", headers: user_access
+        expect(response.status).to eq 204
+        expect(ChatParticipant.where(user: users[0], chat: Chat.first)).to_not exist
+      end
     end
   end
 
@@ -307,8 +336,6 @@ RSpec.describe 'Chats', type: :request do
       expect(Chat.count).to eq(0)
     end
     it 'should not let participant destroy chat' do
-      user = create(:user)
-      user_access = user.create_new_auth_token
       post api_chats_url, headers: access_token, params: { name: 'ok', privacy: 'protected', password: 'abc' }
       post participants_api_chat_url(Chat.first.id), headers: user_access
       delete api_chat_url(Chat.first.id), headers: user_access
@@ -319,18 +346,14 @@ RSpec.describe 'Chats', type: :request do
 
   describe '#invites' do
     it 'should invite participants' do
-      user_1, user_2 = create_list(:user, 2)
       post api_chats_url, headers: access_token, params: { name: 'Hop' }
-      post invites_api_chat_url(Chat.first), headers: access_token, params: { participant_ids: [user_1.id, user_2.id] }
+      post invites_api_chat_url(Chat.first), headers: access_token, params: { participant_ids: [users[0].id, users[1].id] }
       expect(response.status).to eq 201
       expect(Chat.first.participants.count).to eq 3
     end
   end
   describe '#admins' do
-    let(:user) { create(:user) }
-    before do
-      post api_chats_url, headers: access_token, params: { name: 'Hop' }
-    end
+    before { post api_chats_url, headers: access_token, params: { name: 'Hop' } }
     it 'should promote a participant' do
       create(:chat_participant, chat_id: Chat.first.id, user: user)
       post "/api/chats/#{Chat.first.id}/admins/#{user.id}", headers: access_token

@@ -36,6 +36,7 @@ module Api
 
     def destroy_members
       target = GuildMember.find_by(user_id: params.fetch(:tid), guild: @guild)
+      raise NotAllowedError if @guild != current_user.guild
       raise ActiveRecord::RecordNotFound if target.nil?
       return if destroy_error?(target)
 
@@ -88,7 +89,7 @@ module Api
     def destroy_error?(target)
       raise NotAllowedError if current_user.guild_member.member? && target.user != current_user
       return render_error('guildOwnerDeletion', 403) if mutiny?
-      return render_error('warOngoing', 403) if current_user.guild.wars.where(opened: true).present?
+      return render_error('warOngoing', 403) if @guild.owner == target && @guild.wars.where(opened: true).present?
 
       nil
     end
@@ -108,6 +109,10 @@ module Api
 
     def guild_params
       params.permit(:name, :anagram)
+    end
+
+    def check_guild
+      raise NotAllowedError if @guild != current_user.guild
     end
 
     def set_guild

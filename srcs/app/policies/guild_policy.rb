@@ -41,7 +41,7 @@ class GuildPolicy < ApplicationPolicy
   private
 
   def officer?
-    GuildMember.find_by_user_id_and_guild_id_and_rank(user.id, record.id, 'officer')
+    GuildMember.find_by(user: user, guild: record, rank: 'officer')
   end
 
   def owner_admin?

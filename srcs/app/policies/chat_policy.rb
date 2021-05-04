@@ -52,6 +52,6 @@ class ChatPolicy < ApplicationPolicy
   end
 
   def admin_owner_superuser?
-    user.admin == true || ChatParticipant.find_by_user_id_and_chat_id_and_role(user.id, record.id, %w[admin owner])
+    user.admin == true || ChatParticipant.find_by(user: user, chat: record, role: %w[admin owner])
   end
 end

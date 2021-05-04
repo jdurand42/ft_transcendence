@@ -9,7 +9,8 @@ export const GameRecord = Backbone.Model.extend({
     war_time_id: undefined,
     tournament_id: undefined,
     status: undefined,
-    created_at: undefined
+    created_at: undefined,
+    id: undefined
   },
 
   initialize: function () {

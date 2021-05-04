@@ -14,8 +14,10 @@ templates['senderGameNotif'] = template({"compiler":[8,">= 4.3.0"],"main":functi
     + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":2,"column":68},"end":{"line":2,"column":78}}}) : helper)))
     + ">\n        <img src=\"./icons/close.svg\" class=\"closeSenderGameNotif\" id=\"closeSenderGameNotif\" for=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":3,"column":97},"end":{"line":3,"column":107}}}) : helper)))
-    + "\"></img>\n    </div>\n    <p class=\"text\">You have sent an invitation to a match.</p>\n		<div class=\"acceptGame-container\" id=\"acceptGame-container\">\n				<button class=\"button-notif acceptGame\" id=\"acceptGame\" for=\""
-    + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":7,"column":65},"end":{"line":7,"column":75}}}) : helper)))
-    + "\">Go to game</button>\n		</div>\n</div>\n";
+    + "\"></img>\n    </div>\n    <p class=\"text\">You have sent an invitation to a match.</p>\n    <div class=\"buttons-notif-container\">\n        <div class=\"acceptGame-container\" id=\"acceptGame-container\">\n            <button class=\"button-notif acceptGame\" id=\"acceptGame\" for=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":8,"column":73},"end":{"line":8,"column":83}}}) : helper)))
+    + "\">Go to game</button>\n        </div>\n        <div class=\"refuseGame-container\" id=\"refuseGame-container\">\n            <button class=\"button-notif refuseGame\" id=\"refuseGame\" for=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":11,"column":73},"end":{"line":11,"column":83}}}) : helper)))
+    + "\">Cancel invitation</button>\n        </div>\n    </div>\n</div>\n";
 },"useData":true});
 })();

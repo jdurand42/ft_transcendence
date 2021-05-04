@@ -2,7 +2,7 @@
 
 module Api
   class GamesController < ApiController
-    before_action :set_game, only: %i[destroy]
+    before_action :set_game, only: %i[show destroy]
     include(WarHelper)
     include(GameOverHelper)
     include(CompetitionHelper)
@@ -10,15 +10,17 @@ module Api
     GameReducer = Rack::Reducer.new(
       Game.all,
       ->(user_id:) { Game.where(player_left: user_id).or(Game.where(player_right: user_id)) },
-      ->(status:) { where(status: status) },
-      ->(mode:) { where(mode: mode) },
-      ->(tournament_id:) { where(tournament_id: tournament_id) },
-      ->(war_time_id:) { where(war_time_id: war_time_id) }
+      ->(status:) { where(status: status) }, ->(mode:) { where(mode: mode) },
+      ->(tournament_id:) { where(tournament_id: tournament_id) }, ->(war_time_id:) { where(war_time_id: war_time_id) }
     )
 
     def index
       @games = GameReducer.apply(params)
       json_response(@games)
+    end
+
+    def show
+      json_response(@game)
     end
 
     def create

@@ -4,6 +4,7 @@ import { ChatModel } from '../models/chatModel'
 import { User } from '../models/userModel'
 import { Channels } from '../collections/channels'
 import { GameRecords } from '../collections/gameRecords'
+import { Guilds } from '../collections/guildsCollection'
 import { GameRecord } from '../models/gameRecord'
 
 export const ChatView = Backbone.View.extend({
@@ -64,6 +65,7 @@ export const ChatView = Backbone.View.extend({
     this.channels = new Channels()
     this.users = new Users()
     this.userLogged = new User()
+    this.guilds = new Guilds()
     this.userLoggedId = Number(window.localStorage.getItem('user_id'))
     this.socket = options.socket
 
@@ -76,6 +78,7 @@ export const ChatView = Backbone.View.extend({
     }, this)
 
     const fetch = async () => {
+      this.guilds.fetch()
       const response3 = this.channels.fetch()
       const response2 = this.myChannels.fetchByUserId(window.localStorage.getItem('user_id'))
       const response1 = this.users.fetch()
@@ -227,11 +230,9 @@ export const ChatView = Backbone.View.extend({
       if (broadcast === true) {
         this.context.messages.unshift(JSON.parse(JSON.stringify(sender)))
         this.context.messages[0].channelId = channelId
-        console.log(this.context.messages[0].channelId)
       } else {
         this.context.messages.push(JSON.parse(JSON.stringify(sender)))
         this.context.messages[this.context.messages.length - 1].channelId = channelId
-        console.log(this.context.messages[this.context.messages.length - 1].channelId)
       }
       if (message.created_at) {
         let date = message.created_at.replace('T', ' ')
@@ -851,7 +852,13 @@ export const ChatView = Backbone.View.extend({
       } else {
         this.context.DM[i].image_url = user.get('image_url')
       }
-      this.context.DM[i].anagram = user.get('anagram')
+
+      try {
+        this.context.DM[i].anagram = this.guilds.get(user.get('guild_id')).get('anagram')
+      } catch (e) {
+        this.context.DM[i].anagram = 'N/A'
+      }
+
       this.context.DM[i].nickname = user.get('nickname')
       this.context.DM[i].userId = user.get('id')
       this.context.DM[i].channelId = DM[i].get('id')
@@ -911,6 +918,11 @@ export const ChatView = Backbone.View.extend({
           size = 16 - this.context.usersOnline[i].anagram.length
         }
         this.context.usersOnline[i].nickname = this.context.usersOnline[i].nickname.substr(0, size) + '.'
+        try {
+          this.context.usersOnline[i].anagram = this.guilds.get(usersOnline[i].get('guild_id')).get('anagram')
+        } catch (e) {
+          this.context.usersOffline[i].anagram = 'N/A'
+        }
       }
     }
 
@@ -936,6 +948,11 @@ export const ChatView = Backbone.View.extend({
         }
         this.context.usersInGame[i].nickname = this.context.usersInGame[i].nickname.substr(0, size) + '.'
       }
+      try {
+        this.context.usersInGame[i].anagram = this.guilds.get(usersInGame[i].get('guild_id')).get('anagram')
+      } catch (e) {
+        this.context.usersOffline[i].anagram = 'N/A'
+      }
     }
 
     // offline
@@ -953,6 +970,11 @@ export const ChatView = Backbone.View.extend({
           const size = 16 - this.context.usersOffline[i].anagram.length
           this.context.usersOffline[i].nickname = this.context.usersOffline[i].nickname.substr(0, size) + '.'
         }
+      }
+      try {
+        this.context.usersOffline[i].anagram = this.guilds.get(usersOffline[i].get('guild_id')).get('anagram')
+      } catch (e) {
+        this.context.usersOffline[i].anagram = 'N/A'
       }
     }
   },
@@ -978,7 +1000,11 @@ export const ChatView = Backbone.View.extend({
         } else {
           this.context.image_url = user.get('image_url')
         }
-        this.context.anagram = user.get('anagram')
+        try {
+          this.context.anagram = this.guilds.get(user.get('guild_id')).get('anagram')
+        } catch (e) {
+          this.context.anagram = 'N/A'
+        }
         this.context.nickname = user.get('nickname')
         status = user.get('status')
         this.context.status = status
@@ -1381,8 +1407,4 @@ export const ChatView = Backbone.View.extend({
       this.subscribeChannelModel(e, id)
     }
   }
-
-  // destroy: function () {
-  //   this.socket.close()
-  // }
 })
