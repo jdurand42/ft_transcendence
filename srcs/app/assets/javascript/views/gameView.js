@@ -24,12 +24,13 @@ export const GameView = Backbone.View.extend({
     this.guilds = this.model.get('guilds').get('obj')
     this.socket = options.socket
     this.gameId = options.gameId
+    console.log('GameId dans gameView ' + this.gameId)
     this.games = this.model.get('gameRecords').get('obj')
     this.canvas = document.getElementById('gameWindow')
     this.ctx = this.canvas.getContext('2d')
 
     // console.log(this.opponentId)
-    console.log('cest la')
+    // console.log('cest la')
     this.loadModels()
   },
 
@@ -56,6 +57,7 @@ export const GameView = Backbone.View.extend({
         console.log(this.game)
         this.mode = this.game.mode
         this.$el.find('#gameTitle').html('playing ' + this.mode + ' match')
+        console.log('modelLoaded')
         $(document).ready(this.initializeGame())
       } catch (e) {
         // console.log('Error while fetching models')
@@ -169,8 +171,9 @@ export const GameView = Backbone.View.extend({
     const data = this.data[0]
     data.socket.subscribeChannel(chanId, 'GameChannel')
     data.socket.updateContext(this, this.model.get('notifView').get('obj'))
+    console.log('game intialized')
     if (this.data[0].playerRight.isUser || this.data[0].playerLeft.isUser) {
-      console.log('ici')
+      console.log('ici, linput est configuré')
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
     this.preGameLoop()
@@ -194,7 +197,9 @@ export const GameView = Backbone.View.extend({
 
   receiveMessage: function (msg) {
     const message = msg.message
-    // console.log(message)
+    if (!this.data[0].started) {
+    	console.log(message)
+    }
     if (message.player_left) {
       this.data[0].playerLeft.y = parseInt(message.player_left.pos * this.data[0].ratio)
       this.data[0].playerLeft.score = message.player_left.score
@@ -304,6 +309,7 @@ function limitInput (data, n) {
 
 function move (e, data) {
   const mouseLocation = parseInt(event.clientY - data.canvasLocation.y)
+  // console.log('input envoyé')
   data.socket.sendForGame({ position: parseInt(mouseLocation / data.ratio), action: 'received' }, data.gameId)
 }
 
@@ -347,6 +353,7 @@ function gameLoop (data) {
   // printPing(data[0])
 
   if (!data[0].end) {
+    // console.log('In end=false loop')
     // if (data[0].frameLimiter) {
     	// simulateBall(data[0])
     // }
