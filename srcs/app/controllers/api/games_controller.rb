@@ -4,6 +4,7 @@ module Api
   class GamesController < ApiController
     before_action :set_game, only: %i[destroy]
     include(WarHelper)
+    include(GameOverHelper)
     include(CompetitionHelper)
 
     GameReducer = Rack::Reducer.new(
