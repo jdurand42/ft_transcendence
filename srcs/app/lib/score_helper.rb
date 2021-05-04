@@ -33,7 +33,7 @@ module ScoreHelper
     def game_points(game)
       init(game)
       ladder_points
-      @winner.guild&.increment!(:score, POINTS)
+      @winner.guild&.increment!(:score, POINTS) if game.player_left.guild != game.player_right.guild
       war_points(@war, POINTS, @winner) if war_enemies?
     end
 
