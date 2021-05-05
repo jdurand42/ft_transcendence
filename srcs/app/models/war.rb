@@ -13,7 +13,7 @@ class War < ApplicationRecord
 
   belongs_to :from, class_name: 'Guild'
   belongs_to :on, class_name: 'Guild'
-  has_many :war_times
+  has_many :war_times, dependent: :destroy
 
   def from_must_not_eq_on
     valid = from && on && from != on
