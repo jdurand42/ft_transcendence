@@ -252,7 +252,9 @@ export const Router = Backbone.Router.extend({
     if (this.view.canvas) {
       try {
       	this.view.data[0].end = true
-      } catch (e) {}
+        // this.view.music.pause()
+      } catch (e) { /* console.log(e) */
+      }
     }
     try {
       this.view.destroy()
