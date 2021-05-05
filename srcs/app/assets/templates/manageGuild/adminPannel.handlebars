@@ -5,7 +5,8 @@
 	<div class="title">
 	<span id="guildNameIntro"> ADMIN MODE:
 		<a href="#guild/{{this.guild.id}}/">{{this.guild.name}}</a>
-	</span> <span id="guildAnagram">[{{this.guild.anagram}}]</span>
+	</span> <span>[{{this.guild.anagram}}]</span>
+	<div id='manageGuildErrorDiv'></div>
 	</div>
 
 	<div class="manageGuildForm">
@@ -23,6 +24,40 @@
 	<div id="anagramError" class="errorMessage"></div>
 	<div><button class="updateGuildAnagram save">Save</button></div>
 	<div></div>
+	</div>
+
+
+	<button class="button" id="inviteMemberModalButton">Invite someone</button>
+
+
+	<div class="modal modalAddFriendsToGuild" id="inviteMemberModal" style="display: none;">
+		<div class="background"></div>
+		<div class="modalOpen">
+			<div class="close closeModal">
+				<img src="./icons/close.svg" id="close"></img>
+			</div>
+			<label class="label labelSelectFriends" for="search">Select friends</label>
+			<input class="textInput modalSearchChannels modalSearchAddFriendsToChannel" type="text" id="nonMemberToInvite" placeholder="Research" for={{id}}></input>
+			<div class="friends modalSearchAddFriendsToChannel" id="inviteMemberResult">
+				{{#each member}}
+				<div class="eachFriend eachFriendModalCreateChannel" for="addfriends{{id}}">
+					<div class="left">
+						<div class="image-container">
+							<img src={{image_url}} id="image_url" class="image_url"></img>
+						</div>
+						<p class="anagram_nickname">{{anagram}} {{nickname}}</p>
+					</div>
+					<div class="right">
+						<label class="checkboxlabel" for="{{checkboxId}}"></label>
+						<input type="checkbox" class="checkbox" id="addfriends{{id}}" value="{{id}}"></input>
+					</div>
+				</div>
+				{{/each}}
+			</div>
+			<div class="button-container buttons">
+				<button class="validation-buttons button validate-add-friends inviteMember" for="{{guildId}}">Invite</button>
+			</div>
+		</div>
 	</div>
 
 	<div class="manageGuildForm">
@@ -59,14 +94,14 @@
 		<div class="image-container">
 			<img class="memberProfilePicture" src={{this.owner.image_url}}></img>
 		</div>
-		<span>{{this.owner.nickname}}</span><button class="button" id="kickMember" value="{{this.owner.id}}">Kick</button>
+		<span>{{this.owner.nickname}} (Owner)</span><button class="button" id="kickMember" value="{{this.owner.id}}">Kick</button>
 	</li>
 	{{#each this.officers}}
 	<li>
 		<div class="image-container">
 			<img class="memberProfilePicture" src={{this.image_url}}></img>
 		</div>
-		<span>{{this.nickname}}</span><button class="button" id="kickMember" value="{{this.id}}">Kick</button>
+		<span>{{this.nickname}} </span><button class="button" id="kickMember" value="{{this.id}}">Kick</button>
 	</li>
 	{{/each}}
 </ul>

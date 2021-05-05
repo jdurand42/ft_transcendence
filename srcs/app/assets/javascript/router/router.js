@@ -121,14 +121,14 @@ export const Router = Backbone.Router.extend({
 
   accessPage: function (url) {
     // prevent zombie views
+    // (performance.getEntriesByType('navigation')[0].type === 'reload')
     if (this.view !== undefined) {
       this.remove_view()
     }
     if (window.localStorage.getItem('access-token') === null) {
       this.oauth_view()
       return 1
-    } else if ((parseInt(performance.navigation.type) >= 1 && parseInt(performance.navigation.type) <= 2) ||
-      (performance.getEntriesByType('navigation')[0].type === 'reload')) {
+    } else if ((parseInt(performance.navigation.type) >= 1 && parseInt(performance.navigation.type) <= 2)) {
       const fetchUser = async () => {
         this.socket = new MyWebSocket(this)
         await this.setUpUser(this.users, this.oauthService, this.userLogged)
@@ -252,7 +252,9 @@ export const Router = Backbone.Router.extend({
     if (this.view.canvas) {
       try {
       	this.view.data[0].end = true
-      } catch (e) {}
+        // this.view.music.pause()
+      } catch (e) { /* console.log(e) */
+      }
     }
     try {
       this.view.destroy()

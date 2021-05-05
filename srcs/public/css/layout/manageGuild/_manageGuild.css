@@ -329,3 +329,8 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+#manageGuildErrorDiv {
+	color: red;
+	font-style: italic;
+}

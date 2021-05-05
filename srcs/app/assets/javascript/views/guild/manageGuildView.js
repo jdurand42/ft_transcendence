@@ -13,11 +13,6 @@ export const ManageGuildView = Backbone.View.extend({
     'click .updateGuildAnagram': 'updateGuildAnagram',
     'click #leaveGuild': 'leaveGuild',
     'click #leaveGuildSideBar': 'leaveGuildSideBar',
-    /* 'keyup #nonMemberToInvite': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToInvite', '#inviteMemberResult') },
-    'keyup #memberToKick': function () { this.nicknameSearch(this.membersList, 'memberToKick', '#KickMemberResult') },
-    'keyup #memberToPromote': function () { this.nicknameSearch(this.membersList, 'memberToPromote', '#promoteMemberResult') },
-    'keyup #memberToRelegate': function () { this.nicknameSearch(this.officersList, 'memberToRelegate', '#relegateMemberResult') },
-    'keyup #nonMemberToSendInvitation': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#sendInvitationResult') }, */
     'mouseover .nicknameSearchElement': function (e) { this.outlineNickname(e) },
     'mouseout .nicknameSearchElement': function (e) { e.target.style.color = '' },
     'keyup #nonMemberToInvite': function (e) { this.inviteModalSearch(e) },
@@ -124,9 +119,9 @@ export const ManageGuildView = Backbone.View.extend({
           const response2 = this.users.fetch()
           await response1 && await response2
           this.chooseView()
-        } catch (error) {
-          this.$el.html(Handlebars.templates.createGuild({}))
-          this.renderError(error, '#errorField', Handlebars.templates.guildError)
+        } catch (e) {
+          this.renderError(e)
+          // this.renderError(error, '#errorField', Handlebars.templates.guildError)
         }
       }
       createAGuild()
@@ -187,7 +182,7 @@ export const ManageGuildView = Backbone.View.extend({
         this.ownerBool = false
         this.officerBool = false
       } catch (e) {
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
+        this.renderError(e)
       } finally {
       }
     }
@@ -215,7 +210,7 @@ export const ManageGuildView = Backbone.View.extend({
         // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
         this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
+        this.renderError(e)
       }
     }
     inviteMember()
@@ -231,7 +226,12 @@ export const ManageGuildView = Backbone.View.extend({
         this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
         // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
-        console.log(e)
+        if (this.adminBool) {
+          window.location.href = '#guilds'
+        } else {
+          this.renderError(e)
+        }
+        // cons}ole.log(e)
       } finally {
       }
     }
@@ -250,8 +250,7 @@ export const ManageGuildView = Backbone.View.extend({
         this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
         // this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
-        console.log(e)
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
+        this.renderError(e)
       }
     }
     promoteMember()
@@ -269,7 +268,7 @@ export const ManageGuildView = Backbone.View.extend({
         this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
         // this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
-        this.renderError(e, '#guildGlobalError', Handlebars.templates.guildError)
+        this.renderError(e)
       }
     }
     relegateMember()
@@ -281,10 +280,9 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.guild.save({ name: name }, { patch: true })
         this.guild.set({ name: name })
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
-        console.log(e)
-        if (e.status != 200) { this.renderError(e, '#nameError', Handlebars.templates.guildError) }
+        this.renderError(e)
       }
     }
     patchAGuild()
@@ -296,9 +294,9 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.guild.save({ anagram: anagram }, { patch: true })
         this.guild.set({ anagram: anagram })
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
-        if (e.status != 200) { this.renderError(e, '#anagramError', Handlebars.templates.guildError) }
+        this.renderError(e)
       }
     }
     patchAGuild()
@@ -325,16 +323,16 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   emptyError: function (name, anagram) {
-    if (!name.length) { this.$el.find('#nameError').html("Error: name can't be empty") }
-    if (!anagram.length) { this.$el.find('#anagramError').html("Error: anagram can't be empty") }
+    if (!name.length) { this.$el.find('#manageGuildErrorDiv').html("Error: name can't be empty") }
+    if (!anagram.length) { this.$el.find('#manageGuildErrorDiv').html("Error: anagram can't be empty") }
   },
 
-  renderError: function (error, target, template) {
-    this.$el.find(target).html(template({
-      // status: error.status,
-      // statusText: error.statusText,
-      body: JSON.stringify(error.responseJSON.message)
-    }))
+  renderError: function (e) {
+    if (e.responseJSON && e.responseJSON.errors && e.responseJSON.errors[0]) {
+      this.$el.find('#manageGuildErrorDiv').html('Error: ' + e.responseJSON.errors[0])
+    } else if (e.responseJSON && e.responseJSON.message) {
+      this.$el.find('#manageGuildErrorDiv').html('Error: ' + e.responseJSON.message)
+    }
   },
 
   list: function () {

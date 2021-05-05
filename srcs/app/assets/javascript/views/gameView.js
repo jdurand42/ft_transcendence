@@ -28,12 +28,26 @@ export const GameView = Backbone.View.extend({
     this.games = this.model.get('gameRecords').get('obj')
     this.canvas = document.getElementById('gameWindow')
     this.ctx = this.canvas.getContext('2d')
-
-    // console.log(this.opponentId)
-    // console.log('cest la')
+    /* this.music = new Audio('./sounds/music1.mp3')
+		this.music.addEventListener("canplaythrough", event => {
+			console.log('here')
+			this.music.play();
+		}) */
     this.loadModels()
   },
 
+  /*
+	deleteData: function () {
+		try {
+			console.log('dqsdqsdqsdqsdsqdqsdqdqsdsq')
+			this.data[0].end = true
+			console.log('dqsdqsdqsdqsdsqdqsdqdqsdsqdsqdqsdqssqd')
+		}
+		catch (e) {
+			console.log(e)
+		}
+	},
+	*/
   adaptToScreenSize: function () {
     this.width = parseInt(window.innerWidth * 0.66)
     if (this.width < WIDTH) {
@@ -157,6 +171,11 @@ export const GameView = Backbone.View.extend({
 
   initializeGame: function () {
     this.initializeData()
+    const data = this.data[0]
+    /* window.onbeforeunload = function (e) {
+			deleteData(data)
+			return 'dont reload man'
+		} */
     this.data[0].canvasLocation = this.data[0].canvas.getBoundingClientRect()
     if (parseInt(this.game.player_left_id) === parseInt(this.id)) {
 	  	this.data[0].playerLeft.isUser = true
@@ -169,7 +188,8 @@ export const GameView = Backbone.View.extend({
     printBall(this.data[0])
 
     const chanId = this.game.id
-    const data = this.data[0]
+
+    // window.onbeforeunload = deleteData(this.data)
     data.socket.subscribeChannel(chanId, 'GameChannel')
     data.socket.updateContext(this, this.model.get('notifView').get('obj'))
     console.log('game intialized')
@@ -177,6 +197,7 @@ export const GameView = Backbone.View.extend({
       console.log('ici, linput est configuré')
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
+
     this.preGameLoop()
   },
 
@@ -359,10 +380,24 @@ function gameLoop (data) {
     	// simulateBall(data[0])
     // }
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
+    // window.onbeforeunload = function (e) {window.cancelAnimationFrame(animation)}
   } else {
     // data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
+    // console.log('lalalala')
     clearCanvas(data[0])
     printEndScreen(data[0])
     // data[0].socket.unsubscribeChannel(parseInt(data[0].gameId), 'GameChannel')
   }
 }
+
+/*
+function deleteData(data) {
+	try {
+		data.end = true
+		console.log('data cleared')
+	}
+	catch (e) {
+		console.log(e)
+	}
+}
+*/
