@@ -7,7 +7,7 @@ describe GuildPolicy do
   include_context 'with cache'
   let(:user) { create(:user) }
   let(:admin) { create(:user, admin: true) }
-  let!(:guild) { create(:guild, name: 'test', anagram: 't3st') }
+  let!(:guild) { create(:guild, name: 'test') }
   let(:owner) { create(:user_with_guild, guild: guild, rank: 'owner') }
   let(:member) { create(:user_with_guild, guild: guild, rank: 'member') }
   let(:officer) { create(:user_with_guild, guild: guild, rank: 'officer') }

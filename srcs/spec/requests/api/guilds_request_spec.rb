@@ -67,13 +67,13 @@ describe 'Guild', type: :request do
   describe '#update' do
     before { post api_guilds_url, headers: access_token, params: attributes }
     it 'should be updated' do
-      put api_guild_url(Guild.first.id), headers: access_token, params: { name: 'Updated', anagram: 'upd4t' }
+      put api_guild_url(Guild.first.id), headers: access_token, params: { name: 'Updated', anagram: 'UPDT' }
       expect(Guild.first.name).to eq('Updated')
       expect(Guild.count).to eq(1)
       expect(response.status).to eq 200
     end
     it 'should return error: Forbidden' do
-      put api_guild_url(Guild.first.id), headers: access_token_2, params: { name: 'Updated', anagram: 'upd4t' }
+      put api_guild_url(Guild.first.id), headers: access_token_2, params: { name: 'Updated', anagram: 'UPDT' }
       expect(response.message).to eq 'Forbidden'
       expect(response.status).to eq 403
     end

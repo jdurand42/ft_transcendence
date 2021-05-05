@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe WarPolicy, type: :policy do
   let(:user) { create(:user) }
-  let!(:guild) { create(:guild, name: 'test', anagram: 't3st') }
-  let!(:guild_2) { create(:guild, name: 'test2', anagram: 't6st') }
+  let!(:guild) { create(:guild, name: 'test') }
+  let!(:guild_2) { create(:guild, name: 'test2') }
   let!(:war) { create(:war, from_id: guild.id, on_id: guild_2.id, war_start: DateTime.now, war_end: DateTime.now + 1) }
   let(:owner) { create(:user_with_guild, guild: guild, rank: 'owner') }
   let(:member) { create(:user_with_guild, guild: guild, rank: 'member') }

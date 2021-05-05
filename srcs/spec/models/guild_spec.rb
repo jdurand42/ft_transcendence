@@ -26,4 +26,9 @@ describe Guild, type: :model do
       create(:guild, anagram: 'ABCDEF')
     end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Anagram is too long (maximum is 5 characters)')
   end
+  it 'should not validate incorrect anagram caracters' do
+    expect do
+      create(:guild, anagram: '1!@#')
+    end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Anagram is invalid')
+  end
 end
