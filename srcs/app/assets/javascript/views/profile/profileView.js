@@ -599,6 +599,7 @@ export const ProfileView = Backbone.View.extend({
     }
   },
 
+  // fonction pas utile je crois: à supprimer
   spectateUser: function () {
     // check if online
     // check if same user

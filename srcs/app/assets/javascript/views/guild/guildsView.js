@@ -46,8 +46,12 @@ export const GuildsView = Backbone.View.extend({
         await wars.fetchByGuildId(guildId)
         const totalWars = document.createTextNode('0')
         let warWons = document.createTextNode('0')
-        document.getElementById('totalWars' + guildId).appendChild(totalWars)
-        document.getElementById('warsWon' + guildId).appendChild(warWons)
+        try {
+          document.getElementById('totalWars' + guildId).appendChild(totalWars)
+        } catch (e) {}
+        try {
+          document.getElementById('warsWon' + guildId).appendChild(warWons)
+        } catch (e) {}
         this.guildsWar.push({ id: guildId, warWons: 0, totalWars: 0 })
         for (let i = 0; i < wars.length; i++) {
           if (wars.at(i).get('closed') === true) {
