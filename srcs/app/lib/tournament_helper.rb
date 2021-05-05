@@ -4,7 +4,7 @@ module TournamentHelper
   include(ScoreHelper)
   include(AchievementHelper)
   def manage_tournament(game)
-    return unless game.mode == 'tournament' && game.status == 'played'
+    return unless game.mode == 'tournament' && game.status == 'played' && game.winner.present?
 
     increment_win_count(game)
     opponent_control(game)

@@ -13,6 +13,7 @@ class WarTime < ApplicationRecord
   validates_numericality_of :time_to_answer, greater_than: -1
   validates_numericality_of :max_unanswered, greater_than: -1
   belongs_to :war
+  has_many :games, dependent: :destroy
 
   def max_unanswered_per_guild
     self.from_max_unanswered = self.on_max_unanswered = max_unanswered

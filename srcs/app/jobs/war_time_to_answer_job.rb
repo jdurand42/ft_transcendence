@@ -6,6 +6,7 @@ class WarTimeToAnswerJob < ApplicationJob
 
   def perform(game, war_time)
     return unless game.status == 'pending'
+    return if no_one_answered(game)
 
     if max_unanswered_positive?(game, war_time)
       decrement_max_unanswered(game, war_time)
@@ -38,6 +39,15 @@ class WarTimeToAnswerJob < ApplicationJob
       war_time.decrement!(:from_max_unanswered)
     else
       war_time.decrement!(:on_max_unanswered)
+    end
+  end
+
+  def no_one_answered(game)
+    if game.connected_players.size.zero?
+      game.destroy
+      true
+    else
+      false
     end
   end
 end

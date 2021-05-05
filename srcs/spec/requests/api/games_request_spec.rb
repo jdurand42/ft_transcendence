@@ -37,7 +37,7 @@ RSpec.describe 'Games', type: :request do
   end
   describe 'retrieves one game' do
     before { create_list(:game, 2) }
-    it 'returns one game',test:true do
+    it 'returns one game' do
       get api_game_url(Game.first.id), headers: access_token
       expect(json['id']).to eq Game.first.id
       expect(status).to eq 200
@@ -192,13 +192,19 @@ RSpec.describe 'Games', type: :request do
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
       expect(json['error']).to eq "Can't launch game in war mode, no running WarTime"
     end
-    it 'should forfeit opponent at time_to_answer' do
+    it 'should forfeit opponent at time_to_answer',test:true do
       WarTime.first.update!(on_max_unanswered: 0)
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
       accept_game_invite(Game.first, auth.id)
-      expect(WarTimeToAnswerJob).to have_been_enqueued
       perform_enqueued_jobs(only: WarTimeToAnswerJob)
       expect(Game.first.winner_id).to eq auth.id
+    end
+    it 'should delete game at TTA if no one answer' do
+      post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
+      perform_enqueued_jobs(only: WarTimeToAnswerJob)
+      expect(Game.first).to eq nil
+      expect(WarTime.first.from_max_unanswered).to eq 1
+      expect(WarTime.first.on_max_unanswered).to eq 1
     end
   end
   context 'Tournament' do
@@ -269,6 +275,11 @@ RSpec.describe 'Games', type: :request do
         expect(winner.win_count).to eq 1
         expect(winner.opponents).to include(sam.id)
         expect(TournamentParticipant.find_by(user_id: sam.id).opponents).to include(pippin.id)
+      end
+      it 'no one accept game invite, no one win, no max_unanswered decrement' do
+        perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
+        expect(Game.first.status).to eq 'played'
+        expect(Game.first.winner_id).to eq nil
       end
     end
   end
