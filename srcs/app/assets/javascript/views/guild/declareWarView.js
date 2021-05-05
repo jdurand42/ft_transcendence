@@ -111,10 +111,9 @@ export const DeclareWar = Backbone.View.extend({
   disableDates: function () {
     // dates table
 
-    const fromWars = this.fromWars.slice().filter(el => el.get('terms_agreed') === true)
-    const onWars = this.onWars.slice().filter(el => el.get('terms_agreed') === true)
+    const fromWars = this.fromWars.slice().filter(el => (el.get('terms_agreed') === true && el.get('closed') === false))
+    const onWars = this.onWars.slice().filter(el => (el.get('terms_agreed') === true && el.get('closed') === false))
     for (let i = 0; i < fromWars.length; i++) {
-      console.log(fromWars)
       const startDate = new Date(fromWars[i].get('war_start'))
       const endDate = new Date(fromWars[i].get('war_end'))
       // eslint-disable-next-line no-unmodified-loop-condition
@@ -424,7 +423,6 @@ export const DeclareWar = Backbone.View.extend({
       ladderEffort = true
     }
 
-    console.log(this.negoWar)
     let war
     if (this.warId == undefined) {
       war = new War()
