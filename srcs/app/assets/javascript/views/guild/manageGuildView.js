@@ -13,11 +13,6 @@ export const ManageGuildView = Backbone.View.extend({
     'click .updateGuildAnagram': 'updateGuildAnagram',
     'click #leaveGuild': 'leaveGuild',
     'click #leaveGuildSideBar': 'leaveGuildSideBar',
-    /* 'keyup #nonMemberToInvite': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToInvite', '#inviteMemberResult') },
-    'keyup #memberToKick': function () { this.nicknameSearch(this.membersList, 'memberToKick', '#KickMemberResult') },
-    'keyup #memberToPromote': function () { this.nicknameSearch(this.membersList, 'memberToPromote', '#promoteMemberResult') },
-    'keyup #memberToRelegate': function () { this.nicknameSearch(this.officersList, 'memberToRelegate', '#relegateMemberResult') },
-    'keyup #nonMemberToSendInvitation': function () { this.nicknameSearch(this.nonMembersList, 'nonMemberToSendInvitation', '#sendInvitationResult') }, */
     'mouseover .nicknameSearchElement': function (e) { this.outlineNickname(e) },
     'mouseout .nicknameSearchElement': function (e) { e.target.style.color = '' },
     'keyup #nonMemberToInvite': function (e) { this.inviteModalSearch(e) },
@@ -285,7 +280,7 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const response = await this.guild.save({ name: name }, { patch: true })
         this.guild.set({ name: name })
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e)
       }
@@ -294,12 +289,14 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   updateGuildAnagram: function () {
+    console.log(document.getElementById('guildAnagram'))
     const anagram = document.getElementById('guildAnagram').value
     const patchAGuild = async () => {
       try {
         const response = await this.guild.save({ anagram: anagram }, { patch: true })
         this.guild.set({ anagram: anagram })
-        this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+        console.log(anagram)
+        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e)
       }
