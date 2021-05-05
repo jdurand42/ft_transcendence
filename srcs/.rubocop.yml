@@ -14,3 +14,6 @@ Metrics/MethodLength:
   Max: 15
 Metrics/ClassLength:
   Max: 102
+Lint/MissingSuper:
+  Exclude:
+    - 'app/controllers/api/*'

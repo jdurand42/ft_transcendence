@@ -90,6 +90,20 @@ class ApiController < ApplicationController
   end
   rescue_from OpponentNotAvailableError, with: :unauthorized
 
+  class GuildOwnerDeletionError < StandardError
+    def message
+      I18n.t('guildOwnerDeletion')
+    end
+  end
+  rescue_from GuildOwnerDeletionError, with: :unauthorized
+
+  class WarOngoingError < StandardError
+    def message
+      I18n.t('warOngoing')
+    end
+  end
+  rescue_from WarOngoingError, with: :unauthorized
+
   private
 
   def unprocessable_entity(error)
