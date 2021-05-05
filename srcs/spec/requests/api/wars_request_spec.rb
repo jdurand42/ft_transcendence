@@ -4,13 +4,11 @@ require 'rails_helper'
 
 include(AchievementHelper)
 RSpec.describe 'Wars', type: :request do
-  let(:auth) { create(:user) }
-  let(:auth_2) { create(:user) }
-  let(:access_token) { auth.create_new_auth_token }
-  let(:access_token_2) { auth_2.create_new_auth_token }
-  let(:attributes) do
-    { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022, 0o1, 0o1, 0o0, 0o0, 0), prize: 1000 }
-  end
+  let!(:auth) { create(:user) }
+  let!(:auth_2) { create(:user) }
+  let!(:access_token) { auth.create_new_auth_token }
+  let!(:access_token_2) { auth_2.create_new_auth_token }
+  let(:attributes) { { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 100 } }
   let(:attributes_2) { { on_id: Guild.first.id, war_start: DateTime.now, war_end: DateTime.new(2022), prize: 100 } }
   let!(:ach) { Achievement.create(name: 'Tonight, We Dine In Hell !', description: 'You must declare a War') }
   let!(:ach_2) { Achievement.create(name: 'This Is Sparta !', description: 'You must win a War') }
@@ -63,8 +61,7 @@ RSpec.describe 'Wars', type: :request do
       expect(War.count).to eq 0
     end
     it 'should not let declare a war against himself' do
-      valid_attributes = { on_id: Guild.first.id, war_start: DateTime.now,
-                           war_end: DateTime.new(2022, 0o3, 10, 11, 11, 0), prize: 1000 }
+      valid_attributes = { on_id: Guild.first.id, war_start: DateTime.now, war_end: DateTime.new(2022, 0o3, 10, 11, 11, 0), prize: 1000 }
       post api_wars_url, headers: access_token, params: valid_attributes
       expect(response.status).to eq 422
       expect(War.count).to eq(0)
@@ -78,20 +75,17 @@ RSpec.describe 'Wars', type: :request do
     end
     it 'unlock an achievement' do
       expect do
-        post api_wars_url, headers: access_token,
-                           params: attributes
+        post api_wars_url, headers: access_token, params: attributes
       end.to have_broadcasted_to("user_#{auth.id}").exactly(:once).with(action: 'achievement_unlocked', id: ach.id)
     end
   end
   describe '#update' do
     before do
       post api_wars_url, headers: access_token, params: attributes
-      post times_api_war_url(War.first.id), headers: access_token,
-                                            params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+      post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
     end
     it 'on_side should update the war' do
-      put api_war_url(War.first.id), headers: access_token_2,
-                                     params: { war_end: DateTime.new(2022, 0o3, 10, 11, 11, 0), prize: 200 }
+      put api_war_url(War.first.id), headers: access_token_2, params: { war_end: DateTime.new(2022, 0o3, 10, 11, 11, 0), prize: 200 }
       expect(status).to eq 200
       expect(War.first.war_end).to eq(DateTime.new(2022, 0o3, 10, 11, 11, 0))
       expect(War.first.prize).to eq(200)
@@ -143,8 +137,7 @@ RSpec.describe 'Wars', type: :request do
   describe '#agreement' do
     before { post api_wars_url, headers: access_token, params: attributes }
     it 'should agree war terms' do
-      post times_api_war_url(War.first.id), headers: access_token,
-                                            params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+      post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
       post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
       expect(War.first.from_agreement).to be_truthy
       post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
@@ -152,27 +145,23 @@ RSpec.describe 'Wars', type: :request do
       expect(War.first.on_agreement).to be_truthy
       expect(War.first.terms_agreed).to be_truthy
     end
-    context 'if one side has agreed terms,' do
+    context 'if one side has agreed terms' do
       it 'should not let update' do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         put api_war_url(War.first.id), headers: access_token, params: { prize: 900 }
         expect(response.status).to eq 403
         expect(json['errors']).to eq ['One side has agree war terms, accept or decline agreement']
       end
       it 'should not let create war_times' do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         expect(response.status).to eq 403
         expect(json['errors']).to eq ['One side has agree war terms, accept or decline agreement']
       end
       it 'should disagree terms' do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         expect(War.first.from_agreement).to be_truthy
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: false }
@@ -191,10 +180,8 @@ RSpec.describe 'Wars', type: :request do
   describe '#wars_entangled?' do
     before do
       post api_wars_url, headers: access_token, params: attributes
-      post api_wars_url, headers: access_token_2,
-                         params: { on_id: Guild.first.id, war_start: DateTime.now, war_end: DateTime.new(2022, 0o1, 0o1, 0o0, 0o0, 0), prize: 1000 }
-      post times_api_war_url(War.first.id), headers: access_token,
-                                            params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+      post api_wars_url, headers: access_token_2, params: { on_id: Guild.first.id, war_start: DateTime.now, war_end: DateTime.new(2022, 0o1, 0o1, 0o0, 0o0, 0), prize: 1000 }
+      post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
       post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
     end
     it 'should consider war with agreed terms (start dates entangled)' do
@@ -204,8 +191,7 @@ RSpec.describe 'Wars', type: :request do
       expect(response.status).to eq 403
     end
     it 'should consider war with agreed terms (end dates entangled)' do
-      post api_wars_url, headers: access_token_2,
-                         params: { on_id: Guild.first.id, war_start: DateTime.new(2020, 1, 1), war_end: DateTime.new(2021, 6, 6), prize: 1000 }
+      post api_wars_url, headers: access_token_2, params: { on_id: Guild.first.id, war_start: DateTime.new(2020, 1, 1), war_end: DateTime.new(2021, 6, 6), prize: 1000 }
       post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
       post agreements_api_war_url(War.last.id), headers: access_token, params: { agree_terms: true }
       expect(json['errors']).to eq ['Entity dates are entangled with another one']
@@ -216,22 +202,20 @@ RSpec.describe 'Wars', type: :request do
     end
   end
   describe 'lifecycle' do
-    let(:attributes) do
-      { on_id: Guild.last.id, war_start: DateTime.now, war_end: DateTime.now.in_time_zone(1).in(5), prize: 100 }
-    end
+    let!(:war_start) { DateTime.now + 1 }
     before do
-      post api_wars_url, headers: access_token, params: attributes
-      post times_api_war_url(War.first.id), headers: access_token,
-                                            params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+      post api_wars_url, headers: access_token, params: { on_id: Guild.last.id, war_start: war_start, war_end: DateTime.now + 2, prize: 100 }
+      post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
       post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
       post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
     end
     context 'opening' do
-      before { perform_enqueued_jobs(only: WarOpenerJob) }
       it 'should open at start time' do
+        perform_enqueued_jobs(only: WarOpenerJob)
         expect(War.first.opened?).to be_truthy
       end
       it 'should not let update when opened' do
+        perform_enqueued_jobs(only: WarOpenerJob)
         put api_war_url(War.first.id), headers: access_token_2, params: { prize: 1200 }
         expect(json['errors']).to eq ['War ongoing']
       end
@@ -282,7 +266,7 @@ RSpec.describe 'Wars', type: :request do
       end
     end
     context 'create' do
-      it 'should create a war time', test: true do
+      it 'should create a war time' do
         post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
         expect(response.status).to eq 201
         expect(WarTime.first.from_max_unanswered).to eq war_time_attributes[:max_unanswered]
@@ -290,37 +274,31 @@ RSpec.describe 'Wars', type: :request do
       end
       it 'should not create entangled war time (start hour entangled)' do
         post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         expect(response.status).to eq 403
         expect(json['errors']).to eq ['Entity dates are entangled with another one']
       end
       it 'should not create entangled war time (end hour entangled)' do
         post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 7, end_hour: 19, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 7, end_hour: 19, time_to_answer: 10, max_unanswered: 2 }
         expect(response.status).to eq 403
         expect(json['errors']).to eq ['Entity dates are entangled with another one']
       end
       it 'should not be entangled (start_hour param == existing end_hour)' do
         post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 20, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 20, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         expect(response.status).to eq 201
       end
       it 'should not be entangled (end_hour param == existing start_hour)' do
         post times_api_war_url(War.first.id), headers: access_token, params: war_time_attributes
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 7, end_hour: 8, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 7, end_hour: 8, time_to_answer: 10, max_unanswered: 2 }
         expect(response.status).to eq 201
       end
       it 'should not create a war_time after war start' do
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
         post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-        post times_api_war_url(War.first.id), headers: access_token,
-                                              params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+        post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
         expect(json['errors']).to eq ['War terms have been accepted']
       end
     end

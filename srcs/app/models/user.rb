@@ -4,6 +4,7 @@ class User < ApplicationRecord
   include(AchievementHelper)
   devise :database_authenticatable, :registerable, :validatable, :omniauthable
   include DeviseTokenAuth::Concerns::User
+  before_save :positive_score
   after_update :achievements
   after_update :achievement_ladder, if: :saved_change_to_ladder_id?
 
@@ -54,5 +55,9 @@ class User < ApplicationRecord
     else
       achievement_unlocked(id, 'To Infinity And Beyond !') if ladder == 'Diamond'
     end
+  end
+
+  def positive_score
+    self.score = 0 if score.negative?
   end
 end

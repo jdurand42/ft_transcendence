@@ -18,14 +18,12 @@ describe Guild, type: :model do
   end
   it 'should not validate length of too short anagram' do
     expect do
-      create(:guild,
-             anagram: 'AB')
+      create(:guild, anagram: 'AB')
     end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Anagram is too short (minimum is 3 characters)')
   end
   it 'should not validate length of too long anagram' do
     expect do
-      create(:guild,
-             anagram: 'ABCDEF')
+      create(:guild, anagram: 'ABCDEF')
     end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Anagram is too long (maximum is 5 characters)')
   end
 end

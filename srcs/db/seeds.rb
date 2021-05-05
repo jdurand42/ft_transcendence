@@ -24,55 +24,81 @@ Chat.create(name: 'general', privacy: 'public')
 
 if Rails.env.development?
 
-  guilds = FactoryBot.create_list(:guild, 5)
-  guilds.each do |guild|
-    @users = FactoryBot.create_list(:user, 5)
-    FactoryBot.create(:guild_member, guild: guild, rank: 'owner', user: @users[0])
-    1.upto(2) do |i|
-      FactoryBot.create(:guild_member, guild: guild, rank: 'officer', user: @users[i])
+  def create_users(count)
+    FactoryBot.create_list(:user, count)
+  end
+
+  def create_guilds(count, officer_count = 0, member_count = 0)
+    guilds = FactoryBot.create_list(:guild, count)
+    guilds.each do |guild|
+      create_guild_members(guild, 'owner', create_users(1))
+      create_guild_members(guild, 'officer', create_users(officer_count))
+      create_guild_members(guild, 'member', create_users(member_count))
     end
-    3.upto(4) do |i|
-      FactoryBot.create(:guild_member, guild: guild, user: @users[i])
+    guilds
+  end
+
+  def create_guild_members(guild, rank, users)
+    users.each { |user| FactoryBot.create(:guild_member, guild: guild, rank: rank, user: user) }
+  end
+
+  def create_chats(count, participant_count)
+    chats = FactoryBot.create_list(:chat, count)
+    chats.each do |chat|
+      create_chat_participants(chat, create_users(participant_count))
     end
-    chat = FactoryBot.create(:chat, owner: @users[0])
-    1.upto(4) do |i|
-      FactoryBot.create(:chat_participant, user: @users[i], chat: chat)
-    end
-    guilds.without(guild).each do |on|
-      case rand(3)
-      when 0
-        attr = { opened: true, closed: false }
-        dates = { start: DateTime.now + rand(-5..0), end: DateTime.now + rand(1..10) } # war_ongoing
-      when 1
-        attr = { opened: false, closed: false }
-        dates = { start: DateTime.now + rand(1..4), end: DateTime.now + rand(5..10) } # war_incoming
-      else
-        attr = { opened: false, closed: true }
-        dates = { start: DateTime.now + rand(-10..-6), end: DateTime.now + rand(-5..0) } # war_ended
+  end
+
+  def create_chat_participants(chat, users)
+    users.each { |participant| FactoryBot.create(:chat_participant, user: participant, chat: chat) }
+  end
+
+  def create_incoming_war(from, on)
+    FactoryBot.create(:war, from: from, on: on, war_start: DateTime.now + 2, war_end: DateTime.now + 3, opened: false, closed: false)
+  end
+
+  def create_opened_war(from, on)
+    FactoryBot.create(:war, from: from, on: on, war_start: DateTime.now - 1, war_end: DateTime.now + 1, opened: true, closed: false)
+  end
+
+  def create_closed_war(from, on)
+    FactoryBot.create(:war, from: from, on: on, war_start: DateTime.now - 3, war_end: DateTime.now - 2, opened: false, closed: true)
+  end
+
+  def create_war_games(count, war_times, from_side, on_side)
+    war_times.each do |war_time|
+      count.times do
+        left = User.find(from_side.members.pluck(:user_id).sample)
+        right = User.find(on_side.members.pluck(:user_id).sample)
+        Game.create(winner: [left, right].sample, player_left: left, player_right: right, mode: 'war', status: 'played', war_time: war_time, player_left_points: 3, player_right_points: rand(0..2))
       end
-      FactoryBot.create(:war, from: guild, on: on, war_start: dates[:start], war_end: dates[:end],
-                              opened: attr[:opened], closed: attr[:closed])
     end
   end
 
-  10.times do |_i|
-    players = @users.sample(2)
-    FactoryBot.create(:game, winner: players[0], player_left: players[0], player_right: players[1], mode: 'ladder',
-                             status: 'played')
+  def create_war_times(count, war)
+    days = %w[monday tuesday wednesday thursday friday saturday sunday]
+    war_times = []
+      count.times do
+        war_times << WarTime.create(day: days.sample, start_hour: rand(1..12), end_hour: rand(13..23), time_to_answer: rand(10..120), max_unanswered: rand(1..10), war: war)
+      end
+    war_times
   end
 
-  FactoryBot.create_list(:user, 5)
+  guilds = create_guilds(2, 1, 2)
 
-  User.all.each do |t|
-    score = (t.ladder_games_won - t.ladder_games_lost) * 10
-    score = 0 if score.negative?
-    t.update!(score: score)
-    assign_ladder(t)
-  end
+  incoming_war = create_incoming_war(guilds[0], guilds[1])
+  create_war_times(2, incoming_war)
 
-  days = %w[monday tuesday wednesday thursday friday saturday sunday]
-  War.all.each do |t|
-    WarTime.create(day: days.sample, start_hour: rand(1..12), end_hour: rand(13..23), time_to_answer: rand(10..120),
-                   max_unanswered: rand(1..10), war_id: t.id)
-  end
+  closed_war = create_closed_war(guilds[0], guilds[1])
+  war_times = create_war_times(2, closed_war)
+  create_war_games(2, war_times, guilds[0], guilds[1])
+
+  opened_war = create_opened_war(guilds[0], guilds[1])
+  war_times = create_war_times(2, opened_war)
+  create_war_games(2, war_times, guilds[0], guilds[1])
+
+  create_chats(2, 2)
+  create_guilds(2, 2, 3)
+
+  User.all.each { |user| assign_ladder(user) }
 end

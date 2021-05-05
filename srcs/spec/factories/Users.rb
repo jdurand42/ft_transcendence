@@ -14,6 +14,7 @@ FactoryBot.define do
     status { 'offline' }
     uid { Faker::Internet.uuid }
     provider { 'marvin' }
+    score { (ladder_games_won - ladder_games_lost) * 10 }
 
     factory :user_with_guild do
       transient do
