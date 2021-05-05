@@ -289,13 +289,11 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   updateGuildAnagram: function () {
-    console.log(document.getElementById('guildAnagram'))
     const anagram = document.getElementById('guildAnagram').value
     const patchAGuild = async () => {
       try {
         const response = await this.guild.save({ anagram: anagram }, { patch: true })
         this.guild.set({ anagram: anagram })
-        console.log(anagram)
         this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e)
