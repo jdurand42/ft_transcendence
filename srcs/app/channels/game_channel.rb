@@ -37,7 +37,7 @@ class GameChannel < ApplicationCable::Channel
     @game.with_lock do
       @game.reload
       @game.connected_players << current_user.id
-      GameEngineJob.perform_later(@game, 0) if @game.connected_players.size == 2 && @game.state == 'pending'
+      GameEngineJob.perform_later(@game, 0) if @game.connected_players.size == 2 && @game.status == 'pending'
       @game.save!
     end
   end
