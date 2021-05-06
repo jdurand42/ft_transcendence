@@ -122,6 +122,7 @@ export const Router = Backbone.Router.extend({
   accessPage: function (url) {
     // prevent zombie views
     // (performance.getEntriesByType('navigation')[0].type === 'reload')
+    console.log(parseInt(performance.navigation.type))
     if (this.view !== undefined) {
       this.remove_view()
     }

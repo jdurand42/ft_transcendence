@@ -36,18 +36,6 @@ export const GameView = Backbone.View.extend({
     this.loadModels()
   },
 
-  /*
-	deleteData: function () {
-		try {
-			console.log('dqsdqsdqsdqsdsqdqsdqdqsdsq')
-			this.data[0].end = true
-			console.log('dqsdqsdqsdqsdsqdqsdqdqsdsqdsqdqsdqssqd')
-		}
-		catch (e) {
-			console.log(e)
-		}
-	},
-	*/
   adaptToScreenSize: function () {
     this.width = parseInt(window.innerWidth * 0.66)
     if (this.width < WIDTH) {
@@ -71,7 +59,6 @@ export const GameView = Backbone.View.extend({
         console.log('Item game in gameView:')
         console.log(this.game)
         this.mode = this.game.mode
-        this.$el.find('#gameTitle').html('playing ' + this.mode + ' match')
         console.log('modelLoaded')
         $(document).ready(this.initializeGame())
       } catch (e) {
@@ -93,29 +80,6 @@ export const GameView = Backbone.View.extend({
     this.ctx.font = px_height + 'px serif'
     this.ctx.fillText(arg, this.width / 2, this.height / 2)
   },
-
-	  /* callAlfred: async function () {
-	    return await $.ajax({
-	      url: '/api/games/',
-	      data: { mode: 'duel', opponent_id: '1' },
-	      method: 'POST',
-	      context: this,
-	      success: function (response) {
-	        console.log(response)
-	        this.game = response
-	        this.initializeGame()
-	      }
-	    })
-	  }
-
-	 	challengeAlfred: function () {
-	    try {
-	     	this.callAlfred()
-	    } catch (e) {
-	      console.log('error while trying to challengeAlfred')
-	      console.log(e)
-	    }
-	  }, */
 
   initializeData: function () {
     this.data = [{
@@ -141,9 +105,8 @@ export const GameView = Backbone.View.extend({
       gameId: this.game.id,
       frameLimiter: true,
       ping: 0,
-      drop: 0,
       frames: 0,
-      oldDate: Date.now()
+      mode: this.mode
     }]
     this.data[0].playerLeft = {
       nickname: this.users.get(this.game.player_left_id).get('nickname'),
@@ -171,11 +134,9 @@ export const GameView = Backbone.View.extend({
 
   initializeGame: function () {
     this.initializeData()
+    this.$el.find('#gameTitle').html('playing ' + this.mode + ' match')
+    // this.$el.find('#gameTitle').innerHTML = '<h1 id="gameTitle" value="' + this.mode + '">playing ' + this.mode + ' match</h1>'
     const data = this.data[0]
-    /* window.onbeforeunload = function (e) {
-			deleteData(data)
-			return 'dont reload man'
-		} */
     this.data[0].canvasLocation = this.data[0].canvas.getBoundingClientRect()
     if (parseInt(this.game.player_left_id) === parseInt(this.id)) {
 	  	this.data[0].playerLeft.isUser = true
@@ -189,7 +150,6 @@ export const GameView = Backbone.View.extend({
 
     const chanId = this.game.id
 
-    // window.onbeforeunload = deleteData(this.data)
     data.socket.subscribeChannel(chanId, 'GameChannel')
     data.socket.updateContext(this, this.model.get('notifView').get('obj'))
     console.log('game intialized')
@@ -210,11 +170,6 @@ export const GameView = Backbone.View.extend({
   },
 
   receivePing: function () {
-    // console.log('ping')
-
-    /* this.data[0].newDate = this.data[0].newDate.getMilliseconds()
-		this.data[0].ping = this.data[0].newDate - this.data[0].oldDate
-		this.data[0].oldDate = this.data[0].newDate */
   },
 
   receiveMessage: function (msg) {
@@ -301,22 +256,55 @@ function printTextBoxes (data) {
 }
 
 function printEndScreen (data) {
+  // print line
+  data.ctx.strokeStyle = 'white'
+  data.ctx.beginPath()
+  data.ctx.moveTo(data.halfWidth, data.halfHeight - (15 * data.ratio))
+  data.ctx.lineTo(data.halfWidth, data.halfHeight - (15 * data.ratio) + (45 * data.ratio))
+  data.ctx.stroke()
+  data.ctx.closePath()
+
   const px_height = parseInt(15 * data.ratio)
   let arg
-  if (data.playerRight.score > data.playerLeft.score) {
-    arg = data.playerRight.nickname
+  if (data.playerRight.score > data.playerLeft.score && data.playerRight.isUser) {
+    arg = 'YOU WIN'
+  } else if (data.playerLeft.isUser) {
+    arg = 'YOU LOOSE'
+  } else if (data.playerRight.score > data.playerLeft.score) {
+    arg = data.playerRight.nickname + ' WIN'
   } else {
-    arg = data.playerLeft.nickname
+    arg = data.playerLeft.nickname + ' WIN'
   }
   data.ctx.fillStyle = 'yellow'
   data.ctx.font = px_height + 'px serif'
   data.ctx.textAlign = 'center'
-  data.ctx.fillText(`${arg} wins the MATCH`, data.halfWidth, data.halfHeight)
+  data.ctx.fillText(arg, data.halfWidth, data.halfHeight - (45 * data.ratio))
+
+  data.ctx.fillStyle = 'white'
+  data.ctx.font = px_height + 'px serif'
+  data.ctx.textAlign = 'left'
+  data.ctx.textBaseline = 'top'
+
+  let boxes_text = data.playerLeft.nickname
+  // penser a réduire si le nom est trop grand
+  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
+  boxes_text = data.playerLeft.score
+  data.ctx.fillStyle = 'white'
+  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + px_height + 5)
+
+  boxes_text = data.playerRight.nickname
+  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
+  data.ctx.fillStyle = 'white'
+  boxes_text = data.playerRight.score
+  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + px_height + 5)
+
+  data.ctx.fillStyle = 'yellow'
+  data.ctx.textAlign = 'center'
+  data.ctx.fillText('Click anywhere to exit', data.halfWidth, data.halfHeight - (15 * data.ratio) + (45 * data.ratio) + (10 * data.ratio))
 }
 
 function printPing (data) {
   // console.log(data.ping)
-  console.log(data.drop)
 }
 
 function limitInput (data, n) {
@@ -363,7 +351,6 @@ function clearCanvas (data) {
 
 function gameLoop (data) {
   let animation
-  // data[0].frameLimiter = !data[0].frameLimiter
   printField(data[0])
   printTextBoxes(data[0])
   printPaddles(data[0])
@@ -371,9 +358,6 @@ function gameLoop (data) {
   if (!data[0].started) {
     printWaitingScreen(data[0])
   }
-  // console.log('frame')
-  // printPing(data[0])
-
   if (!data[0].end) {
     // console.log('In end=false loop')
     // if (data[0].frameLimiter) {
@@ -383,10 +367,31 @@ function gameLoop (data) {
     // window.onbeforeunload = function (e) {window.cancelAnimationFrame(animation)}
   } else {
     // data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
-    // console.log('lalalala')
     clearCanvas(data[0])
     printEndScreen(data[0])
-    // data[0].socket.unsubscribeChannel(parseInt(data[0].gameId), 'GameChannel')
+    const mode = data[0].mode
+    data[0].canvas.addEventListener('click', function (e) { redirecting(e, mode) })
+    /* sleep(5000)
+		redirecting(data[0]) */
+  }
+}
+
+function sleep (ms) {
+  const start = new Date().getTime()
+  for (let i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > ms) {
+      break
+    }
+  }
+}
+
+function redirecting (e, mode) {
+  if (mode === 'training' || mode === 'ladder') {
+    window.location.href = '#home'
+  } else if (mode === 'duel') {
+    window.location.href = '#profile/'
+  } else if (mode === 'tournament') {
+    window.location.href = '#tournament'
   }
 }
 

@@ -27,7 +27,7 @@ export const HomeView = Backbone.View.extend({
     try {
       // this.$el.find('#homeMain').html(Handlebars.templates.loader({}))
       await game.playGame('ladder')
-      window.location.href = '/#game/' + game.get('id')
+      // window.location.href = '/#game/' + game.get('id')
     } catch (e) {
       this.$el.find('#homeMain').html(Handlebars.templates.play({}))
     }
@@ -37,7 +37,7 @@ export const HomeView = Backbone.View.extend({
     try {
       // this.$el.find('#homeMain').html(Handlebars.templates.loader({}))
       await game.playGame('duel')
-      window.location.href = '/#game/' + game.get('id')
+      // window.location.href = '/#game/' + game.get('id')
     } catch (e) {
       this.$el.find('#homeMain').html(Handlebars.templates.play({}))
     }
