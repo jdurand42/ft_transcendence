@@ -192,7 +192,7 @@ RSpec.describe 'Games', type: :request do
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
       expect(json['error']).to eq "Can't launch game in war mode, no running WarTime"
     end
-    it 'should forfeit opponent at time_to_answer',test:true do
+    it 'should forfeit opponent at time_to_answer' do
       WarTime.first.update!(on_max_unanswered: 0)
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
       accept_game_invite(Game.first, auth.id)
@@ -207,7 +207,7 @@ RSpec.describe 'Games', type: :request do
       expect(WarTime.first.on_max_unanswered).to eq 1
     end
   end
-  context 'Tournament' do
+  context 'Tournament',test:true do
     include(TournamentHelper)
     let(:users) { create_list(:user, 2, status: 'online') }
     let(:token) { sam.create_new_auth_token }
@@ -216,6 +216,7 @@ RSpec.describe 'Games', type: :request do
       post api_tournaments_url, headers: access_token, params: { start_date: DateTime.now + 1 }
       post participants_api_tournament_url(Tournament.first.id), headers: token
       post participants_api_tournament_url(Tournament.first.id), headers: token_2
+      create(:tournament_participant, tournament: Tournament.first)
     end
     it "can't play twice against same opponent (one way)" do
       put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
