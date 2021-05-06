@@ -36,23 +36,23 @@ export const LeaderboardView = Backbone.View.extend({
       const response8 = this.ladders.fetch()
       await response2 && await response8
       this.render()
-
+      let response3
       if (this.ladderId === 1) {
-        await this.usersLadder1.fetchByLadderId(1)
+        response3 = this.usersLadder1.fetchByLadderId(1)
       }
       if (this.ladderId === 2) {
-        await this.usersLadder2.fetchByLadderId(2)
+        response3 = this.usersLadder2.fetchByLadderId(2)
       }
       if (this.ladderId === 3) {
-        await this.usersLadder3.fetchByLadderId(3)
+        response3 = this.usersLadder3.fetchByLadderId(3)
       }
       if (this.ladderId === 4) {
-        await this.usersLadder4.fetchByLadderId(4)
+        response3 = this.usersLadder4.fetchByLadderId(4)
       }
       if (this.ladderId === 5) {
-        await this.usersLadder5.fetchByLadderId(5)
+        response3 = this.usersLadder5.fetchByLadderId(5)
       }
-      await response1
+      await response1 && await response3
       this.displayList()
     }
     fetchUsers()
