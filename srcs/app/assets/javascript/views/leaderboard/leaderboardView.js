@@ -34,8 +34,9 @@ export const LeaderboardView = Backbone.View.extend({
       const response1 = this.guilds.fetch()
       const response2 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
       const response8 = this.ladders.fetch()
-      await response1 && await response2 && await response8
-      this.ladderId = this.userLogged.get('ladder_id')
+      await response2 && await response8
+      this.render()
+
       if (this.ladderId === 1) {
         await this.usersLadder1.fetchByLadderId(1)
       }
@@ -51,7 +52,8 @@ export const LeaderboardView = Backbone.View.extend({
       if (this.ladderId === 5) {
         await this.usersLadder5.fetchByLadderId(5)
       }
-      this.render()
+      await response1
+      this.displayList()
     }
     fetchUsers()
   },
@@ -59,18 +61,16 @@ export const LeaderboardView = Backbone.View.extend({
   el: $('#app'),
 
   render: function () {
-    this.templateLeaderboard = Handlebars.templates.leaderboardMain
-    const templateData = this.templateLeaderboard(this.context)
-
+    this.ladderId = this.userLogged.get('ladder_id')
     this.context.name = this.ladders.get(this.ladderId).get('name')
     this.context.league = []
     for (let i = 0; i < this.ladders.length; i++) {
       this.context.league.unshift(JSON.parse(JSON.stringify(this.ladders.at(i))))
     }
-
+    this.templateLeaderboard = Handlebars.templates.leaderboardMain
+    const templateData = this.templateLeaderboard(this.context)
     this.$el.html(templateData)
     this.$el.find('#leaderboardHeader-container').html(Handlebars.templates.leaderboardHeader(this.context))
-    this.displayList()
     return this
   },
 
