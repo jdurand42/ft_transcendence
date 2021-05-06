@@ -75,7 +75,7 @@ export class MyWebSocket {
       }),
       data: JSON.stringify(data)
     }
-    // console.log(msg)
+    console.log(msg)
     this.socket.send(JSON.stringify(msg))
   }
 
