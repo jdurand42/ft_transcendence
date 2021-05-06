@@ -41,7 +41,7 @@ RSpec.describe GamePointGiver do
     end
   end
   context 'Tournament' do
-    let!(:tournament) { create(:tournament, winner_id: tom.id) }
+    let!(:tournament) { create(:tournament_with_participants, winner_id: tom.id) }
     let(:game) { create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'tournament', tournament_id: Tournament.first.id) }
     it 'increment winner score' do
       gp.tournament_points(Tournament.first)
@@ -66,7 +66,7 @@ RSpec.describe GamePointGiver do
     it "gives points to Alan's guild" do
       expect { gp.game_points(duel_game_2) }.to change { Guild.last.score }.by(10)
     end
-    it 'should not earn points if play against a member of his guild',test:true do
+    it 'should not earn points if play against a member of his guild' do
       expect { gp.game_points(duel_game_same_guild) }.to_not change { Guild.first.score }
     end
     context 'At war' do
@@ -94,14 +94,14 @@ RSpec.describe GamePointGiver do
       end
       context 'with tournament effort' do
         it 'at false gives no points' do
-          create(:tournament, winner_id: tom.id)
+          create(:tournament_with_participants, winner_id: tom.id)
           create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'tournament', tournament_id: Tournament.first.id)
           gp.tournament_points(Tournament.first)
           expect(War.first.on_score).to eq 0
         end
         it 'at true gives points' do
           War.first.toggle!(:tournament_effort)
-          create(:tournament, winner_id: tom.id)
+          create(:tournament_with_participants, winner_id: tom.id)
           create(:game, player_left: tom, player_right: alan, winner: tom, status: 'played', mode: 'tournament', tournament_id: Tournament.first.id)
           gp.tournament_points(Tournament.first)
           expect(War.first.on_score).to eq 100

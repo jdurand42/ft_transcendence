@@ -9,9 +9,11 @@ class ChatChannel < ApplicationCable::Channel
   end
 
   def received(data)
-    return if user_timeout_from_chat?(@chat_id, current_user.id) || user_banned_from_chat?(@chat_id, current_user.id)
+    return if unauthorized?
 
-    content = data.fetch('message')
+    content = data['content']
+    raise MessageTooLongError if content.length > 300
+
     ChatMessage.create!(content: content, sender_id: current_user.id, chat_id: @chat_id)
     ActionCable.server.broadcast("chat_#{@chat_id}",
                                  { action: 'message', sender_id: current_user.id, content: content,
@@ -21,6 +23,10 @@ class ChatChannel < ApplicationCable::Channel
   def unsubscribed; end
 
   private
+
+  def unauthorized?
+    user_timeout_from_chat?(@chat_id, current_user.id) || user_banned_from_chat?(@chat_id, current_user.id)
+  end
 
   def reject_user?
     return true if user_banned_from_chat?(@chat_id, current_user.id)
