@@ -11,8 +11,10 @@ class ChatChannel < ApplicationCable::Channel
   def received(data)
     return if user_timeout_from_chat?(@chat_id, current_user.id) || user_banned_from_chat?(@chat_id, current_user.id)
 
+    content = data.fetch('message')
+    ChatMessage.create!(content: content, sender_id: current_user.id, chat_id: @chat_id)
     ActionCable.server.broadcast("chat_#{@chat_id}",
-                                 { action: 'message', sender_id: current_user.id, content: data.fetch('message'),
+                                 { action: 'message', sender_id: current_user.id, content: content,
                                    created_at: Time.now.strftime('%Y-%m-%d %H:%M:%S') })
   end
 

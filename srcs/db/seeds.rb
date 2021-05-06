@@ -70,7 +70,19 @@ if Rails.env.development?
       count.times do
         left = User.find(from_side.members.pluck(:user_id).sample)
         right = User.find(on_side.members.pluck(:user_id).sample)
-        Game.create(winner: [left, right].sample, player_left: left, player_right: right, mode: 'war', status: 'played', war_time: war_time, player_left_points: 3, player_right_points: rand(0..2))
+        hash = {
+          left: {
+            user: left,
+            left_score: 3,
+            right_score: rand(0..2)
+          }, right: {
+            user: right,
+            right_score: 3,
+            left_score: rand(0..2)
+          }
+        }
+        winner = hash[hash.keys.sample]
+        Game.create(winner: winner[:user], player_left: left, player_right: right, mode: 'war', status: 'played', war_time: war_time, player_left_points: winner[:left_score], player_right_points: winner[:right_score])
       end
     end
   end
