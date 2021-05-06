@@ -181,9 +181,10 @@ export const ManageGuildView = Backbone.View.extend({
         this.users.get(this.userId).set({ guild_id: null })
         this.ownerBool = false
         this.officerBool = false
+        window.location.href = '#profile/'
       } catch (e) {
+        // console.log(e)
         this.renderError(e)
-      } finally {
       }
     }
     leaveGuild()
@@ -332,6 +333,8 @@ export const ManageGuildView = Backbone.View.extend({
       this.$el.find('#manageGuildErrorDiv').html('Error: ' + e.responseJSON.errors[0])
     } else if (e.responseJSON && e.responseJSON.message) {
       this.$el.find('#manageGuildErrorDiv').html('Error: ' + e.responseJSON.message)
+    } else if (e.responseJSON && e.responseJSON.error) {
+      this.$el.find('#manageGuildErrorDiv').html('Error: ' + e.responseJSON.error)
     }
   },
 
