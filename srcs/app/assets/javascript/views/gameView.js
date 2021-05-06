@@ -65,6 +65,7 @@ export const GameView = Backbone.View.extend({
         // console.log('Error while fetching models')
         console.log(e)
         this.handleGameNotFound()
+        this.canvas.addEventListener('click', function (e) { redirecting(e) })
       }
     }
     load()
@@ -74,11 +75,16 @@ export const GameView = Backbone.View.extend({
     // console.log("here")
     this.$el.find('#gameTitle').html('Game not found')
     const px_height = parseInt(15 * this.ratio)
-    const arg = 'Oups ! Game not found. Perphaps it was declined'
+    let arg = 'Oups ! Game not found. Perphaps it was declined'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
     this.ctx.font = px_height + 'px serif'
     this.ctx.fillText(arg, this.width / 2, this.height / 2)
+    arg = 'Click anywhere to exit'
+    this.ctx.textAlign = 'center'
+    this.ctx.fillStyle = 'yellow'
+    this.ctx.font = px_height + 'px serif'
+    this.ctx.fillText(arg, this.width / 2, this.height / 2 + 45 * this.ratio)
   },
 
   initializeData: function () {
@@ -135,7 +141,6 @@ export const GameView = Backbone.View.extend({
   initializeGame: function () {
     this.initializeData()
     this.$el.find('#gameTitle').html('playing ' + this.mode + ' match')
-    // this.$el.find('#gameTitle').innerHTML = '<h1 id="gameTitle" value="' + this.mode + '">playing ' + this.mode + ' match</h1>'
     const data = this.data[0]
     this.data[0].canvasLocation = this.data[0].canvas.getBoundingClientRect()
     if (parseInt(this.game.player_left_id) === parseInt(this.id)) {
@@ -369,6 +374,7 @@ function gameLoop (data) {
     // data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
     clearCanvas(data[0])
     printEndScreen(data[0])
+    data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
     const mode = data[0].mode
     data[0].canvas.addEventListener('click', function (e) { redirecting(e, mode) })
     /* sleep(5000)
@@ -386,12 +392,12 @@ function sleep (ms) {
 }
 
 function redirecting (e, mode) {
-  if (mode === 'training' || mode === 'ladder') {
-    window.location.href = '#home'
-  } else if (mode === 'duel') {
+  if (mode === 'duel') {
     window.location.href = '#profile/'
   } else if (mode === 'tournament') {
     window.location.href = '#tournament'
+  } else {
+    window.location.href = '#home'
   }
 }
 

@@ -121,8 +121,6 @@ export const Router = Backbone.Router.extend({
 
   accessPage: function (url) {
     // prevent zombie views
-    // (performance.getEntriesByType('navigation')[0].type === 'reload')
-    console.log(parseInt(performance.navigation.type))
     if (this.view !== undefined) {
       this.remove_view()
     }
@@ -253,6 +251,7 @@ export const Router = Backbone.Router.extend({
     if (this.view.canvas) {
       try {
       	this.view.data[0].end = true
+        this.view.socket.unsubscribeChannel(this.view.gameId, 'GameChannel')
         // this.view.music.pause()
       } catch (e) { /* console.log(e) */
       }

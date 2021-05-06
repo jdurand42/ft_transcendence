@@ -56,7 +56,7 @@ export const ProfileView = Backbone.View.extend({
     this.socket.updateContext(this, this.notifView)
 
     // this.myWarGames = new GameRecords()
-    if (this.id === null) {
+    if (this.id === null || isNaN(this.id)) {
       this.id = this.userId
     }
 
