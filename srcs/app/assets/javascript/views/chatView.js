@@ -1151,7 +1151,6 @@ export const ChatView = Backbone.View.extend({
         this.closeOpenDiscussion()
         document.getElementById('channel' + newChannel.get('id')).classList.add('open')
         e.currentTarget = document.getElementById('channel' + newChannel.get('id'))
-        // this.socket.push(new MyWebSocket(newChannel.get('id'), 'ChatChannel', this))
         this.openChat(e)
       } catch (error) {
         document.getElementById('error-message').innerHTML = error.responseJSON.message
@@ -1166,7 +1165,8 @@ export const ChatView = Backbone.View.extend({
       const chatId = e.currentTarget.getAttribute('for')
       const currentChannel = this.channels.get(chatId)
       const message = e.currentTarget.value
-      const response = currentChannel.sendMessage(message)
+      // const response = currentChannel.sendMessage(message)
+      this.socket.sendMessage(currentChannel.get('id'), 'ChatChannel', message)
     }
   },
 
@@ -1233,7 +1233,6 @@ export const ChatView = Backbone.View.extend({
         this.closeOpenDiscussion()
         document.getElementById('DM' + newChannel.get('id')).classList.add('open')
         e.currentTarget = document.getElementById('DM' + newChannel.get('id'))
-        // const socket = new MyWebSocket(newChannel.get('id'), 'ChatChannel', this)
         this.openChat(e)
         return newChannel
       } catch (error) {
