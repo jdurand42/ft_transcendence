@@ -188,12 +188,12 @@ export const Router = Backbone.Router.extend({
     this.view = new GuildsView({ socket: this.socket, notifView: this.notifView })
   },
 
-  guild_view: function (id, page) {
+  guild_view: async function (id, page) {
     if (this.accessPage()) { return }
     if (id == null) {
+      await this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
       id = this.userLogged.get('guild_id')
     }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = this.guildController.loadView(id, this.loadWrapper())
   },
 
