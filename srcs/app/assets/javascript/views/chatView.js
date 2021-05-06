@@ -1166,7 +1166,7 @@ export const ChatView = Backbone.View.extend({
       const currentChannel = this.channels.get(chatId)
       const message = e.currentTarget.value
       // const response = currentChannel.sendMessage(message)
-      this.socket.sendMessage(currentChannel.get('id'), 'ChatChannel', message)
+      this.socket.sendMessage(currentChannel.get('id'), 'ChatChannel', { content: message })
     }
   },
 
