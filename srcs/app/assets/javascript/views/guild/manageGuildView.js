@@ -112,7 +112,7 @@ export const ManageGuildView = Backbone.View.extend({
       const guild = new Guild()
       const createAGuild = async () => {
         try {
-	        const response = await guild.create(name, anagram)
+          const response = await guild.create(name, anagram)
           // await this.guilds.fetch() && await this.users.fetch()
           // await guild.create(name, anagram)
           const response1 = this.guilds.fetch()
