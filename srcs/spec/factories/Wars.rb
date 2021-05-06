@@ -18,8 +18,6 @@ FactoryBot.define do
     war_end { Faker::Date.between(from: 3.days.after, to: 5.days.after) }
     on { FactoryBot.create(:guild) }
     from { FactoryBot.create(:guild) }
-    opened { true }
-    closed { false }
 
     factory :war_with_times do
       transient do

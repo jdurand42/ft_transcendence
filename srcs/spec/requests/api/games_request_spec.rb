@@ -19,7 +19,7 @@ RSpec.describe 'Games', type: :request do
     GuildMember.create(user_id: User.find_by(nickname: 'auth_2').id, guild_id: Guild.last.id, rank: 'owner')
     GuildMember.create(user_id: User.find_by(nickname: 'sam').id, guild_id: Guild.first.id, rank: 'member')
     GuildMember.create(user_id: User.find_by(nickname: 'pippin').id, guild_id: Guild.last.id, rank: 'member')
-    FactoryBot.create(:war, from_id: Guild.first.id, on_id: Guild.last.id)
+    FactoryBot.create(:war, from_id: Guild.first.id, on_id: Guild.last.id, opened: true)
   }
   after(:all) {
     GuildMember.destroy_all

@@ -5,12 +5,6 @@ module WarHelper
     War.where(from: guild_a, on: guild_b, opened: true).or(War.where(from: guild_b, on: guild_a, opened: true)).first
   end
 
-  def start_war(war)
-    war.update!(terms_agreed: true)
-    WarOpenerJob.set(wait_until: war.war_start).perform_later(war)
-    WarCloserJob.set(wait_until: war.war_end).perform_later(war)
-  end
-
   def wars_entangled?(war, from, on)
     (from.wars + on.wars).uniq.without(war).filter { |i| i.terms_agreed == true }.each do |t|
       return true if war.war_start.between?(t.war_start, t.war_end)

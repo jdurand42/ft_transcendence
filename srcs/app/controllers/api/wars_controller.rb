@@ -38,7 +38,6 @@ module Api
       return render_error('noWarTime', 403) if @war.war_times.empty?
 
       guild_agrees
-      start_war(@war) if @war.from_agreement? && @war.on_agreement?
       json_response(@war, 201)
     end
 

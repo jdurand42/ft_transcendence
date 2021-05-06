@@ -201,16 +201,16 @@ RSpec.describe 'Wars', type: :request do
       expect(response.status).to eq 201
     end
   end
-  describe 'lifecycle' do
-    let!(:war_start) { DateTime.now + 1 }
-    before do
-      post api_wars_url, headers: access_token, params: { on_id: Guild.last.id, war_start: war_start, war_end: DateTime.now + 2, prize: 100 }
-      post times_api_war_url(War.first.id), headers: access_token, params: { day: Date.today.strftime('%A'), start_hour: 9, end_hour: 21, time_to_answer: 10, max_unanswered: 2 }
+  describe 'lifecycle',test:true do
+    let!(:war) { create(:war, from: Guild.first, on: Guild.last, war_start: DateTime.now, war_end: DateTime.now + 1, prize: 100) }
+    let!(:war_time) { create(:war_time, war: war) }
+    before {
       post agreements_api_war_url(War.first.id), headers: access_token, params: { agree_terms: true }
       post agreements_api_war_url(War.first.id), headers: access_token_2, params: { agree_terms: true }
-    end
+    }
     context 'opening' do
       it 'should open at start time' do
+        expect(WarOpenerJob).to have_been_enqueued
         perform_enqueued_jobs(only: WarOpenerJob)
         expect(War.first.opened?).to be_truthy
       end

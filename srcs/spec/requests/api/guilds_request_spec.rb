@@ -162,7 +162,7 @@ describe 'Guild', type: :request do
       context "at war" do
         before {
           post api_guilds_url, headers: access_token_2, params: attributes_2
-          create(:war, from: Guild.first, on: Guild.last)
+          create(:war, from: Guild.first, on: Guild.last, opened: true)
         }
         it 'should not let owner leave' do
           delete "/api/guilds/#{Guild.first.id}/members/#{auth.id}", headers: access_token
