@@ -257,7 +257,7 @@ export const LeaderboardView = Backbone.View.extend({
 
     if (msg.message.status === 'ingame') {
       div = document.getElementById('status-container' + msg.message.id)
-      div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + ';')
+      div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
       div.style.cursor = 'pointer'
     }
   }
