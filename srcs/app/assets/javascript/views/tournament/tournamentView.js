@@ -24,7 +24,6 @@ export const TournamentView = Backbone.View.extend({
   initialize: function (options) {
     this.userLogged = new User()
     this.tournaments = new Tournaments()
-    this.tournament = new Tournament()
     this.games = new GameRecords()
     this.myGamesDone = new GameRecords()
     this.myGamesPending = new GameRecords()
@@ -39,26 +38,7 @@ export const TournamentView = Backbone.View.extend({
     this.socket = options.socket
     this.socket.updateContext(this, options.notifView)
 
-    const fetch = async () => {
-      const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
-      const response2 = this.tournaments.fetch()
-      const response3 = this.ladders.fetch()
-      const response4 = this.guilds.fetch()
-      await response1 && await response2 && await response3
-      this.userId = this.userLogged.get('id')
-      if (this.tournaments.length > 0) {
-        this.tournament = this.tournaments.at(0)
-        const response5 = this.games.fetchByTournament(this.tournament.get('id'))
-        const response6 = this.myGamesDone.fetchTournamentMyGames(this.userLogged.get('id'), 'played', this.tournament.get('id'))
-        const response7 = this.myGamesPending.fetchTournamentMyGames(this.userLogged.get('id'), 'pending', this.tournament.get('id'))
-        await response5 && await response6 && await response7
-        this.tournamentParticipants = new TournamentParticipants({ tournament_id: this.tournament.get('id') })
-        await this.tournamentParticipants.fetch()
-      }
-      await response4
-      this.render()
-    }
-    fetch()
+    this.render()
   },
 
   el: $('#app'),
@@ -75,6 +55,7 @@ export const TournamentView = Backbone.View.extend({
     this.context.nbMyToDo = 0
     this.context.nbMyDone = 0
     this.matchesToDo = []
+    this.tournament = new Tournament()
 
     this.templateTournamentMain = Handlebars.templates.tournamentMain
     const templateData = this.templateTournamentMain(this.context)
@@ -92,6 +73,25 @@ export const TournamentView = Backbone.View.extend({
     })
 
     const render = async () => {
+      const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
+      const response2 = this.tournaments.fetch()
+      const response3 = this.ladders.fetch()
+      const response4 = this.guilds.fetch()
+      await response1 && await response2 && await response3
+      this.userId = this.userLogged.get('id')
+      if (this.tournaments.length > 0) {
+        this.tournament = this.tournaments.at(0)
+        const response5 = this.games.fetchByTournament(this.tournament.get('id'))
+        const response6 = this.myGamesDone.fetchTournamentMyGames(this.userLogged.get('id'), 'played', this.tournament.get('id'))
+        const response7 = this.myGamesPending.fetchTournamentMyGames(this.userLogged.get('id'), 'pending', this.tournament.get('id'))
+        await response5 && await response6 && await response7
+        this.tournamentParticipants = new TournamentParticipants({ tournament_id: this.tournament.get('id') })
+        await this.tournamentParticipants.fetch()
+        if (this.tournament.get('start_date') > new Date().toISOString()) {
+          await response4
+        }
+      }
+
       this.context.admin = this.userLogged.get('admin')
       this.context.createTournament = 'Create new tournament'
       this.context.register = undefined
@@ -600,8 +600,8 @@ export const TournamentView = Backbone.View.extend({
     this.initializeCalendar()
   },
 
-  cancelTournament: function () {
-    this.tournament.cancelTournament()
+  cancelTournament: async function () {
+    await this.tournament.cancelTournament()
     this.tournament = new Tournament()
     this.context = {}
     clearInterval(this.x)
