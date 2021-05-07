@@ -121,7 +121,7 @@ export const TournamentView = Backbone.View.extend({
 
           this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentRegistration(this.context))
         } else { // Tournament is pending
-          this.initializeRanking()
+          await this.initializeRanking()
 
           this.context.pending = true
 
@@ -233,7 +233,6 @@ export const TournamentView = Backbone.View.extend({
       this.context.ranked[length].slide_show = './icons/slideshow.svg'
     }
     // eslint-disable-next-line eqeqeq
-    console.log(user.get('guild_id'))
     if (user.get('guild_id') == null) {
       this.context.ranked[length].guild = 'N/A'
     } else {
@@ -256,8 +255,11 @@ export const TournamentView = Backbone.View.extend({
         await this.fillContextRanked(user)
       }
     }
+    console.log(this.games)
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
+      console.log(this.registered)
+      console.log(game)
       if (this.registered.find(el => el.get('id') === game.get('player_left_id')) == null) {
         await this.registerUser(game.get('player_left_id'))
         await this.fillContextRanked(this.registered.at(this.registered.length - 1))
@@ -392,8 +394,8 @@ export const TournamentView = Backbone.View.extend({
       return game.get('player_left_points')
     }
     const opponentId2 = getOpponentId2()
-    const opponent1 = this.registered.get(opponentId1) // BUG SI JE SUIS PLUS REGISTERED
-    const opponent2 = this.registered.get(opponentId2) // BUG SI JE SUIS PLUS REGISTERED
+    const opponent1 = this.registered.get(opponentId1)
+    const opponent2 = this.registered.get(opponentId2)
     context[length].opponent1 = opponent1.get('nickname')
     context[length].avatarOpponent1 = opponent1.get('image_url')
     context[length].opponent2 = opponent2.get('nickname')
