@@ -43,7 +43,7 @@ templates['tournamentMyMatches'] = template({"1":function(container,depth0,helpe
     + alias4(((helper = (helper = lookupProperty(helpers,"play") || (depth0 != null ? lookupProperty(depth0,"play") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"play","hash":{},"data":data,"loc":{"start":{"line":20,"column":126},"end":{"line":20,"column":134}}}) : helper)))
     + "</button>\n";
 },"4":function(container,depth0,helpers,partials,data) {
-    var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
+    var helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=container.hooks.helperMissing, alias3="function", alias4=container.escapeExpression, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {
           return parent[propertyName];
         }
@@ -51,8 +51,12 @@ templates['tournamentMyMatches'] = template({"1":function(container,depth0,helpe
     };
 
   return "                        <div class=\"buttons\">\n                            <div class=\"accept-container check-container\" onclick=\"window.location='#game/"
-    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : (container.nullContext || {}),{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":24,"column":106},"end":{"line":24,"column":116}}}) : helper)))
-    + "';\">\n                                <img class=\"accept-button check-button\" src=\"./icons/check.svg\">\n                            </div>\n                            <div class=\"accept-container close-container\">\n                                <img class=\"accept-button close-button\" src=\"./icons/close.svg\">\n                            </div>\n                        </div>\n";
+    + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":24,"column":106},"end":{"line":24,"column":116}}}) : helper)))
+    + "';\">\n                                <img class=\"accept-button check-button\" src=\"./icons/check.svg\">\n                            </div>\n                            <div class=\"accept-container close-container\">\n                                <img class=\"accept-button close-button\" src=\"./icons/close.svg\" for=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"gameId") || (depth0 != null ? lookupProperty(depth0,"gameId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"gameId","hash":{},"data":data,"loc":{"start":{"line":28,"column":101},"end":{"line":28,"column":111}}}) : helper)))
+    + "\" user=\""
+    + alias4(((helper = (helper = lookupProperty(helpers,"opponentId") || (depth0 != null ? lookupProperty(depth0,"opponentId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"opponentId","hash":{},"data":data,"loc":{"start":{"line":28,"column":119},"end":{"line":28,"column":133}}}) : helper)))
+    + "\">\n                            </div>\n                        </div>\n";
 },"6":function(container,depth0,helpers,partials,data) {
     var helper, lookupProperty = container.lookupProperty || function(parent, propertyName) {
         if (Object.prototype.hasOwnProperty.call(parent, propertyName)) {

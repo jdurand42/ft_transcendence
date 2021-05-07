@@ -19,7 +19,8 @@ export const TournamentView = Backbone.View.extend({
     'click .all-matches-nav': 'allMatchesNav',
     'click .my-matches-nav': 'myMatchesNav',
     'click .play-my-matches': 'play',
-    'click #follow': 'follow'
+    'click #follow': 'follow',
+    'click .close-button': 'refuseGame'
   },
   initialize: function (options) {
     this.userLogged = new User()
@@ -418,46 +419,17 @@ export const TournamentView = Backbone.View.extend({
           this.context.nbMyDone += 1
         }
         this.context.nbDone += 1
-        this.matchesToDo = this.matchesToDo.filter(el => {
-          return (!((el.opponent1 === game.get('player_left_id') &&
-          el.opponent2 === game.get('player_right_id')) ||
-          (el.opponent1 === game.get('player_right_id') &&
-          el.opponent2 === game.get('player_left_id'))))
-        })
-      } else if (game.get('status') === 'pending') {
-        let found
-        if (game.get('player_left_id') === this.userLogged.get('id')) {
-          found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
-          found.play = 'Pending'
-          found.pending = true
-        } else {
-          console.log(this.context.myToDo)
-          console.log(game.get('player_left_id'))
-          found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
-          console.log(found)
-          found.play = 'Accept'
-          found.waiting = true
-        }
-
-        this.initializeTimerPendingMatch('timer' + found.opponentId, found.opponentId, game)
+        // this.matchesToDo = this.matchesToDo.filter(el => {
+        //   return (!((el.opponent1 === game.get('player_left_id') &&
+        //   el.opponent2 === game.get('player_right_id')) ||
+        //   (el.opponent1 === game.get('player_right_id') &&
+        //   el.opponent2 === game.get('player_left_id'))))
+        // })
       }
     }
   },
 
-  initializeTimerPendingMatch: function (div, opponentId, game) {
-    try {
-      const found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
-      found.play = 'Pending'
-      found.pending = true
-
-      this.updateHTML('button-timer' + opponentId, 'timer' + opponentId, Handlebars.templates.tournamentMyMatches)
-      const playButton = document.getElementById('play-my-matches' + opponentId)
-      playButton.innerHTML = 'Pending'
-      playButton.style.backgroundcolor = '#C4C4C4'
-      playButton.style.cursor = 'auto'
-      playButton.classList.remove('Challenge')
-      playButton.classList.add('Pending')
-    } catch (e) {}
+  initializeTimerMatches: function (game, div) {
     const date = new Date(game.get('created_at'))
     date.setSeconds(date.getSeconds() + 60)
     // date.setSeconds(date.getSeconds() + this.tournament.get('time_to_answer'))
@@ -479,6 +451,23 @@ export const TournamentView = Backbone.View.extend({
         clearInterval(this)
       }
     }, 1000))
+  },
+
+  initializeTimerPendingMatch: function (div, opponentId, game) {
+    try {
+      const found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
+      found.play = 'Pending'
+      found.pending = true
+
+      this.updateHTML('button-timer' + opponentId, 'timer' + opponentId, Handlebars.templates.tournamentMyMatches)
+      const playButton = document.getElementById('play-my-matches' + opponentId)
+      playButton.innerHTML = 'Pending'
+      playButton.style.backgroundcolor = '#C4C4C4'
+      playButton.style.cursor = 'auto'
+      playButton.classList.remove('Challenge')
+      playButton.classList.add('Pending')
+    } catch (e) {}
+    this.initializeTimerMatches(game, div)
   },
 
   initializeAllMatchesToDo: function () {
@@ -513,6 +502,24 @@ export const TournamentView = Backbone.View.extend({
         this.context.myToDo[length].opponentAvatar = opponent.get('image_url')
         this.context.myToDo[length].play = 'Challenge'
         this.context.nbMyToDo += 1
+      }
+    }
+
+    for (let i = 0; i < this.games.length; i++) {
+      const game = this.games.at(i)
+      if (game.get('status') === 'pending') {
+        let found
+        if (game.get('player_left_id') === this.userLogged.get('id')) {
+          found = this.context.myToDo.find(el => el.opponentId === game.get('player_right_id'))
+          found.play = 'Pending'
+          found.pending = true
+        } else {
+          found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
+          found.play = 'Accept'
+          found.waiting = true
+        }
+
+        this.initializeTimerPendingMatch('timer' + found.opponentId, found.opponentId, game)
       }
     }
   },
@@ -699,47 +706,86 @@ export const TournamentView = Backbone.View.extend({
     } catch (e) {}
   },
 
-  receiveMessage: function (msg) {
+  refuseGame: function (e) {
+    const game = new GameRecord()
+
+    const gameId = Number(e.currentTarget.getAttribute('for'))
+    const opponentId = Number(e.currentTarget.getAttribute('user'))
+    game.deleteGame(gameId)
+
+    const found = this.context.myToDo.find(el => el.opponentId == opponentId)
+
+    found.play = 'Challenge'
+    found.waiting = false
+    found.gameId = game.get('id')
+
+    this.replaceHTML('button-timer' + opponentId, Handlebars.templates.tournamentMyMatches)
+  },
+
+  replaceHTML: function (div, template) {
+    const html = template(this.context)
+    const currentDiv = document.getElementById(div)
+    const found = $(html).find('#' + div)[0].innerHTML
+    currentDiv.innerHTML = found
+  },
+
+  receiveMessage: async function (msg) {
     if (msg.message.action && msg.message.action === 'user_update_status') {
       this.registered.set({ status: msg.message.status })
-      let div = document.getElementById('play-my-matches' + msg.message.id)
-      if (div !== null) {
-        if (msg.message.status === 'online') {
-          div.style.backgroundColor = 'var(--primary-color)'
-          div.style.cursor = 'pointer'
-        } else {
-          div.style.backgroundColor = '#C4C4C4'
-          div.style.cursor = 'auto'
+      try {
+        let div = document.getElementById('play-my-matches' + msg.message.id)
+        if (div !== null) {
+          if (msg.message.status === 'online') {
+            div.style.backgroundColor = 'var(--primary-color)'
+            div.style.cursor = 'pointer'
+          } else {
+            div.style.backgroundColor = '#C4C4C4'
+            div.style.cursor = 'auto'
+          }
         }
-      }
-      div = document.getElementById('pastille' + msg.message.id)
-      if (div !== null) {
-        div.classList.remove('offline')
-        div.classList.remove('ingame')
-        div.classList.remove('online')
-        div.classList.add(msg.message.status)
-      }
-      div = document.getElementById('status' + msg.message.id)
-      if (msg.message.status === 'online') {
-        div.innerHTML = 'ONLINE'
-      } else if (msg.message.status === 'offline') {
-        div.innerHTML = 'OFFLINE'
-      } else {
-        div.innerHTML = 'INGAME'
-      }
+        div = document.getElementById('pastille' + msg.message.id)
+        if (div !== null) {
+          div.classList.remove('offline')
+          div.classList.remove('ingame')
+          div.classList.remove('online')
+          div.classList.add(msg.message.status)
+        }
+        div = document.getElementById('status' + msg.message.id)
+        if (msg.message.status === 'online') {
+          div.innerHTML = 'ONLINE'
+        } else if (msg.message.status === 'offline') {
+          div.innerHTML = 'OFFLINE'
+        } else {
+          div.innerHTML = 'INGAME'
+        }
 
-      div = document.getElementById('slide-show' + msg.message.id)
-      if (msg.message.status === 'ingame') {
-        div.setAttribute('src', './icons/slideshow-ingame.svg')
-      } else {
-        div.setAttribute('src', './icons/slideshow.svg')
-      }
+        div = document.getElementById('slide-show' + msg.message.id)
+        if (msg.message.status === 'ingame') {
+          div.setAttribute('src', './icons/slideshow-ingame.svg')
+        } else {
+          div.setAttribute('src', './icons/slideshow.svg')
+        }
 
-      if (msg.message.status === 'ingame') {
-        div = document.getElementById('status-container' + msg.message.id)
-        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
-        div.style.cursor = 'pointer'
-      }
+        if (msg.message.status === 'ingame') {
+          div = document.getElementById('status-container' + msg.message.id)
+          div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
+          div.style.cursor = 'pointer'
+        }
+      } catch (e) {}
+    }
+    if (msg.message.action && msg.message.action === 'game_invitation') {
+      try {
+        const game = new GameRecord({ id: msg.message.id })
+        await game.fetch()
+        if (game.get('mode') === 'tournament') {
+          const found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
+          found.play = 'Accept'
+          found.waiting = true
+          found.gameId = game.get('id')
+          this.replaceHTML('button-timer' + msg.message.sender_id, Handlebars.templates.tournamentMyMatches)
+          this.initializeTimerMatches(game, 'timer' + msg.message.sender_id)
+        }
+      } catch (e) {}
     }
   },
 
