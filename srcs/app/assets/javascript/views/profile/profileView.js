@@ -235,7 +235,6 @@ export const ProfileView = Backbone.View.extend({
 
   renderPannel: async function () {
     const user = this.users.get(this.id)
-    console.log(user)
 
     let slideShow
     if (user.get('status') === 'ingame') {
@@ -325,8 +324,8 @@ export const ProfileView = Backbone.View.extend({
   },
 
   pushDone: function (context, game) {
-    context.unshift({})
-    const length = 0
+    context.push({})
+    const length = context.length - 1
     context[length].nb = context.length
     const opponentId1 = game.get('winner_id')
     const getOpponentId2 = function () {

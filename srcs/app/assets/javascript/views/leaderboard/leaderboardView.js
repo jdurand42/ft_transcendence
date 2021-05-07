@@ -224,26 +224,36 @@ export const LeaderboardView = Backbone.View.extend({
     }
 
     let div = document.getElementById('pastille' + msg.message.id)
-    div.classList.remove('offline')
-    div.classList.remove('ingame')
-    div.classList.remove('online')
+    try {
+      div.classList.remove('offline')
+    } catch (e) {}
+    try {
+      div.classList.remove('ingame')
+    } catch (e) {}
+    try {
+      div.classList.remove('online')
+    } catch (e) {}
     div.classList.add(msg.message.status)
 
-    div = document.getElementById('status' + msg.message.id)
-    if (msg.message.status === 'online') {
-      div.innerHTML = 'ONLINE'
-    } else if (msg.message.status === 'offline') {
-      div.innerHTML = 'OFFLINE'
-    } else {
-      div.innerHTML = 'INGAME'
-    }
+    try {
+      div = document.getElementById('status' + msg.message.id)
+      if (msg.message.status === 'online') {
+        div.innerHTML = 'ONLINE'
+      } else if (msg.message.status === 'offline') {
+        div.innerHTML = 'OFFLINE'
+      } else {
+        div.innerHTML = 'INGAME'
+      }
+    } catch (e) {}
 
-    div = document.getElementById('slide-show' + msg.message.id)
-    if (msg.message.status === 'ingame') {
-      div.setAttribute('src', './icons/slideshow-ingame.svg')
-    } else {
-      div.setAttribute('src', './icons/slideshow.svg')
-    }
+    try {
+      div = document.getElementById('slide-show' + msg.message.id)
+      if (msg.message.status === 'ingame') {
+        div.setAttribute('src', './icons/slideshow-ingame.svg')
+      } else {
+        div.setAttribute('src', './icons/slideshow.svg')
+      }
+    } catch (e) {}
 
     if (msg.message.status === 'ingame') {
       div = document.getElementById('status-container' + msg.message.id)

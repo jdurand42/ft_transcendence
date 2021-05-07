@@ -233,7 +233,8 @@ export const TournamentView = Backbone.View.extend({
       this.context.ranked[length].slide_show = './icons/slideshow.svg'
     }
     // eslint-disable-next-line eqeqeq
-    if (user.get('guild_id') == undefined) {
+    console.log(user.get('guild_id'))
+    if (user.get('guild_id') == null) {
       this.context.ranked[length].guild = 'N/A'
     } else {
       this.context.ranked[length].guild = this.guilds.get(user.get('guild_id')).get('name')
@@ -369,6 +370,7 @@ export const TournamentView = Backbone.View.extend({
   pushDone: function (context, game) {
     context.push({})
     const length = context.length - 1
+    console.log(game)
     const opponentId1 = game.get('winner_id')
     const getOpponentId2 = function () {
       if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -390,8 +392,8 @@ export const TournamentView = Backbone.View.extend({
       return game.get('player_left_points')
     }
     const opponentId2 = getOpponentId2()
-    const opponent1 = this.registered.get(opponentId1)
-    const opponent2 = this.registered.get(opponentId2)
+    const opponent1 = this.registered.get(opponentId1) // BUG SI JE SUIS PLUS REGISTERED
+    const opponent2 = this.registered.get(opponentId2) // BUG SI JE SUIS PLUS REGISTERED
     context[length].opponent1 = opponent1.get('nickname')
     context[length].avatarOpponent1 = opponent1.get('image_url')
     context[length].opponent2 = opponent2.get('nickname')
@@ -427,7 +429,10 @@ export const TournamentView = Backbone.View.extend({
           found.play = 'Pending'
           found.pending = true
         } else {
+          console.log(this.context.myToDo)
+          console.log(game.get('player_left_id'))
           found = this.context.myToDo.find(el => el.opponentId === game.get('player_left_id'))
+          console.log(found)
           found.play = 'Accept'
           found.waiting = true
         }
@@ -684,8 +689,12 @@ export const TournamentView = Backbone.View.extend({
     })
     this.context.registered.slice(index, 1)
     this.context.nbRegistered = this.participantIds.length
-    document.getElementById('registered' + userId).remove()
-    document.getElementById('number-registered').innerHTML = this.context.nbRegistered + ' registered players'
+    try {
+      document.getElementById('registered' + userId).remove()
+    } catch (e) {}
+    try {
+      document.getElementById('number-registered').innerHTML = this.context.nbRegistered + ' registered players'
+    } catch (e) {}
   },
 
   receiveMessage: function (msg) {

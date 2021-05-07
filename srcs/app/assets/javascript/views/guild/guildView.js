@@ -567,6 +567,7 @@ export const GuildView = Backbone.View.extend({
               document.getElementById('accept-random-fight').innerHTML = 'Accept'
               document.getElementById('accept-random-fight').style.backgroundColor = 'var(--primary-color)'
               document.getElementById('accept-random-fight').style.cursor = 'pointer'
+              document.getElementById('accept-random-fight').setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
             } else {
               document.getElementById('accept-random-fight').innerHTML = 'Pending'
               document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
@@ -791,21 +792,26 @@ export const GuildView = Backbone.View.extend({
         const game = new GameRecord({ id: msg.message.id })
         await game.fetch()
         const warTime = this.currentWarTimes[0].find(el => el.get('id') === this.warTimeId)
-        if (game != undefined && msg.message.sender_id !== this.userId) {
-          this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
-          document.getElementById('accept-random-fight').innerHTML = 'Accept'
-          document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild has been challenged'
-        } else if (game != undefined && msg.message.sender_id === this.userId) {
-          const warTime = this.currentWarTimes[0].find(el => el.get('id') === this.warTimeId)
-          this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
-          document.getElementById('accept-random-fight').innerHTML = 'Pending'
-          document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
-          document.getElementById('accept-random-fight').style.cursor = 'auto'
-          document.getElementById('random-fight-title').innerHTML = 'You have sent an invitation to someone from the other guild'
-        }
+        try {
+          if (game != undefined && msg.message.sender_id !== this.userId) {
+            this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
+            document.getElementById('accept-random-fight').innerHTML = 'Accept'
+            document.getElementById('random-fight-title').innerHTML = 'Someone of you\'re guild has been challenged'
+            document.getElementById('accept-random-fight').setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
+          } else if (game != undefined && msg.message.sender_id === this.userId) {
+            const warTime = this.currentWarTimes[0].find(el => el.get('id') === this.warTimeId)
+            this.initializeTimerTTA(game.get('created_at'), warTime.get('time_to_answer'), 'war-time-timer')
+            document.getElementById('accept-random-fight').innerHTML = 'Pending'
+            document.getElementById('accept-random-fight').style.backgroundColor = '#C4C4C4'
+            document.getElementById('accept-random-fight').style.cursor = 'auto'
+            document.getElementById('random-fight-title').innerHTML = 'You have sent an invitation to someone from the other guild'
+          }
+        } catch (e) {}
       } else if (msg.message.action === 'status_update') {
         const channelId = Number(JSON.parse(msg.identifier).id)
-        this.users.get(msg.message.id).set({ status: msg.message.status })
+        try {
+          this.users.get(msg.message.id).set({ status: msg.message.status })
+        } catch (e) {}
         if (msg.message.id === this.userId) {
           this.userLogged.set({ status: msg.message.status })
         }
