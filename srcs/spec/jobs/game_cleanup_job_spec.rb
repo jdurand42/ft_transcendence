@@ -15,7 +15,7 @@ RSpec.describe GameCleanupJob, type: :job do
 
 
   it 'does not delete inprogress game' do
-    game.update!(status: 'inprogress')
+    game.update!(status: 'inprogress', connected_players: [player_left.id, player_right.id])
     expect {
       GameCleanupJob.perform_later(game)
     }.not_to have_broadcasted_to("user_#{player_right.id}").with(a_hash_including(action: 'game_declined', id: game.id)).once

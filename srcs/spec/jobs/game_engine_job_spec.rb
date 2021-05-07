@@ -6,7 +6,7 @@ RSpec.describe GameEngineJob, type: :job do
   include(CacheHelper)
   let!(:player_left) { create(:user, status: 'online') }
   let!(:player_right) { create(:user, status: 'online') }
-  let!(:game) { create(:game, player_left: player_left, player_right: player_right) }
+  let!(:game) { create(:game, player_left: player_left, player_right: player_right, connected_players: [player_left.id, player_right.id]) }
   ActiveJob::Base.queue_adapter = :test
   ActiveJob::Base.queue_adapter.perform_enqueued_jobs = true
   it 'starts pongEngine' do

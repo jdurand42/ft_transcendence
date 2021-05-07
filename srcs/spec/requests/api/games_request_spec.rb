@@ -61,8 +61,8 @@ RSpec.describe 'Games', type: :request do
     context 'search with user_id and status' do
       before do
         create_list(:game, 2)
-        Game.first.update!(status: 'inprogress')
-        get '/api/games', headers: access_token, params: { status: 'inprogress' }
+        Game.first.update!(status: 'played')
+        get '/api/games', headers: access_token, params: { status: 'played' }
       end
       it 'returns all games played' do
         expect(json).not_to be_empty
@@ -150,7 +150,7 @@ RSpec.describe 'Games', type: :request do
       before do
         game = create(:game)
         game.update!(status: 'played')
-        delete "/api/games/#{game.id}", headers: access_token
+        delete "/api/games/#{game.id}", headers: sam.create_new_auth_token
       end
       it 'returns status code 403' do
         expect(response).to have_http_status(403)
@@ -176,9 +176,9 @@ RSpec.describe 'Games', type: :request do
       post '/api/games', headers: token_3, params: { mode: 'war', opponent_id: auth_2.id }
       expect(json['error']).to eq "Can't launch game in war mode, no running WarTime"
     end
-    it "can't create a game if existing 'inprogress' game" do
+    it "can't create a game if existing 'inprogress' game",test:true do
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
-      Game.first.update!(status: 'inprogress')
+      Game.first.update!(status: 'inprogress', connected_players: [auth.id, auth_2.id])
       post '/api/games', headers: sam.create_new_auth_token, params: { mode: 'war', opponent_id: pippin.id }
       expect(json['error']).to eq 'Your guild is already playing a war time match against this guild'
     end
@@ -207,7 +207,7 @@ RSpec.describe 'Games', type: :request do
       expect(WarTime.first.on_max_unanswered).to eq 1
     end
   end
-  context 'Tournament',test:true do
+  context 'Tournament' do
     include(TournamentHelper)
     let(:users) { create_list(:user, 2, status: 'online') }
     let(:token) { sam.create_new_auth_token }
