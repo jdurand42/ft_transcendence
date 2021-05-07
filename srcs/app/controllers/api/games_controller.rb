@@ -122,12 +122,9 @@ module Api
     end
 
     def players_already_in_game?
-      Game.where(player_right_id: @games_params['player_right_id'])
-          .or(Game.where(player_left_id: @games_params['player_right_id']))
-          .where.not(status: 'played').empty? == false ||
-        Game.where(player_right_id: @games_params['player_left_id'])
-            .or(Game.where(player_left_id: @games_params['player_left_id']))
-            .where.not(status: 'played').empty? == false
+      player_right_id = @games_params['player_right_id']
+      player_left_id = @games_params['player_left_id']
+      Game.where(player_right_id: [player_left_id, player_right_id]).or(Game.where(player_left_id: [player_left_id, player_right_id])).where.not(status: 'played').present?
     end
   end
 end

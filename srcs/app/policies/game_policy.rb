@@ -4,8 +4,9 @@ class GamePolicy < ApplicationPolicy
   attr_reader :user, :record
 
   def destroy?
-    return false if user.id != record.player_left.id && user.id != record.player_right.id
+    return true if user.admin?
+    return true if (user.id == record.player_left.id || user.id == record.player_right.id) && record.status == 'pending'
 
-    record.status == 'pending'
+    false
   end
 end
