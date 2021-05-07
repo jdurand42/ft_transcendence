@@ -153,10 +153,14 @@ export const LeaderboardView = Backbone.View.extend({
       if (user.get('status') === 'ingame') {
         const games = new GameRecords()
         await games.fetchGameByUserIdStatus(user.get('id'), 'inprogress')
-        const game = games.at(0)
-        this.context.users[i].ingame = true
-        this.context.users[i].gameId = game.get('id')
-        this.context.users[i].slide_show = './icons/slideshow-ingame.svg'
+        if (games.length > 0) {
+          const game = games.at(0)
+          this.context.users[i].ingame = true
+          this.context.users[i].gameId = game.get('id')
+          this.context.users[i].slide_show = './icons/slideshow-ingame.svg'
+        } else {
+          this.context.users[i].slide_show = './icons/slideshow.svg'
+        }
       } else {
         this.context.users[i].slide_show = './icons/slideshow.svg'
       }
