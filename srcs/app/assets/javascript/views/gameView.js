@@ -179,6 +179,7 @@ export const GameView = Backbone.View.extend({
 
   receiveMessage: function (msg) {
     const message = msg.message
+    // {action: "game_unanswered", id: 28}
     if (!this.data[0].started) {
     	console.log(message)
     }
@@ -207,6 +208,10 @@ export const GameView = Backbone.View.extend({
     } else if (message.action && message.action === 'game_lost') {
       this.data[0].end = true
       // this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
+    } else if (message.action && message.action === 'game_unanswered') {
+      this.data[0].end = true
+    } else {
+      console.log(message)
     }
   }
 })
@@ -271,14 +276,12 @@ function printEndScreen (data) {
 
   const px_height = parseInt(15 * data.ratio)
   let arg
-  if (data.playerRight.score > data.playerLeft.score && data.playerRight.isUser) {
-    arg = 'YOU WIN'
-  } else if (data.playerLeft.isUser) {
-    arg = 'YOU LOOSE'
-  } else if (data.playerRight.score > data.playerLeft.score) {
+  if (data.playerRight.score > data.playerLeft.score) {
     arg = data.playerRight.nickname + ' WIN'
-  } else {
+  } else if (data.playerRight.score < data.playerLeft.score) {
     arg = data.playerLeft.nickname + ' WIN'
+  } else {
+    arg = 'Your opponent forfeited'
   }
   data.ctx.fillStyle = 'yellow'
   data.ctx.font = px_height + 'px serif'
@@ -396,6 +399,8 @@ function redirecting (e, mode) {
     window.location.href = '#profile/'
   } else if (mode === 'tournament') {
     window.location.href = '#tournament'
+  } else if (mode === 'war') {
+    window.location.href = '#guild'
   } else {
     window.location.href = '#home'
   }
