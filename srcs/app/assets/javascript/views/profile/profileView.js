@@ -361,6 +361,11 @@ export const ProfileView = Backbone.View.extend({
     if (context[length].score1 === 0 && context[length].score2 === 0) {
       context[length].forfeit = true
     }
+    let j = 1
+    for (let i = context.length - 1; i >= 0; i--) {
+      context[i].nb = j
+      j++
+    }
   },
 
   matchHistory: async function (type) {
