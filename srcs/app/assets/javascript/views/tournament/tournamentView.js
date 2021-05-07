@@ -419,12 +419,12 @@ export const TournamentView = Backbone.View.extend({
           this.context.nbMyDone += 1
         }
         this.context.nbDone += 1
-        this.matchesToDo = this.matchesToDo.filter(el => {
-          return (!((el.opponent1 === game.get('player_left_id') &&
-          el.opponent2 === game.get('player_right_id')) ||
-          (el.opponent1 === game.get('player_right_id') &&
-          el.opponent2 === game.get('player_left_id'))))
-        })
+        // this.matchesToDo = this.matchesToDo.filter(el => {
+        //   return (!((el.opponent1 === game.get('player_left_id') &&
+        //   el.opponent2 === game.get('player_right_id')) ||
+        //   (el.opponent1 === game.get('player_right_id') &&
+        //   el.opponent2 === game.get('player_left_id'))))
+        // })
       }
     }
   },
