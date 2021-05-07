@@ -64,9 +64,6 @@ export class MyWebSocket {
   }
 
   sendMessage (chatRoomId, channelName, data) {
-    console.log(chatRoomId)
-    console.log(channelName)
-    console.log(data)
     const msg = {
       command: 'message',
       identifier: JSON.stringify({
@@ -75,7 +72,6 @@ export class MyWebSocket {
       }),
       data: JSON.stringify(data)
     }
-    console.log(msg)
     this.socket.send(JSON.stringify(msg))
   }
 
