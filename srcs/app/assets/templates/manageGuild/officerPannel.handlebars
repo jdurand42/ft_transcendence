@@ -11,7 +11,7 @@
 
 	<div class="manageGuildForm">
 
-{{#if this.ownerBool}}
+<!--{{#if this.ownerBool}}
 <div>OFFICERS</div>
 <ul class="manageGuildMembersList" id="membersList">
 	{{#each this.officers}}
@@ -23,10 +23,42 @@
 	</li>
 	{{/each}}
 </ul>
-{{/if}}
+{{/if}}-->
+<div> RELEGATE OFFICERS</div>
+<ul class="manageGuildMembersList" id="officersList">
+	{{#each this.officers}}
+	<li>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.image_url}}></img>
+		</div>
+		<span>{{this.nickname}}</span><button class="button" id="relegateMember" value="{{this.id}}">Relegate</button>
+	</li>
+	{{/each}}
+</ul>
 
-<div>MEMBERS</div>
+<div>PROMOTE MEMBERS</div>
 <ul class="manageGuildMembersList" id="membersList">
+	{{#each this.members}}
+	<li>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.image_url}}></img>
+		</div>
+
+		<span>{{this.nickname}}</span><button class="button" id="promoteMember" value="{{this.id}}">Promote</button>
+	</li>
+	{{/each}}
+</ul>
+
+<div>KICK MEMBERS</div>
+<ul class="manageGuildMembersList" id="membersList">
+	{{#each this.officers}}
+	<li>
+		<div class="image-container">
+			<img class="memberProfilePicture" src={{this.image_url}}></img>
+		</div>
+		<span>{{this.nickname}}</span><button class="button" id="kickMember" value="{{this.id}}">Kick</button>
+	</li>
+	{{/each}}
 	{{#each this.members}}
 	<li>
 		<div class="image-container">

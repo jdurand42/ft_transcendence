@@ -58,13 +58,13 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   sideBar: function (e) {
-    if (e.target.textContent === 'Owner') {
+    if (e.target.textContent === 'Edit guild') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       document.getElementById('owner').classList.add('open')
       try {
         document.getElementById('officer').classList.remove('open')
       } catch (e) {}
-    } else if (e.target.textContent === 'Officer') {
+    } else if (e.target.textContent === 'Manage Members') {
       this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       document.getElementById('officer').classList.add('open')
       try {
@@ -167,6 +167,7 @@ export const ManageGuildView = Backbone.View.extend({
       context.members = this.membersList
     } else if (this.officerBool) {
       context.members = this.membersList
+      context.officers = this.officersList
     }
     if (this.adminBool) {
       context.owner = JSON.parse(JSON.stringify(this.users.get(this.guild.get('owner_id')[0])))
@@ -248,8 +249,11 @@ export const ManageGuildView = Backbone.View.extend({
         const response = await this.createRequest('/officers/' + id, 'POST')
         await this.users.fetch() && await this.guilds.fetch()
         this.getGuild()
-        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
-        // this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
+        /* if (this.ownerBool) {
+        	this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
+        } else { */
+        this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
+        // }
       } catch (e) {
         this.renderError(e)
       }
@@ -266,7 +270,11 @@ export const ManageGuildView = Backbone.View.extend({
         const response = await this.createRequest('/officers/' + id, 'DELETE')
         await this.users.fetch() && await this.guilds.fetch()
         this.getGuild()
-        this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
+        /* if (this.ownerBool) {
+        	this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
+        } else { */
+        this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
+        // }
         // this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e)

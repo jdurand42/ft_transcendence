@@ -78,7 +78,7 @@ export const GameView = Backbone.View.extend({
     let arg = 'Oups ! Game not found. Perphaps it was declined'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
-    this.ctx.font = px_height + 'px serif'
+    this.ctx.font = px_height + ' \"PressStart2P-Regular\"'
     this.ctx.fillText(arg, this.width / 2, this.height / 2)
     arg = 'Click anywhere to exit'
     this.ctx.textAlign = 'center'
@@ -180,6 +180,7 @@ export const GameView = Backbone.View.extend({
   receiveMessage: function (msg) {
     const message = msg.message
     // {action: "game_unanswered", id: 28}
+    // {action: "game_declined", id: 94}
     if (!this.data[0].started) {
     	console.log(message)
     }
@@ -202,17 +203,13 @@ export const GameView = Backbone.View.extend({
       this.data[0].ball.diry = (message.ball.up) ? 1 : -1
     }
 
-    if (message.action && message.action === 'game_won') {
+    if (message.action && message.action === 'game_won' || message.action === 'game_lost' ||
+		message.action === 'game_unanswered' || message.action === 'game_over') {
       this.data[0].end = true
-      // this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
-    } else if (message.action && message.action === 'game_lost') {
-      this.data[0].end = true
-      // this.data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) })
-    } else if (message.action && message.action === 'game_unanswered') {
-      this.data[0].end = true
-    } else {
-      console.log(message)
     }
+    /* } else {
+      if (message.action && mess) { console.log(message) }
+    } */
   }
 })
 
@@ -247,7 +244,7 @@ function printBall (data) {
 function printTextBoxes (data) {
   const px_height = parseInt(15 * data.ratio)
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + 'px serif'
+  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
@@ -284,12 +281,12 @@ function printEndScreen (data) {
     arg = 'Your opponent forfeited'
   }
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + 'px serif'
+  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
   data.ctx.textAlign = 'center'
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight - (45 * data.ratio))
 
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + 'px serif'
+  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
@@ -349,7 +346,7 @@ function printWaitingScreen (data) {
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + 'px serif'
+  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight)
 }
 
