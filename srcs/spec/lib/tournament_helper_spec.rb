@@ -60,7 +60,7 @@ RSpec.describe TournamentHelper do
       end
     end
   end
-  describe 'manage_exaequo' do
+  describe 'manage_exaequo',test:true do
     let!(:tournament) { create(:tournament_with_participants, count: 4) }
     let(:participants) { tournament.participants.pluck(:user_id) }
     before do

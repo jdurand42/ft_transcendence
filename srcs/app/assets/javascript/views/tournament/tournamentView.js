@@ -226,10 +226,12 @@ export const TournamentView = Backbone.View.extend({
     if (user.get('status') === 'ingame') {
       const games = new GameRecords()
       await games.fetchGameByUserIdStatus(user.get('id'), 'inprogress')
-      const game = games.at(0)
-      this.context.ranked[length].ingame = true
-      this.context.ranked[length].gameId = game.get('id')
-      this.context.ranked[length].slide_show = './icons/slideshow-ingame.svg'
+      if (games.length > 0) {
+        const game = games.at(0)
+        this.context.ranked[length].ingame = true
+        this.context.ranked[length].gameId = game.get('id')
+        this.context.ranked[length].slide_show = './icons/slideshow-ingame.svg'
+      }
     } else {
       this.context.ranked[length].slide_show = './icons/slideshow.svg'
     }
@@ -354,7 +356,9 @@ export const TournamentView = Backbone.View.extend({
   initializeAllMatches: function () {
     for (let i = 0; i < this.tournamentParticipants.length; i++) {
       const user = this.tournamentParticipants.at(i)
+      console.log(user)
       const opponents = user.get('opponents')
+      console.log(opponents)
       for (let i = 0; i < this.participantIds.length; i++) {
         if (opponents.find(el => el === this.participantIds[i]) == null) {
           if (this.matchesToDo.find(el => {
@@ -419,12 +423,12 @@ export const TournamentView = Backbone.View.extend({
           this.context.nbMyDone += 1
         }
         this.context.nbDone += 1
-        this.matchesToDo = this.matchesToDo.filter(el => {
-          return (!((el.opponent1 === game.get('player_left_id') &&
-          el.opponent2 === game.get('player_right_id')) ||
-          (el.opponent1 === game.get('player_right_id') &&
-          el.opponent2 === game.get('player_left_id'))))
-        })
+        // this.matchesToDo = this.matchesToDo.filter(el => {
+        //   return (!((el.opponent1 === game.get('player_left_id') &&
+        //   el.opponent2 === game.get('player_right_id')) ||
+        //   (el.opponent1 === game.get('player_right_id') &&
+        //   el.opponent2 === game.get('player_left_id'))))
+        // })
       }
     }
   },
