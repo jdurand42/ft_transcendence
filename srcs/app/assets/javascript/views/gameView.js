@@ -11,6 +11,7 @@ const BALL_SPEED = 1
 const BALL_RAY = 5
 const AIMED_PING = 3000
 const FRAMES = 10
+const FONT_NAME = 'Arial'
 
 export const GameView = Backbone.View.extend({
   el: $('#app'),
@@ -83,7 +84,7 @@ export const GameView = Backbone.View.extend({
     arg = 'Click anywhere to exit'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
-    this.ctx.font = px_height + 'px serif'
+    this.ctx.font = px_height + `px ${FONT_NAME}`
     this.ctx.fillText(arg, this.width / 2, this.height / 2 + 45 * this.ratio)
   },
 
@@ -167,7 +168,9 @@ export const GameView = Backbone.View.extend({
   },
 
   preGameLoop: function () {
-   	printWaitingScreen(this.data[0])
+    printWaitingScreen(this.data[0])
+    console.log(this.data[0].canvas.style.fontFamily)
+   	// printWaitingScreen(this.data[0])
     gameLoop(this.data)
   },
 
@@ -244,7 +247,7 @@ function printBall (data) {
 function printTextBoxes (data) {
   const px_height = parseInt(15 * data.ratio)
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
+  data.ctx.font = px_height + `px ${FONT_NAME}`
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
@@ -281,12 +284,12 @@ function printEndScreen (data) {
     arg = 'Your opponent forfeited'
   }
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
+  data.ctx.font = px_height + `px ${FONT_NAME}`
   data.ctx.textAlign = 'center'
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight - (45 * data.ratio))
 
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
+  data.ctx.font = px_height + `px ${FONT_NAME}`
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
@@ -342,11 +345,12 @@ function checkFrames (data) {
 }
 
 function printWaitingScreen (data) {
+  console.log('ici')
   const px_height = parseInt(35 * data.ratio)
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + ' \"PressStart2P-Regular\"'
+  data.ctx.font = px_height + `px ${FONT_NAME}`
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight)
 }
 
