@@ -356,9 +356,7 @@ export const TournamentView = Backbone.View.extend({
   initializeAllMatches: function () {
     for (let i = 0; i < this.tournamentParticipants.length; i++) {
       const user = this.tournamentParticipants.at(i)
-      console.log(user)
       const opponents = user.get('opponents')
-      console.log(opponents)
       for (let i = 0; i < this.participantIds.length; i++) {
         if (opponents.find(el => el === this.participantIds[i]) == null) {
           if (this.matchesToDo.find(el => {
@@ -377,7 +375,6 @@ export const TournamentView = Backbone.View.extend({
   pushDone: function (context, game) {
     context.push({})
     const length = context.length - 1
-    console.log(game)
     const opponentId1 = game.get('winner_id')
     const getOpponentId2 = function () {
       if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -509,8 +506,8 @@ export const TournamentView = Backbone.View.extend({
       }
     }
 
-    for (let i = 0; i < this.games.length; i++) {
-      const game = this.games.at(i)
+    for (let i = 0; i < this.myGamesPending.length; i++) {
+      const game = this.myGamesPending.at(i)
       if (game.get('status') === 'pending') {
         let found
         if (game.get('player_left_id') === this.userLogged.get('id')) {
