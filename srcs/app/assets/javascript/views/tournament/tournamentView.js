@@ -35,6 +35,7 @@ export const TournamentView = Backbone.View.extend({
     this.userId = undefined
     this.tournamentParticipants = undefined
     this.tta = []
+    this.users = new Users()
 
     this.socket = options.socket
     this.socket.updateContext(this, options.notifView)
@@ -74,6 +75,7 @@ export const TournamentView = Backbone.View.extend({
     })
 
     const render = async () => {
+      const response5 = this.users.fetch()
       const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
       const response2 = this.tournaments.fetch()
       const response3 = this.ladders.fetch()
@@ -91,6 +93,7 @@ export const TournamentView = Backbone.View.extend({
         if (this.tournament.get('start_date') > new Date().toISOString()) {
           await response4
         }
+        await response5
       }
 
       this.context.admin = this.userLogged.get('admin')
@@ -396,8 +399,8 @@ export const TournamentView = Backbone.View.extend({
       return game.get('player_left_points')
     }
     const opponentId2 = getOpponentId2()
-    const opponent1 = this.registered.get(opponentId1)
-    const opponent2 = this.registered.get(opponentId2)
+    const opponent1 = this.users.get(opponentId1)
+    const opponent2 = this.users.get(opponentId2)
     context[length].opponent1 = opponent1.get('nickname')
     context[length].avatarOpponent1 = opponent1.get('image_url')
     context[length].opponent2 = opponent2.get('nickname')
@@ -420,12 +423,6 @@ export const TournamentView = Backbone.View.extend({
           this.context.nbMyDone += 1
         }
         this.context.nbDone += 1
-        // this.matchesToDo = this.matchesToDo.filter(el => {
-        //   return (!((el.opponent1 === game.get('player_left_id') &&
-        //   el.opponent2 === game.get('player_right_id')) ||
-        //   (el.opponent1 === game.get('player_right_id') &&
-        //   el.opponent2 === game.get('player_left_id'))))
-        // })
       }
     }
   },
