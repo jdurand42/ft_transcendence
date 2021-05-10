@@ -586,9 +586,9 @@ export const ProfileView = Backbone.View.extend({
       success: function (response) {
         // this.gameId = response.id
         // navigate to game/{{this.gameId}}
-        console.log('game successfully created')
-        console.log('Item game created in requestDuel: ')
-        console.log(response)
+        // console.log('game successfully created')
+        // console.log('Item game created in requestDuel: ')
+        // console.log(response)
       }
     })
   },
@@ -598,7 +598,7 @@ export const ProfileView = Backbone.View.extend({
     try {
       this.requestDuel()
     } catch (e) {
-      console.log(e)
+      // console.log(e)
       // gérer dans la notif l'erreur? genre un print error dedans?
     }
   },
@@ -619,7 +619,7 @@ export const ProfileView = Backbone.View.extend({
           window.location.href = '#game/' + game.get('id')
         }
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
     getGame()

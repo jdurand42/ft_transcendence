@@ -25,7 +25,7 @@ export const GameView = Backbone.View.extend({
     this.guilds = this.model.get('guilds').get('obj')
     this.socket = options.socket
     this.gameId = options.gameId
-    console.log('GameId dans gameView ' + this.gameId)
+    // console.log('GameId dans gameView ' + this.gameId)
     this.games = this.model.get('gameRecords').get('obj')
     this.canvas = document.getElementById('gameWindow')
     this.ctx = this.canvas.getContext('2d')
@@ -57,14 +57,14 @@ export const GameView = Backbone.View.extend({
         if (this.game.status === 'played') {
           throw 'Game is already played'
         }
-        console.log('Item game in gameView:')
+        // console.log('Item game in gameView:')
         console.log(this.game)
         this.mode = this.game.mode
-        console.log('modelLoaded')
+        // console.log('modelLoaded')
         $(document).ready(this.initializeGame())
       } catch (e) {
         // console.log('Error while fetching models')
-        console.log(e)
+        // console.log(e)
         this.handleGameNotFound()
         this.canvas.addEventListener('click', function (e) { redirecting(e) })
       }
@@ -158,9 +158,9 @@ export const GameView = Backbone.View.extend({
 
     data.socket.subscribeChannel(chanId, 'GameChannel')
     data.socket.updateContext(this, this.model.get('notifView').get('obj'))
-    console.log('game intialized')
+    // console.log('game intialized')
     if (this.data[0].playerRight.isUser || this.data[0].playerLeft.isUser) {
-      console.log('ici, linput est configuré')
+      // console.log('ici, linput est configuré')
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
 
@@ -169,7 +169,7 @@ export const GameView = Backbone.View.extend({
 
   preGameLoop: function () {
     printWaitingScreen(this.data[0])
-    console.log(this.data[0].canvas.style.fontFamily)
+    // console.log(this.data[0].canvas.style.fontFamily)
    	// printWaitingScreen(this.data[0])
     gameLoop(this.data)
   },
@@ -184,9 +184,10 @@ export const GameView = Backbone.View.extend({
     const message = msg.message
     // {action: "game_unanswered", id: 28}
     // {action: "game_declined", id: 94}
-    if (!this.data[0].started) {
-    	console.log(message)
-    }
+    // if (!this.data[0].started) {
+    // 	// console.log(message)
+    //
+    // }
     if (message.player_left) {
       this.data[0].playerLeft.y = parseInt(message.player_left.pos * this.data[0].ratio)
       this.data[0].playerLeft.score = message.player_left.score
@@ -208,6 +209,7 @@ export const GameView = Backbone.View.extend({
 
     if (message.action && message.action === 'game_won' || message.action === 'game_lost' ||
 		message.action === 'game_unanswered' || message.action === 'game_over') {
+      console.log(message)
       this.data[0].end = true
     }
     /* } else {
@@ -345,7 +347,7 @@ function checkFrames (data) {
 }
 
 function printWaitingScreen (data) {
-  console.log('ici')
+  // console.log('ici')
   const px_height = parseInt(35 * data.ratio)
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'

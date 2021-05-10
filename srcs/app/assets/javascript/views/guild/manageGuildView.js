@@ -184,7 +184,6 @@ export const ManageGuildView = Backbone.View.extend({
         this.officerBool = false
         window.location.href = '#profile/'
       } catch (e) {
-        // console.log(e)
         this.renderError(e)
       }
     }
