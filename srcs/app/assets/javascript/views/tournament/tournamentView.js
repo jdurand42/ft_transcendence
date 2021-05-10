@@ -75,7 +75,7 @@ export const TournamentView = Backbone.View.extend({
     })
 
     const render = async () => {
-      const response5 = this.users.fetch()
+      const response8 = this.users.fetch()
       const response1 = this.userLogged.fetchUser(window.localStorage.getItem('user_id'))
       const response2 = this.tournaments.fetch()
       const response3 = this.ladders.fetch()
@@ -93,7 +93,7 @@ export const TournamentView = Backbone.View.extend({
         if (this.tournament.get('start_date') > new Date().toISOString()) {
           await response4
         }
-        await response5
+        await response8
       }
 
       this.context.admin = this.userLogged.get('admin')
