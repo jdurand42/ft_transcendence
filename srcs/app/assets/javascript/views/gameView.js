@@ -208,7 +208,8 @@ export const GameView = Backbone.View.extend({
     }
 
     if (message.action && message.action === 'game_won' || message.action === 'game_lost' ||
-		message.action === 'game_unanswered' || message.action === 'game_over') {
+		message.action === 'game_unanswered' || message.action === 'game_over' ||
+		message.action === 'game_declined') {
       console.log(message)
       this.data[0].end = true
     }
@@ -283,7 +284,7 @@ function printEndScreen (data) {
   } else if (data.playerRight.score < data.playerLeft.score) {
     arg = data.playerLeft.nickname + ' WIN'
   } else {
-    arg = 'Your opponent forfeited'
+    arg = 'Draw'
   }
   data.ctx.fillStyle = 'yellow'
   data.ctx.font = px_height + `px ${FONT_NAME}`
@@ -370,30 +371,16 @@ function gameLoop (data) {
     printWaitingScreen(data[0])
   }
   if (!data[0].end) {
-    // console.log('In end=false loop')
     // if (data[0].frameLimiter) {
     	// simulateBall(data[0])
     // }
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
-    // window.onbeforeunload = function (e) {window.cancelAnimationFrame(animation)}
   } else {
-    // data[0].canvas.removeEventListener('mousemove', function (e) { move(e, data) }) // ca marche???
     clearCanvas(data[0])
     printEndScreen(data[0])
     data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
     const mode = data[0].mode
     data[0].canvas.addEventListener('click', function (e) { redirecting(e, mode) })
-    /* sleep(5000)
-		redirecting(data[0]) */
-  }
-}
-
-function sleep (ms) {
-  const start = new Date().getTime()
-  for (let i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > ms) {
-      break
-    }
   }
 }
 
