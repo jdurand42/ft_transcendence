@@ -674,6 +674,7 @@ export const GuildView = Backbone.View.extend({
     context.totalWars = 0
     context.warsWon = 0
     context.rank = this.guilds.indexOf(guild) + 1
+    context.totalRank = this.guilds.length
     for (let i = 0; i < this.wars.length; i++) {
       const war = this.wars.at(i)
       if (war.get('closed') === true) {
