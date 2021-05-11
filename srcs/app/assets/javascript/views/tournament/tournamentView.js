@@ -93,7 +93,6 @@ export const TournamentView = Backbone.View.extend({
         if (this.tournament.get('start_date') > new Date().toISOString()) {
           await response4
         }
-        await response8
       }
 
       this.context.admin = this.userLogged.get('admin')
@@ -133,6 +132,7 @@ export const TournamentView = Backbone.View.extend({
           this.context.maxToDo = (nbParticipants / 2) * (nbParticipants - 1)
           this.context.maxMyToDo = (nbParticipants - 1)
 
+          await response8
           this.initializeAllMatches()
 
           this.tournament.status = 'inprogress'
