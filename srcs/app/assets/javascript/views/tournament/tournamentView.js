@@ -572,7 +572,9 @@ export const TournamentView = Backbone.View.extend({
       const secondes = Math.floor((distance % (1000 * 60)) / 1000)
 
       if (!(days < 0 && hours < 0 && minutes < 0 && secondes < 0)) {
-        document.getElementById('timer').innerHTML = days + 'd ' + hours + 'h ' + minutes + 'm ' + secondes + 's'
+        try {
+          document.getElementById('timer').innerHTML = days + 'd ' + hours + 'h ' + minutes + 'm ' + secondes + 's'
+        } catch (e) {}
       }
       if (distance < 0) {
         clearInterval(this.x)
