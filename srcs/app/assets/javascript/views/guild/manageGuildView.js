@@ -229,11 +229,12 @@ export const ManageGuildView = Backbone.View.extend({
       } catch (e) {
         if (this.adminBool) {
           window.location.href = '#guilds'
+        } else if (parseInt(this.userId) === parseInt(id)) {
+          window.location.href = '#profile/'
         } else {
           this.renderError(e)
         }
         // cons}ole.log(e)
-      } finally {
       }
     }
     kickMember()
