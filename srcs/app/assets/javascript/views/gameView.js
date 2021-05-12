@@ -189,7 +189,6 @@ export const GameView = Backbone.View.extend({
       this.data[0].playerRight.score = message.player_right.score
     }
     if (message.ball) {
-      // console.log(message.ball)
       if (!this.data[0].started) {
         this.data[0].started = true
       }
@@ -200,8 +199,8 @@ export const GameView = Backbone.View.extend({
     }
 
     if (message.action && message.action === 'game_won' || message.action === 'game_lost' ||
-		message.action === 'game_unanswered' || message.action === 'game_over' ||
-		message.action === 'game_declined') {
+        message.action === 'game_unanswered' || message.action === 'game_over' ||
+        message.action === 'game_declined') {
       console.log(message)
       this.data[0].completed = true
       this.data[0].end = true
@@ -310,7 +309,6 @@ function printEndScreen (data) {
 
 function move (e, data) {
   const mouseLocation = parseInt(event.clientY - data.canvasLocation.y)
-  // console.log('input envoyé')
   data.socket.sendForGame({ position: parseInt(mouseLocation / data.ratio), action: 'received' }, data.gameId)
 }
 
@@ -321,7 +319,6 @@ function simulateBall (data) {
 }
 
 function printWaitingScreen (data) {
-  // console.log('ici')
   const px_height = parseInt(35 * data.ratio)
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'

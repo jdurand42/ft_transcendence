@@ -51,10 +51,7 @@ export const GameRecords = Backbone.Collection.extend({
     }
     try {
       deleteGame()
-      console.log('game successfully deleted')
     } catch (e) {
-      // pas grave si la game n'existe pas en principe
-      console.log(e)
     }
   }
 })

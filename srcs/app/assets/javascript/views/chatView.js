@@ -172,7 +172,6 @@ export const ChatView = Backbone.View.extend({
           await games.fetchGameByUserIdStatus(this.context.usersInGame[i].userId, 'inprogress')
           const game = games.at(0)
           const div = document.getElementById('slide-show-container' + this.context.usersInGame[i].userId)
-          console.log(div)
           div.setAttribute('onclick', 'window.location=\'#game/' + game.get('id') + '\';')
           div.style.cursor = 'pointer'
         }
@@ -383,8 +382,6 @@ export const ChatView = Backbone.View.extend({
     dropList.style.top = e.pageY
     dropList.style.left = e.pageX
 
-    console.log(userId)
-    console.log(this.userLoggedId)
     if (userId != this.userLoggedId) {
       const block = dropList.childNodes[3]
       document.getElementById('block').style.display = 'block'

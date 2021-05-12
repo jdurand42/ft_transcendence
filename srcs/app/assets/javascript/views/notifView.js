@@ -55,7 +55,6 @@ export const NotifView = Backbone.View.extend({
   gameInvitation: function (msg) {
     this.userLoggedId = Number(window.localStorage.getItem('user_id'))
     this.context.gameId = msg.id
-    console.log('id dans gameId ' + this.context.gameId)
     this.templateGameNotif = undefined
     if (msg.sender_id === this.userLoggedId) {
       // this.context.nickname = this.users.get(this.userLoggedId).get('nickname') // Add receiver
@@ -72,7 +71,6 @@ export const NotifView = Backbone.View.extend({
   acceptGame: function (e) {
     this.gameRecord = new GameRecord()
     const gameId = e.currentTarget.getAttribute('for')
-    console.log('gameId dans acceptGame ' + gameId)
     if (document.getElementById('gameNotif' + gameId) !== null) {
       document.getElementById('gameNotif' + gameId).remove()
     } else if (document.getElementById('senderGameNotif' + gameId) !== null) {

@@ -201,7 +201,6 @@ export const TournamentView = Backbone.View.extend({
   initializePlayButtons: function () {
     const playButtons = document.getElementsByClassName('play-my-matches')
     for (let i = 0; i < playButtons.length; i++) {
-      console.log(Number(playButtons[i].getAttribute('for')))
       const user = this.registered.get(Number(playButtons[i].getAttribute('for')))
       if (user && user.get('status') != 'online') {
         playButtons[i].style.backgroundColor = '#C4C4C4'
@@ -262,11 +261,8 @@ export const TournamentView = Backbone.View.extend({
         await this.fillContextRanked(user)
       }
     }
-    console.log(this.games)
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
-      console.log(this.registered)
-      console.log(game)
       if (this.registered.find(el => el.get('id') === game.get('player_left_id')) == null) {
         await this.registerUser(game.get('player_left_id'))
         await this.fillContextRanked(this.registered.at(this.registered.length - 1))
@@ -285,10 +281,8 @@ export const TournamentView = Backbone.View.extend({
   fillVictoriesDefeats: function () {
     for (let i = 0; i < this.games.length; i++) {
       const game = this.games.at(i)
-      console.log(game)
       if (game.get('status') === 'played') {
         const index = this.context.ranked.findIndex(el => el.id == game.get('winner_id'))
-        console.log(index)
         this.context.ranked[index].victories += 1
         let id
         if (game.get('player_left_id') !== game.get('winner_id')) {
@@ -472,7 +466,6 @@ export const TournamentView = Backbone.View.extend({
   },
 
   initializeAllMatchesToDo: function () {
-    console.log(this.matchesToDo)
     for (let i = 0; i < this.matchesToDo.length; i++) {
       const opponent1 = this.users.get(this.matchesToDo[i].opponent1)
       const opponent2 = this.users.get(this.matchesToDo[i].opponent2)

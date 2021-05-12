@@ -78,7 +78,6 @@ export const GuildView = Backbone.View.extend({
           this.currentWarTimes.push(new WarTimes(this.wars.at(i).get('id')))
           await this.currentWarTimes[this.currentWarTimes.length - 1].fetch()
           this.currentWar.add(this.wars.at(i))
-          console.log(this.wars.at(i))
           await this.initializeLastWarsGames(this.wars.at(i), this.currentWarTimes[this.currentWarTimes.length - 1], this.currentGames)
         }
         // GET LAST WARS -> LOAD ONE TIME ON CLICK ON LAST WARS
@@ -219,12 +218,8 @@ export const GuildView = Backbone.View.extend({
   },
 
   initializeTimerTTA: function (createdAt, tta) {
-    console.log(tta)
-    console.log(createdAt)
     const date = new Date(createdAt)
-    console.log(date)
     date.setSeconds(date.getSeconds() + tta)
-    console.log(date)
     const countDownDate = date.getTime()
     this.timer.push(setInterval(function () {
       const now = new Date().getTime()
@@ -370,8 +365,6 @@ export const GuildView = Backbone.View.extend({
       return game.get('player_left_points')
     }
     const opponentId2 = getOpponentId2()
-    console.log(game)
-    console.log(opponentId1)
     try { // TO REMOVE
       const opponent1 = this.users.get(opponentId1)
       context[length].opponent1 = opponent1.get('nickname')

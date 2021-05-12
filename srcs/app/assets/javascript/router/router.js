@@ -16,7 +16,6 @@ import { GameView } from '../views/gameView'
 
 // models
 import { User } from '../models/userModel'
-import { Channels } from '../collections/channels'
 
 // controlers
 import { ProfileController } from '../views/profile/profileController'
@@ -114,13 +113,11 @@ export const Router = Backbone.Router.extend({
       this.socket = new MyWebSocket(this)
       await this.setUpUser(this.users, this.oauthService, this.userLogged)
       this.navigate('#first_connection', { trigger: true })
-      // this.navigate('#home', { trigger: true })
     }
     fetchUser()
   },
 
   accessPage: function (url) {
-    // prevent zombie views
     if (this.view !== undefined) {
       this.remove_view()
     }
@@ -184,7 +181,6 @@ export const Router = Backbone.Router.extend({
 
   guilds_view: function () {
     if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = new GuildsView({ socket: this.socket, notifView: this.notifView })
   },
 
@@ -199,19 +195,16 @@ export const Router = Backbone.Router.extend({
 
   chat_view: function (id, page) {
     if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = new ChatView({ socket: this.socket, notifView: this.notifView })
   },
 
   leaderboard_view: function () {
     if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = new LeaderboardView({ socket: this.socket, notifView: this.notifView })
   },
 
   tournaments_view: function () {
     if (this.accessPage()) { return }
-    // if (this.view != undefined) { this.view.undelegateEvents() }
     this.view = new TournamentView({ socket: this.socket, notifView: this.notifView })
   },
 
@@ -246,15 +239,13 @@ export const Router = Backbone.Router.extend({
   },
 
   remove_view: function () {
-    // this._removeElement();
     this.view.$el.empty()
     if (this.view.canvas) {
       try {
         window.onbeforeunload = function (e) {}
-      	this.view.data[0].end = true
+        this.view.data[0].end = true
         this.view.socket.unsubscribeChannel(this.view.gameId, 'GameChannel')
-        // this.view.music.pause()
-      } catch (e) { /* console.log(e) */
+      } catch (e) {
       }
     }
     try {
