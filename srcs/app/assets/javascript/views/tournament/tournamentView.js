@@ -217,8 +217,10 @@ export const TournamentView = Backbone.View.extend({
     const newGame = new GameRecord()
 
     const createGame = async () => {
-      await newGame.inviteTournamentGame(userId)
-      this.initializeTimerPendingMatch('timer' + userId, userId, newGame)
+      try {
+        await newGame.inviteTournamentGame(userId)
+        this.initializeTimerPendingMatch('timer' + userId, userId, newGame)
+      } catch (e) {}
     }
     createGame()
   },
@@ -473,8 +475,8 @@ export const TournamentView = Backbone.View.extend({
   initializeAllMatchesToDo: function () {
     console.log(this.matchesToDo)
     for (let i = 0; i < this.matchesToDo.length; i++) {
-      const opponent1 = this.registered.get(this.matchesToDo[i].opponent1)
-      const opponent2 = this.registered.get(this.matchesToDo[i].opponent2)
+      const opponent1 = this.users.get(this.matchesToDo[i].opponent1)
+      const opponent2 = this.users.get(this.matchesToDo[i].opponent2)
 
       this.context.allToDo.push({})
       const length = this.context.allToDo.length - 1
