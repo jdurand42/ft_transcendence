@@ -157,7 +157,6 @@ export const TournamentView = Backbone.View.extend({
           }
         }
 
-        const nbParticipants = this.tournament.get('participant_ids').length
         if (this.tournament.get('winner_id') != undefined) {
           this.context.status = 'finish'
           this.context.createTournament = 'Create new tournament'
