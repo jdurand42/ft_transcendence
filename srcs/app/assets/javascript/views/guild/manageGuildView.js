@@ -225,18 +225,16 @@ export const ManageGuildView = Backbone.View.extend({
         await this.users.fetch() && await this.guilds.fetch()
         this.getGuild()
         this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
-        if (parseInt(this.userId) === parseInt(id)) {
-          window.location.href = '#profile/'
-        }
         // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
         if (this.adminBool) {
           window.location.href = '#guilds'
+        } else if (parseInt(this.userId) === parseInt(id)) {
+          window.location.href = '#profile/'
         } else {
           this.renderError(e)
         }
         // cons}ole.log(e)
-      } finally {
       }
     }
     kickMember()
