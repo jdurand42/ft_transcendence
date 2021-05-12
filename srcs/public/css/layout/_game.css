@@ -21,6 +21,10 @@
 	color: var(--primary-color);
 }
 
+#gameRules {
+	color: var(--primary-color);
+}
+
 #gameContainer {
 	padding-top: 40px;
 	height: 100%;
