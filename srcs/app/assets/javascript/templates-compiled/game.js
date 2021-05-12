@@ -8,7 +8,7 @@ templates['game'] = template({"compiler":[8,">= 4.3.0"],"main":function(containe
         return undefined
     };
 
-  return "<div class='gameSupraDiv'>\n	<h1 id=\"gameTitle\">LOADING ...</h1>\n	<div id=\"gameRules\">\n		Play with your mouse, first to 3 wins\n	</div>\n	<div id=\"gameContainer\">\n		<canvas id=\"gameWindow\" width="
+  return "<div class='gameSupraDiv'>\n	<h1 id=\"gameTitle\">LOADING ...</h1>\n	<div id=\"gameRules\">\n		Play with your mouse, first to 3 points wins\n	</div>\n	<div id=\"gameContainer\">\n		<canvas id=\"gameWindow\" width="
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"width") : depth0), depth0))
     + " height="
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"height") : depth0), depth0))
