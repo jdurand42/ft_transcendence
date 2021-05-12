@@ -737,23 +737,23 @@ export const GuildView = Backbone.View.extend({
     await this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
 
     // line
-    if (this.calendar.length > 1) {
-      e.currentTarget = document.getElementById('validation-container-0')
-      const div1 = e.currentTarget
-      const center1X = div1.clientLeft + div1.clientWidth / 2
-      const center1Y = div1.clientTop + div1.clientHeight / 2
-      e.currentTarget = document.getElementById('validation-container-' + (this.calendar.length - 1))
-      const div2 = e.currentTarget
-      const height = div2.offsetTop - div1.offsetTop
-      const line = document.getElementById('line')
-      line.style.top = center1Y
-      line.style.left = center1X
-      line.style.height = height
-    } else {
-      try {
+    try {
+      if (this.calendar.length > 1) {
+        e.currentTarget = document.getElementById('validation-container-0')
+        const div1 = e.currentTarget
+        const center1X = div1.clientLeft + div1.clientWidth / 2
+        const center1Y = div1.clientTop + div1.clientHeight / 2
+        e.currentTarget = document.getElementById('validation-container-' + (this.calendar.length - 1))
+        const div2 = e.currentTarget
+        const height = div2.offsetTop - div1.offsetTop
+        const line = document.getElementById('line')
+        line.style.top = center1Y
+        line.style.left = center1X
+        line.style.height = height
+      } else {
         document.getElementById('line').style.display = 'none'
-      } catch (e) {}
-    }
+      }
+    } catch (e) {}
 
     return this
   },

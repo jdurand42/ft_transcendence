@@ -6,6 +6,7 @@ import { Guild } from '../models/guildModel'
 export const NotifView = Backbone.View.extend({
   events: {
     'click .refuseGame': 'cancel',
+    'click #refuseGuild': 'cancel',
     'click .acceptGame': 'acceptGame',
     'click .closeNotif': 'closeNotif',
     'click #acceptGuild': 'acceptGuild'

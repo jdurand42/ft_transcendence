@@ -260,9 +260,11 @@ export const LeaderboardView = Backbone.View.extend({
     } catch (e) {}
 
     if (msg.message.status === 'ingame') {
-      div = document.getElementById('status-container' + msg.message.id)
-      div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
-      div.style.cursor = 'pointer'
+      try {
+        div = document.getElementById('status-container' + msg.message.id)
+        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
+        div.style.cursor = 'pointer'
+      } catch (e) {}
     }
   }
 })

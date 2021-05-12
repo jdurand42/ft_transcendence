@@ -1087,7 +1087,7 @@ export const ChatView = Backbone.View.extend({
 
     if (currentChannel.get('timeout_ids').some(el => el == this.userLoggedId) === true) {
       document.getElementById('textInput').disabled = true
-      document.getElementById('textInput').value = 'You have been mute for a certain amount of time'
+      document.getElementById('textInput').value = 'You have been muted for a certain amount of time'
     }
 
     if (currentChannel.get('privacy') === 'direct_message' && this.context.status !== 'online') {
