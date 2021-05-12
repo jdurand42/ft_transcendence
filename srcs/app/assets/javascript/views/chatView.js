@@ -649,11 +649,9 @@ export const ChatView = Backbone.View.extend({
     document.getElementById('center').style.display = 'flex'
     this.updateHTML('right-side')
     document.getElementById('right-side').style.display = 'flex'
-    // this.channelId = undefined
   },
 
   savePrivacy: function () {
-    // const radios = document.getElementByName('privacy')
     const privacy = document.querySelector('input[name="privacy"]:checked').value
     const password = document.getElementById('password').value
     const currentChannel = this.myChannels.get(this.channelId)

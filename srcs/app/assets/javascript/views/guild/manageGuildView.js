@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 /* eslint-disable eqeqeq */
 import { Guild } from '../../models/guildModel.js'
 
@@ -88,7 +89,6 @@ export const ManageGuildView = Backbone.View.extend({
       }
     }
     if (this.adminBool) {
-      // this.guild = this.guilds.get(this.id)
       this.manageAdminView()
     } else if (this.users.get(this.userId).get('guild_id') === undefined ||
     this.users.get(this.userId).get('guild_id') === null) {
@@ -113,15 +113,12 @@ export const ManageGuildView = Backbone.View.extend({
       const createAGuild = async () => {
         try {
           const response = await guild.create(name, anagram)
-          // await this.guilds.fetch() && await this.users.fetch()
-          // await guild.create(name, anagram)
           const response1 = this.guilds.fetch()
           const response2 = this.users.fetch()
           await response1 && await response2
           this.chooseView()
         } catch (e) {
           this.renderError(e)
-          // this.renderError(error, '#errorField', Handlebars.templates.guildError)
         }
       }
       createAGuild()
@@ -135,8 +132,6 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   manageGuildView: function () {
-    /* this.ownerBool = (this.id == this.guilds.get('owner_id'))
-    this.officerBool = (this.guild.get('officer_ids').includes(this.id) || this.id === this.guilds.get('owner_id')) */
     this.getPermissionsBool()
     this.$el.html(Handlebars.templates.manageGuild({ owner: this.ownerBool, officer: this.officerBool, member: true }))
     this.$el.find('#guildManageIntro').html(Handlebars.templates.guildManageIntro(JSON.parse(JSON.stringify(this.guild))))
@@ -160,7 +155,7 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   loadContext: function () {
-    const context = { guild: JSON.parse(JSON.stringify(this.guild)), officers: Array(), members: Array(), ownerBool: this.ownerBool, officerBool: this.officerBool, adminBool: this.adminBool }
+    const context = { guild: JSON.parse(JSON.stringify(this.guild)), officers: [], members: [], ownerBool: this.ownerBool, officerBool: this.officerBool, adminBool: this.adminBool }
     this.list()
     if (this.ownerBool) {
       context.officers = this.officersList
@@ -201,14 +196,12 @@ export const ManageGuildView = Backbone.View.extend({
       try {
         const ids = this.getSelectedBoxes()
         for (let i = 0; i < ids.length; i++) {
-          // const response = await this.createRequest('/members' + '/' + ids[i], 'POST')
           const response = await this.guild.sendInvitation(ids[i])
         }
         this.closeModal(null)
         await this.users.fetch() && await this.guilds.fetch()
         this.getGuild()
         this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
-        // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
         this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e)
@@ -225,7 +218,6 @@ export const ManageGuildView = Backbone.View.extend({
         await this.users.fetch() && await this.guilds.fetch()
         this.getGuild()
         this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
-        // this.$el.find('#manageGuildContent').html(Handlebars.templates.officerPannel(this.loadContext()))
       } catch (e) {
         if (this.adminBool) {
           window.location.href = '#guilds'
@@ -234,14 +226,12 @@ export const ManageGuildView = Backbone.View.extend({
         } else {
           this.renderError(e)
         }
-        // cons}ole.log(e)
       }
     }
     kickMember()
   },
 
   promoteMember: function (e) {
-    // const nickname = document.getElementById('memberToPromote').value
     const id = e.target.value
     const promoteMember = async () => {
       const officers = this.guild.get('officer_ids')
@@ -249,11 +239,7 @@ export const ManageGuildView = Backbone.View.extend({
         const response = await this.createRequest('/officers/' + id, 'POST')
         await this.users.fetch() && await this.guilds.fetch()
         this.getGuild()
-        /* if (this.ownerBool) {
-        	this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
-        } else { */
         this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
-        // }
       } catch (e) {
         this.renderError(e)
       }
@@ -262,7 +248,6 @@ export const ManageGuildView = Backbone.View.extend({
   },
 
   relegateMember: function (e) {
-    // const nickname = document.getElementById('memberToRelegate').value
     const id = e.target.value
     const relegateMember = async () => {
       try {
@@ -270,12 +255,7 @@ export const ManageGuildView = Backbone.View.extend({
         const response = await this.createRequest('/officers/' + id, 'DELETE')
         await this.users.fetch() && await this.guilds.fetch()
         this.getGuild()
-        /* if (this.ownerBool) {
-        	this.getTemplate(Handlebars.templates.ownerPannel(this.loadContext()))
-        } else { */
         this.getTemplate(Handlebars.templates.officerPannel(this.loadContext()))
-        // }
-        // this.$el.find('#manageGuildContent').html(Handlebars.templates.ownerPannel(this.loadContext()))
       } catch (e) {
         this.renderError(e)
       }

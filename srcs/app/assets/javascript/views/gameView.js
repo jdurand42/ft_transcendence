@@ -93,7 +93,7 @@ export const GameView = Backbone.View.extend({
       canvas: this.canvas,
       canvasLocation: undefined,
       ctx: this.ctx,
-     	ratio: this.ratio,
+      ratio: this.ratio,
       width: this.width,
       height: this.height,
       halfWidth: parseInt(this.width / 2),

@@ -523,7 +523,7 @@ export const ProfileView = Backbone.View.extend({
       if (this.users.get(this.userId).get('guild_id') &&
       (this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
       this.guilds.get(this.users.get(this.userId).get('guild_id')).get('officer_ids').includes(parseInt(this.userId)))) {
-        await this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
+        await this.$el.find('#sendInvitationButton').html('<button id="sendInvitation">Send an Invitation to your guild</button>')
       }
       return
     }

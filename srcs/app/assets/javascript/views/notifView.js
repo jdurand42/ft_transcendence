@@ -57,7 +57,6 @@ export const NotifView = Backbone.View.extend({
     this.context.gameId = msg.id
     this.templateGameNotif = undefined
     if (msg.sender_id === this.userLoggedId) {
-      // this.context.nickname = this.users.get(this.userLoggedId).get('nickname') // Add receiver
       this.templateGameNotif = Handlebars.templates.senderGameNotif
     } else {
       const sender = this.users.get(msg.sender_id)

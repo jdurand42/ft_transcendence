@@ -46,14 +46,6 @@ export const War = Backbone.Model.extend({
     const header = this.superHeaders.getHeaders()
     const url = this.urlRoot + '/' + this.id + '/times'
 
-    // return this.save({
-    //   url: url,
-    //   day: day,
-    //   start_hour: startHour,
-    //   end_hour: endHour,
-    //   time_to_answer: timeToAnswer,
-    //   max_unanswered: maxUnanswered
-    // })
     return fetch(url, {
       method: 'POST',
       headers: header,
