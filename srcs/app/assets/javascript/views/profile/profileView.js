@@ -584,42 +584,26 @@ export const ProfileView = Backbone.View.extend({
       method: 'POST',
       context: this,
       success: function (response) {
-        // this.gameId = response.id
-        // navigate to game/{{this.gameId}}
-        // console.log('game successfully created')
-        // console.log('Item game created in requestDuel: ')
-        // console.log(response)
       }
     })
   },
 
   playUser: function () {
-    // not implemented yet
     try {
       this.requestDuel()
     } catch (e) {
-      // console.log(e)
-      // gérer dans la notif l'erreur? genre un print error dedans?
     }
   },
 
-  // fonction pas utile je crois: à supprimer
   spectateUser: function () {
-    // check if online
-    // check if same user
-    // get user game
-    // go spectate
     const getGame = async () => {
       try {
-        // pending ou en cours?
         const game = this.games.fetchInProgressGame(this.id)
         await game
-        console.log(game)
         if (game) {
           window.location.href = '#game/' + game.get('id')
         }
       } catch (e) {
-        // console.log(e)
       }
     }
     getGame()

@@ -98,7 +98,6 @@ export const LeaderboardView = Backbone.View.extend({
       }
       await this.updateContextLeaderboard(this.usersLadder1)
     } else if (this.ladderId === 2) {
-      console.log(this.usersLadder2)
       if (this.usersLadder2.length === 0) {
         await this.usersLadder2.fetchByLadderId(2)
       }
