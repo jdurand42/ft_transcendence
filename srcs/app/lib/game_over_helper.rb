@@ -19,7 +19,7 @@ module GameOverHelper
   def notify_players(game)
     notify_spectator(game)
     notify_winner(game.id, game.winner.id)
-    notify_looser(game.id, game.player_left.id == game.winner.id ? player_left.id : player_right.id)
+    notify_looser(game.id, game.player_left.id == game.winner.id ? game.player_left.id : game.player_right.id)
   end
 
   def game_over(game)
