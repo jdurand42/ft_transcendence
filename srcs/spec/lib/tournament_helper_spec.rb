@@ -8,22 +8,30 @@ RSpec.describe TournamentHelper do
     let!(:tournament) { create(:tournament_with_participants) }
     let(:participants) { tournament.participants.pluck(:user_id) }
     describe 'match_all_played?' do
-      it 'returns true' do
-        create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[0], player_right_id: participants[1], winner_id: participants[0])
-        create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[1], player_right_id: participants[2], winner_id: participants[1])
-        create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[2], player_right_id: participants[0], winner_id: participants[2])
-        expect(match_all_played?).to be_truthy
+      it 'returns true', test:true do
+        game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[0], player_right_id: participants[1], winner_id: participants[0])
+        manage_tournament(game)
+        game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[1], player_right_id: participants[2], winner_id: participants[1])
+        manage_tournament(game)
+        game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[2], player_right_id: participants[0], winner_id: participants[0])
+        manage_tournament(game)
+        expect(Tournament.first.winner_id).to eq participants[0]
       end
       it 'returns false' do
-        create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[0], player_right_id: participants[1], winner_id: participants[0])
-        create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[1], player_right_id: participants[2], winner_id: participants[1])
-        expect(match_all_played?).to be_falsey
+        game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[0], player_right_id: participants[1], winner_id: participants[1])
+        manage_tournament(game)
+        game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[1], player_right_id: participants[2], winner_id: participants[1])
+        manage_tournament(game)
+        expect(Tournament.first.winner_id).to eq nil
       end
       it "returns false if all game status not 'played'" do
-        create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[0], player_right_id: participants[1], winner_id: participants[0])
-        create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[1], player_right_id: participants[2], winner_id: participants[1])
-        create(:game, mode: 'tournament', status: 'inprogress', tournament_id: tournament.id, player_left_id: participants[2], player_right_id: participants[0])
-        expect(match_all_played?).to be_falsey
+        game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[0], player_right_id: participants[1], winner_id: participants[0])
+        manage_tournament(game)
+        game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[1], player_right_id: participants[2], winner_id: participants[1])
+        manage_tournament(game)
+        game = create(:game, mode: 'tournament', status: 'inprogress', tournament_id: tournament.id, player_left_id: participants[2], player_right_id: participants[0])
+        manage_tournament(game)
+        expect(Tournament.first.winner_id).to eq nil
       end
     end
     describe 'participant win_count' do
@@ -60,7 +68,7 @@ RSpec.describe TournamentHelper do
       end
     end
   end
-  describe 'manage_exaequo',test:true do
+  describe 'manage_exaequo' do
     let!(:tournament) { create(:tournament_with_participants, count: 4) }
     let(:participants) { tournament.participants.pluck(:user_id) }
     before do

@@ -9,6 +9,6 @@ class GameCleanupJob < ApplicationJob
     return unless game.status == 'pending'
 
     notify_declined(game)
-    Game.destroy(game.id)
+    game.destroy
   end
 end

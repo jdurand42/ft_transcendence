@@ -29,7 +29,7 @@ module Api
       creation_errors?
 
       game = create_game
-      GameCleanupJob.set(wait: 300).perform_later(game)
+      GameCleanupJob.set(wait: 120).perform_later(game)
       json_response(game, 201)
     end
 
