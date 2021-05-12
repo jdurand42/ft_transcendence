@@ -202,7 +202,7 @@ export const GameView = Backbone.View.extend({
     if (message.action && message.action === 'game_won' || message.action === 'game_lost' ||
 		message.action === 'game_unanswered' || message.action === 'game_over' ||
 		message.action === 'game_declined') {
-      console.log(message)
+      // console.log(message)
       this.data[0].completed = true
       this.data[0].end = true
     }
