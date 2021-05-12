@@ -108,6 +108,7 @@ export const GameView = Backbone.View.extend({
       ball: undefined,
       socket: this.socket,
       end: false,
+      completed: false,
       started: false,
       gameId: this.game.id,
       frameLimiter: true,
@@ -163,7 +164,7 @@ export const GameView = Backbone.View.extend({
       // console.log('ici, linput est configuré')
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
-
+    window.onbeforeunload = function (e) { safetyBeforeUnload(e, data) }
     this.preGameLoop()
   },
 
@@ -211,6 +212,7 @@ export const GameView = Backbone.View.extend({
 		message.action === 'game_unanswered' || message.action === 'game_over' ||
 		message.action === 'game_declined') {
       console.log(message)
+      this.data[0].completed = true
       this.data[0].end = true
     }
     /* } else {
@@ -279,12 +281,14 @@ function printEndScreen (data) {
 
   const px_height = parseInt(15 * data.ratio)
   let arg
-  if (data.playerRight.score > data.playerLeft.score) {
-    arg = data.playerRight.nickname + ' WIN'
-  } else if (data.playerRight.score < data.playerLeft.score) {
-    arg = data.playerLeft.nickname + ' WIN'
+  if (data.playerRight.score > data.playerLeft.score && data.completed === true) {
+    arg = data.playerRight.nickname + ' WINS'
+  } else if (data.playerRight.score < data.playerLeft.score && data.completed === true) {
+    arg = data.playerLeft.nickname + ' WINS'
+  } else if (data.completed === true) {
+    arg = 'Cancelled'
   } else {
-    arg = 'Draw'
+    arg = 'Leaving game'
   }
   data.ctx.fillStyle = 'yellow'
   data.ctx.font = px_height + `px ${FONT_NAME}`
@@ -311,7 +315,9 @@ function printEndScreen (data) {
 
   data.ctx.fillStyle = 'yellow'
   data.ctx.textAlign = 'center'
-  data.ctx.fillText('Click anywhere to exit', data.halfWidth, data.halfHeight - (15 * data.ratio) + (45 * data.ratio) + (10 * data.ratio))
+  if (data.completed) {
+  	data.ctx.fillText('Click anywhere to exit', data.halfWidth, data.halfHeight - (15 * data.ratio) + (45 * data.ratio) + (10 * data.ratio))
+  }
 }
 
 function printPing (data) {
@@ -361,13 +367,16 @@ function clearCanvas (data) {
   data.ctx.clearRect(0, 0, data.width, data.height)
 }
 
+// unsubscribeChannel si reload
+
 function gameLoop (data) {
   let animation
   printField(data[0])
   printTextBoxes(data[0])
-  printPaddles(data[0])
-  printBall(data[0])
-  if (!data[0].started) {
+  if (data[0].started) {
+    printPaddles(data[0])
+	  printBall(data[0])
+  } else {
     printWaitingScreen(data[0])
   }
   if (!data[0].end) {
@@ -378,10 +387,17 @@ function gameLoop (data) {
   } else {
     clearCanvas(data[0])
     printEndScreen(data[0])
-    data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
+    // data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
     const mode = data[0].mode
     data[0].canvas.addEventListener('click', function (e) { redirecting(e, mode) })
   }
+}
+
+function safetyBeforeUnload (e, data) {
+  try {
+  	// data.socket.unsubscribeChannel(data.gameId, 'GameChannel')
+  	data.end = true
+  } catch (e) {}
 }
 
 function redirecting (e, mode) {
