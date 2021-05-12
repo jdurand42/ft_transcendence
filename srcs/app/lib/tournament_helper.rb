@@ -31,8 +31,7 @@ module TournamentHelper
   end
 
   def match_all_played?
-    trnmt = Tournament.first
-    (trnmt.participants.count * (trnmt.participants.count - 1)) / 2 == trnmt.games.where(status: 'played').count
+    TournamentParticipant.pluck(:opponents).all? { |t| t.size == Tournament.first.participants.count - 1 }
   end
 
   def tournament_winner

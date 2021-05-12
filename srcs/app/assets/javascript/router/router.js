@@ -250,6 +250,7 @@ export const Router = Backbone.Router.extend({
     this.view.$el.empty()
     if (this.view.canvas) {
       try {
+        window.onbeforeunload = function (e) {}
       	this.view.data[0].end = true
         this.view.socket.unsubscribeChannel(this.view.gameId, 'GameChannel')
         // this.view.music.pause()

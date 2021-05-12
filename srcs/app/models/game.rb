@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Game < ApplicationRecord
-  after_update :inprogress_clean_up, if: :inprogress_ghost?
   belongs_to :player_left, class_name: 'User'
   belongs_to :player_right, class_name: 'User'
   belongs_to :winner, class_name: 'User', optional: true
@@ -17,13 +16,5 @@ class Game < ApplicationRecord
 
   def war_mode
     mode == 'war'
-  end
-
-  def inprogress_ghost?
-    status == 'inprogress' && connected_players.size.zero?
-  end
-
-  def inprogress_clean_up
-    destroy
   end
 end
