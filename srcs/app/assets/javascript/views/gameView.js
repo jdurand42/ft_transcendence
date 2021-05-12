@@ -111,9 +111,6 @@ export const GameView = Backbone.View.extend({
       completed: false,
       started: false,
       gameId: this.game.id,
-      frameLimiter: true,
-      ping: 0,
-      frames: 0,
       mode: this.mode
     }]
     this.data[0].playerLeft = {
@@ -183,12 +180,6 @@ export const GameView = Backbone.View.extend({
 
   receiveMessage: function (msg) {
     const message = msg.message
-    // {action: "game_unanswered", id: 28}
-    // {action: "game_declined", id: 94}
-    // if (!this.data[0].started) {
-    // 	// console.log(message)
-    //
-    // }
     if (message.player_left) {
       this.data[0].playerLeft.y = parseInt(message.player_left.pos * this.data[0].ratio)
       this.data[0].playerLeft.score = message.player_left.score
@@ -215,9 +206,6 @@ export const GameView = Backbone.View.extend({
       this.data[0].completed = true
       this.data[0].end = true
     }
-    /* } else {
-      if (message.action && mess) { console.log(message) }
-    } */
   }
 })
 
@@ -320,20 +308,6 @@ function printEndScreen (data) {
   }
 }
 
-function printPing (data) {
-  // console.log(data.ping)
-}
-
-function limitInput (data, n) {
-  if (n <= data.halfPlayerSizeY) {
-    return data.halfPlayerSizeY
-  } else if (n >= data.height - data.halfPlayerSizeY) {
-    return data.height - data.halfPlayerSizeY
-  } else {
-    return n
-  }
-}
-
 function move (e, data) {
   const mouseLocation = parseInt(event.clientY - data.canvasLocation.y)
   // console.log('input envoyé')
@@ -344,13 +318,6 @@ function simulateBall (data) {
   // simulate ball for lag compensation here
   data.ball.x += data.ball.speed * data.ball.dirx
   data.ball.y += data.ball.speed * data.ball.diry
-}
-
-function checkFrames (data) {
-  if (data.frames >= 60) {
-    data.frames = 0
-    printPing(data)
-  }
 }
 
 function printWaitingScreen (data) {
@@ -380,14 +347,13 @@ function gameLoop (data) {
     printWaitingScreen(data[0])
   }
   if (!data[0].end) {
-    // if (data[0].frameLimiter) {
-    	// simulateBall(data[0])
-    // }
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
   } else {
     clearCanvas(data[0])
     printEndScreen(data[0])
-    // data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
+    if (data[0].completed) {
+    	data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
+    }
     const mode = data[0].mode
     data[0].canvas.addEventListener('click', function (e) { redirecting(e, mode) })
   }
