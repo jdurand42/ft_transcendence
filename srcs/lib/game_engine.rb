@@ -75,13 +75,13 @@ class GameEngine
 
   def right_score
     @right.score += 1
-    forfeit(@game.player_left.id) if @right.score > SCORE_LIMIT
+    forfeit(@game.player_left.id) if @right.score >= SCORE_LIMIT
     start
   end
 
   def left_score
     @left.score += 1
-    forfeit(@game.player_right.id) if @left.score > SCORE_LIMIT
+    forfeit(@game.player_right.id) if @left.score >= SCORE_LIMIT
     start
   end
 

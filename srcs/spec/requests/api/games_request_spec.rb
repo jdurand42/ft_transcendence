@@ -176,7 +176,7 @@ RSpec.describe 'Games', type: :request do
       post '/api/games', headers: token_3, params: { mode: 'war', opponent_id: auth_2.id }
       expect(json['error']).to eq "Can't launch game in war mode, no running WarTime"
     end
-    it "can't create a game if existing 'inprogress' game",test:true do
+    it "can't create a game if existing 'inprogress' game" do
       post '/api/games', headers: access_token, params: { mode: 'war', opponent_id: auth_2.id }
       Game.first.update!(status: 'inprogress', connected_players: [auth.id, auth_2.id])
       post '/api/games', headers: sam.create_new_auth_token, params: { mode: 'war', opponent_id: pippin.id }
@@ -277,10 +277,9 @@ RSpec.describe 'Games', type: :request do
         expect(winner.opponents).to include(sam.id)
         expect(TournamentParticipant.find_by(user_id: sam.id).opponents).to include(pippin.id)
       end
-      it 'no one accept game invite, no one win, no max_unanswered decrement' do
+      it 'no one accept game invite',test:true do
         perform_enqueued_jobs(only: TournamentTimeToAnswerJob)
-        expect(Game.first.status).to eq 'played'
-        expect(Game.first.winner_id).to eq nil
+        expect(Game.count).to eq 0
       end
     end
   end

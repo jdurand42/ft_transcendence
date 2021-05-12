@@ -5,9 +5,13 @@ module ScoreHelper
   include(AchievementHelper)
 
   class WarPrizeGiver
+    include(AchievementHelper)
     def prize_points(war)
-      winner_from(war) if war.from_score > war.on_score
-      winner_on(war) if war.on_score > war.from_score
+      if war.from_score > war.on_score
+        winner_from(war)
+      else
+        winner_on(war)
+      end
     end
 
     private

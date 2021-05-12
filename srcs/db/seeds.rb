@@ -20,8 +20,6 @@ Achievement.create(name: 'RoadToDiamond III', description: 'You must reach Plati
 Achievement.create(name: 'To Infinity And Beyond !', description: 'You must reach Diamond Ladder')
 Achievement.create(name: 'Much Secure!', description: '2FA is activated')
 
-Chat.create(name: 'general', privacy: 'public')
-
 if Rails.env.development?
 
   def create_users(count)
