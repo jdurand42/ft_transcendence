@@ -554,10 +554,10 @@ export const ChatView = Backbone.View.extend({
           admin = this.userLogged
         }
         let anagram
-        if (admin.get('anagram') === undefined) {
+        if (admin.get('guild_id') == undefined) {
           anagram = 'N/A'
         } else {
-          anagram = admin.get('anagram')
+          anagram = this.guilds.get(admin.get('guild_id')).get('anagram')
         }
         this.context.admins.push(JSON.parse(JSON.stringify(admin)))
         this.context.admins[this.context.admins.length - 1].anagram = anagram
@@ -585,13 +585,18 @@ export const ChatView = Backbone.View.extend({
     for (let i = 0; i < members.length; i++) {
       if (!admins.find(el => el === members[i]) &&
         members[i] !== ownerId) {
-        const member = this.users.get(members[i])
+        let member
+        if (members[i] == this.userLoggedId) {
+          member = this.userLogged
+        } else {
+          member = this.users.get(members[i])
+        }
         if (member != undefined) {
           let anagram
-          if (owner.get('anagram') === undefined) {
+          if (member.get('guild_id') == undefined) {
             anagram = 'N/A'
           } else {
-            anagram = owner.get('anagram')
+            anagram = this.guilds.get(member.get('guild_id')).get('anagram')
           }
           this.context.members.push(JSON.parse(JSON.stringify(member)))
           this.context.members[this.context.members.length - 1].anagram = anagram
@@ -618,10 +623,10 @@ export const ChatView = Backbone.View.extend({
     this.context.owners = []
     let anagram
     if (owner) {
-      if (owner.get('anagram') === undefined) {
+      if (owner.get('guild_id') == undefined) {
         anagram = 'N/A'
       } else {
-        anagram = owner.get('anagram')
+        anagram = this.guilds.get(owner.get('guild_id')).get('anagram')
       }
       this.context.owners.push(JSON.parse(JSON.stringify(owner)))
       this.context.owners[this.context.owners.length - 1].anagram = anagram
