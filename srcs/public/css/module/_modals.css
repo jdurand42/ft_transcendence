@@ -45,7 +45,7 @@
     height: auto;
 
     width: auto;
-    height: auto;
+    height: auto !important;
 
     align-items: center;
     justify-content: center;

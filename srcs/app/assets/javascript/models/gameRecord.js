@@ -48,7 +48,6 @@ export const GameRecord = Backbone.Model.extend({
         url: this.urlRoot + '/' + gameId
       })
     } catch (e) {
-      // en principe on s'en fout
     }
   },
 
@@ -63,15 +62,5 @@ export const GameRecord = Backbone.Model.extend({
       opponent_id: userId,
       mode: 'tournament'
     })
-
-    // fetch('/api/games', {
-    //   method: 'POST',
-    //   headers: this.headers,
-    //   body: JSON.stringify({
-    //     opponent_id: userId,
-    //     mode: 'tournament'
-    //   })
-    // })
   }
-
 })

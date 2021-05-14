@@ -365,7 +365,7 @@ export const GuildView = Backbone.View.extend({
       return game.get('player_left_points')
     }
     const opponentId2 = getOpponentId2()
-    try { // TO REMOVE
+    try {
       const opponent1 = this.users.get(opponentId1)
       context[length].opponent1 = opponent1.get('nickname')
       context[length].avatarOpponent1 = opponent1.get('image_url')

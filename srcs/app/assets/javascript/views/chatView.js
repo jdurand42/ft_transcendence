@@ -554,10 +554,10 @@ export const ChatView = Backbone.View.extend({
           admin = this.userLogged
         }
         let anagram
-        if (admin.get('anagram') === undefined) {
+        if (admin.get('guild_id') == undefined) {
           anagram = 'N/A'
         } else {
-          anagram = admin.get('anagram')
+          anagram = this.guilds.get(admin.get('guild_id')).get('anagram')
         }
         this.context.admins.push(JSON.parse(JSON.stringify(admin)))
         this.context.admins[this.context.admins.length - 1].anagram = anagram
@@ -585,18 +585,25 @@ export const ChatView = Backbone.View.extend({
     for (let i = 0; i < members.length; i++) {
       if (!admins.find(el => el === members[i]) &&
         members[i] !== ownerId) {
-        const member = this.users.get(members[i])
-        let anagram
-        if (owner.get('anagram') === undefined) {
-          anagram = 'N/A'
+        let member
+        if (members[i] == this.userLoggedId) {
+          member = this.userLogged
         } else {
-          anagram = owner.get('anagram')
+          member = this.users.get(members[i])
         }
-        this.context.members.push(JSON.parse(JSON.stringify(member)))
-        this.context.members[this.context.members.length - 1].anagram = anagram
-        this.context.members[this.context.members.length - 1].owner = this.context.owner
-        this.context.members[this.context.members.length - 1].superAdmin = this.userLogged.get('admin')
-        this.context.members[this.context.members.length - 1].channelId = channelId
+        if (member != undefined) {
+          let anagram
+          if (member.get('guild_id') == undefined) {
+            anagram = 'N/A'
+          } else {
+            anagram = this.guilds.get(member.get('guild_id')).get('anagram')
+          }
+          this.context.members.push(JSON.parse(JSON.stringify(member)))
+          this.context.members[this.context.members.length - 1].anagram = anagram
+          this.context.members[this.context.members.length - 1].owner = this.context.owner
+          this.context.members[this.context.members.length - 1].superAdmin = this.userLogged.get('admin')
+          this.context.members[this.context.members.length - 1].channelId = channelId
+        }
       }
     }
   },
@@ -616,10 +623,10 @@ export const ChatView = Backbone.View.extend({
     this.context.owners = []
     let anagram
     if (owner) {
-      if (owner.get('anagram') === undefined) {
+      if (owner.get('guild_id') == undefined) {
         anagram = 'N/A'
       } else {
-        anagram = owner.get('anagram')
+        anagram = this.guilds.get(owner.get('guild_id')).get('anagram')
       }
       this.context.owners.push(JSON.parse(JSON.stringify(owner)))
       this.context.owners[this.context.owners.length - 1].anagram = anagram
@@ -649,11 +656,9 @@ export const ChatView = Backbone.View.extend({
     document.getElementById('center').style.display = 'flex'
     this.updateHTML('right-side')
     document.getElementById('right-side').style.display = 'flex'
-    // this.channelId = undefined
   },
 
   savePrivacy: function () {
-    // const radios = document.getElementByName('privacy')
     const privacy = document.querySelector('input[name="privacy"]:checked').value
     const password = document.getElementById('password').value
     const currentChannel = this.myChannels.get(this.channelId)
