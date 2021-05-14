@@ -585,18 +585,20 @@ export const ChatView = Backbone.View.extend({
     for (let i = 0; i < members.length; i++) {
       if (!admins.find(el => el === members[i]) &&
         members[i] !== ownerId) {
-        const member = this.users.get(members[i])
-        let anagram
-        if (owner.get('anagram') === undefined) {
-          anagram = 'N/A'
-        } else {
-          anagram = owner.get('anagram')
-        }
-        this.context.members.push(JSON.parse(JSON.stringify(member)))
-        this.context.members[this.context.members.length - 1].anagram = anagram
-        this.context.members[this.context.members.length - 1].owner = this.context.owner
-        this.context.members[this.context.members.length - 1].superAdmin = this.userLogged.get('admin')
-        this.context.members[this.context.members.length - 1].channelId = channelId
+        try {
+          const member = this.users.get(members[i])
+          let anagram
+          if (owner.get('anagram') === undefined) {
+            anagram = 'N/A'
+          } else {
+            anagram = owner.get('anagram')
+          }
+          this.context.members.push(JSON.parse(JSON.stringify(member)))
+          this.context.members[this.context.members.length - 1].anagram = anagram
+          this.context.members[this.context.members.length - 1].owner = this.context.owner
+          this.context.members[this.context.members.length - 1].superAdmin = this.userLogged.get('admin')
+          this.context.members[this.context.members.length - 1].channelId = channelId
+        } catch (e) {}
       }
     }
   },
