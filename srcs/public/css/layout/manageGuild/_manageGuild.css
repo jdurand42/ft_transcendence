@@ -35,18 +35,12 @@
 	flex-direction: column;
 
 	border-top: 1px solid #313236;
+}
 
-	/* position: absolute;
-	display: flex;
-	width: 100%;
-	height: 100vh;
-	left: 329px;
-	min-width: 100vw - var(--header-size);
-	background-color: transparent;
-	border-top: 1px solid #364050;
-
-	overflow: hidden;
-	overflow-x: hidden; */
+#manageGuildContentContainerEl {
+	height: 100%;
+	overflow-y: scroll;
+	margin-left: 64px;
 }
 
 .manageGuildContainer .save {
@@ -74,6 +68,8 @@
 .manageGuildContainer .manageGuildContentContainer .manageGuildContent {
 	/* padding-left: 71px;
 	padding-top: 60px; */
+	height: 100%;
+	overflow-y: scroll;
 }
 
 .manageGuildSideBar {
@@ -143,7 +139,7 @@
 }
 
 .manageGuildTitle {
-	margin-left: 64px;
+	/*margin-left: 64px;*/
 	font-size: 18px;
 }
 
@@ -162,7 +158,8 @@
 } */
 
 .manageGuildForm {
-	/* padding-top: 30px; */
+	/*height: 100%;
+	overflow-y: scroll;*/
 }
 
 .manageGuildForm div {
@@ -236,6 +233,7 @@
 	border-top: 1px solid #364050;
 	width: 90%;
 	padding: 0;
+	/*height: 100%;*/
 }
 
 #inviteMemberModalButton {
@@ -333,4 +331,9 @@
 #manageGuildErrorDiv {
 	color: red;
 	font-style: italic;
+}
+
+#forScrool {
+	height: 40vh;
+	overflow-y: scroll;
 }

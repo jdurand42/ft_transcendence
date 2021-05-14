@@ -1,6 +1,7 @@
 <div class="closeParams exitButton" id="ManageGuildExitButton" onclick="window.location='#guild/{{this.guild.id}}';">
 	<img src="./icons/esc.svg" class="">
 </div>
+<div id="manageGuildContentContainerEl">
 <div class="manageGuildTitle">
 	<div class="title">
 	<span id="guildNameIntro"> ADMIN MODE:
@@ -8,6 +9,7 @@
 	</span> <span>[{{this.guild.anagram}}]</span>
 	<div id='manageGuildErrorDiv'></div>
 	</div>
+</div>
 
 
 	<div class="manageGuildForm">
@@ -28,38 +30,7 @@
 	</div>
 
 
-	<button class="button" id="inviteMemberModalButton">Invite someone</button>
 
-
-	<div class="modal modalAddFriendsToGuild" id="inviteMemberModal" style="display: none;">
-		<div class="background"></div>
-		<div class="modalOpen">
-			<div class="close closeModal">
-				<img src="./icons/close.svg" id="close"></img>
-			</div>
-			<label class="label labelSelectFriends" for="search">Select friends</label>
-			<input class="textInput modalSearchChannels modalSearchAddFriendsToChannel" type="text" id="nonMemberToInvite" placeholder="Research" for={{id}}></input>
-			<div class="friends modalSearchAddFriendsToChannel" id="inviteMemberResult">
-				{{#each member}}
-				<div class="eachFriend eachFriendModalCreateChannel" for="addfriends{{id}}">
-					<div class="left">
-						<div class="image-container">
-							<img src={{image_url}} id="image_url" class="image_url"></img>
-						</div>
-						<p class="anagram_nickname">{{anagram}} {{nickname}}</p>
-					</div>
-					<div class="right">
-						<label class="checkboxlabel" for="{{checkboxId}}"></label>
-						<input type="checkbox" class="checkbox" id="addfriends{{id}}" value="{{id}}"></input>
-					</div>
-				</div>
-				{{/each}}
-			</div>
-			<div class="button-container buttons">
-				<button class="validation-buttons button validate-add-friends inviteMember" for="{{guildId}}">Invite</button>
-			</div>
-		</div>
-	</div>
 
 	<div class="manageGuildForm">
 
@@ -120,5 +91,36 @@
 	{{/each}}
 </ul>
 </div>
+<button class="button" id="inviteMemberModalButton">Invite someone</button>
+
+
+<div class="modal modalAddFriendsToGuild" id="inviteMemberModal" style="display: none;">
+	<div class="background"></div>
+	<div class="modalOpen">
+		<div class="close closeModal">
+			<img src="./icons/close.svg" id="close"></img>
+		</div>
+		<label class="label labelSelectFriends" for="search">Select friends</label>
+		<input class="textInput modalSearchChannels modalSearchAddFriendsToChannel" type="text" id="nonMemberToInvite" placeholder="Research" for={{id}}></input>
+		<div class="friends modalSearchAddFriendsToChannel" id="inviteMemberResult">
+			{{#each member}}
+			<div class="eachFriend eachFriendModalCreateChannel" for="addfriends{{id}}">
+				<div class="left">
+					<div class="image-container">
+						<img src={{image_url}} id="image_url" class="image_url"></img>
+					</div>
+					<p class="anagram_nickname">{{anagram}} {{nickname}}</p>
+				</div>
+				<div class="right">
+					<label class="checkboxlabel" for="{{checkboxId}}"></label>
+					<input type="checkbox" class="checkbox" id="addfriends{{id}}" value="{{id}}"></input>
+				</div>
+			</div>
+			{{/each}}
+		</div>
+		<div class="button-container buttons">
+			<button class="validation-buttons button validate-add-friends inviteMember" for="{{guildId}}">Invite</button>
+		</div>
+	</div>
 </div>
 </div>
