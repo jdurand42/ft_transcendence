@@ -585,8 +585,8 @@ export const ChatView = Backbone.View.extend({
     for (let i = 0; i < members.length; i++) {
       if (!admins.find(el => el === members[i]) &&
         members[i] !== ownerId) {
-        try {
-          const member = this.users.get(members[i])
+        const member = this.users.get(members[i])
+        if (member != undefined) {
           let anagram
           if (owner.get('anagram') === undefined) {
             anagram = 'N/A'
@@ -598,7 +598,7 @@ export const ChatView = Backbone.View.extend({
           this.context.members[this.context.members.length - 1].owner = this.context.owner
           this.context.members[this.context.members.length - 1].superAdmin = this.userLogged.get('admin')
           this.context.members[this.context.members.length - 1].channelId = channelId
-        } catch (e) {}
+        }
       }
     }
   },
