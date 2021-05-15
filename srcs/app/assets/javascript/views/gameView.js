@@ -17,23 +17,15 @@ export const GameView = Backbone.View.extend({
   el: $('#app'),
   initialize: function (options) {
     this.adaptToScreenSize()
-    // this.$el.html(Handlebars.templates.game({ width: WIDTH * MULT, height: HEIGHT * MULT }))
     this.$el.html(Handlebars.templates.game({ width: this.width, height: this.height }))
     this.users = this.model.get('users').get('obj')
     this.id = this.model.get('userLoggedId')
-    // this.opponentId = options.opponentId
     this.guilds = this.model.get('guilds').get('obj')
     this.socket = options.socket
     this.gameId = options.gameId
-    // console.log('GameId dans gameView ' + this.gameId)
     this.games = this.model.get('gameRecords').get('obj')
     this.canvas = document.getElementById('gameWindow')
     this.ctx = this.canvas.getContext('2d')
-    /* this.music = new Audio('./sounds/music1.mp3')
-		this.music.addEventListener("canplaythrough", event => {
-			console.log('here')
-			this.music.play();
-		}) */
     this.loadModels()
   },
 
@@ -44,7 +36,6 @@ export const GameView = Backbone.View.extend({
     }
     this.height = parseInt(this.width / 2)
     this.ratio = this.width / WIDTH
-    // this.width = (this.width < 512)
   },
 
   loadModels: function () {
@@ -57,13 +48,10 @@ export const GameView = Backbone.View.extend({
         if (this.game.status === 'played') {
           throw 'Game is already played'
         }
-        // console.log('Item game in gameView:')
         console.log(this.game)
         this.mode = this.game.mode
-        // console.log('modelLoaded')
         $(document).ready(this.initializeGame())
       } catch (e) {
-        // console.log('Error while fetching models')
         // console.log(e)
         this.handleGameNotFound()
         this.canvas.addEventListener('click', function (e) { redirecting(e) })
@@ -73,18 +61,17 @@ export const GameView = Backbone.View.extend({
   },
 
   handleGameNotFound: function () {
-    // console.log("here")
     this.$el.find('#gameTitle').html('Game not found')
-    const px_height = parseInt(15 * this.ratio)
+    const pxHeight = parseInt(15 * this.ratio)
     let arg = 'Oups ! Game not found. Perphaps it was declined'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
-    this.ctx.font = px_height + ' \"PressStart2P-Regular\"'
+    this.ctx.font = pxHeight + ' \"PressStart2P-Regular\"'
     this.ctx.fillText(arg, this.width / 2, this.height / 2)
     arg = 'Click anywhere to exit'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
-    this.ctx.font = px_height + `px ${FONT_NAME}`
+    this.ctx.font = pxHeight + `px ${FONT_NAME}`
     this.ctx.fillText(arg, this.width / 2, this.height / 2 + 45 * this.ratio)
   },
 
@@ -156,9 +143,7 @@ export const GameView = Backbone.View.extend({
 
     data.socket.subscribeChannel(chanId, 'GameChannel')
     data.socket.updateContext(this, this.model.get('notifView').get('obj'))
-    // console.log('game intialized')
     if (this.data[0].playerRight.isUser || this.data[0].playerLeft.isUser) {
-      // console.log('ici, linput est configuré')
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
     window.onbeforeunload = function (e) { safetyBeforeUnload(e, data) }
@@ -167,8 +152,6 @@ export const GameView = Backbone.View.extend({
 
   preGameLoop: function () {
     printWaitingScreen(this.data[0])
-    // console.log(this.data[0].canvas.style.fontFamily)
-   	// printWaitingScreen(this.data[0])
     gameLoop(this.data)
   },
 
@@ -201,7 +184,6 @@ export const GameView = Backbone.View.extend({
     if (message.action && message.action === 'game_won' || message.action === 'game_lost' ||
         message.action === 'game_unanswered' || message.action === 'game_over' ||
         message.action === 'game_declined') {
-      console.log(message)
       this.data[0].completed = true
       this.data[0].end = true
     }
@@ -237,28 +219,26 @@ function printBall (data) {
 }
 
 function printTextBoxes (data) {
-  const px_height = parseInt(15 * data.ratio)
+  const pxHeight = parseInt(15 * data.ratio)
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
-  let boxes_text = data.playerLeft.nickname
-  // penser a réduire si le nom est trop grand
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, 0)
-  boxes_text = data.playerLeft.score
+  let boxesText = data.playerLeft.nickname
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, 0)
+  boxesText = data.playerLeft.score
   data.ctx.fillStyle = 'white'
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, px_height + 5)
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, pxHeight + 5)
 
-  boxes_text = data.playerRight.nickname
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, 0)
+  boxesText = data.playerRight.nickname
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, 0)
   data.ctx.fillStyle = 'white'
-  boxes_text = data.playerRight.score
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, px_height + 5)
+  boxesText = data.playerRight.score
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, pxHeight + 5)
 }
 
 function printEndScreen (data) {
-  // print line
   data.ctx.strokeStyle = 'white'
   data.ctx.beginPath()
   data.ctx.moveTo(data.halfWidth, data.halfHeight - (15 * data.ratio))
@@ -266,7 +246,7 @@ function printEndScreen (data) {
   data.ctx.stroke()
   data.ctx.closePath()
 
-  const px_height = parseInt(15 * data.ratio)
+  const pxHeight = parseInt(15 * data.ratio)
   let arg
   if (data.playerRight.score > data.playerLeft.score && data.completed === true) {
     arg = data.playerRight.nickname + ' WINS'
@@ -278,27 +258,26 @@ function printEndScreen (data) {
     arg = 'Leaving game'
   }
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.textAlign = 'center'
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight - (45 * data.ratio))
 
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
-  let boxes_text = data.playerLeft.nickname
-  // penser a réduire si le nom est trop grand
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
-  boxes_text = data.playerLeft.score
+  let boxesText = data.playerLeft.nickname
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
+  boxesText = data.playerLeft.score
   data.ctx.fillStyle = 'white'
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + px_height + 5)
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + pxHeight + 5)
 
-  boxes_text = data.playerRight.nickname
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
+  boxesText = data.playerRight.nickname
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
   data.ctx.fillStyle = 'white'
-  boxes_text = data.playerRight.score
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + px_height + 5)
+  boxesText = data.playerRight.score
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + pxHeight + 5)
 
   data.ctx.fillStyle = 'yellow'
   data.ctx.textAlign = 'center'
@@ -319,11 +298,11 @@ function simulateBall (data) {
 }
 
 function printWaitingScreen (data) {
-  const px_height = parseInt(35 * data.ratio)
+  const pxHeight = parseInt(35 * data.ratio)
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight)
 }
 
@@ -374,15 +353,3 @@ function redirecting (e, mode) {
     window.location.href = '#home'
   }
 }
-
-/*
-function deleteData(data) {
-	try {
-		data.end = true
-		console.log('data cleared')
-	}
-	catch (e) {
-		console.log(e)
-	}
-}
-*/

@@ -12,6 +12,6 @@ templates['game'] = template({"compiler":[8,">= 4.3.0"],"main":function(containe
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"width") : depth0), depth0))
     + " height="
     + alias2(alias1((depth0 != null ? lookupProperty(depth0,"height") : depth0), depth0))
-    + " style=\"font-family: PressStart2P-Regular\">\n		</canvas>\n	</div>\n</div>\n<div></div>\n";
+    + " style=\"font-family: PressStart2P-Regular\">\n		</canvas>\n	</div>\n	<div id=\"forScroll\"></div>\n</div>\n";
 },"useData":true});
 })();
