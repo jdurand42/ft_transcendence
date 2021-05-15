@@ -265,11 +265,11 @@ export const TournamentView = Backbone.View.extend({
       const game = this.games.at(i)
       if (this.registered.find(el => el.get('id') === game.get('player_left_id')) == null) {
         await this.registerUser(game.get('player_left_id'))
-        await this.fillContextRanked(this.registered.at(this.registered.length - 1))
+        await this.fillContextRanked(this.registered.get(game.get('player_left_id')))
       }
       if (this.registered.find(el => el.get('id') === game.get('player_right_id')) == null) {
         await this.registerUser(game.get('player_right_id'))
-        await this.fillContextRanked(this.registered.at(this.registered.length - 1))
+        await this.fillContextRanked(this.registered.get(game.get('player_right_id')))
       }
     }
     const divs = document.getElementsByClassName('ingame-container')
