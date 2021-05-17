@@ -8,11 +8,11 @@ templates['firstConnexion'] = template({"compiler":[8,">= 4.3.0"],"main":functio
         return undefined
     };
 
-  return "<div class=\"firstConnexion\">\n  <div class=\"nickname\">\n    <label class=\"status\" for=\"nickname\">Choose your nickname</label>\n    <input class=\"input\" type=\"text\" id=\"nickname\" name=\"nickname\" minlength=\"2\" maxlength=\"20\" value="
+  return "<div class=\"firstConnexion\">\n  <div class=\"nickname\">\n    <label class=\"status\" for=\"nickname\">Choose your nickname</label>\n    <input class=\"input\" type=\"text\" id=\"nickname\" name=\"nickname\" minlength=\"2\" maxlength=\"15\" value="
     + alias4(((helper = (helper = lookupProperty(helpers,"nickname") || (depth0 != null ? lookupProperty(depth0,"nickname") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"nickname","hash":{},"data":data,"loc":{"start":{"line":4,"column":102},"end":{"line":4,"column":114}}}) : helper)))
     + ">\n    <p class=\"error-message\" id=\"error-message\" style=\"display: none;\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"message") || (depth0 != null ? lookupProperty(depth0,"message") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"message","hash":{},"data":data,"loc":{"start":{"line":5,"column":71},"end":{"line":5,"column":82}}}) : helper)))
-    + "</p>\n  </div>\n\n  <div class=\"avatar\">\n    <label class=\"status\" >Choose your avatar</label>\n      <label>\n      <input type=\"file\"  accept=\"image/*\" name=\"image\" id=\"file\"  style=\"display: none;\">\n      <img class=\"image\" alt=\"avatar\" src=\""
+    + "</p>\n  </div>\n\n  <div class=\"avatar\">\n    <label class=\"status\" >Choose your avatar</label>\n    <label>\n      <input type=\"file\"  accept=\"image/*\" name=\"image\" id=\"file\"  style=\"display: none;\">\n      <img class=\"image\" alt=\"avatar\" src=\""
     + alias4(((helper = (helper = lookupProperty(helpers,"image_url") || (depth0 != null ? lookupProperty(depth0,"image_url") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"image_url","hash":{},"data":data,"loc":{"start":{"line":12,"column":43},"end":{"line":12,"column":56}}}) : helper)))
     + "\" id=\"output\" width=\"200\" style=\"cursor: pointer;\" />\n    </label>\n      <div id=\"twoFactor\">\n      <input type=\"checkbox\" class=\"checkbox checkbox2FA\" id=\"2FA\" name=\"2FA\" />\n      <label class=\"activate2FA\">Activate Two-Factor via Email</label>\n      </div>\n  </div>\n  <button class=\"validate\">Validate</button>\n</div>\n";
 },"useData":true});

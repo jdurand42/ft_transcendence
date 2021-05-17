@@ -135,10 +135,6 @@
 	padding: 8px;
 }
 
-#editNicknameError {
-	font-family: Roboto-Regular;
-}
-
 .manageGuildContent #leaveGuildPage {
 	margin-top: 64px;
 	margin-left: 32px;
