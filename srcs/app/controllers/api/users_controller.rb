@@ -77,15 +77,15 @@ module Api
     def forbidden_updated_attributes?
       return true if banning? && (@user.id == current_user.id || @user.uid.to_s == ENV['P42NG_OWNER_UID'])
 
-      promoting? && @user.uid.to_s == ENV['P42NG_OWNER_UID']
+      administrating? && @user.uid.to_s == ENV['P42NG_OWNER_UID']
     end
 
     def banning?
-      user_params.key?(:banned) && user_params[:banned]
+      user_params.key?(:banned)
     end
 
-    def promoting?
-      user_params.key?(:admin) && user_params[:admin]
+    def administrating?
+      user_params.key?(:admin)
     end
 
     def ban_hammer
