@@ -17,23 +17,15 @@ export const GameView = Backbone.View.extend({
   el: $('#app'),
   initialize: function (options) {
     this.adaptToScreenSize()
-    // this.$el.html(Handlebars.templates.game({ width: WIDTH * MULT, height: HEIGHT * MULT }))
     this.$el.html(Handlebars.templates.game({ width: this.width, height: this.height }))
     this.users = this.model.get('users').get('obj')
     this.id = this.model.get('userLoggedId')
-    // this.opponentId = options.opponentId
     this.guilds = this.model.get('guilds').get('obj')
     this.socket = options.socket
     this.gameId = options.gameId
-    // console.log('GameId dans gameView ' + this.gameId)
     this.games = this.model.get('gameRecords').get('obj')
     this.canvas = document.getElementById('gameWindow')
     this.ctx = this.canvas.getContext('2d')
-    /* this.music = new Audio('./sounds/music1.mp3')
-		this.music.addEventListener("canplaythrough", event => {
-			console.log('here')
-			this.music.play();
-		}) */
     this.loadModels()
   },
 
@@ -44,7 +36,6 @@ export const GameView = Backbone.View.extend({
     }
     this.height = parseInt(this.width / 2)
     this.ratio = this.width / WIDTH
-    // this.width = (this.width < 512)
   },
 
   loadModels: function () {
@@ -57,13 +48,10 @@ export const GameView = Backbone.View.extend({
         if (this.game.status === 'played') {
           throw 'Game is already played'
         }
-        // console.log('Item game in gameView:')
         console.log(this.game)
         this.mode = this.game.mode
-        // console.log('modelLoaded')
         $(document).ready(this.initializeGame())
       } catch (e) {
-        // console.log('Error while fetching models')
         // console.log(e)
         this.handleGameNotFound()
         this.canvas.addEventListener('click', function (e) { redirecting(e) })
@@ -73,18 +61,17 @@ export const GameView = Backbone.View.extend({
   },
 
   handleGameNotFound: function () {
-    // console.log("here")
     this.$el.find('#gameTitle').html('Game not found')
-    const px_height = parseInt(15 * this.ratio)
+    const pxHeight = parseInt(15 * this.ratio)
     let arg = 'Oups ! Game not found. Perphaps it was declined'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
-    this.ctx.font = px_height + ' \"PressStart2P-Regular\"'
+    this.ctx.font = pxHeight + ' \"PressStart2P-Regular\"'
     this.ctx.fillText(arg, this.width / 2, this.height / 2)
     arg = 'Click anywhere to exit'
     this.ctx.textAlign = 'center'
     this.ctx.fillStyle = 'yellow'
-    this.ctx.font = px_height + `px ${FONT_NAME}`
+    this.ctx.font = pxHeight + `px ${FONT_NAME}`
     this.ctx.fillText(arg, this.width / 2, this.height / 2 + 45 * this.ratio)
   },
 
@@ -93,7 +80,7 @@ export const GameView = Backbone.View.extend({
       canvas: this.canvas,
       canvasLocation: undefined,
       ctx: this.ctx,
-     	ratio: this.ratio,
+      ratio: this.ratio,
       width: this.width,
       height: this.height,
       halfWidth: parseInt(this.width / 2),
@@ -108,11 +95,9 @@ export const GameView = Backbone.View.extend({
       ball: undefined,
       socket: this.socket,
       end: false,
+      completed: false,
       started: false,
       gameId: this.game.id,
-      frameLimiter: true,
-      ping: 0,
-      frames: 0,
       mode: this.mode
     }]
     this.data[0].playerLeft = {
@@ -158,19 +143,15 @@ export const GameView = Backbone.View.extend({
 
     data.socket.subscribeChannel(chanId, 'GameChannel')
     data.socket.updateContext(this, this.model.get('notifView').get('obj'))
-    // console.log('game intialized')
     if (this.data[0].playerRight.isUser || this.data[0].playerLeft.isUser) {
-      // console.log('ici, linput est configuré')
       this.data[0].canvas.addEventListener('mousemove', function (e) { move(e, data) })
     }
-
+    window.onbeforeunload = function (e) { safetyBeforeUnload(e, data) }
     this.preGameLoop()
   },
 
   preGameLoop: function () {
     printWaitingScreen(this.data[0])
-    // console.log(this.data[0].canvas.style.fontFamily)
-   	// printWaitingScreen(this.data[0])
     gameLoop(this.data)
   },
 
@@ -182,12 +163,6 @@ export const GameView = Backbone.View.extend({
 
   receiveMessage: function (msg) {
     const message = msg.message
-    // {action: "game_unanswered", id: 28}
-    // {action: "game_declined", id: 94}
-    // if (!this.data[0].started) {
-    // 	// console.log(message)
-    //
-    // }
     if (message.player_left) {
       this.data[0].playerLeft.y = parseInt(message.player_left.pos * this.data[0].ratio)
       this.data[0].playerLeft.score = message.player_left.score
@@ -197,7 +172,6 @@ export const GameView = Backbone.View.extend({
       this.data[0].playerRight.score = message.player_right.score
     }
     if (message.ball) {
-      // console.log(message.ball)
       if (!this.data[0].started) {
         this.data[0].started = true
       }
@@ -208,14 +182,11 @@ export const GameView = Backbone.View.extend({
     }
 
     if (message.action && message.action === 'game_won' || message.action === 'game_lost' ||
-		message.action === 'game_unanswered' || message.action === 'game_over' ||
-		message.action === 'game_declined') {
-      console.log(message)
+        message.action === 'game_unanswered' || message.action === 'game_over' ||
+        message.action === 'game_declined') {
+      this.data[0].completed = true
       this.data[0].end = true
     }
-    /* } else {
-      if (message.action && mess) { console.log(message) }
-    } */
   }
 })
 
@@ -248,28 +219,26 @@ function printBall (data) {
 }
 
 function printTextBoxes (data) {
-  const px_height = parseInt(15 * data.ratio)
+  const pxHeight = parseInt(15 * data.ratio)
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
-  let boxes_text = data.playerLeft.nickname
-  // penser a réduire si le nom est trop grand
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, 0)
-  boxes_text = data.playerLeft.score
+  let boxesText = data.playerLeft.nickname
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, 0)
+  boxesText = data.playerLeft.score
   data.ctx.fillStyle = 'white'
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, px_height + 5)
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, pxHeight + 5)
 
-  boxes_text = data.playerRight.nickname
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, 0)
+  boxesText = data.playerRight.nickname
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, 0)
   data.ctx.fillStyle = 'white'
-  boxes_text = data.playerRight.score
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, px_height + 5)
+  boxesText = data.playerRight.score
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, pxHeight + 5)
 }
 
 function printEndScreen (data) {
-  // print line
   data.ctx.strokeStyle = 'white'
   data.ctx.beginPath()
   data.ctx.moveTo(data.halfWidth, data.halfHeight - (15 * data.ratio))
@@ -277,60 +246,48 @@ function printEndScreen (data) {
   data.ctx.stroke()
   data.ctx.closePath()
 
-  const px_height = parseInt(15 * data.ratio)
+  const pxHeight = parseInt(15 * data.ratio)
   let arg
-  if (data.playerRight.score > data.playerLeft.score) {
-    arg = data.playerRight.nickname + ' WIN'
-  } else if (data.playerRight.score < data.playerLeft.score) {
-    arg = data.playerLeft.nickname + ' WIN'
+  if (data.playerRight.score > data.playerLeft.score && data.completed === true) {
+    arg = data.playerRight.nickname + ' WINS'
+  } else if (data.playerRight.score < data.playerLeft.score && data.completed === true) {
+    arg = data.playerLeft.nickname + ' WINS'
+  } else if (data.completed === true) {
+    arg = 'Cancelled'
   } else {
-    arg = 'Draw'
+    arg = 'Leaving game'
   }
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.textAlign = 'center'
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight - (45 * data.ratio))
 
   data.ctx.fillStyle = 'white'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.textAlign = 'left'
   data.ctx.textBaseline = 'top'
 
-  let boxes_text = data.playerLeft.nickname
-  // penser a réduire si le nom est trop grand
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
-  boxes_text = data.playerLeft.score
+  let boxesText = data.playerLeft.nickname
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
+  boxesText = data.playerLeft.score
   data.ctx.fillStyle = 'white'
-  data.ctx.fillText(boxes_text, data.halfWidth - (data.ctx.measureText(boxes_text).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + px_height + 5)
+  data.ctx.fillText(boxesText, data.halfWidth - (data.ctx.measureText(boxesText).width) - 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + pxHeight + 5)
 
-  boxes_text = data.playerRight.nickname
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
+  boxesText = data.playerRight.nickname
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio))
   data.ctx.fillStyle = 'white'
-  boxes_text = data.playerRight.score
-  data.ctx.fillText(boxes_text, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + px_height + 5)
+  boxesText = data.playerRight.score
+  data.ctx.fillText(boxesText, data.halfWidth + 5 * data.ratio, data.halfHeight - (15 * data.ratio) + (5 * data.ratio) + pxHeight + 5)
 
   data.ctx.fillStyle = 'yellow'
   data.ctx.textAlign = 'center'
-  data.ctx.fillText('Click anywhere to exit', data.halfWidth, data.halfHeight - (15 * data.ratio) + (45 * data.ratio) + (10 * data.ratio))
-}
-
-function printPing (data) {
-  // console.log(data.ping)
-}
-
-function limitInput (data, n) {
-  if (n <= data.halfPlayerSizeY) {
-    return data.halfPlayerSizeY
-  } else if (n >= data.height - data.halfPlayerSizeY) {
-    return data.height - data.halfPlayerSizeY
-  } else {
-    return n
+  if (data.completed) {
+  	data.ctx.fillText('Click anywhere to exit', data.halfWidth, data.halfHeight - (15 * data.ratio) + (45 * data.ratio) + (10 * data.ratio))
   }
 }
 
 function move (e, data) {
   const mouseLocation = parseInt(event.clientY - data.canvasLocation.y)
-  // console.log('input envoyé')
   data.socket.sendForGame({ position: parseInt(mouseLocation / data.ratio), action: 'received' }, data.gameId)
 }
 
@@ -340,20 +297,12 @@ function simulateBall (data) {
   data.ball.y += data.ball.speed * data.ball.diry
 }
 
-function checkFrames (data) {
-  if (data.frames >= 60) {
-    data.frames = 0
-    printPing(data)
-  }
-}
-
 function printWaitingScreen (data) {
-  // console.log('ici')
-  const px_height = parseInt(35 * data.ratio)
+  const pxHeight = parseInt(35 * data.ratio)
   const arg = 'Waiting for your opponent to join'
   data.ctx.textAlign = 'center'
   data.ctx.fillStyle = 'yellow'
-  data.ctx.font = px_height + `px ${FONT_NAME}`
+  data.ctx.font = pxHeight + `px ${FONT_NAME}`
   data.ctx.fillText(arg, data.halfWidth, data.halfHeight)
 }
 
@@ -361,27 +310,36 @@ function clearCanvas (data) {
   data.ctx.clearRect(0, 0, data.width, data.height)
 }
 
+// unsubscribeChannel si reload
+
 function gameLoop (data) {
   let animation
   printField(data[0])
   printTextBoxes(data[0])
-  printPaddles(data[0])
-  printBall(data[0])
-  if (!data[0].started) {
+  if (data[0].started) {
+    printPaddles(data[0])
+	  printBall(data[0])
+  } else {
     printWaitingScreen(data[0])
   }
   if (!data[0].end) {
-    // if (data[0].frameLimiter) {
-    	// simulateBall(data[0])
-    // }
   	animation = window.requestAnimationFrame(function () { gameLoop(data) })
   } else {
     clearCanvas(data[0])
     printEndScreen(data[0])
-    data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
+    if (data[0].completed) {
+    	data[0].socket.unsubscribeChannel(data[0].gameId, 'GameChannel')
+    }
     const mode = data[0].mode
     data[0].canvas.addEventListener('click', function (e) { redirecting(e, mode) })
   }
+}
+
+function safetyBeforeUnload (e, data) {
+  try {
+  	// data.socket.unsubscribeChannel(data.gameId, 'GameChannel')
+  	data.end = true
+  } catch (e) {}
 }
 
 function redirecting (e, mode) {
@@ -395,15 +353,3 @@ function redirecting (e, mode) {
     window.location.href = '#home'
   }
 }
-
-/*
-function deleteData(data) {
-	try {
-		data.end = true
-		console.log('data cleared')
-	}
-	catch (e) {
-		console.log(e)
-	}
-}
-*/

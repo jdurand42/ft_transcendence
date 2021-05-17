@@ -41,7 +41,7 @@
                 <div class="status-container ingame-container" id="status-container{{id}}" onclick="window.location='#game/{{gameId}}';">
                 {{/if}}
                 {{#unless ingame}}
-                <div class="status-container" id="status-container">
+                <div class="status-container" id="status-container{{id}}">
                 {{/unless}}
                     <div class="pastille {{status}}" id="pastille{{id}}"></div>
                     <p class="status" id="status{{id}}">{{status}}</p>

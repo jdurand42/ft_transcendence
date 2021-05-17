@@ -5,7 +5,9 @@ export const FirstConnectionView = Backbone.View.extend({
     'click .activate2FA': 'check'
   },
 
-  initialize: function () {
+  initialize: function (options) {
+    this.headerView = options.headerView
+    this.router = options.router
     this.render()
   },
   defaults: {
@@ -39,7 +41,8 @@ export const FirstConnectionView = Backbone.View.extend({
         }
         this.model.saveFirstLogin(false)
         this.model.saveTwoFactor(document.getElementById('2FA').checked)
-        Backbone.history.navigate('#home', true)
+        this.headerView.render()
+        this.router.navigate('#home', true)
       } catch (error) {
         const div = document.getElementById('error-message')
         if (typeof error === 'string') {

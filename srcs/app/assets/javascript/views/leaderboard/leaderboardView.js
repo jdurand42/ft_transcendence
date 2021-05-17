@@ -98,7 +98,6 @@ export const LeaderboardView = Backbone.View.extend({
       }
       await this.updateContextLeaderboard(this.usersLadder1)
     } else if (this.ladderId === 2) {
-      console.log(this.usersLadder2)
       if (this.usersLadder2.length === 0) {
         await this.usersLadder2.fetchByLadderId(2)
       }
@@ -260,9 +259,11 @@ export const LeaderboardView = Backbone.View.extend({
     } catch (e) {}
 
     if (msg.message.status === 'ingame') {
-      div = document.getElementById('status-container' + msg.message.id)
-      div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
-      div.style.cursor = 'pointer'
+      try {
+        div = document.getElementById('status-container' + msg.message.id)
+        div.setAttribute('onclick', 'window.location=\'#game/' + msg.message.game_id + '\';')
+        div.style.cursor = 'pointer'
+      } catch (e) {}
     }
   }
 })

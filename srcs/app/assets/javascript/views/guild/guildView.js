@@ -78,7 +78,6 @@ export const GuildView = Backbone.View.extend({
           this.currentWarTimes.push(new WarTimes(this.wars.at(i).get('id')))
           await this.currentWarTimes[this.currentWarTimes.length - 1].fetch()
           this.currentWar.add(this.wars.at(i))
-          console.log(this.wars.at(i))
           await this.initializeLastWarsGames(this.wars.at(i), this.currentWarTimes[this.currentWarTimes.length - 1], this.currentGames)
         }
         // GET LAST WARS -> LOAD ONE TIME ON CLICK ON LAST WARS
@@ -219,12 +218,8 @@ export const GuildView = Backbone.View.extend({
   },
 
   initializeTimerTTA: function (createdAt, tta) {
-    console.log(tta)
-    console.log(createdAt)
     const date = new Date(createdAt)
-    console.log(date)
     date.setSeconds(date.getSeconds() + tta)
-    console.log(date)
     const countDownDate = date.getTime()
     this.timer.push(setInterval(function () {
       const now = new Date().getTime()
@@ -370,9 +365,7 @@ export const GuildView = Backbone.View.extend({
       return game.get('player_left_points')
     }
     const opponentId2 = getOpponentId2()
-    console.log(game)
-    console.log(opponentId1)
-    try { // TO REMOVE
+    try {
       const opponent1 = this.users.get(opponentId1)
       context[length].opponent1 = opponent1.get('nickname')
       context[length].avatarOpponent1 = opponent1.get('image_url')
@@ -737,23 +730,23 @@ export const GuildView = Backbone.View.extend({
     await this.$el.find('#guildcontent').html(Handlebars.templates.calendar(context))
 
     // line
-    if (this.calendar.length > 1) {
-      e.currentTarget = document.getElementById('validation-container-0')
-      const div1 = e.currentTarget
-      const center1X = div1.clientLeft + div1.clientWidth / 2
-      const center1Y = div1.clientTop + div1.clientHeight / 2
-      e.currentTarget = document.getElementById('validation-container-' + (this.calendar.length - 1))
-      const div2 = e.currentTarget
-      const height = div2.offsetTop - div1.offsetTop
-      const line = document.getElementById('line')
-      line.style.top = center1Y
-      line.style.left = center1X
-      line.style.height = height
-    } else {
-      try {
+    try {
+      if (this.calendar.length > 1) {
+        e.currentTarget = document.getElementById('validation-container-0')
+        const div1 = e.currentTarget
+        const center1X = div1.clientLeft + div1.clientWidth / 2
+        const center1Y = div1.clientTop + div1.clientHeight / 2
+        e.currentTarget = document.getElementById('validation-container-' + (this.calendar.length - 1))
+        const div2 = e.currentTarget
+        const height = div2.offsetTop - div1.offsetTop
+        const line = document.getElementById('line')
+        line.style.top = center1Y
+        line.style.left = center1X
+        line.style.height = height
+      } else {
         document.getElementById('line').style.display = 'none'
-      } catch (e) {}
-    }
+      }
+    } catch (e) {}
 
     return this
   },

@@ -522,8 +522,8 @@ export const ProfileView = Backbone.View.extend({
       await this.$el.find('#profileContent').html(Handlebars.templates.userNoGuild(JSON.parse(JSON.stringify(this.users.get(this.id)))))
       if (this.users.get(this.userId).get('guild_id') &&
       (this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.userId)) ||
-      this.guilds.get(this.users.get(this.userId).get('guild_id')).get('owner_id').includes(parseInt(this.officer_ids)))) {
-        await this.$el.find('#sendInvitationButton').html('<button id=\"sendInvitation\">Send an Invitation to your guild</button>')
+      this.guilds.get(this.users.get(this.userId).get('guild_id')).get('officer_ids').includes(parseInt(this.userId)))) {
+        await this.$el.find('#sendInvitationButton').html('<button id="sendInvitation">Send an Invitation to your guild</button>')
       }
       return
     }
@@ -584,42 +584,26 @@ export const ProfileView = Backbone.View.extend({
       method: 'POST',
       context: this,
       success: function (response) {
-        // this.gameId = response.id
-        // navigate to game/{{this.gameId}}
-        // console.log('game successfully created')
-        // console.log('Item game created in requestDuel: ')
-        // console.log(response)
       }
     })
   },
 
   playUser: function () {
-    // not implemented yet
     try {
       this.requestDuel()
     } catch (e) {
-      // console.log(e)
-      // gérer dans la notif l'erreur? genre un print error dedans?
     }
   },
 
-  // fonction pas utile je crois: à supprimer
   spectateUser: function () {
-    // check if online
-    // check if same user
-    // get user game
-    // go spectate
     const getGame = async () => {
       try {
-        // pending ou en cours?
         const game = this.games.fetchInProgressGame(this.id)
         await game
-        console.log(game)
         if (game) {
           window.location.href = '#game/' + game.get('id')
         }
       } catch (e) {
-        // console.log(e)
       }
     }
     getGame()

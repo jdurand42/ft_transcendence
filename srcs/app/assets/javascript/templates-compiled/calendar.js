@@ -94,9 +94,7 @@ templates['calendar'] = template({"1":function(container,depth0,helpers,partials
     + alias4(((helper = (helper = lookupProperty(helpers,"onId") || (depth0 != null ? lookupProperty(depth0,"onId") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"onId","hash":{},"data":data,"loc":{"start":{"line":98,"column":119},"end":{"line":98,"column":127}}}) : helper)))
     + "/"
     + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":98,"column":128},"end":{"line":98,"column":134}}}) : helper)))
-    + "';\">Negociate</button>\n				<button class=\"negociation-button refuse-button\" for=\""
-    + alias4(((helper = (helper = lookupProperty(helpers,"id") || (depth0 != null ? lookupProperty(depth0,"id") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data,"loc":{"start":{"line":99,"column":58},"end":{"line":99,"column":64}}}) : helper)))
-    + "\">Refuse</button>\n			</div>\n";
+    + "';\">Negociate</button>\n			</div>\n";
 },"7":function(container,depth0,helpers,partials,data) {
     return "<div class=\"no-current-war\">NO WAR SCHEDULED</div>\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
