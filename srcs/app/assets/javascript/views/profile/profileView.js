@@ -31,7 +31,10 @@ export const ProfileView = Backbone.View.extend({
     'click #Tournament': 'tournamentMatches',
     'click #Duel': 'duelMatches',
     'click #Ladder': 'ladderMatches',
-    'click #follow': 'follow'
+    'click #follow': 'follow',
+    'click .editNicknameOn': function (e) { this.openModal(e) },
+    'click #close': function (e) { this.closeModal(e) },
+    'click #editNicknameButton': function (e) { this.editNickname(e) }
   },
 
   initialize: function () {
@@ -285,8 +288,37 @@ export const ProfileView = Backbone.View.extend({
 
     if (this.id != this.userId) {
       this.renderProfileSubPannel()
+    } else if (this.id === this.userId) {
+      this.renderEditNickname()
     }
     // this.$el.find('#profilePictureContainer').html('<img id="profilePicture" src=\'' + this.users.get(this.id).get('image_url') + '\'></img>')
+  },
+
+  renderEditNickname: async function () {
+    await this.$el.find('#Pannelnickname').addClass('editNicknameOn')
+  },
+
+  openModal: function (e) {
+    document.getElementById('editNicknameModal').style = 'display: flex'
+  },
+
+  closeModal: function () {
+    document.getElementById('editNicknameModal').style = 'display: none'
+  },
+
+  editNickname: async function (e) {
+    try {
+    	const nickname = document.getElementById('newNicknameInput').value
+      const user = await this.users.get(this.id)
+      const response = await user.saveNickname(nickname)
+      this.$el.find('#Pannelnickname').html(nickname)
+      document.getElementsByClassName('btn user')[0].innerHTML = nickname
+      await this.users.fetch()
+      this.closeModal()
+    } catch (e) {
+      console.log(e)
+      this.$el.find('#editNicknameError').html(e.responseJSON.message)
+    }
   },
 
   renderProfileSubPannel: async function () {
