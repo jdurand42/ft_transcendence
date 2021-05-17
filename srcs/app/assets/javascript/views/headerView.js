@@ -36,6 +36,11 @@ export const HeaderView = Backbone.View.extend({
     return this
   },
 
+  changeNickname: function (target, nickname) {
+    this.model.set({ nickname: nickname })
+    this.render(target)
+  },
+
   target_url: function (e) {
     const target = $(e.currentTarget).attr('href')
     this.render(target)

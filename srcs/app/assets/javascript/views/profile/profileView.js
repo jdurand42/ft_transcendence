@@ -312,8 +312,9 @@ export const ProfileView = Backbone.View.extend({
       const user = await this.users.get(this.id)
       const response = await user.saveNickname(nickname)
       this.$el.find('#Pannelnickname').html(nickname)
-      document.getElementsByClassName('btn user')[0].innerHTML = nickname
-      await this.users.fetch()
+      // document.getElementsByClassName('btn user')[0].innerHTML = nickname
+      await this.users.get(this.userId).set({ nickname: nickname })
+      this.headerView.changeNickname('#profile/' + this.userId, nickname)
       this.closeModal()
     } catch (e) {
       console.log(e)
