@@ -154,7 +154,8 @@ export const Router = Backbone.Router.extend({
     const fetchAPI = new FetchAPI()
     fetchAPI.exit()
     window.localStorage.clear()
-    this.oauth_view()
+    this.accessPage()
+    // this.oauth_view()
   },
 
   admin_view: function () {
