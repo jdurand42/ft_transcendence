@@ -425,6 +425,7 @@
 .nickname {
     margin-left: 8px;
     margin-right: 16px;
+    width: 132px;
 }
 
 .chat .center .messages .scrollable .message
