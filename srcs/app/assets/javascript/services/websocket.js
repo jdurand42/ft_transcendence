@@ -26,12 +26,9 @@ export class MyWebSocket {
         })
       }
       socket.send(JSON.stringify(msg))
-      console.log('WebSocket is connected: ')
     }
 
     this.socket.onclose = function (event) {
-      console.log(event)
-      console.log('websocket is closed: ')
     }
 
     this.socket.onmessage = function (event) {
@@ -41,7 +38,6 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
-      console.log(msg)
       if (msg.message) {
         try {
           objet.receiveMessage(msg)
@@ -49,7 +45,7 @@ export class MyWebSocket {
         }
       }
     }
-    this.socket.onerror = function (error) { console.log(error) }
+    this.socket.onerror = function () {}
   }
 
   subscribeChannel (chatRoomId, channelName) {
@@ -94,7 +90,6 @@ export class MyWebSocket {
       if (msg.type === 'ping') {
         return
       }
-      // console.log(msg)
       if (msg.message && msg.message.action !== undefined && msg.message.action === 'game_invitation') {
         try {
           notif.receiveMessage(msg.message)
@@ -115,9 +110,7 @@ export class MyWebSocket {
   updateContextForGame (objet) {
     this.socket.onmessage = function (event) {
       const response = event.data
-      // console.log(event)
       const msg = JSON.parse(response)
-      // console.log(msg)
       if (msg.type === 'ping') {
         objet.receivePing()
         return
@@ -137,7 +130,6 @@ export class MyWebSocket {
       }),
       data: JSON.stringify(data)
     }
-    // console.log(msg)
     this.socket.send(JSON.stringify(msg))
   }
 
@@ -146,7 +138,6 @@ export class MyWebSocket {
   }
 
   close () {
-    console.log('close')
     this.socket.close()
   }
 }

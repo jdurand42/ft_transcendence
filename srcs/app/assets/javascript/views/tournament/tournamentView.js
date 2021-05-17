@@ -640,7 +640,6 @@ export const TournamentView = Backbone.View.extend({
     if (e.currentTarget.innerHTML === 'Register') {
       this.register(e)
     } else {
-      console.log(document.getElementById('register-button').innerHTML)
       if (document.getElementById('register-button').innerHTML === 'Rage quit') {
         document.getElementById('register-button').remove()
       }

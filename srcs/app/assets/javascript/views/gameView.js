@@ -42,17 +42,16 @@ export const GameView = Backbone.View.extend({
     const load = async () => {
       try {
         await this.users.fetch() &&
-				await this.games.fetch()
+        await this.games.fetch()
         this.user = this.users.get(this.id)
         this.game = JSON.parse(JSON.stringify(this.games.get(this.gameId)))
         if (this.game.status === 'played') {
+          // eslint-disable-next-line no-throw-literal
           throw 'Game is already played'
         }
-        // console.log(this.game)
         this.mode = this.game.mode
         $(document).ready(this.initializeGame())
       } catch (e) {
-        // console.log(e)
         this.handleGameNotFound()
         this.canvas.addEventListener('click', function (e) { redirecting(e) })
       }
