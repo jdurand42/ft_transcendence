@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+
+ActiveJob::Base.queue_adapter = :test
 include(TournamentHelper)
 RSpec.describe TournamentHelper do
   context 'Tournament with 3 participants' do
@@ -8,7 +10,7 @@ RSpec.describe TournamentHelper do
     let!(:tournament) { create(:tournament_with_participants) }
     let(:participants) { tournament.participants.pluck(:user_id) }
     describe 'match_all_played?' do
-      it 'returns true', test:true do
+      it 'returns true' do
         game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[0], player_right_id: participants[1], winner_id: participants[0])
         manage_tournament(game)
         game = create(:game, mode: 'tournament', status: 'played', tournament_id: tournament.id, player_left_id: participants[1], player_right_id: participants[2], winner_id: participants[1])
@@ -65,6 +67,15 @@ RSpec.describe TournamentHelper do
         manage_tournament(Game.first)
         expect(TournamentParticipant.find_by_user_id(participants[0]).opponents).to include(participants[1])
         expect(TournamentParticipant.find_by_user_id(participants[1]).opponents).to include(participants[0])
+      end
+    end
+    describe "rage quits",test:true do
+      it 'set last participant winner' do
+        trnmt = Tournament.first
+        trnmt.update(start_date: DateTime.now - 1)
+        Game.create(player_left_id: trnmt.participants.first.user_id, player_right_id: trnmt.participants.second.user_id, mode: 'tournament', tournament: trnmt)
+        TournamentParticipant.destroy_by(user_id: [participants[0], participants[1]])
+        expect(Tournament.first.winner_id).to eq participants[2]
       end
     end
   end

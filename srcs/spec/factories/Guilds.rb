@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :guild do
-    name { Faker::Music.unique.band }
+    name { Faker::Music.unique.band[0..14] }
     anagram { Faker::Name.initials(number: rand(3..5)) }
     score { rand(0..100) }
     factory :guild_with_officers do

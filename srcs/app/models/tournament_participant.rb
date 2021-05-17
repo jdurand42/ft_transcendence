@@ -5,5 +5,5 @@ class TournamentParticipant < ApplicationRecord
   validates_uniqueness_of :user_id, scope: :tournament
   validates_presence_of :tournament
   belongs_to :user
-  belongs_to :tournament
+  belongs_to :tournament, touch: true
 end
