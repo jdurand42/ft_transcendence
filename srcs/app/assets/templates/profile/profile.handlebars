@@ -6,15 +6,15 @@
 	<div class="contentWrapper">
 		<div id="profileSubNavBar"></div>
 		<div id="profileContent"></div>
-		<div class="modal" id="editNicknameModal" style="display: none;">
+		<div class="modal validationModal" id="editNicknameModal" style="display: none;">
 			<div class="background"></div>
 			<div class="modalOpen">
 				<div class="close closeModal">
 					<img src="./icons/close.svg" id="close"></img>
 				</div>
 				<label class="label" for="search">Edit nickname</label>
-				<input class="textInput" id='newNicknameInput' type="text" placeholder="New nickname" for={{id}}></input>
-				<div id='editNicknameError'></div>
+				<input class="textInput" id="newNicknameInput" type="text" placeholder="New nickname" for="{{id}}"></input>
+				<div id="editNicknameError" ></div>
 				<div class="button-container buttons">
 					<button class="validation-buttons button validate-add-friends editNickname" id='editNicknameButton' for="{{this.id}}">save</button>
 				</div>
