@@ -17,8 +17,14 @@
                     </div>
                 </td>
                 <td>{{ this.nickname }}</td>
+                {{#if owner}}
+                <td>Website owner</td>
+                <td></td>
+                {{/if}}
+                {{#unless owner}}
                 <td><input type="checkbox" name="administrator" for={{this.id}} class="administrator checkbox" {{#if this.admin }}checked>{{/if}}</td>
                 <td><input type="checkbox" name="banned" for={{this.id}} class="banned checkbox" {{#if this.banned }}checked>{{/if}}</td>
+                {{/unless}}
             </tr>
             {{/each}}
     </table>

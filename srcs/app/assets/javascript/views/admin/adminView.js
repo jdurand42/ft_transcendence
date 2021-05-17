@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { Users } from '../../collections/usersCollection'
 
 export const AdminView = Backbone.View.extend({
@@ -23,9 +24,14 @@ export const AdminView = Backbone.View.extend({
   el: $('#app'),
 
   render: function (message = '') {
-    const users = JSON.parse(JSON.stringify(this.users))
-    this.context.users = users
-    this.context.nbUsers = users.length
+    this.context.users = []
+    for (let i = 0; i < this.users.length; i++) {
+      this.context.users[i] = JSON.parse(JSON.stringify(this.users.at(i)))
+      if (this.users.at(i).get('uid') == 69891) {
+        this.context.users[i].owner = true
+      }
+    }
+    this.context.nbUsers = this.users.length
     this.templateAdmin = Handlebars.templates.adminMain
     this.$el.html(this.templateAdmin(this.context))
     this.$el.find('#adminHeader-container').html(Handlebars.templates.adminHeader(this.context))
