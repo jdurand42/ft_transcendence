@@ -131,8 +131,14 @@ export const ChatView = Backbone.View.extend({
     }
 
     const fetchAllMessages = async () => {
-      for (let i = 0; i < this.channels.length; i++) {
-        const channel = this.channels.at(i)
+      let channels
+      if (this.userLogged.get('admin') === true) {
+        channels = this.channels
+      } else {
+        channels = this.myChannels
+      }
+      for (let i = 0; i < channels.length; i++) {
+        const channel = channels.at(i)
         if (channel.get('id') !== channelId) {
           const messages = await channel.getMessages()
           this.socket.subscribeChannel(channel.get('id'), 'ChatChannel')
