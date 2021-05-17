@@ -146,7 +146,6 @@ export const Router = Backbone.Router.extend({
   },
 
   exit: function () {
-    // if (this.accessPage()) { return }
     if (this.view !== undefined) {
       this.remove_view()
     }
@@ -154,8 +153,8 @@ export const Router = Backbone.Router.extend({
     const fetchAPI = new FetchAPI()
     fetchAPI.exit()
     window.localStorage.clear()
-    this.accessPage()
-    // this.oauth_view()
+    history.replaceState({}, null, '/')
+    this.view = new OauthView()
   },
 
   admin_view: function () {
@@ -165,9 +164,7 @@ export const Router = Backbone.Router.extend({
 
   oauth_view: async function (url) {
     document.getElementById('header').innerHTML = ''
-    // const search = window.location.search
     this.urlParams = new URLSearchParams(window.location.search)
-    console.log(window.location.search)
     if (window.location.search !== '') {
       this.connection()
     } else {
