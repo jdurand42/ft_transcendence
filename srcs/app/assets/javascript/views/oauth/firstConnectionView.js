@@ -20,6 +20,7 @@ export const FirstConnectionView = Backbone.View.extend({
     this.template = Handlebars.templates.firstConnexion
     let array = {}
 
+    console.log(this.model)
     array = JSON.parse(JSON.stringify(this.model))
     array.message = message
     const context = JSON.parse(JSON.stringify(array))
