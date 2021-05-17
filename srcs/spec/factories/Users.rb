@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :user, aliases: [:owner] do
-    nickname { Faker::Name.unique.first_name }
+    nickname { Faker::Name.unique.first_name[0..14] }
     # avatar { Rack::Test::UploadedFile.new(Rails.root.join('public', 'images', 'profile-pic.jpg'), 'image/jpg') }
     two_factor { Faker::Boolean.boolean }
     first_login { Faker::Boolean.boolean }
