@@ -48,7 +48,7 @@ export const GameView = Backbone.View.extend({
         if (this.game.status === 'played') {
           throw 'Game is already played'
         }
-        console.log(this.game)
+        // console.log(this.game)
         this.mode = this.game.mode
         $(document).ready(this.initializeGame())
       } catch (e) {

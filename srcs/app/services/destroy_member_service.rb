@@ -13,19 +13,19 @@ class DestroyMemberService
   def destroy_errors
     return if @current_user.admin == true
 
-    verify_guild
-    leaving_member
+    current_user_guild?
+    member_kicks_member?
     mutiny
     owner_leaving_at_war
   end
 
   private
 
-  def verify_guild
+  def current_user_guild?
     raise ApiController::NotAllowedError if @guild != @current_user.guild
   end
 
-  def leaving_member
+  def member_kicks_member?
     raise ApiController::NotAllowedError if @current_user.guild_member.member? && @target.user != @current_user
   end
 

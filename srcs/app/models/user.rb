@@ -23,8 +23,7 @@ class User < ApplicationRecord
   has_many :ignores, foreign_key: 'user_id', dependent: :destroy, class_name: 'UserIgnore'
   has_many :friendship, foreign_key: 'user_id', dependent: :destroy, class_name: 'Friendship'
 
-  validates_presence_of :nickname
-  validates :nickname, uniqueness: true
+  validates :nickname, uniqueness: true, presence: true, length: { maximum: 15 }
   validates :two_factor, inclusion: [true, false]
   validates :first_login, inclusion: [true, false]
   validates :admin, inclusion: [true, false]

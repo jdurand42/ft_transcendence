@@ -1,0 +1,8 @@
+.editNicknameOn:hover {
+	cursor: pointer;
+}
+
+#editNicknameError {
+	color: red;
+	text-align: center;
+}

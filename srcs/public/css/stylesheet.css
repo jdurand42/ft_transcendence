@@ -61,6 +61,7 @@
 @import url(layout/profile/_profile.css);
 @import url(layout/profile/_matchHistory.css);
 @import url(layout/profile/_achievement.css);
+@import url(layout/profile/_editNickname.css);
 
 @import url(layout/manageGuild/_manageGuild.css);
 @import url(layout/_profilePannel.css);
