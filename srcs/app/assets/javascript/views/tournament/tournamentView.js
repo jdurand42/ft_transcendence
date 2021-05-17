@@ -620,13 +620,12 @@ export const TournamentView = Backbone.View.extend({
 
   updateHTML: function (parent, child, template) {
     const html = template(this.context)
-    // document.getElementById(child).remove()
     document.getElementById(parent).appendChild($(html).find('#' + child)[0])
   },
 
   valideCreationTournament: function () {
     const createTournament = async () => {
-      if (this.tournament != undefined) {
+      if (this.tournament != undefined && this.tournament.get('id') != undefined) {
         await this.tournament.cancelTournament()
       }
       this.tournament = new Tournament()
@@ -641,6 +640,10 @@ export const TournamentView = Backbone.View.extend({
     if (e.currentTarget.innerHTML === 'Register') {
       this.register(e)
     } else {
+      console.log(document.getElementById('register-button').innerHTML)
+      if (document.getElementById('register-button').innerHTML === 'Rage quit') {
+        document.getElementById('register-button').remove()
+      }
       this.unregister(e)
     }
     this.handleButtonsColor()
