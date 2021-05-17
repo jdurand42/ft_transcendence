@@ -153,6 +153,7 @@ export const Router = Backbone.Router.extend({
     const fetchAPI = new FetchAPI()
     fetchAPI.exit()
     window.localStorage.clear()
+    document.getElementById('header').innerHTML = ''
     history.replaceState({}, null, '/')
     this.view = new OauthView()
   },
