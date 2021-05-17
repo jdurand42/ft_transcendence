@@ -341,8 +341,8 @@ export const GuildView = Backbone.View.extend({
   },
 
   pushMatchesDone: function (context, game) {
-    context.unshift({})
-    const length = 0
+    context.push({})
+    const length = context.length - 1
     context[length].nb = context.length
     const opponentId1 = game.get('winner_id')
     const getOpponentId2 = function () {
@@ -379,6 +379,11 @@ export const GuildView = Backbone.View.extend({
     context[length].score2 = getScore2()
     if (context[length].score1 === 0 && context[length].score2 === 0) {
       context[length].forfeit = true
+    }
+    let j = 1
+    for (let i = context.length - 1; i >= 0; i--) {
+      context[i].nb = j
+      j++
     }
   },
 
