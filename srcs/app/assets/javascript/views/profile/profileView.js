@@ -317,7 +317,6 @@ export const ProfileView = Backbone.View.extend({
       this.headerView.changeNickname('#profile/' + this.userId, nickname)
       this.closeModal()
     } catch (e) {
-      console.log(e)
       this.$el.find('#editNicknameError').html(e.responseJSON.message)
     }
   },
