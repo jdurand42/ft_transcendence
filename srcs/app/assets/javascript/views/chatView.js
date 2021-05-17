@@ -911,6 +911,11 @@ export const ChatView = Backbone.View.extend({
       if (this.userLogged.get('ignores').some(el => el.ignored_id == usersOnline[i].get('id')) === true) {
         this.context.usersOnline[i].image_url = './icons/blocked.svg'
       }
+      try {
+        this.context.usersOnline[i].anagram = this.guilds.get(usersOnline[i].get('guild_id')).get('anagram')
+      } catch (e) {
+        this.context.usersOnline[i].anagram = 'N/A'
+      }
 
       this.context.usersOnline[i].userId = usersOnline[i].get('id')
       this.context.usersOnline[i].channelId = channelId
@@ -926,11 +931,6 @@ export const ChatView = Backbone.View.extend({
           size = 16 - this.context.usersOnline[i].anagram.length
         }
         this.context.usersOnline[i].nickname = this.context.usersOnline[i].nickname.substr(0, size) + '.'
-        try {
-          this.context.usersOnline[i].anagram = this.guilds.get(usersOnline[i].get('guild_id')).get('anagram')
-        } catch (e) {
-          this.context.usersOffline[i].anagram = 'N/A'
-        }
       }
     }
 
@@ -940,6 +940,11 @@ export const ChatView = Backbone.View.extend({
       this.context.usersInGame.push(JSON.parse(JSON.stringify(usersInGame[i])))
       if (this.userLogged.get('ignores').some(el => el.ignored_id == usersInGame[i].get('id')) === true) {
         this.context.usersInGame[i].image_url = './icons/blocked.svg'
+      }
+      try {
+        this.context.usersInGame[i].anagram = this.guilds.get(usersInGame[i].get('guild_id')).get('anagram')
+      } catch (e) {
+        this.context.usersInGame[i].anagram = 'N/A'
       }
       this.context.usersInGame[i].userId = usersInGame[i].get('id')
       this.context.usersInGame[i].channelId = channelId
@@ -956,11 +961,6 @@ export const ChatView = Backbone.View.extend({
         }
         this.context.usersInGame[i].nickname = this.context.usersInGame[i].nickname.substr(0, size) + '.'
       }
-      try {
-        this.context.usersInGame[i].anagram = this.guilds.get(usersInGame[i].get('guild_id')).get('anagram')
-      } catch (e) {
-        this.context.usersOffline[i].anagram = 'N/A'
-      }
     }
 
     // offline
@@ -970,6 +970,11 @@ export const ChatView = Backbone.View.extend({
       if (this.userLogged.get('ignores').some(el => el.ignored_id == usersOffline[i].get('id')) === true) {
         this.context.usersOffline[i].image_url = './icons/blocked.svg'
       }
+      try {
+        this.context.usersOffline[i].anagram = this.guilds.get(usersOffline[i].get('guild_id')).get('anagram')
+      } catch (e) {
+        this.context.usersOffline[i].anagram = 'N/A'
+      }
       this.context.usersOffline[i].userId = usersOffline[i].get('id')
       this.context.usersOffline[i].channelId = channelId
       if (this.context.usersOffline[i].anagram !== undefined) {
@@ -978,11 +983,6 @@ export const ChatView = Backbone.View.extend({
           const size = 16 - this.context.usersOffline[i].anagram.length
           this.context.usersOffline[i].nickname = this.context.usersOffline[i].nickname.substr(0, size) + '.'
         }
-      }
-      try {
-        this.context.usersOffline[i].anagram = this.guilds.get(usersOffline[i].get('guild_id')).get('anagram')
-      } catch (e) {
-        this.context.usersOffline[i].anagram = 'N/A'
       }
     }
   },
