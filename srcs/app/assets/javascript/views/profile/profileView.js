@@ -298,12 +298,9 @@ export const ProfileView = Backbone.View.extend({
         div.innerHTML = '<div>Unfollow</div>'
         div.style.backgroundColor = '#C4C4C4'
         div.style.border = '2px solid #606060'
-
-        // document.getElementById('followUser').style = 'background: #DDD7D7;border: 2px solid #606060;box-sizing: border-box;border-radius: 10px;'
         return
       }
     }
-    // document.getElementById('followUser').style = ''
   },
 
   follow: function (e) {
