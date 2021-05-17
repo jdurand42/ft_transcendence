@@ -4,18 +4,6 @@ module Api
   class MessagesController < ApiController
     before_action :authorize
 
-    def create
-      raise NotAllowedError unless send_forbidden? == false
-
-      content = message_params.fetch('content')
-      raise MessageTooLongError if content.length > 300
-
-      message = ChatMessage.create!(content: content, sender_id: current_user.id, chat_id: @chat_id)
-      ActionCable.server.broadcast("chat_#{@chat_id}", { sender_id: current_user.id, content: content,
-                                                         created_at: message.created_at.to_s })
-      json_response(message, 201)
-    end
-
     def index
       json_response(ChatMessage.where(chat_id: @chat_id).order(id: :asc).last(10))
     end
@@ -35,9 +23,10 @@ module Api
     end
 
     def reject_user?
+      return false if current_user.admin?
       return true if user_banned_from_chat?(@chat_id, current_user.id)
 
-      ChatParticipant.where(user_id: current_user.id, chat_id: @chat_id).empty?
+      ChatParticipant.find_by(user_id: current_user.id, chat_id: @chat_id).nil?
     end
 
     def authorize

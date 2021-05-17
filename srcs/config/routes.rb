@@ -33,7 +33,7 @@ Rails.application.routes.draw do
       end
     end
     resources :chats do
-      resources :messages, only: %i[index create]
+      resources :messages, only: %i[index]
       member do
         post 'participants', to: 'chats#join'
         delete 'participants', to: 'chats#leave'
