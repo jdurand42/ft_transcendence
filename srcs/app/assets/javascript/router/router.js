@@ -146,7 +146,10 @@ export const Router = Backbone.Router.extend({
   },
 
   exit: function () {
-    if (this.accessPage()) { return }
+    // if (this.accessPage()) { return }
+    if (this.view !== undefined) {
+      this.remove_view()
+    }
     this.socket.close()
     const fetchAPI = new FetchAPI()
     fetchAPI.exit()
