@@ -36,7 +36,7 @@ module Api
     def destroy
       authorize @game
       notify_declined(@game)
-      @game.destroy
+      @game.destroy!
       head :no_content
     end
 
