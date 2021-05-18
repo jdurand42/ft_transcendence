@@ -32,16 +32,16 @@ module CompetitionHelper
 
   def assign_ladder(player)
     case player.score
-    when 0..999
+    when 0..99
       player.update!(ladder: Ladder.find_by_name('Bronze'))
-    when 1000..1999
+    when 100..199
       player.update!(ladder: Ladder.find_by_name('Silver'))
-    when 2000..3999
+    when 200..299
       player.update!(ladder: Ladder.find_by_name('Gold'))
-    when 4000..9999
+    when 300..499
       player.update!(ladder: Ladder.find_by_name('Platinum'))
     else
-      player.update!(ladder: Ladder.find_by_name('Diamond')) if player.score > 10_000
+      player.update!(ladder: Ladder.find_by_name('Diamond')) if player.score > 499
     end
   end
 end

@@ -3,7 +3,7 @@
 class Tournament < ApplicationRecord
   after_save :minimum_players_abort, if: :saved_change_to_start_date?
   after_update :achievement, if: :saved_change_to_winner_id?
-  after_touch :lone_participant
+  after_touch :lone_participant_winner, if: :lone_participant?
 
   validates :start_date, presence: true
   validates :time_to_answer, presence: true, numericality: true
@@ -19,8 +19,13 @@ class Tournament < ApplicationRecord
     achievement_unlocked(winner_id, 'My Name Is Achilles')
   end
 
-  def lone_participant
-    self.winner_id = participants.first.user_id if games.count.positive? && (participants.count == 1)
+  def lone_participant?
+    games.count.positive? && (participants.count == 1)
+  end
+
+  def lone_participant_winner
+    self.winner_id = participants.first.user_id
     save
+    GamePointGiver.new.tournament_points(self)
   end
 end
