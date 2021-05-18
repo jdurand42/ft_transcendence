@@ -167,7 +167,6 @@ export const Router = Backbone.Router.extend({
     document.getElementById('header').innerHTML = ''
     // const search = window.location.search
     this.urlParams = new URLSearchParams(window.location.search)
-    console.log(window.location.search)
     if (window.location.search !== '') {
       this.connection()
     } else {
