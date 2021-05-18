@@ -14,7 +14,7 @@ COPY srcs/Gemfile /app/Gemfile
 COPY srcs/Gemfile.lock /app/Gemfile.lock
 RUN bundle install
 RUN yarn install
-ADD build/rails/docker-entrypoint.sh /docker-entrypoint.sh
+ADD docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod 0755 /docker-entrypoint.sh
 EXPOSE 3000
 ENTRYPOINT ["/bin/bash","-c", "/docker-entrypoint.sh"]

@@ -11,6 +11,9 @@ export const GameRecords = Backbone.Collection.extend({
   url: function () {
     return this.urlRoot
   },
+  comparator: function (model) {
+    return -new Date(model.get('created_at'))
+  },
   fetchByTournament: function (tournamentId) {
     return this.fetch({
       url: this.urlRoot + '?tournament_id=' + tournamentId
