@@ -122,7 +122,7 @@ export const TournamentView = Backbone.View.extend({
           this.$el.find('#tournament-nav-container').html(Handlebars.templates.tournamentTimer(this.context))
           this.initializeTimer()
 
-          this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentRegistration(this.context))
+          await this.$el.find('#tournament-content-container').html(Handlebars.templates.tournamentRegistration(this.context))
         } else { // Tournament is pending
           await this.initializeRanking()
 
@@ -166,13 +166,15 @@ export const TournamentView = Backbone.View.extend({
         }
       }
 
-      this.$el.find('#tournament-header-container').html(Handlebars.templates.tournamentHeader(this.context))
+      await this.$el.find('#tournament-header-container').html(Handlebars.templates.tournamentHeader(this.context))
 
-      if ((this.tournament.status === 'inprogress' &&
-              this.participantIds.some(el => el === this.userId) === false) ||
-            this.tournament.get('winner_id') != undefined) {
-        document.getElementById('register-button-container').remove()
-      }
+      try {
+        if ((this.tournament.status === 'inprogress' &&
+        this.participantIds.some(el => el === this.userId) === false) ||
+        this.tournament.get('winner_id') != undefined) {
+          document.getElementById('register-button-container').remove()
+        }
+      } catch (e) {}
 
       this.handleButtonsColor()
 
