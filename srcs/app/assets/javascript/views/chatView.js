@@ -1273,6 +1273,7 @@ export const ChatView = Backbone.View.extend({
   yesDeleteDefinitivelyChannel: function (e) {
     const currentChannel = this.channels.get(this.channelId)
     currentChannel.deleteDefinitivelyChannel()
+    this.myChannels.remove(this.channelId)
     this.channels.remove(this.channelId)
     this.deleteChannelOfHTML(e)
     this.closeParams()
