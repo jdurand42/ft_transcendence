@@ -27,8 +27,6 @@ module GameOverHelper
     change_players_status(game, 'online')
     return if game.winner.nil?
 
-    assign_ladder(game.player_left)
-    assign_ladder(game.player_right)
     GamePointGiver.new.game_points(game)
     notify_players(game)
   end

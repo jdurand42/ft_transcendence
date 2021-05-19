@@ -44,16 +44,10 @@ class User < ApplicationRecord
   end
 
   def achievement_ladder
-    case ladder = Ladder.find(ladder_id).name
-    when 'Silver'
-      achievement_unlocked(id, 'RoadToDiamond I')
-    when 'Gold'
-      achievement_unlocked(id, 'RoadToDiamond II')
-    when 'Platinum'
-      achievement_unlocked(id, 'RoadToDiamond III')
-    else
-      achievement_unlocked(id, 'To Infinity And Beyond !') if ladder == 'Diamond'
-    end
+    achievement_unlocked(id, 'RoadToDiamond I') if score > 99
+    achievement_unlocked(id, 'RoadToDiamond II') if score > 199
+    achievement_unlocked(id, 'RoadToDiamond III') if score > 299
+    achievement_unlocked(id, 'To Infinity And Beyond !') if score > 499
   end
 
   def positive_score

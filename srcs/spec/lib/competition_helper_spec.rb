@@ -18,12 +18,12 @@ RSpec.describe CompetitionHelper do
       expect(main_match_maker(player)).to eq player_1.id.to_s
     end
   end
-  describe 'assign_ladder' do
-    let(:bronze) { Ladder.create(name: 'Bronze') }
-    let(:silver) { Ladder.create(name: 'Silver') }
-    let(:gold) { Ladder.create(name: 'Gold') }
-    let(:platinum) { Ladder.create(name: 'Platinum') }
-    let(:diamond) { Ladder.create(name: 'Diamond') }
+  describe 'assign_ladder',test:true do
+    let!(:bronze) { Ladder.create(name: 'Bronze') }
+    let!(:silver) { Ladder.create(name: 'Silver') }
+    let!(:gold) { Ladder.create(name: 'Gold') }
+    let!(:platinum) { Ladder.create(name: 'Platinum') }
+    let!(:diamond) { Ladder.create(name: 'Diamond') }
     let!(:ach_1) { Achievement.create(name: 'RoadToDiamond I', description: 'You must reach Silver Ladder') }
     let!(:ach_2) { Achievement.create(name: 'RoadToDiamond II', description: 'You must reach Gold Ladder') }
     let!(:ach_3) { Achievement.create(name: 'RoadToDiamond III', description: 'You must reach Platinum Ladder') }
@@ -33,22 +33,22 @@ RSpec.describe CompetitionHelper do
       expect { assign_ladder(player) }.to change { player.ladder_id }.to(bronze.id)
     end
     it 'assigns player to silver' do
-      player.update!(score: 1010)
+      player.update!(score: 101)
       expect { assign_ladder(player) }.to change { player.ladder_id }.to(silver.id)
       expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_1.id))
     end
     it 'assigns player to gold' do
-      player.update!(score: 2010)
+      player.update!(score: 201)
       expect { assign_ladder(player) }.to change { player.ladder_id }.to(gold.id)
       expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_2.id))
     end
     it 'assigns player to platinum' do
-      player.update!(score: 4010)
+      player.update!(score: 401)
       expect { assign_ladder(player) }.to change { player.ladder_id }.to(platinum.id)
       expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_3.id))
     end
     it 'assigns player to diamond' do
-      player.update!(score: 12_010)
+      player.update!(score: 701)
       expect { assign_ladder(player) }.to change { player.ladder_id }.to(diamond.id)
       expect(UserAchievement.find_by_user_id_and_achievement_id(player.id, ach_4.id))
     end

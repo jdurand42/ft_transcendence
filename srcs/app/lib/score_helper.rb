@@ -27,6 +27,7 @@ module ScoreHelper
   end
 
   class GamePointGiver
+    include(CompetitionHelper)
     include(WarHelper)
     POINTS = 10
     TOURNAMENT_POINTS = 100
@@ -36,6 +37,8 @@ module ScoreHelper
       ladder_points
       @winner.guild&.increment!(:score, POINTS) if game.player_left.guild != game.player_right.guild
       war_points(@war, POINTS, @winner) if war_enemies?
+      assign_ladder(game.player_left)
+      assign_ladder(game.player_right)
     end
 
     def tournament_points(trnmt)
@@ -43,6 +46,7 @@ module ScoreHelper
       winner.increment!(:score, TOURNAMENT_POINTS)
       winner.guild&.increment!(:score, TOURNAMENT_POINTS)
       tournament_war_effort(winner)
+      assign_ladder(winner)
     end
 
     private

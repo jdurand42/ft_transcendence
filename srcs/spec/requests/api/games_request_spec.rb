@@ -119,20 +119,20 @@ RSpec.describe 'Games', type: :request do
         post '/api/games', headers: access_token, params: { mode: 'duel', opponent_id: sam.id }
       end
       it 'returns status code 403' do
-        expect(response).to have_http_status(401)
+        expect(response).to have_http_status(403)
         expect(json).not_to be_empty
       end
     end
     it 'already in another duel game' do
       create(:game, player_right: auth, status: 'pending')
       post '/api/games', headers: access_token, params: { mode: 'duel', opponent_id: sam.id }
-      expect(response).to have_http_status(401)
+      expect(response).to have_http_status(403)
       expect(json).not_to be_empty
     end
     it 'already in another duel game' do
       create(:game, player_left: auth, status: 'pending')
       post '/api/games', headers: sam.create_new_auth_token, params: { mode: 'duel', opponent_id: auth.id }
-      expect(response).to have_http_status(401)
+      expect(response).to have_http_status(403)
       expect(json).not_to be_empty
     end
   end
@@ -226,7 +226,7 @@ RSpec.describe 'Games', type: :request do
       post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: pippin.id }
       expect(Game.count).to eq 1
       expect(json['error']).to eq 'You already challenged this player'
-      expect(status).to eq 401
+      expect(status).to eq 403
     end
     it "can't play twice against same opponent (other way)" do
       put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
@@ -237,20 +237,20 @@ RSpec.describe 'Games', type: :request do
       post api_games_url, headers: token_2, params: { mode: 'tournament', opponent_id: sam.id }
       expect(Game.count).to eq 1
       expect(json['error']).to eq 'You already challenged this player'
-      expect(status).to eq 401
+      expect(status).to eq 403
     end
     it "can't play before tournament starts" do
       post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: pippin.id }
       expect(Game.count).to eq 0
       expect(json['error']).to eq 'Tournament has not started yet'
-      expect(status).to eq 401
+      expect(status).to eq 403
     end
     it "can't play if opponent not participant" do
       put api_tournament_url(Tournament.first.id), headers: access_token, params: { start_date: DateTime.now }
       post api_games_url, headers: token, params: { mode: 'tournament', opponent_id: merry.id }
       expect(Game.count).to eq 0
       expect(json['error']).to eq "This player doesn't participate to the tournament"
-      expect(status).to eq 401
+      expect(status).to eq 403
     end
     context "TTA" do
       before {

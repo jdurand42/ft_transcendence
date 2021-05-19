@@ -26,8 +26,9 @@ module Api
     def create
       chat = Chat.create!(chat_params)
       ChatParticipant.create!(user: current_user, chat: chat, role: 'owner')
-      ActionCable.server.broadcast("user_#{current_user.id}", { action: 'chat_invitation', id: chat.id })
       add_participants(chat, params[:participant_ids])
+      ActionCable.server.broadcast("user_#{current_user.id}",
+                                   { action: 'chat_invitation', sender_id: current_user.id, id: chat.id })
       json_response(chat, 201)
     end
 

@@ -132,7 +132,7 @@ describe 'Guild', type: :request do
       post "/api/guilds/#{Guild.first.id}/members/#{auth_2.id}", headers: access_token
       post "/api/guilds/#{Guild.first.id}/officers/#{auth_2.id}", headers: access_token
       delete "/api/guilds/#{Guild.last.id}/members/#{auth.id}", headers: access_token_2
-      expect(response.status).to eq 401
+      expect(response.status).to eq 403
       expect(Guild.first.owner).to eq auth.guild_member
     end
     it 'should not let member kick someone else' do
@@ -275,7 +275,7 @@ describe 'Guild', type: :request do
     it '#destroy_members' do
       delete "/api/guilds/#{guild.id}/members/#{user_id_to_kick}", headers: access_token
       expect(json["error"]).to eq "This action is not allowed with your current privileges."
-      expect(status).to eq 401
+      expect(status).to eq 403
     end
     it '#destroy_officers' do
       delete "/api/guilds/#{guild.id}/officers/#{user_id_to_kick}", headers: access_token

@@ -13,7 +13,7 @@ RSpec.describe Chat, type: :model do
   end
 
   it 'validates uniqueness of name' do
-    create(:chat, name: 'unique')
+    create(:chat, name: 'unique', privacy: 'public')
     should validate_uniqueness_of(:name)
   end
 
