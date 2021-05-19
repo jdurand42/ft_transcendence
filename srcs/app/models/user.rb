@@ -6,7 +6,7 @@ class User < ApplicationRecord
   include DeviseTokenAuth::Concerns::User
   before_save :positive_score
   after_update :achievements
-  after_update :achievement_ladder, if: :saved_change_to_score?
+  after_update :achievement_ladder
 
   belongs_to :ladder, optional: true
 
