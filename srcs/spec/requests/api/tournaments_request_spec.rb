@@ -42,7 +42,7 @@ RSpec.describe 'Tournaments', type: :request do
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 1 }
       post api_tournaments_url, headers: token, params: { start_date: DateTime.now + 2 }
       expect(json['error']).to eq 'The tournament has begun'
-      expect(response.status).to eq 401
+      expect(response.status).to eq 403
       expect(Tournament.count).to eq 1
     end
   end
@@ -58,7 +58,7 @@ RSpec.describe 'Tournaments', type: :request do
       create(:tournament_with_participants)
       Tournament.first.update(start_date: DateTime.yesterday)
       put api_tournament_url(Tournament.first.id), headers: token, params: { start_date: DateTime.now }
-      expect(response.status).to eq 401
+      expect(response.status).to eq 403
       expect(json['error']).to eq 'The tournament has begun'
       expect(Tournament.first.start_date.strftime('%d/%b/%Y')).to eq DateTime.yesterday.strftime('%d/%b/%Y')
     end
@@ -113,7 +113,7 @@ RSpec.describe 'Tournaments', type: :request do
       token_3 = users[1].create_new_auth_token
       post participants_api_tournament_url(Tournament.first.id), headers: token_2
       delete "/api/tournaments/#{Tournament.first.id}/participants/#{users[0].id}", headers: token_3
-      expect(status).to eq 401
+      expect(status).to eq 403
     end
   end
 end
