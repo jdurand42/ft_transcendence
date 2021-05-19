@@ -94,6 +94,7 @@ if Rails.env.development?
     war_times
   end
 
+  FactoryBot.create(:user, nickname: "Alfred", email: "9000@student.42.fr", two_factor: true, two_factor_code: ENV["ALFRED_CODE"])
   guilds = create_guilds(2, 1, 2)
 
   incoming_war = create_incoming_war(guilds[0], guilds[1])
