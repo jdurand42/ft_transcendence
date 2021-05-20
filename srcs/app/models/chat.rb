@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 class Chat < ApplicationRecord
-  validates_uniqueness_of :name
+  validates :name, presence: true, uniqueness: true, length: { maximum: 15 }, if: :name_required?
   validates_presence_of :privacy
-  validates_presence_of :name, length: { maximum: 15 }, if: :name_required?
   validates_inclusion_of :privacy, in: %w[public private protected direct_message]
   has_secure_password validations: false
   validates_presence_of :password, if: :password_enabled?

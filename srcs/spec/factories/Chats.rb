@@ -9,7 +9,7 @@ FactoryBot.define do
     end
     after(:create) do |chat, evaluator|
       create(:chat_participant, chat: chat, role: 'owner', user: evaluator.owner)
-      chat.update!(name: "#{evaluator.owner.nickname}'s chat")
+      chat.update!(name: "#{evaluator.owner.nickname}")
     end
 
     factory :chat_with_messages do
